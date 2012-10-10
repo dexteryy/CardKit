@@ -1,0 +1,36 @@
+body{
+    margin:0;padding:0;
+    overflow:hidden;
+}
+
+.ck-viewport{
+
+}
+
+.ck-wrapper{
+
+}
+
+.ck-card{
+    border:1px solid #f00;
+    /*padding:10px;*/
+}
+
+.subject_show .content dl{
+    margin:5px;
+    height:150px;
+}
+.block5 .content dl.clear{
+    display:none;
+}
+
+.reading-notes ul li .con {
+    width:auto;
+    float:none;
+    margin:0;
+    padding: 0 0 0 60px;
+}
+
+.ctsh .clst{
+    width:auto;
+}

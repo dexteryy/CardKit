@@ -1,0 +1,14 @@
+js_dir: /static/js/
+css_dir: /static/css/
+pic_dir: /static/pics/
+repos:
+  ozjs:
+    url: https://github.com/dexteryy/OzJS.git
+    file:
+      /oz.js: /js/lib/
+      /mod/lang.js: /js/mod/
+      /mod/browsers.js: /js/mod/
+      /mod/event.js: /js/mod/
+      /mod/network.js: /js/mod/
+      /mod/template.js: /js/mod/
+      /mod/localmodel.js: /js/mod/
