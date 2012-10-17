@@ -1,6 +1,3 @@
-js_dir: /static/js/
-css_dir: /static/css/
-pic_dir: /static/pics/
 repos:
   ozjs:
     url: https://github.com/dexteryy/OzJS.git
@@ -12,3 +9,11 @@ repos:
       /mod/network.js: /js/mod/
       /mod/template.js: /js/mod/
       /mod/localmodel.js: /js/mod/
+  #jquery:
+    #url: https://github.com/jquery/jquery.git
+    #build_cmd:
+      #- npm install grunt-compare-size
+      #- npm install grunt-git-authors
+      #- grunt custom:-ajax
+    #file:
+      #/dist/jquery.js: /js/lib/

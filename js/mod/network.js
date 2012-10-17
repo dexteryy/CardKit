@@ -1,7 +1,14 @@
 /**
- * Copyright (C) 2011, Dexter.Yy, MIT License
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://dexteryy.github.com/OzJS/ for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
  */
-define("mod/network", ["mod/lang", "mod/browsers"], function(_, browsers, require, exports){
+define("mod/network", [
+    "mod/lang", 
+    "mod/browsers"
+], function(_, browsers, require, exports){
 
     var oz = this,
         ns = _.ns,
@@ -144,6 +151,11 @@ define("mod/network", ["mod/lang", "mod/browsers"], function(_, browsers, requir
     var RE_DOMAIN = /https?\:\/\/(.+?)\//;
     exports.getJSON = function(url, data, fn, op){
         var domain = url.match(RE_DOMAIN);
+        if (!data || _.isFunction(data)) {
+            op = fn;
+            fn = data;
+            data = {};
+        }
         if (fn) {
             if ((!op || !op.isScript) && (!domain || domain[1] === window.location.host)) {
                 ajax({

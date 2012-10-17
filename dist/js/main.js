@@ -3,11 +3,11 @@
 
 /**
  * OzJS: microkernel for modular javascript 
- * compatible with CommonJS Asynchronous Modules
- * Copyright (C) 2010-1011, Dexter.Yy
- * Licensed under The MIT License
- * @example https://github.com/dexteryy/OzJS/tree/master/tests
- * vim:set ts=4 sw=4 sts=4 et:
+ * compatible with AMD (Asynchronous Module Definition)
+ * see http://dexteryy.github.com/OzJS/ for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
  */ 
 (function(undefined){
 
@@ -603,7 +603,11 @@ require.config({ enable_ozma: true });
 /* @source mod/lang.js */;
 
 /**
- * Copyright (C) 2011, Dexter.Yy, MIT License
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://dexteryy.github.com/OzJS/ for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
  */
 define("mod/lang", ["host"], function(host, require, exports){
 
@@ -1010,14 +1014,20 @@ define("mod/lang", ["host"], function(host, require, exports){
 /* @source mod/event.js */;
 
 /**
- * Copyright (C) 2011, Dexter.Yy, MIT License
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://dexteryy.github.com/OzJS/ for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
  */
 define("mod/event", ["mod/lang"], function(_){
 
     var fnQueue = _.fnQueue,
-        slice = Array.prototype.slice;
+        slice = Array.prototype.slice,
+        pipes = ['notify', 'fire', 'error', 'resolve', 'reject', 'reset'];
 
     function Promise(opt){
+        var self = this;
         if (opt) {
             this.subject = opt.subject;
             this.trace = opt.trace;
@@ -1031,6 +1041,12 @@ define("mod/event", ["mod/lang"], function(_){
         this._lastFailQueue = [];
         this.status = 0;
         this._argsCache = [];
+        this.pipe = {};
+        pipes.forEach(function(i){
+            this[i] = function(){
+                return self[i].call(self, slice.call(arguments));
+            };
+        }, this.pipe);
     }
 
     var actors = Promise.prototype = {
@@ -1075,7 +1091,7 @@ define("mod/event", ["mod/lang"], function(_){
             if (errorHandler) {
                 this.failHandlers.clear(errorHandler);
             }
-            return this;            
+            return this;
         },
 
         bind: function(handler){
@@ -1088,47 +1104,47 @@ define("mod/event", ["mod/lang"], function(_){
 
         unbind: function(handler){
             this.observeHandlers.clear(handler);
-            return this;            
+            return this;
         },
 
-        fire: function(params){
+        fire: function(args){
             if (this.trace) {
                 this._trace();
             }
-            params = params || [];
+            args = args || [];
             var onceHandlers = this.doneHandlers;
             this.doneHandlers = this._alterQueue;
-            this.observeHandlers.apply(this, params);
-            onceHandlers.apply(this, params);
+            this.observeHandlers.apply(this, args);
+            onceHandlers.apply(this, args);
             onceHandlers.length = 0;
             this._alterQueue = onceHandlers;
             return this;
         },
 
-        error: function(params){
+        error: function(args){
             if (this.trace) {
                 this._trace();
             }
-            params = params || [];
+            args = args || [];
             var onceHandlers = this.failHandlers;
             this.failHandlers = this._alterQueue;
-            this.observeHandlers.apply(this, params);
-            onceHandlers.apply(this, params); 
+            this.observeHandlers.apply(this, args);
+            onceHandlers.apply(this, args);
             onceHandlers.length = 0;
             this._alterQueue = onceHandlers;
             return this;
         },
 
-        resolve: function(params){
+        resolve: function(args){
             this.status = 1;
-            this._argsCache = params || [];
-            return this.fire(params);
+            this._argsCache = args || [];
+            return this.fire(args);
         },
 
-        reject: function(params){
+        reject: function(args){
             this.status = 2;
-            this._argsCache = params || [];
-            return this.error(params);
+            this._argsCache = args || [];
+            return this.error(args);
         },
 
         reset: function(){
@@ -1189,7 +1205,8 @@ define("mod/event", ["mod/lang"], function(_){
 
     };
 
-    actors.wait = actors.then;
+    actors.notify = actors.fire;
+    actors.progress = actors.bind;
 
     function when(){
         var mutiArgs = [],
@@ -1198,8 +1215,8 @@ define("mod/event", ["mod/lang"], function(_){
         Array.prototype.forEach.call(arguments, function(promise, i){
             var mutiPromise = this;
             promise.then(callback, callback);
-            function callback(params){
-                mutiArgs[i] = params;
+            function callback(args){
+                mutiArgs[i] = args;
                 if (--mutiPromise._count === 0) {
                     mutiPromise.resolve.call(mutiPromise, mutiArgs);
                 }
@@ -1210,11 +1227,10 @@ define("mod/event", ["mod/lang"], function(_){
 
     function pipe(prev, next){
         if (prev && prev.then) {
-            prev.then(function(){
-                next.resolve(slice.call(arguments));
-            }, function(){
-                next.reject(slice.call(arguments));
-            });
+            prev.then(next.pipe.resolve, next.pipe.reject)
+                .bind(next.pipe.fire);
+        } else if (prev !== undefined) {
+            next.resolve([prev]);
         }
         return prev;
     }
@@ -1223,8 +1239,8 @@ define("mod/event", ["mod/lang"], function(_){
         return function(subject){
             var promise = this.lib[subject];
             if (!promise) {
-                promise = this.lib[subject] = new Promise({ 
-                    subject: subject, 
+                promise = this.lib[subject] = new Promise({
+                    subject: subject,
                     trace: this.trace,
                     traceStack: this.traceStack
                 });
@@ -1242,18 +1258,22 @@ define("mod/event", ["mod/lang"], function(_){
         this.lib = {};
     }
 
-    Event.prototype = (function(methods){
+    var EventAPI = Event.prototype = (function(methods){
         for (var i in actors) {
             methods[i] = dispatchFactory(i);
         }
         return methods;
     })({});
 
-    Event.prototype.promise = function(subject){
+    EventAPI.wait = EventAPI.then;
+    EventAPI.on = EventAPI.bind;
+    EventAPI.off = EventAPI.unbind;
+
+    EventAPI.promise = function(subject){
         var promise = this.lib[subject];
         if (!promise) {
-            promise = this.lib[subject] = new Promise({ 
-                subject: subject, 
+            promise = this.lib[subject] = new Promise({
+                subject: subject,
                 trace: this.trace,
                 traceStack: this.traceStack
             });
@@ -1261,7 +1281,7 @@ define("mod/event", ["mod/lang"], function(_){
         return promise;
     };
 
-    Event.prototype.when = function(){
+    EventAPI.when = function(){
         var args = [];
         for (var i = 0, l = arguments.length; i < l; i++) {
             args.push(this.promise(arguments[i]));
@@ -1274,14 +1294,15 @@ define("mod/event", ["mod/lang"], function(_){
     }
 
     exports.Promise = Promise;
+    exports.Event = Event;
     exports.when = when;
 
     return exports;
 });
 
-/* @source cardkits/bus.js */;
+/* @source cardkit/bus.js */;
 
-define("cardkits/bus", [
+define("cardkit/bus", [
     'mod/event'
 ], function(Event){
 
@@ -1292,7 +1313,11 @@ define("cardkits/bus", [
 /* @source mod/template.js */;
 
 /**
- * Copyright (C) 2011, Dexter.Yy, MIT License
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://dexteryy.github.com/OzJS/ for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
  */
 define("mod/template", ["mod/lang", "host"], function(_, host, require, exports){
 
@@ -1422,76 +1447,88 @@ define("mod/template", ["mod/lang", "host"], function(_, host, require, exports)
 define("mod/dollar", [
     "mod/lang",
     "host"
-], function(_, host){
+], function(_, window){
 
-    var doc = host.document,
+    var doc = window.document,
+        NEXT_SIB = 'nextElementSibling',
+        PREV_SIB = 'prevElementSibling',
+        FIRST_CHILD = 'firstElementChild',
         MATCHES_SELECTOR = ['webkitMatchesSelector', 'mozMatchesSelector', 'matchesSelector']
-            .map(pluck, doc.body).filter(pick)[0],
+            .map(function(name){
+                return this[name] && name;
+            }, doc.body).filter(pick)[0],
+        CSS_NUMBER = { 
+            'column-count': 1, 'columns': 1, 'font-weight': 1, 
+            'line-height': 1, 'opacity': 1, 'z-index': 1, 'zoom': 1 
+        },
+        RE_HTMLTAG = /^\s*<(\w+|!)[^>]*>/,
         _array_each = Array.prototype.forEach,
-        _array_push = Array.prototype.push;
+        _array_push = Array.prototype.push,
+        _getComputedStyle = document.defaultView.getComputedStyle,
+        _next_pointer,
+        _elm_display = {},
+        _html_containers = {};
 
 
     function $(selector, context){
         if (selector) {
-            if (context) {
-                return ext.find(context).find(selector);
+            if (selector.constructor === $) {
+                return selector;
+            } else if (typeof selector !== 'string') {
+                var nodes = new $();
+                _array_push[selector.length !== undefined
+                    && selector !== window ? 'apply' : 'call'
+                ](nodes, selector);
+                return nodes;
+            } else if (RE_HTMLTAG.test(selector)) {
+                return create_nodes(selector);
+            } else if (context) {
+                return $(context).find(selector);
             } else {
                 return ext.find(selector);
             }
         }
     }
 
-    $.prototype = Array.prototype;
+    var ext = $.fn = $.prototype = Array.prototype;
 
-    var ext = $.fn = _.mix($.prototype, {
+    ['map', 'filter', 'slice', 'splice', 'concat'].forEach(function(method){
+        var origin = this['_' + method] = this[method];
+        this[method] = function(){
+            return $(origin.apply(this, arguments));
+        };
+    }, ext);
+
+    _.mix(ext, {
 
         constructor: $,
 
+        // Traversing
+
         find: function(selector){
-            if (selector.constructor === $) {
-                return selector;
-            }
-            var obj = new $(), contexts;
+            var nodes = new $(), contexts;
             if (this === ext) {
                 contexts = [doc];
             } else {
-                obj.prevObject = contexts = this;
+                nodes.prevObject = contexts = this;
             }
-            if (typeof selector === 'string') {
-                if (/^#/.test(selector)) {
-                    var elm = doc.getElementById(selector.substr(1));
-                    if (elm) {
-                        obj.push(elm);
-                    }
-                } else {
-                    var query = /\W/.test(selector) ? 'querySelectorAll' 
-                                                    : 'getElementsByTagName';
-                    if (contexts[1]) {
-                        contexts.forEach(function(context){
-                            this.push.apply(this, context[query](selector));
-                        }, obj);
-                    } else {
-                        obj.push.apply(obj, contexts[0][query](selector));
-                    }
+            if (/^#/.test(selector)) {
+                var elm = doc.getElementById(selector.substr(1));
+                if (elm) {
+                    nodes.push(elm);
                 }
-            } else if (selector) {
-                obj.push(selector);
-            }
-            return obj;
-        },
-
-        each: function(fn){
-            for (var i = 0, l = this.length; i < l; i++){
-                var re = fn.call(this[i], i);
-                if (re === false) {
-                    break;      
+            } else {
+                var query = /\W/.test(selector) ? 'querySelectorAll' 
+                                                : 'getElementsByTagName';
+                if (contexts[1]) {
+                    contexts.forEach(function(context){
+                        this.push.apply(this, context[query](selector));
+                    }, nodes);
+                } else if (contexts[0]) {
+                    nodes.push.apply(nodes, contexts[0][query](selector));
                 }
             }
-            return this;
-        },
-
-        end: function(){
-            return this.prevObject || new $();
+            return nodes;
         },
 
         eq: function(i){
@@ -1499,32 +1536,23 @@ define("mod/dollar", [
         },
 
         not: function(selector){
-            return this.filter(function(item){
-                return item && !this(item, selector);
+            return this.filter(function(node){
+                return node && !this(node, selector);
             }, matches_selector);
         },
 
         has: function(selector){
-            return this.filter(function(item){
-                return this(item, selector);
+            return this.filter(function(node){
+                return this(node, selector);
             }, matches_selector);
         },
 
-        parent: function(selector){
-            return _.unique([undefined, doc, null].concat(this.map(selector ? function(item){
-                var p = item.parentNode;
-                if (p && matches_selector(p, selector)) {
-                    return p;
-                }
-            } : function(item){
-                return item.parentNode;
-            }))).slice(3);
-        },
+        parent: find_near('parentNode'),
 
         parents: function(selector){
             var ancestors = new $(), p = this,
-                finding = selector ? find_selector(selector, 'parentNode') : function(item){
-                    return this[this.push(item.parentNode) - 1];
+                finding = selector ? find_selector(selector, 'parentNode') : function(node){
+                    return this[this.push(node.parentNode) - 1];
                 };
             while (p.length) {
                 p = p.map(finding, ancestors);
@@ -1541,24 +1569,37 @@ define("mod/dollar", [
             return ancestors.length && ancestors || this;
         },
 
-        siblings: function(selector){
-            var sibs = new $(),
-                finding = selector ? find_selector(selector) : function(item){
-                    this.push(item);
-                };
-            this.forEach(function(item){
-                _array_each.apply(((item || {}).parentNode || {}).children || [], function(child){
-                    if (child !== item) {
-                        this.call(this, child);
-                    }
-                }, this);
-            }, sibs);
-            return _.unique(sibs);
+        siblings: find_sibs(NEXT_SIB, FIRST_CHILD),
+
+        next: find_near(NEXT_SIB),
+
+        nextAll: find_sibs(NEXT_SIB),
+
+        nextUntil: find_sibs(NEXT_SIB, false, true),
+
+        prev: find_near(PREV_SIB),
+
+        prevAll: find_sibs(PREV_SIB),
+
+        prevUntil: find_sibs(PREV_SIB, false, true),
+
+        children: function(){
+            return _.merge.apply(_, this.map(function(node){
+                return this(node.children);
+            }, $));
         },
 
+        contents: function(){
+            return _.merge.apply(_, this.map(function(node){
+                return this(node.childNodes);
+            }, $));
+        },
+
+        // Detection
+
         is: function(selector){
-            this.some(function(item){
-                return matches_selector(item, selector);
+            return this.some(function(node){
+                return matches_selector(node, selector);
             });
         },
 
@@ -1571,67 +1612,152 @@ define("mod/dollar", [
             return false;
         },
 
+        // Properties
+
         addClass: function(cname){
-            var is_fn_arg = _.isFunction(cname);
-            this.forEach(function(item, i){
-                if (is_fn_arg) {
-                    cname = cname.call(this, i, item.className);
-                }
-                item.classList.add(cname);
+            return foreach_farg(this, cname, 'className', function(node, cname){
+                node.classList.add(cname);
             });
-            return this;
         },
 
         removeClass: function(cname){
-            var is_fn_arg = _.isFunction(cname);
-            this.forEach(function(item, i){
-                if (is_fn_arg) {
-                    cname = cname.call(this, i, item.className);
-                }
-                item.classList.remove(cname);
+            return foreach_farg(this, cname, 'className', function(node, cname){
+                node.classList.remove(cname);
             });
-            return this;
         },
 
         toggleClass: function(cname, force){
-            var is_fn_arg = _.isFunction(cname);
-            this.forEach(function(item, i){
-                if (is_fn_arg) {
-                    cname = cname.call(this, i, item.className);
+            return foreach_farg(this, cname, 'className', function(node, cname){
+                node.classList[typeof this === 'undefined' && 'toggle'
+                                    || this && 'add' || 'remove'](cname);
+            }, force);
+        },
+
+        attr: kv_access(function(node, name, value){
+            node.setAttribute(name, value);
+        }, function(node, name){
+            return node && node.getAttribute(name);
+        }),
+
+        removeAttr: function(name){
+            this.forEach(function(node){
+                node.removeAttribute(this);
+            }, name);
+            return this;
+        },
+
+        prop: kv_access(function(node, name, value){
+            node[name] = value;
+        }, function(node, name){
+            return (node || {})[name];
+        }),
+
+        removeProp: function(name){
+            this.forEach(function(node){
+                delete node[this];
+            }, name);
+            return this;
+        },
+
+        data: kv_access(function(node, name, value){
+            node.dataset[name] = value;
+        }, function(node, name){
+            return (node || {}).dataset[name];
+        }),
+
+        removeData: function(name){
+            this.forEach(function(node){
+                delete node.dataset[this];
+            }, name);
+            return this;
+        },
+
+        val: function(value){
+            var node = this[0];
+            if (value === undefined) {
+                if (node) {
+                    if (node.multiple) {
+                        return $('option', this).filter(function(item){
+                            return item.selected;
+                        }).map(function(item){
+                            return item.value;
+                        });
+                    }
+                    return node.value;
                 }
-                item.classList[typeof force === 'undefined' && 'toggle'
-                                    || force && 'add' || 'remove'](cname);
+            } else {
+                return foreach_farg(this, value, 'value', function(node, value){
+                    node.value = value;
+                });
+            }
+        },
+
+        empty: function(){
+            this.forEach(function(node){
+                node.innerHTML = '';
             });
             return this;
         },
 
-        css: function(){
-        
+        html: function(str){
+            return str === undefined ? (this[0] || {}).innerHTML
+                : foreach_farg(this, str, 'innerHTML', function(node, str){
+                    this(node).empty().append(str);
+                }, $);
         },
 
-        attr: function(name, value){
-        
+        text: function(str){
+            return str === undefined ? (this[0] || {}).textContent
+                : foreach_farg(this, str, 'textContent', function(node, str){
+                    node.textContent = str;
+                });
         },
 
-        removeAttr: function(){
-        
+        css: kv_access(function(node, name, value){
+            var prop = css_prop(name);
+            if (!value && value !== 0) {
+                node.style.removeProperty(prop);
+            } else {
+                node.style.cssText += ';' + prop + ":" + css_unit(prop, value);
+            }
+        }, function(node, name){
+            return node && (node.style[css_method(name)] 
+                || _getComputedStyle(node, '').getPropertyValue(name));
+        }, function(self, dict){
+            var prop, value, css = '';
+            for (var name in dict) {
+                value = dict[name];
+                prop = css_prop(name);
+                if (!value && value !== 0) {
+                    self.forEach(function(node){
+                        node.style.removeProperty(this);
+                    }, prop);
+                } else {
+                    css += prop + ":" + css_unit(prop, value) + ';';
+                }
+            }
+            self.forEach(function(node){
+                node.style.cssText += ';' + this;
+            }, css);
+        }),
+
+        hide: function(){
+            return this.css("display", "none");
         },
 
-        prop: function(name, value){
-        
+        show: function(){
+            this.forEach(function(node){
+                if (node.style.display === "none") {
+                    node.style.display = null;
+                }
+                if (this(node, '').getPropertyValue("display") === "none") {
+                    node.style.display = default_display(node.nodeName);
+                }
+            }, _getComputedStyle);
+            return this;
         },
 
-        html: function(){
-        
-        },
-
-        text: function(){
-        
-        },
-
-        val: function(){
-        
-        },
+        // Dimensions
 
         offset: function(){
             var set = this[0].getBoundingClientRect();
@@ -1643,43 +1769,105 @@ define("mod/dollar", [
             };
         },
 
-        appendTo: function(){
-        
+        width: dimension('Width'),
+
+        height: dimension('Height'),
+
+        // Manipulation
+
+        appendTo: operator_insert_to(1),
+
+        append: operator_insert(1),
+
+        prependTo: operator_insert_to(3),
+
+        prepend: operator_insert(3),
+
+        insertBefore: operator_insert_to(2),
+
+        before: operator_insert(2),
+
+        insertAfter: operator_insert_to(4),
+
+        after: operator_insert(4),
+
+        replaceAll: function(targets){
+            var t = $(targets);
+            this.insertBefore(t);
+            t.remove();
+            return this;
         },
 
-        append: function(){
-        
+        replaceWith: function(contents){
+            return $(contents).replaceAll(this);
         },
 
-        prependTo: function(){
-        
+        wrap: function(boxes){
+            return foreach_farg(this, boxes, false, function(node, boxes){
+                this(boxes).insertBefore(node).append(node);
+            }, $);
         },
 
-        prepend: function(){
-        
+        wrapAll: function(boxes){
+            $(boxes).insertBefore(this.eq(0)).append(this);
+            return this;
         },
 
-        insertBefore: function(){
-        
+        wrapInner: function(boxes){
+            return foreach_farg(this, boxes, false, function(node, boxes){
+                this(node).contents().wrapAll(boxes);
+            }, $);
         },
 
-        insertAfter: function(){
-        
+        unwrap: function(){
+            this.parent().forEach(function(node){
+                this(node).children().replaceAll(node);
+            }, $);
+            return this;
         },
 
-        bind: function(){
-        
+        remove: function(){
+            this.forEach(function(node){
+                node.parentNode.removeChild(node);
+            });
+            return this;
         },
 
-        unbind: function(){
-        
+        // Event
+
+        bind: function(subject, cb){
+            this.forEach(function(node){
+                node.addEventListener(subject, this, false);
+            }, cb);
+            return this;
+        },
+
+        unbind: function(subject, cb){
+            this.forEach(function(node){
+                node.removeEventListener(subject, this, false);
+            }, cb);
+            return this;
+        },
+
+        // Miscellaneous
+
+        end: function(){
+            return this.prevObject || new $();
+        },
+
+        each: function(fn){
+            for (var i = 0, l = this.length; i < l; i++){
+                var re = fn.call(this[i], i);
+                if (re === false) {
+                    break;      
+                }
+            }
+            return this;
         }
 
     });
 
-    function pluck(name){
-        return this[name];
-    }
+    // private
 
     function pick(v){ 
         return v; 
@@ -1690,30 +1878,217 @@ define("mod/dollar", [
     }
 
     function find_selector(selector, attr){
-        return function(item){
+        return function(node){
             if (attr) {
-                item = item[attr];
+                node = node[attr];
             }
-            if (matches_selector(item, selector)) {
-                this.push(item);
+            if (matches_selector(node, selector)) {
+                this.push(node);
             }
-            return item;
+            return node;
         };
     }
 
+    function find_near(prop){
+        return function(selector){
+            return $(_.unique([undefined, doc, null].concat(
+                this._map(selector ? function(node){
+                    var n = node[prop];
+                    if (n && matches_selector(n, selector)) {
+                        return n;
+                    }
+                } : function(node){
+                    return node[prop];
+                })
+            )).slice(3));
+        };
+    }
+
+    function find_sibs(prop, start, has_until){
+        return function(target, selector){
+            if (!has_until) {
+                selector = target;
+            }
+            var sibs = new $();
+            this.forEach(function(node){
+                var until,
+                    n = start ? node.parentNode[start] : node;
+                if (has_until) {
+                    until = $(target, node.parentNode);
+                }
+                do {
+                    if (until && until.indexOf(n) > -1) {
+                        break;
+                    }
+                    if (node !== n && (!selector 
+                        || matches_selector(n, selector))) {
+                        this.push(n);
+                    }
+                } while (n = n[prop]);
+            }, sibs);
+            return _.unique(sibs);
+        };
+    }
+
+    function foreach_farg(nodes, arg, prop, cb, context){
+        var is_fn_arg = _.isFunction(arg);
+        nodes.forEach(function(node, i){
+            cb.call(context, node, !is_fn_arg ? arg
+                : arg.call(this, i, prop && node[prop]));
+        }, nodes);
+        return nodes;
+    }
+
+    function kv_access(setter, getter, map){
+        return function(name, value){
+            if (typeof name === 'object') {
+                if (map) {
+                    map(this, name);
+                } else {
+                    for (var k in name) {
+                        this.forEach(function(node){
+                            setter(node, this, name[this]);
+                        }, k);
+                    }
+                }
+            } else {
+                if (value !== undefined) {
+                    var is_fn_arg = _.isFunction(value);
+                    this.forEach(function(node, i){
+                        setter(node, name, !is_fn_arg ? value 
+                            : value.call(this, i, getter(node, name)));
+                    }, this);
+                } else {
+                    return getter(this[0], name);
+                }
+            }
+            return this;
+        };
+    }
+
+    function css_method(name){
+        return name.replace(/-+(.)?/g, function($0, $1){
+            return $1 ? $1.toUpperCase() : '';
+        }); 
+    }
+
+    function css_prop(name) {
+        return name.replace(/::/g, '/')
+            .replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2')
+            .replace(/([a-z\d])([A-Z])/g, '$1_$2')
+            .replace(/_/g, '-')
+            .toLowerCase();
+    }
+
+    function css_unit(name, value) {
+        return typeof value == "number" && !CSS_NUMBER[name] 
+            && value + "px" || value;
+    }
+
+    function default_display(tag) {
+        var display = _elm_display[tag];
+        if (!display) {
+            var tmp = document.createElement(tag);
+            doc.body.appendChild(tmp);
+            display = _getComputedStyle(tmp, '').getPropertyValue("display");
+            tmp.parentNode.removeChild(tmp);
+            if (display === "none") {
+                display = "block";
+            }
+            _elm_display[tag] = display;
+        }
+        return display;
+    }
+
+    function dimension(method){
+        return function(){
+            var offset;
+            return this[0] === window 
+                ? window['inner' + method] 
+                : this[0] === doc 
+                    ? doc.documentElement['offset' + method] 
+                    : (this.offset() || {})[method];
+        };
+    }
+
+    function create_nodes(str, attrs){
+        var tag = (RE_HTMLTAG.exec(str) || [])[0] || str;
+        var temp = _html_containers[tag];
+        if (!temp) {
+            temp = _html_containers[tag] = tag === 'tr' && document.createElement('tbody')
+                || (tag === 'tbody' || tag === 'thead' || tag === 'tfoot') 
+                    && document.createElement('table')
+                || (tag === 'td' || tag === 'th') && document.createElement('tr')
+                || document.createElement('div');
+        }
+        temp.innerHTML = str;
+        var nodes = new $();
+        _array_push.apply(nodes, temp.childNodes);
+        nodes.forEach(function(node){
+            this.removeChild(node);
+        }, temp);
+        if (attrs) {
+            for (var k in attrs) {
+                nodes.attr(k, attrs[k]);
+            }
+        }
+        return nodes;
+    }
+
+    function insert_node(target, node, action){
+        if (node.nodeName.toUpperCase() === 'SCRIPT' 
+                && (!node.type || node.type === 'text/javascript')) {
+            window['eval'].call(window, node.innerHTML);
+        }
+        switch(action) {
+            case 1: target.appendChild(node); break;
+            case 2: target.parentNode.insertBefore(node, target); break;
+            case 3: target.insertBefore(node, target.firstChild); break;
+            case 4: target.parentNode.insertBefore(node, target.nextSibling); break;
+            default: break;
+        }
+    }
+
+    function insert_nodes(action, is_reverse){
+        var fn = is_reverse ? function(target){
+            insert_node(target, this, action);
+        } : function(content){
+            insert_node(this, content, action);
+        };
+        return function(elms){
+            this.forEach(function(node){
+                this.forEach(fn, node);
+            }, $(elms));
+            return this;
+        };
+    }
+
+    function operator_insert_to(action){
+        return insert_nodes(action, true);
+    }
+
+    function operator_insert(action){
+        return insert_nodes(action);
+    }
+
+    // public static API
+
     $.matchesSelector = matches_selector;
+    $.createNodes = create_nodes;
+    $.camelize = css_method;
+    $.dasherize = css_prop;
 
     return $;
 
 });
 
-/* @source cardkits/view.js */;
+/* @source cardkit/view.js */;
 
-define("cardkits/view", [
+define("cardkit/view", [
     'mod/dollar',
     'mod/lang',
     'mod/template',
-    'cardkits/bus'
+    'cardkit/bus'
 ], function($, _, tpl, bus){
 
     var view = {
@@ -1722,6 +2097,29 @@ define("cardkits/view", [
 
             var win = $(window),
                 win_width = win.width();
+
+            var a = $('<div id="yyyyyy">xxxx</div><span>xxx</span><span>zzzz</span>').appendTo(opt.viewport)
+                .css({
+                    'position': 'absolute',
+                    'top': 10,
+                    'left': 10,
+                    'display': 'none',
+                    'marginTop': 20
+                })
+            $('<div>222</div>').insertAfter($('#yyyyyy'))
+            console.info($('#yyyyyy').nextAll('span'), $('#yyyyyy').next('div'))
+            console.info(
+                opt.wrapper.find('.ck-card').eq(0).nextUntil('[data-type=popup]'), 
+                opt.wrapper.find('div').eq(0).nextUntil('[data-type=popup]', '.ck-card'), 
+                $('#yyyyyy').siblings('div'))
+            $('#yyyyyy').unwrap()
+                .nextAll('span')
+                .wrapAll('<div class="bbbbb"></div>')
+                .wrap(function(i){
+                        return '<div class="aaaaa"></div>'
+                })
+                .wrapInner('<p></p>')
+            a.show();
 
             opt.viewport.css({
                 'width': win_width,
@@ -1753,12 +2151,12 @@ define("cardkits/view", [
 
 });
 
-/* @source cardkits/app.js */;
+/* @source cardkit/app.js */;
 
-define("cardkits/app", [
+define("cardkit/app", [
     'mod/lang',
-    'cardkits/bus',
-    'cardkits/view'
+    'cardkit/bus',
+    'cardkit/view'
 ], function(_, bus, view){
 
     var app = {
@@ -1783,7 +2181,7 @@ require.config({
 
 require([
     'mod/dollar', 
-    'cardkits/app'
+    'cardkit/app'
 ], function($, app){
 
     app.setup({

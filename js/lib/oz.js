@@ -1,10 +1,10 @@
 /**
  * OzJS: microkernel for modular javascript 
- * compatible with CommonJS Asynchronous Modules
- * Copyright (C) 2010-1011, Dexter.Yy
- * Licensed under The MIT License
- * @example https://github.com/dexteryy/OzJS/tree/master/tests
- * vim:set ts=4 sw=4 sts=4 et:
+ * compatible with AMD (Asynchronous Module Definition)
+ * see http://dexteryy.github.com/OzJS/ for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
  */ 
 (function(undefined){
 

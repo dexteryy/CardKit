@@ -6,7 +6,7 @@ require.config({
 
 require([
     'mod/dollar', 
-    'cardkits/app'
+    'cardkit/app'
 ], function($, app){
 
     app.setup({

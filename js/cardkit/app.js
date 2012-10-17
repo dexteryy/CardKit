@@ -1,7 +1,7 @@
 define([
     'mod/lang',
-    'cardkits/bus',
-    'cardkits/view'
+    'cardkit/bus',
+    'cardkit/view'
 ], function(_, bus, view){
 
     var app = {
