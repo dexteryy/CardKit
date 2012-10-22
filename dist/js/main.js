@@ -113,6 +113,7 @@ function define(fullname, deps, block){
             fullname = "";
         } else {
             is_remote = typeof block === 'string';
+            console.info(fullname, is_remote)
             if (!is_remote && !deps) {
                 deps = seek(block);
             }
@@ -167,11 +168,14 @@ function define(fullname, deps, block){
  * @param {function}
  */ 
 function require(deps, block) {
-    if (!block) {
+    if (typeof deps === 'string') {
+        if (!block) {
+            return (_config.mods[deps] || {}).exports;
+        }
+        deps = [deps];
+    } else if (!block) {
         block = deps;
         deps = seek(block);
-    } else if (typeof deps === 'string') {
-        deps = [deps];
     }
     var m, remotes = 0, // counter for remote scripts
         host = isWindow(this) ? this : window,
@@ -251,7 +255,7 @@ function exec(list){
             mid = deps[i];
             switch(mid) {
                 case 'require':
-                    depObjs.push(requireFn);
+                    depObjs.push(require);
                     break;
                 case 'exports':
                     depObjs.push(exportObj);
@@ -494,17 +498,6 @@ function truename(file){
     return file.replace(/(.+?)(_src.*)?(\.\w+)$/, function($0, $1, $2, $3){
         return $1 + ($2 && '_combo' || '_pack') + $3;
     });
-}
-
-/**
- * @private for "require" module
- */ 
-function requireFn(name, cb){
-    if (!cb) {
-        return (_config.mods[name] || {}).exports;
-    } else {
-        return require(name, cb);
-    }
 }
 
 /**
@@ -1443,7 +1436,13 @@ define("mod/template", ["mod/lang", "host"], function(_, host, require, exports)
 
 /* @source mod/dollar.js */;
 
-
+/**
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://dexteryy.github.com/OzJS/ for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
 define("mod/dollar", [
     "mod/lang",
     "host"
@@ -1457,6 +1456,8 @@ define("mod/dollar", [
             .map(function(name){
                 return this[name] && name;
             }, doc.body).filter(pick)[0],
+        _MOE = 'MouseEvents',
+        SPECIAL_EVENTS = { click: _MOE, mousedown: _MOE, mouseup: _MOE, mousemove: _MOE },
         CSS_NUMBER = { 
             'column-count': 1, 'columns': 1, 'font-weight': 1, 
             'line-height': 1, 'opacity': 1, 'z-index': 1, 'zoom': 1 
@@ -1490,7 +1491,7 @@ define("mod/dollar", [
         }
     }
 
-    var ext = $.fn = $.prototype = Array.prototype;
+    var ext = $.fn = $.prototype = Object.create(Array.prototype);
 
     ['map', 'filter', 'slice', 'splice', 'concat'].forEach(function(method){
         var origin = this['_' + method] = this[method];
@@ -1835,17 +1836,22 @@ define("mod/dollar", [
 
         // Event
 
-        bind: function(subject, cb){
-            this.forEach(function(node){
-                node.addEventListener(subject, this, false);
-            }, cb);
-            return this;
-        },
+        bind: event_access('add'),
 
-        unbind: function(subject, cb){
-            this.forEach(function(node){
-                node.removeEventListener(subject, this, false);
-            }, cb);
+        unbind: event_access('remove'),
+
+        trigger: function(event){
+            if (typeof event == 'string') {
+                event = Event(event);
+            }
+            this.forEach(event.type == 'submit' 
+                && !event.defaultPrevented ? function(node){
+                node.submit();
+            } : function(node){
+                if ('dispatchEvent' in node) {
+                    node.dispatchEvent(this);
+                }
+            }, event);
             return this;
         },
 
@@ -1966,6 +1972,45 @@ define("mod/dollar", [
         };
     }
 
+    function event_access(action){
+        return function(subject, cb){
+            var ev = [];
+            if (typeof subject !== 'string') {
+                for (var i in subject) {
+                    ev.push([action, i, subject[i]]);
+                }
+            } else if (!cb) {
+                this.forEach(function(node){
+                    node['on' + this] = null;
+                }, subject);
+                return this;
+            } else {
+                ev.push([action, subject, cb]);
+            }
+            this.forEach(function(node){
+                this.forEach(function(pair){
+                    this[pair[0] + 'EventListener'](pair[1], pair[2], false);
+                }, node);
+            }, ev);
+            return this;
+        };
+    }
+
+    function Event(type, props) {
+        var bubbles = true,
+            event = document.createEvent(SPECIAL_EVENTS[type] || 'Events');
+        if (props) {
+            if ('bubbles' in props) {
+                bubbles = !!props.bubbles;
+                delete props.bubbles;
+            }
+            _.mix(event, props);
+        }
+        event.initEvent(type, bubbles, true, null, null, null, null, 
+            null, null, null, null, null, null, null, null);
+        return event;
+    }
+
     function css_method(name){
         return name.replace(/-+(.)?/g, function($0, $1){
             return $1 ? $1.toUpperCase() : '';
@@ -2077,6 +2122,7 @@ define("mod/dollar", [
     $.createNodes = create_nodes;
     $.camelize = css_method;
     $.dasherize = css_prop;
+    $.Event = Event;
 
     return $;
 
@@ -2108,6 +2154,7 @@ define("cardkit/view", [
                 })
             $('<div>222</div>').insertAfter($('#yyyyyy'))
             console.info($('#yyyyyy').nextAll('span'), $('#yyyyyy').next('div'))
+            console.info([].constructor)
             console.info(
                 opt.wrapper.find('.ck-card').eq(0).nextUntil('[data-type=popup]'), 
                 opt.wrapper.find('div').eq(0).nextUntil('[data-type=popup]', '.ck-card'), 

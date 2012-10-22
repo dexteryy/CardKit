@@ -6,6 +6,7 @@ repos:
       /mod/lang.js: /js/mod/
       /mod/browsers.js: /js/mod/
       /mod/event.js: /js/mod/
+      /mod/dollar.js: /js/mod/
       /mod/network.js: /js/mod/
       /mod/template.js: /js/mod/
       /mod/localmodel.js: /js/mod/

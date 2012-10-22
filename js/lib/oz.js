@@ -116,7 +116,7 @@ function define(fullname, deps, block){
         }
     }
     var mod = fullname && _config.mods[fullname];
-    if (mod && mod.fullname 
+    if (!_config.debug && mod && mod.fullname 
             && (is_remote && mod.loaded == 2 || mod.exports)) {
         return;
     }
@@ -164,11 +164,14 @@ function define(fullname, deps, block){
  * @param {function}
  */ 
 function require(deps, block) {
-    if (!block) {
+    if (typeof deps === 'string') {
+        if (!block) {
+            return (_config.mods[deps] || {}).exports;
+        }
+        deps = [deps];
+    } else if (!block) {
         block = deps;
         deps = seek(block);
-    } else if (typeof deps === 'string') {
-        deps = [deps];
     }
     var m, remotes = 0, // counter for remote scripts
         host = isWindow(this) ? this : window,
@@ -248,7 +251,7 @@ function exec(list){
             mid = deps[i];
             switch(mid) {
                 case 'require':
-                    depObjs.push(requireFn);
+                    depObjs.push(require);
                     break;
                 case 'exports':
                     depObjs.push(exportObj);
@@ -347,7 +350,7 @@ function fetch(m, cb){
                 return alias[e2] || "";
             });
         }
-        var true_url = /^http:\/\//.test(url) ? url 
+        var true_url = /^\w+:\/\//.test(url) ? url 
                 : (_config.enable_ozma && _config.distUrl || _config.baseUrl || '') 
                     + (_config.enableAutoSuffix ? truename(url) : url);
         getScript.call(m.host || this, true_url, function(){
@@ -491,17 +494,6 @@ function truename(file){
     return file.replace(/(.+?)(_src.*)?(\.\w+)$/, function($0, $1, $2, $3){
         return $1 + ($2 && '_combo' || '_pack') + $3;
     });
-}
-
-/**
- * @private for "require" module
- */ 
-function requireFn(name, cb){
-    if (!cb) {
-        return (_config.mods[name] || {}).exports;
-    } else {
-        return require(name, cb);
-    }
 }
 
 /**
