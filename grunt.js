@@ -2,8 +2,8 @@
 module.exports = function(grunt) {
 
     grunt.initConfig({
+        pkg: '<%= grunt.file.readJSON("package.json") %>',
         meta: {
-            name: 'cardkit',
             distDir: 'dist',
             staticDir: 'static'
         },
@@ -23,21 +23,50 @@ module.exports = function(grunt) {
                 debounceDelay: 3000
             }
         },
+        sass: {
+            main: {
+                options: {
+                    style: 'expanded'
+                },
+                files: {
+                    '<%= meta.distDir %>/css/main.css': 'css/main.scss'
+                }
+            }
+        },
         concat: {
-            dist: {
+            js_main: {
                 src: ['<%= meta.distDir %>/js/main.js'],
-                dest: '<%= meta.staticDir %>/js/<%= meta.name %>.js'
+                dest: '<%= meta.staticDir %>/js/<%= pkg.title %>.js'
+            },
+            css_main: {
+                src: ['<%= meta.distDir %>/css/main.css'],
+                dest: '<%= meta.staticDir %>/css/<%= pkg.title %>.css'
             }
         },
         min: {
-            dist: {
-                src: ['<config:concat.dist.dest>'],
-                dest: '<%= meta.staticDir %>/js/<%= meta.name %>.min.js'
+            main: {
+                src: ['<config:concat.js_main.dest>'],
+                dest: '<%= meta.staticDir %>/js/<%= pkg.title %>.min.js'
+            }
+        },
+        cssmin: {
+            main: {
+                src: ['<config:concat.css_main.dest>'],
+                dest: '<%= meta.staticDir %>/css/<%= pkg.title %>.min.css'
             }
         },
         lint: {
             files: ['grunt.js', '<%= meta.distDir %>/**/*.js']
         },
+        //csslint: {
+            //main: {
+                //src: "<config:concat.css.src>",
+                //rules: {
+                    //"import": false,
+                    //"overqualified-elements": 2
+                //}
+            //}
+        //},
         watch: {
             files: 'js/**/*.js',
             tasks: 'ozma:main'
@@ -47,8 +76,10 @@ module.exports = function(grunt) {
     });
 
     grunt.loadNpmTasks('grunt-ozjs');
+    grunt.loadNpmTasks('grunt-contrib-sass');
+    grunt.loadNpmTasks('grunt-css');
     //grunt.loadNpmTasks('grunt-contrib-watch');
     
-    grunt.registerTask('default', 'ozma:main concat min');
+    grunt.registerTask('default', 'ozma:main sass:main concat min cssmin');
 
 };

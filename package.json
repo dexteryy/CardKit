@@ -1,0 +1,12 @@
+{
+    "name": "CardKit",
+    "title": "cardkit",
+    "description": "",
+    "version": "0.1.0",
+    "devDependencies": {
+        "grunt": "~0.3.16",
+        "grunt-ozjs": ">=0.1.5",
+        "grunt-contrib-sass": ">=0.1.3",
+        "grunt-css": ">=0.3.2"
+    }
+}

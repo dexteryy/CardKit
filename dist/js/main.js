@@ -113,14 +113,13 @@ function define(fullname, deps, block){
             fullname = "";
         } else {
             is_remote = typeof block === 'string';
-            console.info(fullname, is_remote)
             if (!is_remote && !deps) {
                 deps = seek(block);
             }
         }
     }
     var mod = fullname && _config.mods[fullname];
-    if (mod && mod.fullname 
+    if (!_config.debug && mod && mod.fullname 
             && (is_remote && mod.loaded == 2 || mod.exports)) {
         return;
     }
@@ -354,7 +353,7 @@ function fetch(m, cb){
                 return alias[e2] || "";
             });
         }
-        var true_url = /^http:\/\//.test(url) ? url 
+        var true_url = /^\w+:\/\//.test(url) ? url 
                 : (_config.enable_ozma && _config.distUrl || _config.baseUrl || '') 
                     + (_config.enableAutoSuffix ? truename(url) : url);
         getScript.call(m.host || this, true_url, function(){
@@ -2143,30 +2142,6 @@ define("cardkit/view", [
 
             var win = $(window),
                 win_width = win.width();
-
-            var a = $('<div id="yyyyyy">xxxx</div><span>xxx</span><span>zzzz</span>').appendTo(opt.viewport)
-                .css({
-                    'position': 'absolute',
-                    'top': 10,
-                    'left': 10,
-                    'display': 'none',
-                    'marginTop': 20
-                })
-            $('<div>222</div>').insertAfter($('#yyyyyy'))
-            console.info($('#yyyyyy').nextAll('span'), $('#yyyyyy').next('div'))
-            console.info([].constructor)
-            console.info(
-                opt.wrapper.find('.ck-card').eq(0).nextUntil('[data-type=popup]'), 
-                opt.wrapper.find('div').eq(0).nextUntil('[data-type=popup]', '.ck-card'), 
-                $('#yyyyyy').siblings('div'))
-            $('#yyyyyy').unwrap()
-                .nextAll('span')
-                .wrapAll('<div class="bbbbb"></div>')
-                .wrap(function(i){
-                        return '<div class="aaaaa"></div>'
-                })
-                .wrapInner('<p></p>')
-            a.show();
 
             opt.viewport.css({
                 'width': win_width,
