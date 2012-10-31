@@ -4,5 +4,4 @@ dev.yaml
 syncdb_dumps.bak
 .statictmp
 node_modules/
-static/
 .sass-cache/

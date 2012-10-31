@@ -2,7 +2,7 @@
 module.exports = function(grunt) {
 
     grunt.initConfig({
-        pkg: '<%= grunt.file.readJSON("package.json") %>',
+        pkg: '<json:package.json>',
         meta: {
             distDir: 'dist',
             staticDir: 'static'
