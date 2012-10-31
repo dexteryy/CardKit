@@ -23,16 +23,38 @@ module.exports = function(grunt) {
                 debounceDelay: 3000
             }
         },
-        sass: {
+        //sass: {
+            //main: {
+                //options: {
+                    //style: 'expanded'
+                //},
+                //files: {
+                    //'<%= meta.distDir %>/css/main.css': 'css/main.scss'
+                //}
+            //}
+        //},
+        compass: {
             main: {
-                options: {
-                    style: 'expanded'
-                },
-                files: {
-                    '<%= meta.distDir %>/css/main.css': 'css/main.scss'
-                }
+                src: 'css',
+                dest: 'dist/css',
+                images: 'pics',
+                relativeassets: true,
+                outputstyle: 'expanded',
+                linecomments: true,
+                //debugsass: true,
+                config: 'css/config.rb',
+                require: [
+                    'animate-sass'
+                ]
             }
         },
+        //copy: {
+            //dist: {
+                //files: {
+                    //"pics/*": "dist/pics/*"
+                //}
+            //}
+        //},
         concat: {
             js_main: {
                 src: ['<%= meta.distDir %>/js/main.js'],
@@ -68,18 +90,20 @@ module.exports = function(grunt) {
             //}
         //},
         watch: {
-            files: 'js/**/*.js',
-            tasks: 'ozma:main'
+            files: ['js/**/*.js', 'css/**/*.scss'],
+            tasks: ['ozma:main', 'compass:main']
         },
         jshint: {},
         uglify: {}
     });
 
     grunt.loadNpmTasks('grunt-ozjs');
-    grunt.loadNpmTasks('grunt-contrib-sass');
+    //grunt.loadNpmTasks('grunt-contrib-sass');
+    grunt.loadNpmTasks('grunt-compass');
     grunt.loadNpmTasks('grunt-css');
+    //grunt.loadNpmTasks('grunt-contrib-copy');
     //grunt.loadNpmTasks('grunt-contrib-watch');
     
-    grunt.registerTask('default', 'ozma:main sass:main concat min cssmin');
+    grunt.registerTask('default', 'ozma:main compass:main concat min cssmin');
 
 };

@@ -1,8 +1,7 @@
-body{
-    margin:0;
-    padding:0;
-    overflow:hidden;
-}
+@import "base";
+
+//@import "map1/*.png";
+//@include all-map1-sprites;
 
 .ck-viewport{
 
