@@ -2143,19 +2143,19 @@ define("cardkit/view", [
             var win = $(window),
                 win_width = win.width();
 
-            opt.viewport.css({
-                'width': win_width,
-                'overflow': 'auto'
-            });
+            console.info("log: ", 1, win_width); // log
+            //opt.viewport.css({
+                //'width': win_width,
+                //'overflow': 'auto'
+            //});
 
-            opt.wrapper.css({
-                'width': win_width * 15,
-                'overflow': 'hidden'
-            });
+            //opt.wrapper.css({
+                //'width': win_width * 15,
+                //'overflow': 'hidden'
+            //});
 
             opt.cards.css({
                 'width': win_width,
-                'height': 10000,
                 'float': 'left',
                 'overflow': 'hidden',
                 'margin': 0

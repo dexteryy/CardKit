@@ -63,31 +63,14 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   display: block;
 }
 
+/* line 7, ../../css/main.scss */
+.ck-viewport {
+  overflow: hidden;
+}
+
 /* line 14, ../../css/main.scss */
 .ck-card {
-  border: 1px solid #f00;
-}
-
-/* line 18, ../../css/main.scss */
-.subject_show .content dl {
-  margin: 5px;
-  height: 150px;
-}
-
-/* line 22, ../../css/main.scss */
-.block5 .content dl.clear {
-  display: none;
-}
-
-/* line 29, ../../css/main.scss */
-.reading-notes ul li .con {
-  width: auto;
-  float: none;
-  margin: 0;
-  padding: 0 0 0 60px;
-}
-
-/* line 40, ../../css/main.scss */
-.ctsh .clst {
-  width: auto;
+  -webkit-box-shadow: rgba(255, 0, 0, 0.4) 0 0 10px inset;
+  -moz-box-shadow: rgba(255, 0, 0, 0.4) 0 0 10px inset;
+  box-shadow: rgba(255, 0, 0, 0.4) 0 0 10px inset;
 }

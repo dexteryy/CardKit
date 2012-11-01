@@ -1,6 +1,6 @@
 @import "compass/reset";
 @import "compass/css3";
-//@import "animate";
+@import "animate/shared";
 
 $support-for-original-webkit-gradients : false;
 $experimental-support-for-opera : false;

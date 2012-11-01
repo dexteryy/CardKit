@@ -1,44 +1,17 @@
 @import "base";
 
+//@import "animate/animations/attention-seekers/bounce";
 //@import "map1/*.png";
 //@include all-map1-sprites;
 
 .ck-viewport{
-
+  overflow:hidden;
 }
 
 .ck-wrapper{
-
 }
 
 .ck-card{
-    border:1px solid #f00;
-}
-
-.subject_show .content dl{
-    margin:5px;
-    height:150px;
-}
-.block5 .content dl.clear{
-    display:none;
-}
-
-.reading-notes {
-    ul {
-        li {
-            .con {
-                width:auto;
-                float:none;
-                margin:0;
-                padding: 0 0 0 60px;
-            }
-        }
-    }
-}
-
-.ctsh {
-    .clst{
-        width:auto;
-    }
+  @include box-shadow(rgba(#f00, 0.4) 0 0 10px inset);
 }
 

@@ -8,6 +8,9 @@ handlers:
   static_files: \1
   upload: static_dist/.*
 
+- url: /dist/(.*)
+  static_files: dist/\1
+
 - url: /static/(.*)
   static_files: static/\1
   upload: static_dist/(.*)
