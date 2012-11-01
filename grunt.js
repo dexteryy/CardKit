@@ -91,10 +91,10 @@ module.exports = function(grunt) {
         //},
         watch: [{
             files: 'js/**/*.js',
-            tasks: 'ozma:main'
+            tasks: 'ozma'
         }, {
             files: 'css/**/*.scss',
-            tasks: 'compass:main'
+            tasks: 'compass'
         }],
         jshint: {},
         uglify: {}

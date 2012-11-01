@@ -4,14 +4,69 @@
 //@import "map1/*.png";
 //@include all-map1-sprites;
 
+body{
+  font: 12px Arial,Helvetica,sans-serif;
+}
+
+$nav_height: 40px;
+
+.ck-nav{
+  background: #4FA353;
+  color: #fff;
+  overflow: hidden;
+  border: 1px solid #A1CD9D;
+  border-width: 0 0 1px 0;
+
+  a {
+    text-decoration: none;
+    color: #fff;
+  }
+
+  .ck-nav-global{
+    height: $nav_height;
+    width: 45px;
+    border: 1px solid #6CB265;
+    border-width: 0 1px 0 0;
+    float: left;
+    background: {
+      image: inline-image('nav-global.png');
+      repeat: no-repeat;
+      position: center;
+      size: 26px 24px;
+    }
+    @include box-shadow(#000 0 1px 1px);
+  }
+
+  .ck-nav-local{
+      height: $nav_height;
+      border: 1px solid #6CB265;
+      border-width: 0 0 0 1px;
+      float: left;
+      margin: 0 0 0 1px;
+      ul {
+        li {
+          a {
+            font-size: 16px;
+            line-height: $nav_height;
+            height: $nav_height;
+            display: block;
+            padding:0 12px;
+          }
+        }
+      }
+  }
+
+}
+
 .ck-viewport{
-  overflow:hidden;
+  overflow: hidden;
 }
 
 .ck-wrapper{
 }
 
 .ck-card{
+  padding: 15px;
   @include box-shadow(rgba(#f00, 0.4) 0 0 10px inset);
 }
 

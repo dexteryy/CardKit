@@ -23,11 +23,18 @@ define([
                 //'overflow': 'hidden'
             //});
 
-            opt.cards.css({
-                'width': win_width,
+            opt.cards.each(function(){
+                if (!/\S/.test(this.innerHTML)) {
+                    $(this).remove();
+                }
+            }).css({
                 'float': 'left',
                 'overflow': 'hidden',
                 'margin': 0
+            }).css('width', function(){
+                var me = $(this);
+                return win_width - parseFloat(me.css('padding-left')) 
+                    - parseFloat(me.css('padding-right'));
             });
 
             document.addEventListener("touchmove", function(e){
