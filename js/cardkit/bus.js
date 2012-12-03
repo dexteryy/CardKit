@@ -1,5 +1,5 @@
 define([
-    'mod/event'
+    'eventmaster'
 ], function(Event){
 
     return Event();

@@ -1,11 +1,14 @@
 
 require.config({
-    baseUrl: 'js/',
-    distUrl: 'dist/js/'
+    baseUrl: 'js/mod/',
+    distUrl: 'dist/js/mod/',
+    aliases: {
+        'cardkit': '../cardkit/'
+    }
 });
 
 require([
-    'mod/dollar', 
+    'dollar', 
     'cardkit/app'
 ], function($, app){
 

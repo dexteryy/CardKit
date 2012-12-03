@@ -1,4 +1,3 @@
-/* line 17, ../../../../../../../Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -20,55 +19,45 @@ time, mark, audio, video {
   vertical-align: baseline;
 }
 
-/* line 22, ../../../../../../../Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 html {
   line-height: 1;
 }
 
-/* line 24, ../../../../../../../Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 ol, ul {
   list-style: none;
 }
 
-/* line 26, ../../../../../../../Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 table {
   border-collapse: collapse;
   border-spacing: 0;
 }
 
-/* line 28, ../../../../../../../Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 caption, th, td {
   text-align: left;
   font-weight: normal;
   vertical-align: middle;
 }
 
-/* line 30, ../../../../../../../Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 q, blockquote {
   quotes: none;
 }
-/* line 103, ../../../../../../../Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 q:before, q:after, blockquote:before, blockquote:after {
   content: "";
   content: none;
 }
 
-/* line 32, ../../../../../../../Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 a img {
   border: none;
 }
 
-/* line 116, ../../../../../../../Library/Ruby/Gems/1.8/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/reset/_utilities.scss */
 article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section, summary {
   display: block;
 }
 
-/* line 7, ../../css/main.scss */
 body {
   font: 12px Arial,Helvetica,sans-serif;
 }
 
-/* line 13, ../../css/main.scss */
 .ck-nav {
   background: #4FA353;
   color: #fff;
@@ -76,12 +65,10 @@ body {
   border: 1px solid #A1CD9D;
   border-width: 0 0 1px 0;
 }
-/* line 20, ../../css/main.scss */
 .ck-nav a {
   text-decoration: none;
   color: #fff;
 }
-/* line 25, ../../css/main.scss */
 .ck-nav .ck-nav-global {
   height: 40px;
   width: 45px;
@@ -96,7 +83,6 @@ body {
   -moz-box-shadow: black 0 1px 1px;
   box-shadow: black 0 1px 1px;
 }
-/* line 40, ../../css/main.scss */
 .ck-nav .ck-nav-local {
   height: 40px;
   border: 1px solid #6CB265;
@@ -104,7 +90,6 @@ body {
   float: left;
   margin: 0 0 0 1px;
 }
-/* line 48, ../../css/main.scss */
 .ck-nav .ck-nav-local ul li a {
   font-size: 16px;
   line-height: 40px;
@@ -113,15 +98,26 @@ body {
   padding: 0 12px;
 }
 
-/* line 61, ../../css/main.scss */
 .ck-viewport {
   overflow: hidden;
+  padding: 15px 0 15px 15px;
 }
 
-/* line 68, ../../css/main.scss */
-.ck-card {
-  padding: 15px;
-  -webkit-box-shadow: rgba(255, 0, 0, 0.4) 0 0 10px inset;
-  -moz-box-shadow: rgba(255, 0, 0, 0.4) 0 0 10px inset;
-  box-shadow: rgba(255, 0, 0, 0.4) 0 0 10px inset;
+.ck-card[data-ck-layout="tile"] {
+  padding: 10px;
+  width: 120px;
+  height: 110px;
+  overflow: hidden;
+  float: left;
+  margin: 0 8px 8px 0;
+  color: #333333;
+  font-size: 10px;
+  line-height: 150%;
+  background: #F6FBF4;
+  -webkit-box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.3);
+}
+.ck-card[data-ck-layout="tile"][data-ck-tilesize="big"] {
+  width: 268px;
 }

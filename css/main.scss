@@ -60,13 +60,37 @@ $nav_height: 40px;
 
 .ck-viewport{
   overflow: hidden;
+  padding:15px 0 15px 15px;
 }
 
 .ck-wrapper{
 }
 
 .ck-card{
-  padding: 15px;
-  @include box-shadow(rgba(#f00, 0.4) 0 0 10px inset);
+
+  &[data-ck-layout="intro"] {
+
+  }
+
+  &[data-ck-layout="tile"] {
+    padding: 10px;
+    width:120px;
+    height:110px;
+    overflow:hidden;
+    float:left;
+    margin:0 8px 8px 0;
+    color:rgb(51,51,51);
+    font-size:10px;
+    line-height:150%;
+    background: #F6FBF4;
+    @include box-shadow(0px 1px 1px 0px rgba(0,0,0,0.3));
+    //@include box-shadow(rgba(#f00, 0.4) 0 0 10px inset);
+
+    &[data-ck-tilesize="big"] {
+      width:268px;
+    }
+
+  }
+
 }
 

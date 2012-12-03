@@ -14,13 +14,12 @@ module.exports = function(grunt) {
             main: {
                 src: 'js/main.js',
                 config: {
-                    baseUrl: "js/",
-                    distUrl: "<%= meta.distDir %>/js/",
-                    loader: "lib/oz.js",
+                    baseUrl: "js/mod/",
+                    distUrl: "<%= meta.distDir %>/js/mod/",
+                    loader: "../lib/oz.js",
                     disableAutoSuffix: true
                 },
-                save_config: true,
-                debounceDelay: 3000
+                saveConfig: true
             }
         },
         //sass: {
@@ -40,7 +39,7 @@ module.exports = function(grunt) {
                 images: 'pics',
                 relativeassets: true,
                 outputstyle: 'expanded',
-                linecomments: true,
+                linecomments: false,
                 //debugsass: true,
                 config: 'css/config.rb',
                 require: [

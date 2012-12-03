@@ -1,12 +1,16 @@
 /**
+ * DollarJS
+ * A jQuery-compatible and non-All-in-One library which is more "Zepto" than Zepto.js
+ * Focus on DOM operations and mobile platform, wrap native API wherever possible.
+ *
  * using AMD (Asynchronous Module Definition) API with OzJS
- * see http://dexteryy.github.com/OzJS/ for details
+ * see http://ozjs.org for details
  *
  * Copyright (C) 2010-2012, Dexter.Yy, MIT License
  * vim: et:ts=4:sw=4:sts=4
  */
-define("mod/dollar", [
-    "mod/lang",
+define("dollar", [
+    "mo/lang",
     "host"
 ], function(_, window){
 
@@ -685,6 +689,8 @@ define("mod/dollar", [
     $.camelize = css_method;
     $.dasherize = css_prop;
     $.Event = Event;
+
+    $.VERSION = '1.0.0';
 
     return $;
 

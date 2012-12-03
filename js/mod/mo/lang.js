@@ -1,11 +1,13 @@
 /**
+ * ES5/6 shim and minimum utilities for language enhancement
+ *
  * using AMD (Asynchronous Module Definition) API with OzJS
- * see http://dexteryy.github.com/OzJS/ for details
+ * see http://ozjs.org for details
  *
  * Copyright (C) 2010-2012, Dexter.Yy, MIT License
  * vim: et:ts=4:sw=4:sts=4
  */
-define("mod/lang", ["host"], function(host, require, exports){
+define("mo/lang", ["host"], function(host, require, exports){
 
     var oz = this,
         Array = host.Array,
@@ -173,6 +175,14 @@ define("mod/lang", ["host"], function(host, require, exports){
     exports.type = type;
     exports.isFunction = oz._isFunction;
     exports.isWindow = oz._isWindow;
+
+	exports.isEmptyObject = function(obj) {
+        for (var name in obj) {
+            return false;
+        }
+        return true;
+	};
+    
     exports.semver = oz._semver;
 
     function mix(origin) {
@@ -369,14 +379,11 @@ define("mod/lang", ["host"], function(host, require, exports){
         function getCallMethod(type){
             return function(){
                 var re, fn;
-                for (var i = 0, l = this.length; i < l; i++) {
-                    fn = this[i];
-                    if (fn) {
-                        re = fn[type].apply(fn, arguments);
-                    } else {
-                        break;
-                    }
+                dup = this.slice().reverse();
+                while (fn = dup.pop()) {
+                    re = fn[type].apply(fn, arguments);
                 }
+                dup = false;
                 return re;
             };
         }

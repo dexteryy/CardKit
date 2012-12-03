@@ -1,13 +1,15 @@
 /**
+ * Standalone jQuery.ajax API and enhanced getJSON, and so on
+ *
  * using AMD (Asynchronous Module Definition) API with OzJS
- * see http://dexteryy.github.com/OzJS/ for details
+ * see http://ozjs.org for details
  *
  * Copyright (C) 2010-2012, Dexter.Yy, MIT License
  * vim: et:ts=4:sw=4:sts=4
  */
-define("mod/network", [
-    "mod/lang", 
-    "mod/browsers"
+define("mo/network", [
+    "mo/lang", 
+    "mo/browsers"
 ], function(_, browsers, require, exports){
 
     var oz = this,

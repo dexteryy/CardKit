@@ -1,6 +1,6 @@
 {
-  "baseUrl":"js/",
-  "distUrl":"<%= meta.distDir %>/js/",
-  "loader":"lib/oz.js",
+  "baseUrl":"js/mod/",
+  "distUrl":"dist/js/mod/",
+  "loader":"../lib/oz.js",
   "disableAutoSuffix":true
 }

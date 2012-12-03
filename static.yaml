@@ -1,20 +1,19 @@
+#gitHostDict:
+  #code: http://code.dapps.douban.com/
+
 repos:
-  ozjs:
-    url: https://github.com/dexteryy/OzJS.git
-    file:
-      /oz.js: /js/lib/
-      /mod/lang.js: /js/mod/
-      /mod/browsers.js: /js/mod/
-      /mod/event.js: /js/mod/
-      /mod/dollar.js: /js/mod/
-      /mod/network.js: /js/mod/
-      /mod/template.js: /js/mod/
-      /mod/localmodel.js: /js/mod/
-  #jquery:
-    #url: https://github.com/jquery/jquery.git
-    #build_cmd:
-      #- npm install grunt-compare-size
-      #- npm install grunt-git-authors
-      #- grunt custom:-ajax
+  #dexteryy/OzJS:
     #file:
-      #/dist/jquery.js: /js/lib/
+      #/oz.js: /js/lib/
+  dexteryy/mo:
+    file:
+      /lang.js: /js/mod/mo/
+      /browsers.js: /js/mod/mo/
+      /network.js: /js/mod/mo/
+      /template.js: /js/mod/mo/
+  dexteryy/EventMaster:
+    file:
+      /eventmaster.js: /js/mod/
+  dexteryy/DollarJS:
+    file:
+      /dollar.js: /js/mod/

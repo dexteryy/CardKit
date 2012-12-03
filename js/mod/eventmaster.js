@@ -1,15 +1,20 @@
 /**
+ * EventMaster
+ * A simple, compact and consistent implementation of a variant of CommonJS's Promises and Events
+ * Provide both Promise/Deferred/Flow pattern and Event/Notify/Observer/PubSub pattern
+ *
  * using AMD (Asynchronous Module Definition) API with OzJS
- * see http://dexteryy.github.com/OzJS/ for details
+ * see http://ozjs.org for details
  *
  * Copyright (C) 2010-2012, Dexter.Yy, MIT License
  * vim: et:ts=4:sw=4:sts=4
  */
-define("mod/event", ["mod/lang"], function(_){
+define("eventmaster", ["mo/lang"], function(_){
 
     var fnQueue = _.fnQueue,
         slice = Array.prototype.slice,
-        pipes = ['notify', 'fire', 'error', 'resolve', 'reject', 'reset'];
+        pipes = ['notify', 'fire', 'error', 
+            'resolve', 'reject', 'reset', 'disable', 'enable'];
 
     function Promise(opt){
         var self = this;
@@ -38,7 +43,7 @@ define("mod/event", ["mod/lang"], function(_){
 
         then: function(handler, errorHandler){
             var _status = this.status;
-            if (errorHandler) {
+            if (errorHandler) { // error, reject
                 if (_status === 2) {
                     this._resultCache = errorHandler.apply(this, this._argsCache);
                 } else if (!_status) {
@@ -48,7 +53,7 @@ define("mod/event", ["mod/lang"], function(_){
             } else {
                 this._lastFailQueue = [];
             }
-            if (handler) {
+            if (handler) { // fire, resolve
                 if (_status === 1) {
                     this._resultCache = handler.apply(this, this._argsCache);
                 } else if (!_status) {
@@ -61,44 +66,67 @@ define("mod/event", ["mod/lang"], function(_){
             return this;
         },
 
-        done: function(handler){
+        done: function(handler){ // fire, resolve
             return this.then(handler);
         },
 
-        fail: function(handler){
+        fail: function(handler){ // error, reject
             return this.then(false, handler);
         },
 
-        cancel: function(handler, errorHandler){
-            if (handler) {
+        cancel: function(handler, errorHandler){ // then
+            if (handler) { // done
                 this.doneHandlers.clear(handler);
             }
-            if (errorHandler) {
+            if (errorHandler) { // fail
                 this.failHandlers.clear(errorHandler);
             }
             return this;
         },
 
         bind: function(handler){
-            if (this.status) {
+            if (this.status) { // resolve, reject
                 handler.apply(this, this._argsCache);
             }
-            this.observeHandlers.push(handler);
+            this.observeHandlers.push(handler); // notify, fire, error
             return this;
         },
 
-        unbind: function(handler){
+        unbind: function(handler){ // bind
             this.observeHandlers.clear(handler);
             return this;
         },
 
-        fire: function(args){
+        progress: function(handler){ // notify, fire?, error?
+            var self = this;
+            this.observeHandlers.push(function(){
+                if (!self.status) {
+                    handler.apply(this, arguments);
+                }
+            });
+            return this;
+        },
+
+        notify: function(args){ // progress, bind
+            if (this._disalbed) {
+                return this;
+            }
+            this.status = 0;
+            this.observeHandlers.apply(this, args || []);
+            return this;
+        },
+
+        fire: function(args){ // bind, progress?, then, done
+            if (this._disalbed) {
+                return this;
+            }
             if (this.trace) {
                 this._trace();
             }
             args = args || [];
             var onceHandlers = this.doneHandlers;
             this.doneHandlers = this._alterQueue;
+            this.failHandlers.length = 0;
             this.observeHandlers.apply(this, args);
             onceHandlers.apply(this, args);
             onceHandlers.length = 0;
@@ -106,13 +134,17 @@ define("mod/event", ["mod/lang"], function(_){
             return this;
         },
 
-        error: function(args){
+        error: function(args){ // bind, progress?, then, fail 
+            if (this._disalbed) {
+                return this;
+            }
             if (this.trace) {
                 this._trace();
             }
             args = args || [];
             var onceHandlers = this.failHandlers;
             this.failHandlers = this._alterQueue;
+            this.doneHandlers.length = 0;
             this.observeHandlers.apply(this, args);
             onceHandlers.apply(this, args);
             onceHandlers.length = 0;
@@ -120,24 +152,41 @@ define("mod/event", ["mod/lang"], function(_){
             return this;
         },
 
-        resolve: function(args){
+        resolve: function(args){ // bind, then, done 
             this.status = 1;
             this._argsCache = args || [];
             return this.fire(args);
         },
 
-        reject: function(args){
+        reject: function(args){ // bind, then, fail 
             this.status = 2;
             this._argsCache = args || [];
             return this.error(args);
         },
 
-        reset: function(){
+        reset: function(){ // resolve, reject
             this.status = 0;
             this._argsCache = [];
             this.doneHandlers.length = 0;
             this.failHandlers.length = 0;
             return this;
+        },
+
+        disable: function(){
+            this._disalbed = true;
+        },
+
+        enable: function(){
+            this._disalbed = false;
+        },
+
+        merge: function(promise){ // @TODO need testing
+            _.merge(this.doneHandlers, promise.doneHandlers);
+            _.merge(this.failHandlers, promise.failHandlers);
+            _.merge(this.observeHandlers, promise.observeHandlers);
+            var subject = promise.subject;
+            _.mix(promise, this);
+            promise.subject = subject;
         },
 
         _trace: function(){
@@ -174,36 +223,42 @@ define("mod/event", ["mod/lang"], function(_){
         },
 
         all: function(){
-            this._count = this._total;
-            return this;
+            var fork = when.apply(this, this._when);
+            return fork;
         },
 
         any: function(){
-            this._count = 1;
-            return this;
+            var fork = when.apply(this, this._when);
+            fork._count = fork._total = 1;
+            return fork;
         },
 
         some: function(n){
-            this._count = n;
-            return this;
+            var fork = when.apply(this, this._when);
+            fork._count = fork._total = n;
+            return fork;
         }
 
     };
 
-    actors.notify = actors.fire;
-    actors.progress = actors.bind;
-
     function when(){
         var mutiArgs = [],
+            completed = [],
             mutiPromise = new Promise();
+        mutiPromise._when = [];
         mutiPromise._count = mutiPromise._total = arguments.length;
         Array.prototype.forEach.call(arguments, function(promise, i){
             var mutiPromise = this;
-            promise.then(callback, callback);
+            mutiPromise._when.push(promise.bind(callback));
             function callback(args){
-                mutiArgs[i] = args;
-                if (--mutiPromise._count === 0) {
-                    mutiPromise.resolve.call(mutiPromise, mutiArgs);
+                if (!completed[i]) {
+                    completed[i] = true;
+                    mutiArgs[i] = args;
+                    if (--mutiPromise._count === 0) {  // @TODO
+                        completed.length = 0;
+                        mutiPromise._count = mutiPromise._total;
+                        mutiPromise.resolve.call(mutiPromise, mutiArgs);
+                    }
                 }
             }
         }, mutiPromise);
@@ -213,7 +268,7 @@ define("mod/event", ["mod/lang"], function(_){
     function pipe(prev, next){
         if (prev && prev.then) {
             prev.then(next.pipe.resolve, next.pipe.reject)
-                .bind(next.pipe.fire);
+                .progress(next.pipe.notify);
         } else if (prev !== undefined) {
             next.resolve([prev]);
         }
@@ -281,6 +336,9 @@ define("mod/event", ["mod/lang"], function(_){
     exports.Promise = Promise;
     exports.Event = Event;
     exports.when = when;
+    exports.pipe = pipe;
+
+    exports.VERSION = '2.0.0';
 
     return exports;
 });

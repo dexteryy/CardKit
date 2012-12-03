@@ -1,9 +1,9 @@
 define([
-    'mod/dollar',
-    'mod/lang',
-    'mod/template',
+    'dollar',
+    'mo/lang',
+    'mo/template',
     'cardkit/bus'
-], function($, _, tpl, bus){
+], function($, _, tpl, bus, require, exports, module){
 
     var view = {
 
@@ -27,15 +27,15 @@ define([
                 if (!/\S/.test(this.innerHTML)) {
                     $(this).remove();
                 }
-            }).css({
-                'float': 'left',
-                'overflow': 'hidden',
-                'margin': 0
-            }).css('width', function(){
-                var me = $(this);
-                return win_width - parseFloat(me.css('padding-left')) 
-                    - parseFloat(me.css('padding-right'));
-            });
+            })//.css({
+                //'float': 'left',
+                //'overflow': 'hidden',
+                //'margin': 0
+            //}).css('width', function(){
+                //var me = $(this);
+                //return win_width - parseFloat(me.css('padding-left')) 
+                    //- parseFloat(me.css('padding-right'));
+            //});
 
             document.addEventListener("touchmove", function(e){
                 //e.preventDefault();

@@ -1,5 +1,5 @@
 define([
-    'mod/lang',
+    'mo/lang',
     'cardkit/bus',
     'cardkit/view'
 ], function(_, bus, view){
