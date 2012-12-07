@@ -9,12 +9,10 @@
  * Copyright (C) 2010-2012, Dexter.Yy, MIT License
  * vim: et:ts=4:sw=4:sts=4
  */
-define("dollar", [
-    "mo/lang",
-    "host"
-], function(_, window){
+define("dollar", ["mo/lang"], function(_){
 
-    var doc = window.document,
+    var window = this,
+        doc = window.document,
         NEXT_SIB = 'nextElementSibling',
         PREV_SIB = 'prevElementSibling',
         FIRST_CHILD = 'firstElementChild',
@@ -227,9 +225,9 @@ define("dollar", [
         },
 
         data: kv_access(function(node, name, value){
-            node.dataset[name] = value;
+            node.dataset[css_method(name)] = value;
         }, function(node, name){
-            return (node || {}).dataset[name];
+            return (node || {}).dataset[css_method(name)];
         }),
 
         removeData: function(name){
@@ -269,7 +267,11 @@ define("dollar", [
         html: function(str){
             return str === undefined ? (this[0] || {}).innerHTML
                 : foreach_farg(this, str, 'innerHTML', function(node, str){
-                    this(node).empty().append(str);
+                    if (RE_HTMLTAG.test(str)) {
+                        this(node).empty().append(str);
+                    } else {
+                        node.innerHTML = str;
+                    }
                 }, $);
         },
 
@@ -618,7 +620,7 @@ define("dollar", [
                 ? window['inner' + method] 
                 : this[0] === doc 
                     ? doc.documentElement['offset' + method] 
-                    : (this.offset() || {})[method];
+                    : (this.offset() || {})[method.toLowerCase()];
         };
     }
 
@@ -690,7 +692,7 @@ define("dollar", [
     $.dasherize = css_prop;
     $.Event = Event;
 
-    $.VERSION = '1.0.0';
+    $.VERSION = '1.0.1';
 
     return $;
 

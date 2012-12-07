@@ -12,8 +12,7 @@ define("mo/network", [
     "mo/browsers"
 ], function(_, browsers, require, exports){
 
-    var oz = this,
-        ns = _.ns,
+    var ns = _.ns,
         uuid4jsonp = 1;
 
     var httpParam = function(a) {

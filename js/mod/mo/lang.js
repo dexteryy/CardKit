@@ -7,9 +7,9 @@
  * Copyright (C) 2010-2012, Dexter.Yy, MIT License
  * vim: et:ts=4:sw=4:sts=4
  */
-define("mo/lang", ["host"], function(host, require, exports){
+define("mo/lang", [], function(require, exports){
 
-    var oz = this,
+    var host = this,
         Array = host.Array,
         String = host.String,
         Object = host.Object,
@@ -183,8 +183,6 @@ define("mo/lang", ["host"], function(host, require, exports){
         return true;
 	};
     
-    exports.semver = oz._semver;
-
     function mix(origin) {
         var objs = arguments, ol = objs.length, 
             VALTYPE = { 'number': 1, 'boolean': 2, 'string': 3 },

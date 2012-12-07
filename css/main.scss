@@ -4,93 +4,258 @@
 //@import "map1/*.png";
 //@include all-map1-sprites;
 
+$text_color: #252525;
+$desc_color: #787878;
+$border_color: #dadada;
+
+$head_size: 34px/2;
+$title_size: 30px/2;
+$big_size: 26px/2;
+$text_size: 22px/2;
+
+$hover_color: #3377aa;
+$notice_color: #df5001;
+
+$space: 30px/2;
+$radius: 6px/2;
+
+$nav_height: 85px/2;
+
 body{
-  font: 12px Arial,Helvetica,sans-serif;
+  font:$text_size Helvetica,sans-serif;
+  color:$text_color;
+  background:#666;
+  line-height:1.7;
 }
 
-$nav_height: 40px;
+a {
+  text-decoration:none;
+  color:$hover_color;
+}
 
-.ck-nav{
-  background: #4FA353;
-  color: #fff;
-  overflow: hidden;
-  border: 1px solid #A1CD9D;
-  border-width: 0 0 1px 0;
+.btn {
+  display:inline-block;
+  width: (160px/2);
+  height: (56px/2);
+  @include border-radius($radius);
+  background-color: #81858b;
+  border: solid 1px #bcbcbc;
+  @include background-image(linear-gradient(bottom, #ccc, #fff));
+  font-size:$big_size;
+  color:$text_color;
+  @include text-shadow(0 1px #fff);
+  line-height:(56px/2);
 
-  a {
-    text-decoration: none;
-    color: #fff;
+  &:hover {
+    @include box-shadow(inset 0 2px 3px rgba(129,129,129,.5));
+    @include background-image(linear-gradient(bottom, #ccc, #fff));
+
+    span {
+      position:relative;
+      top:1px;
+    }
+
   }
 
-  .ck-nav-global{
-    height: $nav_height;
-    width: 45px;
-    border: 1px solid #6CB265;
-    border-width: 0 1px 0 0;
-    float: left;
+}
+
+.btn.default {
+  border-color:#0C518C;
+  @include background-image(linear-gradient(bottom, #1366a4, #278cd7));
+  color:#fff;
+  @include text-shadow(0 1px #000);
+
+  &:hover {
+    border-color:#0A5B97;
+    @include box-shadow(inset 0 2px 3px rgba(117,117,117,.51));
+    @include background-image(linear-gradient(bottom, #1366a4, #278cd7));
+  }
+
+}
+
+
+.ck-header {
+  position:fixed;
+  top:0;
+  left:0;
+  z-index:100;
+  width:100%;
+  background:#000;
+  @include user-select(none);
+  @include transition(top 400ms ease-in-out);
+}
+
+.bigtext {
+  font-size: $big_size;
+}
+
+.ck-topbar {
+  height: $nav_height;
+  @include border-radius($radius $radius 0 0);
+  @include background(linear-gradient(bottom, #78624f, #846f5b));
+  @include box-shadow(0 2px 3px rgba(0,0,0,.35), inset 0 1px #90806a);
+
+  .ck-title {
+    font-size:$head_size;
+    color:#fff;
+    @include text-shadow(0px 1px 0px rgba(0,0,0,1));
+    line-height: $nav_height;
+    text-align:center;
+    display:block;
+    margin:0 $space + 40px;
+  }
+
+  $btn-size: 15px;
+
+  .ck-top-nav {
+    width:$btn-size;
+    height:$btn-size;
+    position:absolute;
+    top:$space;
+    left:$space;
+    @include box-shadow(inset 0px 0px 2px #000); // @TODO
+  }
+
+  .ck-top-action {
+    @extend .ck-top-nav;
+    left:auto;
+    right:$space;
+    padding:0;
+    border:0;
+    background:none;
+  }
+
+  .ck-top-search {
+    @extend .ck-top-action;
+    right:$space*2 + $btn-size;
+  }
+
+}
+
+.ck-viewport {
+  background:#666;
+  width:100%;
+  position:absolute;
+  //top:$nav_height;
+  top:0;
+  bottom:0;
+  left:0;
+  overflow:auto;
+}
+
+.ck-wrapper {
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  @include box-shadow(0px 0px 3px rgba(0,0,0,.35));
+  background:#f2f2f2;
+  padding-top:$nav_height;
+}
+
+.ck-pile {
+  @include user-select(none);
+  overflow:hidden;
+
+  .ck-card:first-child {
+    margin-top:(58px/2);
+  }
+
+}
+
+.ck-card {
+  margin:$space;
+  background-color:#fff;
+  border:1px solid rgb(255,255,255);
+  @include border-radius($radius);
+  @include box-shadow(0px 1px 4px 0px rgba(0,0,0,0.3));
+
+  &[data-ck-type="paper"] {
+    background:none;
+    border:none;
+    @include border-radius(0);
+    @include box-shadow(none);
+    @include user-select(text);
+  }
+
+  &[data-ck-type="drawer"] {
+
+  }
+
+  &[data-ck-type="list"] {
+
+  }
+
+  &[data-ck-type="tile"] {
+    display:none;
+  }
+
+}
+
+.ck-item {
+  border-bottom:1px solid $border_color;
+  margin:0 20px;
+  padding:($space/2 + 1) 0;
+
+  .ck-link {
+    padding:($space/2 - 1) 0;
+    font-size:$title_size;
+    color:$text_color;
+    display:block;
     background: {
-      image: inline-image('nav-global.png');
+      image: inline-image('drawer_icon.png');
       repeat: no-repeat;
-      position: center;
-      size: 26px 24px;
+      position: right;
+      size: 5.5px 10px;
     }
-    @include box-shadow(#000 0 1px 1px);
   }
 
-  .ck-nav-local{
-      height: $nav_height;
-      border: 1px solid #6CB265;
-      border-width: 0 0 0 1px;
-      float: left;
-      margin: 0 0 0 1px;
-      ul {
-        li {
-          a {
-            font-size: 16px;
-            line-height: $nav_height;
-            height: $nav_height;
-            display: block;
-            padding:0 12px;
-          }
-        }
-      }
+  &:last-child {
+    border:none;
   }
 
-}
+  &:hover {
+    margin:0 10px;
+    border:none;
 
-.ck-viewport{
-  overflow: hidden;
-  padding:15px 0 15px 15px;
-}
-
-.ck-wrapper{
-}
-
-.ck-card{
-
-  &[data-ck-layout="intro"] {
-
-  }
-
-  &[data-ck-layout="tile"] {
-    padding: 10px;
-    width:120px;
-    height:110px;
-    overflow:hidden;
-    float:left;
-    margin:0 8px 8px 0;
-    color:rgb(51,51,51);
-    font-size:10px;
-    line-height:150%;
-    background: #F6FBF4;
-    @include box-shadow(0px 1px 1px 0px rgba(0,0,0,0.3));
-    //@include box-shadow(rgba(#f00, 0.4) 0 0 10px inset);
-
-    &[data-ck-tilesize="big"] {
-      width:268px;
+    .ck-link {
+      @include border-radius($radius);
+      background:$hover_color;
+      color:#fff;
+      padding-left:10px;
+      padding-right:10px;
     }
 
+    &+.ck-item {
+      border-top:1px solid $border_color;
+    }
+  
   }
 
 }
 
+.ck-modal {
+  @extend .btn;
+}
+
+.ck-modal:hover {
+  @extend .btn:hover;
+}
+
+.ck-discards {
+  display:none;
+}
+
+.ck-footer {
+  height:15px;
+  padding:5px 0 15px 0;
+  background:#f2f2f2;
+  text-align:center;
+  
+  .copyright {
+    font-size:$text_size;
+    color:$desc_color;
+    margin:5px 0;
+  }
+
+}
