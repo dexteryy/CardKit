@@ -3,9 +3,10 @@ define([
     'mo/lang',
     'mo/template',
     'cardkit/bus',
+    'cardkit/view/modal',
     'iscroll-lite',
     'mo/domready'
-], function($, _, tpl, bus, iScroll){
+], function($, _, tpl, bus, modal, iScroll){
 
     var view = {
 
@@ -17,6 +18,10 @@ define([
                 viewport = this.viewport = $('.ck-viewport');
             this.piles = $('.ck-pile', viewport);
             this.cards = $('.ck-card', viewport);
+
+            if (header.length === 0) {
+                return;
+            }
 
             this.render();
 
@@ -80,8 +85,10 @@ define([
                 }
             });
         }
-    
+
     };
+
+    view.modal = modal;
 
     return view;
 

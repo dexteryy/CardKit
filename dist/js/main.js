@@ -1678,492 +1678,6 @@ define("mo/lang", [], function(require, exports){
 
 });
 
-/* @source eventmaster.js */;
-
-/**
- * EventMaster
- * A simple, compact and consistent implementation of a variant of CommonJS's Promises and Events
- * Provide both Promise/Deferred/Flow pattern and Event/Notify/Observer/PubSub pattern
- *
- * using AMD (Asynchronous Module Definition) API with OzJS
- * see http://ozjs.org for details
- *
- * Copyright (C) 2010-2012, Dexter.Yy, MIT License
- * vim: et:ts=4:sw=4:sts=4
- */
-define("eventmaster", [
-  "mo/lang"
-], function(_){
-
-    var fnQueue = _.fnQueue,
-        slice = Array.prototype.slice,
-        pipes = ['notify', 'fire', 'error', 
-            'resolve', 'reject', 'reset', 'disable', 'enable'];
-
-    function Promise(opt){
-        var self = this;
-        if (opt) {
-            this.subject = opt.subject;
-            this.trace = opt.trace;
-            this.traceStack = opt.traceStack || [];
-        }
-        this.doneHandlers = fnQueue();
-        this.failHandlers = fnQueue();
-        this.observeHandlers = fnQueue();
-        this._alterQueue = fnQueue();
-        this._lastDoneQueue = [];
-        this._lastFailQueue = [];
-        this.status = 0;
-        this._argsCache = [];
-        this.pipe = {};
-        pipes.forEach(function(i){
-            this[i] = function(){
-                return self[i].call(self, slice.call(arguments));
-            };
-        }, this.pipe);
-    }
-
-    var actors = Promise.prototype = {
-
-        then: function(handler, errorHandler){
-            var _status = this.status;
-            if (errorHandler) { // error, reject
-                if (_status === 2) {
-                    this._resultCache = errorHandler.apply(this, this._argsCache);
-                } else if (!_status) {
-                    this.failHandlers.push(errorHandler);
-                    this._lastFailQueue = this.failHandlers;
-                }
-            } else {
-                this._lastFailQueue = [];
-            }
-            if (handler) { // fire, resolve
-                if (_status === 1) {
-                    this._resultCache = handler.apply(this, this._argsCache);
-                } else if (!_status) {
-                    this.doneHandlers.push(handler);
-                    this._lastDoneQueue = this.doneHandlers;
-                }
-            } else {
-                this._lastDoneQueue = [];
-            }
-            return this;
-        },
-
-        done: function(handler){ // fire, resolve
-            return this.then(handler);
-        },
-
-        fail: function(handler){ // error, reject
-            return this.then(false, handler);
-        },
-
-        cancel: function(handler, errorHandler){ // then
-            if (handler) { // done
-                this.doneHandlers.clear(handler);
-            }
-            if (errorHandler) { // fail
-                this.failHandlers.clear(errorHandler);
-            }
-            return this;
-        },
-
-        bind: function(handler){
-            if (this.status) { // resolve, reject
-                handler.apply(this, this._argsCache);
-            }
-            this.observeHandlers.push(handler); // notify, fire, error
-            return this;
-        },
-
-        unbind: function(handler){ // bind
-            this.observeHandlers.clear(handler);
-            return this;
-        },
-
-        progress: function(handler){ // notify, fire?, error?
-            var self = this;
-            this.observeHandlers.push(function(){
-                if (!self.status) {
-                    handler.apply(this, arguments);
-                }
-            });
-            return this;
-        },
-
-        notify: function(args){ // progress, bind
-            if (this._disalbed) {
-                return this;
-            }
-            this.status = 0;
-            this.observeHandlers.apply(this, args || []);
-            return this;
-        },
-
-        fire: function(args){ // bind, progress?, then, done
-            if (this._disalbed) {
-                return this;
-            }
-            if (this.trace) {
-                this._trace();
-            }
-            args = args || [];
-            var onceHandlers = this.doneHandlers;
-            this.doneHandlers = this._alterQueue;
-            this.failHandlers.length = 0;
-            this.observeHandlers.apply(this, args);
-            onceHandlers.apply(this, args);
-            onceHandlers.length = 0;
-            this._alterQueue = onceHandlers;
-            return this;
-        },
-
-        error: function(args){ // bind, progress?, then, fail 
-            if (this._disalbed) {
-                return this;
-            }
-            if (this.trace) {
-                this._trace();
-            }
-            args = args || [];
-            var onceHandlers = this.failHandlers;
-            this.failHandlers = this._alterQueue;
-            this.doneHandlers.length = 0;
-            this.observeHandlers.apply(this, args);
-            onceHandlers.apply(this, args);
-            onceHandlers.length = 0;
-            this._alterQueue = onceHandlers;
-            return this;
-        },
-
-        resolve: function(args){ // bind, then, done 
-            this.status = 1;
-            this._argsCache = args || [];
-            return this.fire(args);
-        },
-
-        reject: function(args){ // bind, then, fail 
-            this.status = 2;
-            this._argsCache = args || [];
-            return this.error(args);
-        },
-
-        reset: function(){ // resolve, reject
-            this.status = 0;
-            this._argsCache = [];
-            this.doneHandlers.length = 0;
-            this.failHandlers.length = 0;
-            return this;
-        },
-
-        disable: function(){
-            this._disalbed = true;
-        },
-
-        enable: function(){
-            this._disalbed = false;
-        },
-
-        merge: function(promise){ // @TODO need testing
-            _.merge(this.doneHandlers, promise.doneHandlers);
-            _.merge(this.failHandlers, promise.failHandlers);
-            _.merge(this.observeHandlers, promise.observeHandlers);
-            var subject = promise.subject;
-            _.mix(promise, this);
-            promise.subject = subject;
-        },
-
-        _trace: function(){
-            this.traceStack.unshift(this.subject);
-            if (this.traceStack.length > this.trace) {
-                this.traceStack.pop();
-            }
-        },
-
-        follow: function(){
-            var next = new Promise();
-            next._prevActor = this;
-            if (this.status) {
-                pipe(this._resultCache, next);
-            } else {
-                var doneHandler = this._lastDoneQueue.pop();
-                if (doneHandler) {
-                    this._lastDoneQueue.push(function(){
-                        return pipe(doneHandler.apply(this, arguments), next);
-                    });
-                }
-                var failHandler = this._lastFailQueue.pop();
-                if (failHandler) {
-                    this._lastFailQueue.push(function(){
-                        return pipe(failHandler.apply(this, arguments), next);
-                    });
-                }
-            }
-            return next;
-        },
-
-        end: function(){
-            return this._prevActor;
-        },
-
-        all: function(){
-            var fork = when.apply(this, this._when);
-            return fork;
-        },
-
-        any: function(){
-            var fork = when.apply(this, this._when);
-            fork._count = fork._total = 1;
-            return fork;
-        },
-
-        some: function(n){
-            var fork = when.apply(this, this._when);
-            fork._count = fork._total = n;
-            return fork;
-        }
-
-    };
-
-    function when(){
-        var mutiArgs = [],
-            completed = [],
-            mutiPromise = new Promise();
-        mutiPromise._when = [];
-        mutiPromise._count = mutiPromise._total = arguments.length;
-        Array.prototype.forEach.call(arguments, function(promise, i){
-            var mutiPromise = this;
-            mutiPromise._when.push(promise.bind(callback));
-            function callback(args){
-                if (!completed[i]) {
-                    completed[i] = true;
-                    mutiArgs[i] = args;
-                    if (--mutiPromise._count === 0) {  // @TODO
-                        completed.length = 0;
-                        mutiPromise._count = mutiPromise._total;
-                        mutiPromise.resolve.call(mutiPromise, mutiArgs);
-                    }
-                }
-            }
-        }, mutiPromise);
-        return mutiPromise;
-    }
-
-    function pipe(prev, next){
-        if (prev && prev.then) {
-            prev.then(next.pipe.resolve, next.pipe.reject)
-                .progress(next.pipe.notify);
-        } else if (prev !== undefined) {
-            next.resolve([prev]);
-        }
-        return prev;
-    }
-
-    function dispatchFactory(i){
-        return function(subject){
-            var promise = this.lib[subject];
-            if (!promise) {
-                promise = this.lib[subject] = new Promise({
-                    subject: subject,
-                    trace: this.trace,
-                    traceStack: this.traceStack
-                });
-            }
-            promise[i].apply(promise, slice.call(arguments, 1));
-            return this;
-        };
-    }
-
-    function Event(opt){
-        if (opt) {
-            this.trace = opt.trace;
-            this.traceStack = opt.traceStack;
-        }
-        this.lib = {};
-    }
-
-    var EventAPI = Event.prototype = (function(methods){
-        for (var i in actors) {
-            methods[i] = dispatchFactory(i);
-        }
-        return methods;
-    })({});
-
-    EventAPI.wait = EventAPI.then;
-    EventAPI.on = EventAPI.bind;
-    EventAPI.off = EventAPI.unbind;
-
-    EventAPI.promise = function(subject){
-        var promise = this.lib[subject];
-        if (!promise) {
-            promise = this.lib[subject] = new Promise({
-                subject: subject,
-                trace: this.trace,
-                traceStack: this.traceStack
-            });
-        }
-        return promise;
-    };
-
-    EventAPI.when = function(){
-        var args = [];
-        for (var i = 0, l = arguments.length; i < l; i++) {
-            args.push(this.promise(arguments[i]));
-        }
-        return when.apply(this, args);
-    };
-
-    function exports(opt){
-        return new Event(opt);
-    }
-
-    exports.Promise = Promise;
-    exports.Event = Event;
-    exports.when = when;
-    exports.pipe = pipe;
-
-    exports.VERSION = '2.0.0';
-
-    return exports;
-});
-
-/* @source ../cardkit/bus.js */;
-
-define("cardkit/bus", [
-  "eventmaster"
-], function(Event){
-
-    return Event();
-
-});
-
-/* @source mo/template.js */;
-
-/**
- * A lightweight and enhanced micro-template implementation, and minimum utilities
- *
- * using AMD (Asynchronous Module Definition) API with OzJS
- * see http://ozjs.org for details
- *
- * Copyright (C) 2010-2012, Dexter.Yy, MIT License
- * vim: et:ts=4:sw=4:sts=4
- */
-define("mo/template", [
-  "mo/lang"
-], function(_, require, exports){
-
-    var document = this.document;
-
-    function escapeHTML(str){
-        str = str || '';
-        var xmlchar = {
-            //"&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            "'": "&#39;",
-            '"': "&quot;",
-            "{": "&#123;",
-            "}": "&#125;",
-            "@": "&#64;"
-        };
-        return str.replace(/[<>'"\{\}@]/g, function($1){
-            return xmlchar[$1];
-        });
-    }
-
-    function substr(str, limit, cb){
-        if(!str || typeof str !== "string")
-            return '';
-        var sub = str.substr(0, limit).replace(/([^\x00-\xff])/g, '$1 ').substr(0, limit).replace(/([^\x00-\xff])\s/g, '$1');
-        return cb ? cb.call(sub, sub) : (str.length > sub.length ? sub + '...' : sub);
-    }
-
-    exports.escapeHTML = escapeHTML;
-    exports.substr = substr;
-
-    exports.strsize = function(str){
-        return str.replace(/([^\x00-\xff]|[A-Z])/g, '$1 ').length;
-    };
-
-    exports.str2html = function(str){
-        var temp = document.createElement("div");
-        temp.innerHTML = str;
-        var child = temp.firstChild;
-        if (temp.childNodes.length == 1) {
-            return child;
-        }
-        var fragment = document.createDocumentFragment();
-        do {
-            fragment.appendChild(child);
-        } while (child = temp.firstChild);
-        return fragment;
-    };
-
-    exports.format = function(tpl, op){
-        return tpl.replace(/\{\{(\w+)\}\}/g, function(e1,e2){
-            return op[e2] != null ? op[e2] : "";
-        });
-    };
-
-    // forked from  underscore.js 
-    exports.tplSettings = {
-        _cache: {},
-        evaluate: /\{%([\s\S]+?)%\}/g,
-        interpolate: /\{%=([\s\S]+?)%\}/g
-    };
-    exports.tplHelpers = {
-        mix: _.mix,
-        escapeHTML: escapeHTML,
-        substr: substr,
-        include: convertTpl,
-        _has: function(obj){
-            return function(name){
-                return _.ns(name, undefined, obj);
-            };
-        }
-    };
-
-    function convertTpl(str, data, namespace){
-        var func, c  = exports.tplSettings, suffix = namespace ? '#' + namespace : '';
-        if (!/[\t\r\n% ]/.test(str)) {
-            func = c._cache[str + suffix];
-            if (!func) {
-                var tplbox = document.getElementById(str);
-                if (tplbox) {
-                    func = c._cache[str + suffix] = convertTpl(tplbox.innerHTML, false, namespace);
-                }
-            }
-        } else {
-            func = new Function(namespace || 'obj', 'api', 'var __p=[];' 
-                + (namespace ? '' : 'with(obj){')
-                    + 'var mix=api.mix,escapeHTML=api.escapeHTML,substr=api.substr,include=api.include,has=api._has(' + (namespace || 'obj') + ');'
-                    + '__p.push(\'' +
-                    str.replace(/\\/g, '\\\\')
-                        .replace(/'/g, "\\'")
-                        .replace(c.interpolate, function(match, code) {
-                            return "'," + code.replace(/\\'/g, "'") + ",'";
-                        })
-                        .replace(c.evaluate || null, function(match, code) {
-                            return "');" + code.replace(/\\'/g, "'")
-                                                .replace(/[\r\n\t]/g, ' ') + "__p.push('";
-                        })
-                        .replace(/\r/g, '\\r')
-                        .replace(/\n/g, '\\n')
-                        .replace(/\t/g, '\\t')
-                    + "');" 
-                + (namespace ? "" : "}")
-                + "return __p.join('');");
-        }
-        return !func ? '' : (data ? func(data, exports.tplHelpers) : func);
-    }
-
-    exports.convertTpl = convertTpl;
-    exports.reloadTpl = function(str){
-        delete exports.tplSettings._cache[str];
-    };
-
-});
-
 /* @source dollar.js */;
 
 /**
@@ -2868,6 +2382,974 @@ define("dollar", [
 
 });
 
+/* @source uiproxy.js */;
+
+define('uiproxy', [
+  "dollar",
+  "mo/lang"
+], function($, _) {
+    var exports = {
+        bind: function(node, events) {},
+        unbind: function(node, events) {}
+    };
+
+    return exports;
+});
+
+/* @source eventmaster.js */;
+
+/**
+ * EventMaster
+ * A simple, compact and consistent implementation of a variant of CommonJS's Promises and Events
+ * Provide both Promise/Deferred/Flow pattern and Event/Notify/Observer/PubSub pattern
+ *
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
+define("eventmaster", [
+  "mo/lang"
+], function(_){
+
+    var fnQueue = _.fnQueue,
+        slice = Array.prototype.slice,
+        pipes = ['notify', 'fire', 'error', 
+            'resolve', 'reject', 'reset', 'disable', 'enable'];
+
+    function Promise(opt){
+        var self = this;
+        if (opt) {
+            this.subject = opt.subject;
+            this.trace = opt.trace;
+            this.traceStack = opt.traceStack || [];
+        }
+        this.doneHandlers = fnQueue();
+        this.failHandlers = fnQueue();
+        this.observeHandlers = fnQueue();
+        this._alterQueue = fnQueue();
+        this._lastDoneQueue = [];
+        this._lastFailQueue = [];
+        this.status = 0;
+        this._argsCache = [];
+        this.pipe = {};
+        pipes.forEach(function(i){
+            this[i] = function(){
+                return self[i].call(self, slice.call(arguments));
+            };
+        }, this.pipe);
+    }
+
+    var actors = Promise.prototype = {
+
+        then: function(handler, errorHandler){
+            var _status = this.status;
+            if (errorHandler) { // error, reject
+                if (_status === 2) {
+                    this._resultCache = errorHandler.apply(this, this._argsCache);
+                } else if (!_status) {
+                    this.failHandlers.push(errorHandler);
+                    this._lastFailQueue = this.failHandlers;
+                }
+            } else {
+                this._lastFailQueue = [];
+            }
+            if (handler) { // fire, resolve
+                if (_status === 1) {
+                    this._resultCache = handler.apply(this, this._argsCache);
+                } else if (!_status) {
+                    this.doneHandlers.push(handler);
+                    this._lastDoneQueue = this.doneHandlers;
+                }
+            } else {
+                this._lastDoneQueue = [];
+            }
+            return this;
+        },
+
+        done: function(handler){ // fire, resolve
+            return this.then(handler);
+        },
+
+        fail: function(handler){ // error, reject
+            return this.then(false, handler);
+        },
+
+        cancel: function(handler, errorHandler){ // then
+            if (handler) { // done
+                this.doneHandlers.clear(handler);
+            }
+            if (errorHandler) { // fail
+                this.failHandlers.clear(errorHandler);
+            }
+            return this;
+        },
+
+        bind: function(handler){
+            if (this.status) { // resolve, reject
+                handler.apply(this, this._argsCache);
+            }
+            this.observeHandlers.push(handler); // notify, fire, error
+            return this;
+        },
+
+        unbind: function(handler){ // bind
+            this.observeHandlers.clear(handler);
+            return this;
+        },
+
+        progress: function(handler){ // notify, fire?, error?
+            var self = this;
+            this.observeHandlers.push(function(){
+                if (!self.status) {
+                    handler.apply(this, arguments);
+                }
+            });
+            return this;
+        },
+
+        notify: function(args){ // progress, bind
+            if (this._disalbed) {
+                return this;
+            }
+            this.status = 0;
+            this.observeHandlers.apply(this, args || []);
+            return this;
+        },
+
+        fire: function(args){ // bind, progress?, then, done
+            if (this._disalbed) {
+                return this;
+            }
+            if (this.trace) {
+                this._trace();
+            }
+            args = args || [];
+            var onceHandlers = this.doneHandlers;
+            this.doneHandlers = this._alterQueue;
+            this.failHandlers.length = 0;
+            this.observeHandlers.apply(this, args);
+            onceHandlers.apply(this, args);
+            onceHandlers.length = 0;
+            this._alterQueue = onceHandlers;
+            return this;
+        },
+
+        error: function(args){ // bind, progress?, then, fail 
+            if (this._disalbed) {
+                return this;
+            }
+            if (this.trace) {
+                this._trace();
+            }
+            args = args || [];
+            var onceHandlers = this.failHandlers;
+            this.failHandlers = this._alterQueue;
+            this.doneHandlers.length = 0;
+            this.observeHandlers.apply(this, args);
+            onceHandlers.apply(this, args);
+            onceHandlers.length = 0;
+            this._alterQueue = onceHandlers;
+            return this;
+        },
+
+        resolve: function(args){ // bind, then, done 
+            this.status = 1;
+            this._argsCache = args || [];
+            return this.fire(args);
+        },
+
+        reject: function(args){ // bind, then, fail 
+            this.status = 2;
+            this._argsCache = args || [];
+            return this.error(args);
+        },
+
+        reset: function(){ // resolve, reject
+            this.status = 0;
+            this._argsCache = [];
+            this.doneHandlers.length = 0;
+            this.failHandlers.length = 0;
+            return this;
+        },
+
+        disable: function(){
+            this._disalbed = true;
+        },
+
+        enable: function(){
+            this._disalbed = false;
+        },
+
+        merge: function(promise){ // @TODO need testing
+            _.merge(this.doneHandlers, promise.doneHandlers);
+            _.merge(this.failHandlers, promise.failHandlers);
+            _.merge(this.observeHandlers, promise.observeHandlers);
+            var subject = promise.subject;
+            _.mix(promise, this);
+            promise.subject = subject;
+        },
+
+        _trace: function(){
+            this.traceStack.unshift(this.subject);
+            if (this.traceStack.length > this.trace) {
+                this.traceStack.pop();
+            }
+        },
+
+        follow: function(){
+            var next = new Promise();
+            next._prevActor = this;
+            if (this.status) {
+                pipe(this._resultCache, next);
+            } else {
+                var doneHandler = this._lastDoneQueue.pop();
+                if (doneHandler) {
+                    this._lastDoneQueue.push(function(){
+                        return pipe(doneHandler.apply(this, arguments), next);
+                    });
+                }
+                var failHandler = this._lastFailQueue.pop();
+                if (failHandler) {
+                    this._lastFailQueue.push(function(){
+                        return pipe(failHandler.apply(this, arguments), next);
+                    });
+                }
+            }
+            return next;
+        },
+
+        end: function(){
+            return this._prevActor;
+        },
+
+        all: function(){
+            var fork = when.apply(this, this._when);
+            return fork;
+        },
+
+        any: function(){
+            var fork = when.apply(this, this._when);
+            fork._count = fork._total = 1;
+            return fork;
+        },
+
+        some: function(n){
+            var fork = when.apply(this, this._when);
+            fork._count = fork._total = n;
+            return fork;
+        }
+
+    };
+
+    function when(){
+        var mutiArgs = [],
+            completed = [],
+            mutiPromise = new Promise();
+        mutiPromise._when = [];
+        mutiPromise._count = mutiPromise._total = arguments.length;
+        Array.prototype.forEach.call(arguments, function(promise, i){
+            var mutiPromise = this;
+            mutiPromise._when.push(promise.bind(callback));
+            function callback(args){
+                if (!completed[i]) {
+                    completed[i] = true;
+                    mutiArgs[i] = args;
+                    if (--mutiPromise._count === 0) {  // @TODO
+                        completed.length = 0;
+                        mutiPromise._count = mutiPromise._total;
+                        mutiPromise.resolve.call(mutiPromise, mutiArgs);
+                    }
+                }
+            }
+        }, mutiPromise);
+        return mutiPromise;
+    }
+
+    function pipe(prev, next){
+        if (prev && prev.then) {
+            prev.then(next.pipe.resolve, next.pipe.reject)
+                .progress(next.pipe.notify);
+        } else if (prev !== undefined) {
+            next.resolve([prev]);
+        }
+        return prev;
+    }
+
+    function dispatchFactory(i){
+        return function(subject){
+            var promise = this.lib[subject];
+            if (!promise) {
+                promise = this.lib[subject] = new Promise({
+                    subject: subject,
+                    trace: this.trace,
+                    traceStack: this.traceStack
+                });
+            }
+            promise[i].apply(promise, slice.call(arguments, 1));
+            return this;
+        };
+    }
+
+    function Event(opt){
+        if (opt) {
+            this.trace = opt.trace;
+            this.traceStack = opt.traceStack;
+        }
+        this.lib = {};
+    }
+
+    var EventAPI = Event.prototype = (function(methods){
+        for (var i in actors) {
+            methods[i] = dispatchFactory(i);
+        }
+        return methods;
+    })({});
+
+    EventAPI.wait = EventAPI.then;
+    EventAPI.on = EventAPI.bind;
+    EventAPI.off = EventAPI.unbind;
+
+    EventAPI.promise = function(subject){
+        var promise = this.lib[subject];
+        if (!promise) {
+            promise = this.lib[subject] = new Promise({
+                subject: subject,
+                trace: this.trace,
+                traceStack: this.traceStack
+            });
+        }
+        return promise;
+    };
+
+    EventAPI.when = function(){
+        var args = [];
+        for (var i = 0, l = arguments.length; i < l; i++) {
+            args.push(this.promise(arguments[i]));
+        }
+        return when.apply(this, args);
+    };
+
+    function exports(opt){
+        return new Event(opt);
+    }
+
+    exports.Promise = Promise;
+    exports.Event = Event;
+    exports.when = when;
+    exports.pipe = pipe;
+
+    exports.VERSION = '2.0.0';
+
+    return exports;
+});
+
+/* @source mo/template.js */;
+
+/**
+ * A lightweight and enhanced micro-template implementation, and minimum utilities
+ *
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
+define("mo/template", [
+  "mo/lang"
+], function(_, require, exports){
+
+    var document = this.document;
+
+    function escapeHTML(str){
+        str = str || '';
+        var xmlchar = {
+            //"&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            "'": "&#39;",
+            '"': "&quot;",
+            "{": "&#123;",
+            "}": "&#125;",
+            "@": "&#64;"
+        };
+        return str.replace(/[<>'"\{\}@]/g, function($1){
+            return xmlchar[$1];
+        });
+    }
+
+    function substr(str, limit, cb){
+        if(!str || typeof str !== "string")
+            return '';
+        var sub = str.substr(0, limit).replace(/([^\x00-\xff])/g, '$1 ').substr(0, limit).replace(/([^\x00-\xff])\s/g, '$1');
+        return cb ? cb.call(sub, sub) : (str.length > sub.length ? sub + '...' : sub);
+    }
+
+    exports.escapeHTML = escapeHTML;
+    exports.substr = substr;
+
+    exports.strsize = function(str){
+        return str.replace(/([^\x00-\xff]|[A-Z])/g, '$1 ').length;
+    };
+
+    exports.str2html = function(str){
+        var temp = document.createElement("div");
+        temp.innerHTML = str;
+        var child = temp.firstChild;
+        if (temp.childNodes.length == 1) {
+            return child;
+        }
+        var fragment = document.createDocumentFragment();
+        do {
+            fragment.appendChild(child);
+        } while (child = temp.firstChild);
+        return fragment;
+    };
+
+    exports.format = function(tpl, op){
+        return tpl.replace(/\{\{(\w+)\}\}/g, function(e1,e2){
+            return op[e2] != null ? op[e2] : "";
+        });
+    };
+
+    // forked from  underscore.js 
+    exports.tplSettings = {
+        _cache: {},
+        evaluate: /\{%([\s\S]+?)%\}/g,
+        interpolate: /\{%=([\s\S]+?)%\}/g
+    };
+    exports.tplHelpers = {
+        mix: _.mix,
+        escapeHTML: escapeHTML,
+        substr: substr,
+        include: convertTpl,
+        _has: function(obj){
+            return function(name){
+                return _.ns(name, undefined, obj);
+            };
+        }
+    };
+
+    function convertTpl(str, data, namespace){
+        var func, c  = exports.tplSettings, suffix = namespace ? '#' + namespace : '';
+        if (!/[\t\r\n% ]/.test(str)) {
+            func = c._cache[str + suffix];
+            if (!func) {
+                var tplbox = document.getElementById(str);
+                if (tplbox) {
+                    func = c._cache[str + suffix] = convertTpl(tplbox.innerHTML, false, namespace);
+                }
+            }
+        } else {
+            func = new Function(namespace || 'obj', 'api', 'var __p=[];' 
+                + (namespace ? '' : 'with(obj){')
+                    + 'var mix=api.mix,escapeHTML=api.escapeHTML,substr=api.substr,include=api.include,has=api._has(' + (namespace || 'obj') + ');'
+                    + '__p.push(\'' +
+                    str.replace(/\\/g, '\\\\')
+                        .replace(/'/g, "\\'")
+                        .replace(c.interpolate, function(match, code) {
+                            return "'," + code.replace(/\\'/g, "'") + ",'";
+                        })
+                        .replace(c.evaluate || null, function(match, code) {
+                            return "');" + code.replace(/\\'/g, "'")
+                                                .replace(/[\r\n\t]/g, ' ') + "__p.push('";
+                        })
+                        .replace(/\r/g, '\\r')
+                        .replace(/\n/g, '\\n')
+                        .replace(/\t/g, '\\t')
+                    + "');" 
+                + (namespace ? "" : "}")
+                + "return __p.join('');");
+        }
+        return !func ? '' : (data ? func(data, exports.tplHelpers) : func);
+    }
+
+    exports.convertTpl = convertTpl;
+    exports.reloadTpl = function(str){
+        delete exports.tplSettings._cache[str];
+    };
+
+});
+
+/* @source mo/browsers.js */;
+
+/**
+ * Standalone jQuery.browsers supports skin browsers popular in China 
+ *
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
+define("mo/browsers", [], function(){
+
+    var match, skin, 
+        rank = { 
+            "360ee": 2,
+            "maxthon/3": 2,
+            "qqbrowser": 2,
+            "metasr": 2,
+            "360se": 1,
+            "theworld": 1,
+            "maxthon": 1,
+            "tencenttraveler": -1
+        };
+
+    try {
+        var ua = navigator.userAgent.toLowerCase(),
+            rmobilesafari = /apple.*mobile.*safari/,
+            rwebkit = /(webkit)[ \/]([\w.]+)/,
+            ropera = /(opera)(?:.*version)?[ \/]([\w.]+)/,
+            rmsie = /(msie) ([\w.]+)/,
+            rmozilla = /(mozilla)(?:.*? rv:([\w.]+))?/;
+
+        var r360se = /(360se)/,
+            r360ee = /(360ee)/,
+            rtheworld = /(theworld)/,
+            rmaxthon3 = /(maxthon\/3)/,
+            rmaxthon = /(maxthon)\s/,
+            rtt = /(tencenttraveler)/,
+            rqq = /(qqbrowser)/,
+            rmetasr = /(metasr)/;
+
+        match = rmobilesafari.test(ua) && [0, "mobilesafari"] ||
+            rwebkit.exec(ua) ||
+            ropera.exec(ua) ||
+            rmsie.exec(ua) ||
+            ua.indexOf("compatible") < 0 && rmozilla.exec(ua) ||
+            [];
+
+        skin = r360se.exec(ua) || r360ee.exec(ua) || rtheworld.exec(ua) || 
+            rmaxthon3.exec(ua) || rmaxthon.exec(ua) ||
+            rtt.exec(ua) || rqq.exec(ua) ||
+            rmetasr.exec(ua) || [];
+
+    } catch (ex) {
+        match = [];
+        skin = [];
+    }
+
+    var result = { 
+        browser: match[1] || "", 
+        version: match[2] || "0",
+        skin: skin[1] || ""
+    };
+    if (match[1]) {
+        result[match[1]] = parseInt(result.version, 10) || true;
+    }
+    if (skin[1]) {
+        result.rank = rank[result.skin] || 0;
+    }
+    result.shell = result.skin;
+
+    return result;
+
+});
+
+/* @source mo/network.js */;
+
+/**
+ * Standalone jQuery.ajax API and enhanced getJSON, and so on
+ *
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
+define("mo/network", [
+  "mo/lang",
+  "mo/browsers"
+], function(_, browsers, require, exports){
+
+    var ns = _.ns,
+        uuid4jsonp = 1;
+
+    var httpParam = function(a) {
+        var s = [];
+        if (a.constructor == Array) {
+            for (var i = 0; i < a.length; i++)
+                s.push(a[i].name + "=" + encodeURIComponent(a[i].value));
+        } else {
+            for (var j in a)
+                s.push(j + "=" + encodeURIComponent(a[j]));
+        }
+        return s.join("&").replace(/%20/g, "+");
+    };
+
+    /**
+     * From jquery by John Resig
+     */ 
+    var ajax = function(s){
+        var options = {
+            type: s.type || "GET",
+            url: s.url || "",
+            data: s.data || null,
+            dataType: s.dataType,
+            contentType: s.contentType || "application/x-www-form-urlencoded",
+            username: s.username || null,
+            password: s.password || null,
+            timeout: s.timeout || 0,
+            processData: s.processData || true,
+            beforeSend: s.beforeSend || function(){},
+            complete: s.complete || function(){},
+            handleError: s.handleError || function(){},
+            success: s.success || function(){},
+            accepts: {
+                xml: "application/xml, text/xml",
+                html: "text/html",
+                script: "text/javascript, application/javascript",
+                json: "application/json, text/javascript",
+                text: "text/plain",
+                _default: "*/*"
+            }
+        };
+        
+        if ( options.data && options.processData && typeof options.data != "string" )
+            options.data = httpParam(options.data);
+        if ( options.data && options.type.toLowerCase() == "get" ) {
+            options.url += (options.url.match(/\?/) ? "&" : "?") + options.data;
+            options.data = null;
+        }
+        
+        var status, data, requestDone = false, xhr = window.ActiveXObject ? new ActiveXObject("Microsoft.XMLHTTP") : new XMLHttpRequest();
+        xhr.open( options.type, options.url, true, options.username, options.password );
+        try {
+            if ( options.data )
+                xhr.setRequestHeader("Content-Type", options.contentType);
+            xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+            xhr.setRequestHeader("Accept", s.dataType && options.accepts[ s.dataType ] ?
+                options.accepts[ s.dataType ] + ", */*" :
+                options.accepts._default );
+        } catch(e){}
+        
+        if ( options.beforeSend )
+            options.beforeSend(xhr);
+            
+        var onreadystatechange = function(isTimeout){
+            if ( !requestDone && xhr && (xhr.readyState == 4 || isTimeout == "timeout") ) {
+                requestDone = true;
+                if (ival) {
+                    clearInterval(ival);
+                    ival = null;
+                }
+
+                status = isTimeout == "timeout" && "timeout" || !httpSuccess( xhr ) && "error" || "success";
+
+                if ( status == "success" ) {
+                    try {
+                        data = httpData( xhr, options.dataType );
+                    } catch(e) {
+                        status = "parsererror";
+                    }
+                    
+                    options.success( data, status );
+                } else
+                    options.handleError( xhr, status );
+                options.complete( xhr, status );
+                xhr = null;
+            }
+        };
+
+        var ival = setInterval(onreadystatechange, 13); 
+        if ( options.timeout > 0 )
+            setTimeout(function(){
+                if ( xhr ) {
+                    xhr.abort();
+                    if( !requestDone )
+                        onreadystatechange( "timeout" );
+                }
+            }, options.timeout);    
+            
+        xhr.send(options.data);
+
+        function httpSuccess(r) {
+            try {
+                return !r.status && location.protocol == "file:" || ( r.status >= 200 && r.status < 300 ) || r.status == 304 || r.status == 1223 || browsers.safari && r.status == undefined;
+            } catch(e){}
+            return false;
+        }
+        function httpData(r,type) {
+            var ct = r.getResponseHeader("content-type");
+            var xml = type == "xml" || !type && ct && ct.indexOf("xml") >= 0;
+            var data = xml ? r.responseXML : r.responseText;
+            if ( xml && data.documentElement.tagName == "parsererror" )
+                throw "parsererror";
+            if ( type == "script" )
+                eval.call( window, data );
+            if ( type == "json" )
+                data = eval("(" + data + ")");
+            return data;
+        }
+        return xhr;
+    };
+
+    exports.ajax = ajax;
+    exports.params = httpParam;
+
+    exports.getScript = oz._getScript;
+
+    exports.getStyle = function(url){
+        var doc = this.document || document,
+            s = doc.createElement("link");
+        s.setAttribute('type', 'text/css');
+        s.setAttribute('rel', 'stylesheet');
+        s.setAttribute('href', url);
+        var h = doc.getElementsByTagName("head")[0];
+        h.appendChild(s);
+    };
+
+    var RE_DOMAIN = /https?\:\/\/(.+?)\//;
+    exports.getJSON = function(url, data, fn, op){
+        var domain = url.match(RE_DOMAIN);
+        if (!data || _.isFunction(data)) {
+            op = fn;
+            fn = data;
+            data = {};
+        }
+        if (fn) {
+            if ((!op || !op.isScript) && (!domain || domain[1] === window.location.host)) {
+                ajax({
+                    url: url,
+                    data: data,
+                    success: fn,
+                    error: op && op.error,
+                    dataType: "json"
+                });
+                return true;
+            }
+        }
+        op = _.mix({
+            charset: "utf-8",
+            callback: "__oz_jsonp" + (++uuid4jsonp)
+        }, op || {});
+        if (op.random)
+            data[op.random] = +new Date();
+        var cbName = op.callbackName || 'jsoncallback';
+        data[cbName] = op.callback;
+        url = [url, /\?/.test(url) ? "&" : "?", httpParam(data)].join("");
+        if (fn)
+            ns(op.callback, fn);
+        delete op.callback;
+        exports.getScript(url, op);
+    };
+
+    exports.getRequest = function(url, params){
+        var img = new Image();
+        img.onload = function(){ img = null; }; //阻止IE下的自动垃圾回收引起的请求未发出状况
+        img.src = !params ? url : [url, /\?/.test(url) ? "&" : "?", typeof params == "string" ? params : httpParam(params)].join('');
+    };
+
+});
+
+/* @source modal.js */;
+
+define('modal', [
+  "dollar",
+  "mo/lang",
+  "mo/network",
+  "mo/template",
+  "eventmaster",
+  "uiproxy"
+], function($, _, net, tpl, Event, uiproxy) {
+    var body = $('body'),
+        ID = 'modal-',
+
+        LOADING_DOTS = '<span class="ui-inline-loading"><i>.</i><i>.</i><i>.</i></span>',
+
+        TPL_MODAL =
+           '<div id="{{id}}" class="modal-view">\
+                <div class="modal-header">\
+                    <div class="right-button">\
+                    </div>\
+                    <div class="left-button">\
+                    </div>\
+                    <h1 class="modal-title">\
+                    </h1>\
+                </div>\
+                <div class="modal-content"></div>\
+            </div>',
+        TPL_BTN = '<a class="btn {{type}}">{{text}}</a>';
+
+    var _mid = 0;
+
+    var defaults = {
+        title: '',
+        buttons: [{
+            text: '确定',
+            type: 'primary',
+            align: 'right',
+            method: function(modal) {
+                modal.submit(function() {
+                    modal.close();
+                });
+                modal.loading('提交中');
+            }
+        }, {
+            text: '取消',
+            align: 'left',
+            method: function(modal) {
+                modal.close();
+            }
+        }],
+        content: '',
+        async: undefined,
+        iframeUrl: '',
+        event: {}
+    };
+
+    function Modal(opt) {
+        this.id = ID + (_mid++);
+        this.event = Event();
+        this.config = _.mix({}, defaults, opt);
+
+        body.append(tpl.format(TPL_MODAL, {id: this.id}));
+        this.node = $('#' + this.id);
+        this.title = this.node.find('.modal-title');
+        this.rightButton = this.node.find('.right-button');
+        this.leftButton = this.node.find('.left-button');
+        this.content = this.node.find('.modal-content');
+
+        this.set(this.config);
+    }
+
+    Modal.prototype = {
+        set: function(opt) {
+            var self = this;
+
+            this.config = _.mix(this.config, opt);
+
+            // Buttons
+            if (opt.buttons && opt.buttons.length > 0) {
+                opt.events = opt.events || {};
+                opt.buttons.forEach(function(btn) {
+                    var btnEvent = 'click .' + btn.align + '-button .btn';
+                    self[btn.align + 'Button'].html(function() {
+                        var btnType = btn.type !== undefined ?
+                                ('btn-' + btn.type) :  '';
+                        return tpl.format(TPL_BTN, {
+                            type: btnType,
+                            text: btn.text
+                        });
+                    });
+                    opt.events[btnEvent] = btn.method;
+                });
+            }
+
+            // Title
+            if (typeof opt.title === 'string') {
+                this.title.html(opt.title);
+            }
+
+            // Content
+            if (opt.async) {
+                var asyncOpt = _.mix({
+                        success: function(content, modal) {
+                            modal.set({'content': content});
+                        }
+                    }, opt.async);
+
+                asyncOpt.success = function(data) {
+                    asyncOpt.success(data, self);
+                };
+                net.ajax(asyncOpt);
+            } else if (opt.iframeUrl) {
+                //TODO
+            } else if (opt.content) {
+                this.content.empty().append($(opt.content));
+            }
+
+            // Events
+            this.bind(opt.events);
+
+            return this;
+        },
+        bind: function(events) {
+            uiproxy.bind(this.node, events);
+        },
+        unbind: function(events) {
+            uiproxy.unbind(this.node, events);
+        },
+        loading: function(opt) {
+            var text;
+            if (typeof opt === 'string') {
+                text = opt;
+                opt = null;
+            } else if (typeof opt == 'object') {
+                text = opt.text;
+            }
+            this.title.html(text + LOADING_DOTS);
+
+            return this;
+        },
+        open: function() {
+            //TODO: fx
+            this.node.appendTo(body).show();
+            this.event.fire('open', [this]);
+
+            return this;
+        },
+        close: function() {
+            //TODO: fx
+            this.node.hide();
+            this.event.fire('close', [this]);
+
+            return this;
+        },
+        destroy: function() {
+            this.node.remove();
+            this.event.fire('destroy', [this]);
+
+            return this;
+        },
+        submit: function(opt) {
+            var self = this,
+                form = this.node.find('form')[0],
+                success = _.isFunction(opt) ? opt : opt.success,
+                error = _.isFunction(opt) ? undefined : opt.error;
+
+            if (form === undefined) {
+                return;
+            }
+            net.ajax({
+                type: form.method,
+                data: $(form).serialize(),
+                success: success,
+                error: error
+            });
+
+            return this;
+        }
+    };
+
+    return function(opt) {
+        return new Modal(opt);
+    };
+});
+
+/* @source ../cardkit/view/modal.js */;
+
+define('cardkit/view/modal', [
+  "dollar",
+  "modal"
+], function($, Modal) {
+    var modal = Modal();
+
+    return modal;
+});
+
+/* @source ../cardkit/bus.js */;
+
+define("cardkit/bus", [
+  "eventmaster"
+], function(Event){
+
+    return Event();
+
+});
+
 /* @source ../cardkit/view.js */;
 
 define("cardkit/view", [
@@ -2875,9 +3357,10 @@ define("cardkit/view", [
   "mo/lang",
   "mo/template",
   "cardkit/bus",
+  "cardkit/view/modal",
   "iscroll-lite",
   "mo/domready"
-], function($, _, tpl, bus, iScroll){
+], function($, _, tpl, bus, modal, iScroll){
 
     var view = {
 
@@ -2889,6 +3372,10 @@ define("cardkit/view", [
                 viewport = this.viewport = $('.ck-viewport');
             this.piles = $('.ck-pile', viewport);
             this.cards = $('.ck-card', viewport);
+
+            if (header.length === 0) {
+                return;
+            }
 
             this.render();
 
@@ -2952,8 +3439,10 @@ define("cardkit/view", [
                 }
             });
         }
-    
+
     };
+
+    view.modal = modal;
 
     return view;
 
