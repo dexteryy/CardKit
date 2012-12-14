@@ -33,6 +33,7 @@ define([
             this.windowFullHeight = Infinity;
 
             this.render();
+            this.showTopbar();
 
             $(window).bind("popstate", function(e){
                 var loading = view.viewport[0].id === 'ckLoading';
@@ -45,9 +46,9 @@ define([
                         history.back();
                     } else if (loading) {
                         // from other page, need hide loading immediately
+                        view.showTopbar();
                         view.changeView($('#' + e.state.next));
                         view.loadingCard.hide();
-                        view.showTopbar();
                     } else if (e.state.prev === view.viewport[0].id) {
                         // forward from inner view
                         link_handler(e.state.next, e.state.link);
@@ -92,7 +93,6 @@ define([
             });
 
             this.hideAddressbar();
-            this.showTopbar();
             this.windowFullHeight = window.innerHeight;
 
             soviet(document, {
@@ -131,6 +131,7 @@ define([
             this.viewport = pile.show();
             pile.append(this.footer);
             this.updateSize();
+            pile[0].scrollTop = this.topbarEnable ? 0 : this.headerHeight;
         },
 
         updateSize: function(){
@@ -222,12 +223,12 @@ define([
             }
         }
         var current = view.viewport.addClass('ck-interim');
-        view.showTopbar();
         if (!is_forward) {
             push_history(current[0].id, next_id, true_link);
         }
         choreo.transform(next[0], 'translateX', window.innerWidth + 'px');
         next.addClass('ck-moving');
+        view.showTopbar();
         view.changeView(next);
         choreo().play().actor(next[0], {
             'transform': 'translateX(0)'
@@ -240,17 +241,16 @@ define([
                 } else {
                     location.href = true_link;
                 }
-            //} else {
             }
-            view.hideTopbar();
+            //view.hideTopbar();
         });
     }
 
     function back_handler(prev_id){
         var prev = $('#' + prev_id);
         var current = view.viewport.addClass('ck-moving');
-        view.showTopbar();
         prev.addClass('ck-interim');
+        view.showTopbar();
         view.changeView(prev);
         choreo().play().actor(current[0], {
             'transform': 'translateX(' + window.innerWidth + 'px)'
@@ -260,9 +260,8 @@ define([
             prev.removeClass('ck-interim');
             if (prev_id === 'ckLoading') {
                 history.back();
-            //} else {
             }
-            view.hideTopbar();
+            //view.hideTopbar();
         });
     }
 
