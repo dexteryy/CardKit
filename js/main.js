@@ -7,10 +7,7 @@ require.config({
     }
 });
 
-define('iscroll-lite.src', 'iscroll-lite.js');
-define('iscroll-lite', ['iscroll-lite.src'], function(){
-    return window.iScroll;
-});
+define('mo/mainloop', [], function(){});
 
 require([
     'dollar', 
@@ -19,7 +16,7 @@ require([
 
     app.setup({
         header: $('.ck-header'),
-        viewport: $('.ck-viewport')
+        wrapper: $('.ck-wrapper')
     });
 
 });

@@ -66,15 +66,15 @@ module.exports = function(grunt) {
             dist2serve: {
                 files: {
                     "<%= meta.jsServeDir %>/": ["<%= meta.distDir %>/js/**"],
-                    "<%= meta.cssServeDir %>/": ["<%= meta.distDir %>/css/**"],
-                    "<%= meta.picsServeDir %>/": ["<%= meta.distDir %>/pics/**"]
+                    "<%= meta.cssServeDir %>/": ["<%= meta.distDir %>/css/**"]
+                    //"<%= meta.picsServeDir %>/": ["<%= meta.distDir %>/pics/**"]
                 }
             },
             static2serve: {
                 files: {
                     "<%= meta.jsServeDir %>/": ["<%= meta.staticDir %>/js/**"],
-                    "<%= meta.cssServeDir %>/": ["<%= meta.staticDir %>/css/**"],
-                    "<%= meta.picsServeDir %>/": ["<%= meta.staticDir %>/pics/**"]
+                    "<%= meta.cssServeDir %>/": ["<%= meta.staticDir %>/css/**"]
+                    //"<%= meta.picsServeDir %>/": ["<%= meta.staticDir %>/pics/**"]
                 }
             }
         },

@@ -31,7 +31,12 @@ define("mo/lang", [], function(require, exports){
     }
         
     if (!_aproto.forEach) {
-        _aproto.forEach = oz._forEach;
+        _aproto.forEach = function(fn, sc){
+            for(var i = 0, l = this.length; i < l; i++){
+                if (i in this)
+                    fn.call(sc, this[i], i, this);
+            }
+        };
     }
 
     if (!_aproto.map) {
@@ -138,7 +143,11 @@ define("mo/lang", [], function(require, exports){
     }
 
     if (!Object.create) {
-        Object.create = oz._clone;
+        Object.create = function(obj) {
+            function NewObj(){}
+            NewObj.prototype = obj;
+            return new NewObj();
+        };
     }
 
     if (!Object.getPrototypeOf) {
@@ -173,8 +182,14 @@ define("mo/lang", [], function(require, exports){
     }
 
     exports.type = type;
-    exports.isFunction = oz._isFunction;
-    exports.isWindow = oz._isWindow;
+
+    exports.isFunction = function(obj) {
+        return _toString.call(obj) === "[object Function]";
+    };
+
+    exports.isWindow = function(obj) {
+        return "setInterval" in obj;
+    };
 
 	exports.isEmptyObject = function(obj) {
         for (var name in obj) {

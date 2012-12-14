@@ -1,13 +1,15 @@
 define([
     'mo/lang',
-    'cardkit/bus',
-    'cardkit/view'
+    './bus',
+    './view'
 ], function(_, bus, view){
 
     var app = {
 
         setup: function(opt){
+
             view.init(opt);
+
         }
     
     };
