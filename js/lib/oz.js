@@ -59,7 +59,7 @@ function define(name, deps, block){
     if (!block) {
         if (deps) {
             if (isArray(deps)) {
-                block = autofile(unifyname(name));
+                block = filesuffix(realname(basename(name)));
             } else {
                 block = deps;
                 deps = null;
@@ -78,6 +78,7 @@ function define(name, deps, block){
             }
         }
     }
+    name = name && realname(name);
     var mod = name && _config.mods[name];
     if (!_config.debug && mod && mod.name 
             && (is_remote && mod.loaded == 2 || mod.exports)) {
@@ -121,7 +122,7 @@ function define(name, deps, block){
 function require(deps, block, _self_mod) {
     if (typeof deps === 'string') {
         if (!block) {
-            return (_config.mods[unifyname(deps, _scope)] 
+            return (_config.mods[realname(basename(deps, _scope))] 
                 || {}).exports;
         }
         deps = [deps];
@@ -243,7 +244,7 @@ function exec(list){
                 default:
                     depObjs.push((
                         (_resets[mid] || []).pop() 
-                        || _config.mods[mid] 
+                        || _config.mods[realname(mid)] 
                         || {}
                     ).exports);
                     break;
@@ -283,7 +284,7 @@ function fetch(m, cb){
         if (m.deps && m.deps.length && delays[mname] !== 1) {
             delays[mname] = [m.deps.length, cb];
             m.deps.forEach(function(dep){
-                var d = _config.mods[dep];
+                var d = _config.mods[realname(dep)];
                 if (this[dep] !== 1 && d.url && d.loaded !== 2) {
                     if (!this[dep]) {
                         this[dep] = [];
@@ -302,7 +303,7 @@ function fetch(m, cb){
         observers = _scripts[url] = [[cb, m]];
         var true_url = /^\w+:\/\//.test(url) ? url 
             : (_config.enable_ozma && _config.distUrl || _config.baseUrl || '') 
-                + (_config.enableAutoSuffix ? truefile(url) : url);
+                + (_config.enableAutoSuffix ? namesuffix(url) : url);
         getScript.call(m.host || this, true_url, function(){
             forEach.call(observers, function(args){
                 args[0].call(args[1]);
@@ -338,29 +339,31 @@ function scan(m, file_mod, list){
     if (!m[0]) {
         return list;
     }
-    var history = list.history;
+    var deps,
+        history = list.history;
     if (!history) {
         history = list.history = {};
     }
-    var deps, dep, mid, plugin, truename;
     if (m[1]) {
         deps = m;
         m = false;
     } else {
-        mid = m[0];
-        plugin = _RE_PLUGIN.exec(mid);
+        var truename,
+            _mid = m[0],
+            plugin = _RE_PLUGIN.exec(_mid);
         if (plugin) {
-            mid = plugin[2];
+            _mid = plugin[2];
             plugin = plugin[1];
         }
+        var mid = realname(_mid);
         if (!_config.mods[mid] && !_builtin_mods[mid]) {
-            var true_mid = unifyname(mid, file_mod);
+            var true_mid = realname(basename(_mid, file_mod));
             if (mid !== true_mid) {
                 _config.mods[file_mod.url + ':' + mid] = true_mid;
                 mid = true_mid;
             }
             if (!_config.mods[true_mid]) {
-                define(true_mid, autofile(true_mid));
+                define(true_mid, filesuffix(true_mid));
             }
         }
         m = file_mod = _config.mods[mid];
@@ -427,7 +430,7 @@ function seek(block){
 
 function tidy(deps, m){
     forEach.call(deps.slice(), function(dep, i){
-        var true_mid = this[m.url + ':' + dep];
+        var true_mid = this[m.url + ':' + realname(dep)];
         if (typeof true_mid === 'string') {
             deps[i] = true_mid;
         }
@@ -442,6 +445,11 @@ function config(opt){
             }
             for (var j in opt[i]) {
                 _config[i][j] = opt[i][j];
+            }
+            var mods = _config.mods;
+            for (var k in mods) {
+                mods[k].name = realname(k);
+                mods[mods[k].name] = mods[k];
             }
         } else {
             _config[i] = opt[i];
@@ -463,28 +471,30 @@ function config(opt){
  * _yy_bak.pack.js 
  * _yy_bak.pack_pack.js
  */
-function truefile(file){
+function namesuffix(file){
     return file.replace(/(.+?)(_src.*)?(\.\w+)$/, function($0, $1, $2, $3){
         return $1 + ($2 && '_combo' || '_pack') + $3;
     });
 }
 
-function autofile(mid){
+function filesuffix(mid){
+    return _RE_SUFFIX.test(mid) ? mid : mid + '.js';
+}
+
+function realname(mid){
     var alias = _config.aliases;
     if (alias) {
         mid = mid.replace(_RE_ALIAS_IN_MID, function(e1, e2){
             return alias[e2] || (e2 + '/');
         });
     }
-    return _RE_SUFFIX.test(mid) ? mid : mid + '.js';
+    return mid;
 }
 
-function unifyname(mid, file_mod){
+function basename(mid, file_mod){
     var rel_path = _RE_RELPATH.exec(mid);
-    if (rel_path) { // resolve relative path in Module ID
-        if (file_mod) {
-            mid = (file_mod.url || '').replace(/[^\/]+$/, '') + rel_path[0];
-        }
+    if (rel_path && file_mod) { // resolve relative path in Module ID
+        mid = (file_mod.url || '').replace(/[^\/]+$/, '') + rel_path[0];
     }
     return resolvename(mid);
 }
@@ -551,15 +561,16 @@ function clone(obj) { // be careful of using `delete`
 }
 
 var oz = {
-    VERSION: '2.5.0',
+    VERSION: '2.5.1',
     define: define,
     require: require,
     config: config,
     seek: seek,
     fetch: fetch,
-    unifyname: unifyname,
-    autofile: autofile,
-    truefile: truefile,
+    realname: realname,
+    basename: basename,
+    filesuffix: filesuffix,
+    namesuffix: namesuffix,
     // non-core
     _getScript: getScript,
     _clone: clone,

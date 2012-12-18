@@ -1,14 +1,14 @@
 {
-    "name": "CardKit",
-    "title": "cardkit",
-    "description": "",
-    "version": "0.1.0",
-    "devDependencies": {
-        "node-istatic": ">=0.2.3",
-        "grunt": "~0.3.16",
-        "grunt-ozjs": ">=0.1.6",
-        "grunt-compass": ">=0.3.7",
-        "grunt-css": ">=0.3.2",
-        "grunt-contrib-copy": ">=0.3.2"
-    }
+  "name": "CardKit",
+  "title": "cardkit",
+  "description": "",
+  "version": "0.1.0",
+  "devDependencies": {
+    "grunt-istatic": ">=0.1.0",
+    "grunt": "0.3.17",
+    "grunt-ozjs": ">=0.1.7",
+    "grunt-css": ">=0.3.2",
+    "grunt-contrib-copy": ">=0.3.2",
+    "grunt-contrib-compass": "~0.1.0"
+  }
 }

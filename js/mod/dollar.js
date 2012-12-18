@@ -408,10 +408,11 @@ define("dollar", ["mo/lang"], function(_){
 
         unbind: event_access('remove'),
 
-        trigger: function(event){
-            if (typeof event == 'string') {
+        trigger: function(event, argv){
+            if (typeof event === 'string') {
                 event = Event(event);
             }
+            _.mix(event, argv);
             this.forEach(event.type == 'submit' 
                 && !event.defaultPrevented ? function(node){
                 node.submit();
@@ -548,10 +549,7 @@ define("dollar", ["mo/lang"], function(_){
                     ev.push([action, i, subject[i]]);
                 }
             } else if (!cb) {
-                this.forEach(function(node){
-                    node['on' + this] = null;
-                }, subject);
-                return this;
+                return this; // not support 'removeAllEventListener'
             } else {
                 ev.push([action, subject, cb]);
             }
@@ -574,8 +572,7 @@ define("dollar", ["mo/lang"], function(_){
             }
             _.mix(event, props);
         }
-        event.initEvent(type, bubbles, true, null, null, null, null, 
-            null, null, null, null, null, null, null, null);
+        event.initEvent(type, bubbles, true);
         return event;
     }
 
@@ -686,13 +683,14 @@ define("dollar", ["mo/lang"], function(_){
 
     // public static API
 
+    $.find = $;
     $.matchesSelector = matches_selector;
     $.createNodes = create_nodes;
     $.camelize = css_method;
     $.dasherize = css_prop;
     $.Event = Event;
 
-    $.VERSION = '1.0.1';
+    $.VERSION = '1.0.2';
 
     return $;
 
