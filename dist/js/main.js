@@ -673,6 +673,20 @@ define("mo/domready", [
     }
 });
 
+/* @source ../cardkit/view/modal.js */;
+
+define('cardkit/view/modal', [
+  "dollar",
+  "modal"
+], function($, Modal) {
+    var modal = Modal();
+
+    return modal;
+});
+
+/* autogeneration */
+define("../cardkit/view/modal", [], function(){});
+
 /* @source mo/lang.js */;
 
 /**
@@ -3427,8 +3441,9 @@ define("../cardkit/view", [
   "choreo",
   "../cardkit/bus",
   "../cardkit/pagesession",
+  "../cardkit/view/modal",
   "mo/domready"
-], function($, _, tpl, soviet, choreo, bus, pageSession){
+], function($, _, tpl, soviet, choreo, bus, pageSession, modal){
 
     var window = this,
         location = window.location,
@@ -3452,6 +3467,10 @@ define("../cardkit/view", [
             this.defaultCard = $('#ckDefault');
             this.headerHeight = this.header.height();
             this.windowFullHeight = Infinity;
+
+            if (header.length === 0) {
+                return;
+            }
 
             this.render();
             this.showTopbar();
@@ -3618,8 +3637,10 @@ define("../cardkit/view", [
                 }
             });
         }
-    
+
     };
+
+    view.modal = modal;
 
     function link_handler(next_id, true_link){
         var me, is_forward = typeof next_id === 'string';
@@ -3703,7 +3724,7 @@ define("../cardkit/view", [
 
 /* @source ../cardkit/app.js */;
 
-define("../cardkit/app", [
+define("cardkit/app", [
   "mo/lang",
   "../cardkit/bus",
   "../cardkit/view"

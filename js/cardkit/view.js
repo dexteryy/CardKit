@@ -6,8 +6,9 @@ define([
     'choreo',
     './bus',
     './pagesession',
+    './view/modal',
     'mo/domready'
-], function($, _, tpl, soviet, choreo, bus, pageSession){
+], function($, _, tpl, soviet, choreo, bus, pageSession, modal){
 
     var window = this,
         location = window.location,
@@ -31,6 +32,10 @@ define([
             this.defaultCard = $('#ckDefault');
             this.headerHeight = this.header.height();
             this.windowFullHeight = Infinity;
+
+            if (header.length === 0) {
+                return;
+            }
 
             this.render();
             this.showTopbar();
@@ -197,8 +202,10 @@ define([
                 }
             });
         }
-    
+
     };
+
+    view.modal = modal;
 
     function link_handler(next_id, true_link){
         var me, is_forward = typeof next_id === 'string';
