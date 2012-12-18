@@ -3417,62 +3417,18 @@ define("mo/template", [
 
 });
 
-/* @source mo/cookie.js */;
-
-/**
- * using AMD (Asynchronous Module Definition) API with OzJS
- * see http://ozjs.org for details
- *
- * Copyright (C) 2010-2012, Dexter.Yy, MIT License
- * vim: et:ts=4:sw=4:sts=4
- */
-define("mo/cookie", [], function(){
-
-    return function(win, n, v, op){
-        if(typeof win == "string") {
-            op = v;
-            v = n;
-            n = win;
-            win = window;
-        }
-        if(v !== undefined) {
-            op = op || {};
-            var date, expires = "";
-            if(op.expires) {
-                if(op.expires.constructor == Date) {
-                    date = op.expires;
-                } else {
-                    date = new Date();
-                    date.setTime(date.getTime() + (op.expires * 24 * 60 * 60 * 1000));
-                }
-                expires = '; expires=' + date.toGMTString();
-            }
-            var path = op.path ? '; path=' + op.path : '';
-            var domain = op.domain ? '; domain=' + op.domain : '';
-            var secure = op.secure ? '; secure' : '';
-            win.document.cookie = [n, '=', encodeURIComponent(v), expires, path, domain, secure].join('');
-        } else {
-            v = win.document.cookie.match( new RegExp( "(?:\\s|^)" + n + "\\=([^;]*)") );
-            return v ? decodeURIComponent(v[1]) : null;
-        }
-    };
-
-});
-
-
 /* @source ../cardkit/view.js */;
 
 define("../cardkit/view", [
   "dollar",
   "mo/lang",
-  "mo/cookie",
   "mo/template",
   "soviet",
   "choreo",
   "../cardkit/bus",
   "../cardkit/pagesession",
   "mo/domready"
-], function($, _, cookie, tpl, soviet, choreo, bus, pageSession){
+], function($, _, tpl, soviet, choreo, bus, pageSession){
 
     var window = this,
         location = window.location,
@@ -3482,7 +3438,7 @@ define("../cardkit/view", [
         SUPPORT_ORIENT = "orientation" in window && "onorientationchange" in window,
         SUPPORT_OVERFLOWSCROLL = "overflowScrolling" in body,
 
-        TPL_LOADING_CARD = '<div class="ck-pile" cktype="loading" id="ckLoading"><span>加载中...</span></div>';
+        TPL_LOADING_CARD = '<div class="ck-card" cktype="loading" id="ckLoading"><span>加载中...</span></div>';
 
     var view = {
 
@@ -3490,14 +3446,15 @@ define("../cardkit/view", [
             var wrapper = this.wrapper = opt.wrapper;
             this.header = opt.header,
             this.footer = $('.ck-footer', wrapper);
-            this.piles = $('.ck-pile', wrapper);
             this.cards = $('.ck-card', wrapper);
+            this.listContents = $('.ck-list', wrapper);
             this.loadingCard = $(TPL_LOADING_CARD).appendTo(wrapper);
             this.defaultCard = $('#ckDefault');
             this.headerHeight = this.header.height();
             this.windowFullHeight = Infinity;
 
             this.render();
+            this.showTopbar();
 
             $(window).bind("popstate", function(e){
                 var loading = view.viewport[0].id === 'ckLoading';
@@ -3510,9 +3467,9 @@ define("../cardkit/view", [
                         history.back();
                     } else if (loading) {
                         // from other page, need hide loading immediately
+                        view.showTopbar();
                         view.changeView($('#' + e.state.next));
                         view.loadingCard.hide();
-                        view.showTopbar();
                     } else if (e.state.prev === view.viewport[0].id) {
                         // forward from inner view
                         link_handler(e.state.next, e.state.link);
@@ -3557,7 +3514,6 @@ define("../cardkit/view", [
             });
 
             this.hideAddressbar();
-            this.showTopbar();
             this.windowFullHeight = window.innerHeight;
 
             soviet(document, {
@@ -3596,6 +3552,7 @@ define("../cardkit/view", [
             this.viewport = pile.show();
             pile.append(this.footer);
             this.updateSize();
+            pile[0].scrollTop = this.topbarEnable ? 0 : this.headerHeight;
         },
 
         updateSize: function(){
@@ -3644,18 +3601,20 @@ define("../cardkit/view", [
         },
 
         render: function(){
-            this.cards.find('.ck-link').forEach(function(item){
+            this.listContents.find('.ck-link').forEach(function(item){
                 item = $(item);
-                var target_id = item.attr('href').replace(/^.*#/, ''),
+                var target_id = (item.attr('href')
+                        .replace(location.href, '')
+                        .match(/^#(.+)/) || [])[1],
                     hd = $('#' + target_id).find('.ck-hd').html();
                 if (hd) {
                     item.html(hd.trim());
                 } else {
-                    //var card = item.parent().parent();
-                    //item.parent().remove();
-                    //if (!/\S/.test(card.html())) {
-                        //card.remove();
-                    //}
+                    var card = item.parent().parent();
+                    item.parent().remove();
+                    if (!/\S/.test(card.html())) {
+                        card.remove();
+                    }
                 }
             });
         }
@@ -3687,12 +3646,12 @@ define("../cardkit/view", [
             }
         }
         var current = view.viewport.addClass('ck-interim');
-        view.showTopbar();
         if (!is_forward) {
             push_history(current[0].id, next_id, true_link);
         }
         choreo.transform(next[0], 'translateX', window.innerWidth + 'px');
         next.addClass('ck-moving');
+        view.showTopbar();
         view.changeView(next);
         choreo().play().actor(next[0], {
             'transform': 'translateX(0)'
@@ -3705,17 +3664,16 @@ define("../cardkit/view", [
                 } else {
                     location.href = true_link;
                 }
-            //} else {
             }
-            view.hideTopbar();
+            //view.hideTopbar();
         });
     }
 
     function back_handler(prev_id){
         var prev = $('#' + prev_id);
         var current = view.viewport.addClass('ck-moving');
-        view.showTopbar();
         prev.addClass('ck-interim');
+        view.showTopbar();
         view.changeView(prev);
         choreo().play().actor(current[0], {
             'transform': 'translateX(' + window.innerWidth + 'px)'
@@ -3725,9 +3683,8 @@ define("../cardkit/view", [
             prev.removeClass('ck-interim');
             if (prev_id === 'ckLoading') {
                 history.back();
-            //} else {
             }
-            view.hideTopbar();
+            //view.hideTopbar();
         });
     }
 

@@ -193,7 +193,7 @@ a {
   overflow: hidden;
 }
 
-.ck-pile {
+.ck-card {
   width: 100%;
   padding-top: 42.5px;
   background: #f2f2f2;
@@ -207,21 +207,18 @@ a {
   -webkit-overflow-scrolling: touch;
   display: none;
 }
-.ck-pile .ck-card:first-child {
-  margin-top: 29px;
-}
-.ck-pile[cktype="loading"] {
+.ck-card[cktype="loading"] {
   font-size: 15px;
   color: #787878;
   text-align: center;
 }
-.ck-pile[cktype="loading"] span {
+.ck-card[cktype="loading"] span {
   display: block;
   height: 100%;
   padding-top: 50%;
 }
 
-.ck-card {
+.ck-box, .ck-list {
   margin: 15px;
   background-color: #fff;
   border: 1px solid white;
@@ -233,22 +230,12 @@ a {
   -moz-box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.3);
   box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.3);
 }
-.ck-card[data-ck-type="paper"] {
-  background: none;
-  border: none;
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
-  -ms-border-radius: 0;
-  border-radius: 0;
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
+
+.ck-text {
+  margin: 15px;
   -webkit-user-select: text;
   -moz-user-select: text;
   user-select: text;
-}
-.ck-card[data-ck-type="tile"] {
-  display: none;
 }
 
 .ck-item {

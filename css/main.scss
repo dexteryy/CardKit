@@ -145,7 +145,7 @@ a {
   overflow:hidden;
 }
 
-.ck-pile {
+.ck-card {
   width:100%;
   padding-top:$nav_height;
   background:#f2f2f2;
@@ -155,9 +155,9 @@ a {
   -webkit-overflow-scrolling: touch;
   display:none;
 
-  .ck-card:first-child {
-    margin-top:(58px/2);
-  }
+  //.ck-card:first-child {
+    //margin-top:(58px/2);
+  //}
 
   &[cktype="loading"] {
     font-size:$title_size;
@@ -174,33 +174,21 @@ a {
 
 }
 
-.ck-card {
+.ck-box {
   margin:$space;
   background-color:#fff;
   border:1px solid rgb(255,255,255);
   @include border-radius($radius);
   @include box-shadow(0px 1px 4px 0px rgba(0,0,0,0.3));
+}
 
-  &[data-ck-type="paper"] {
-    background:none;
-    border:none;
-    @include border-radius(0);
-    @include box-shadow(none);
-    @include user-select(text);
-  }
+.ck-list {
+  @extend .ck-box;
+}
 
-  &[data-ck-type="drawer"] {
-
-  }
-
-  &[data-ck-type="list"] {
-
-  }
-
-  &[data-ck-type="tile"] {
-    display:none;
-  }
-
+.ck-text {
+  margin:$space;
+  @include user-select(text);
 }
 
 .ck-item {

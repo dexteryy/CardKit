@@ -3438,7 +3438,7 @@ define("../cardkit/view", [
         SUPPORT_ORIENT = "orientation" in window && "onorientationchange" in window,
         SUPPORT_OVERFLOWSCROLL = "overflowScrolling" in body,
 
-        TPL_LOADING_CARD = '<div class="ck-pile" cktype="loading" id="ckLoading"><span>加载中...</span></div>';
+        TPL_LOADING_CARD = '<div class="ck-card" cktype="loading" id="ckLoading"><span>加载中...</span></div>';
 
     var view = {
 
@@ -3446,8 +3446,8 @@ define("../cardkit/view", [
             var wrapper = this.wrapper = opt.wrapper;
             this.header = opt.header,
             this.footer = $('.ck-footer', wrapper);
-            this.piles = $('.ck-pile', wrapper);
             this.cards = $('.ck-card', wrapper);
+            this.listContents = $('.ck-list', wrapper);
             this.loadingCard = $(TPL_LOADING_CARD).appendTo(wrapper);
             this.defaultCard = $('#ckDefault');
             this.headerHeight = this.header.height();
@@ -3601,18 +3601,20 @@ define("../cardkit/view", [
         },
 
         render: function(){
-            this.cards.find('.ck-link').forEach(function(item){
+            this.listContents.find('.ck-link').forEach(function(item){
                 item = $(item);
-                var target_id = item.attr('href').replace(/^.*#/, ''),
+                var target_id = (item.attr('href')
+                        .replace(location.href, '')
+                        .match(/^#(.+)/) || [])[1],
                     hd = $('#' + target_id).find('.ck-hd').html();
                 if (hd) {
                     item.html(hd.trim());
                 } else {
-                    //var card = item.parent().parent();
-                    //item.parent().remove();
-                    //if (!/\S/.test(card.html())) {
-                        //card.remove();
-                    //}
+                    var card = item.parent().parent();
+                    item.parent().remove();
+                    if (!/\S/.test(card.html())) {
+                        card.remove();
+                    }
                 }
             });
         }
