@@ -7,6 +7,7 @@ require.config({
     }
 });
 
+define('mo/lang/es5', [], function(){});
 define('mo/mainloop', [], function(){});
 
 require([

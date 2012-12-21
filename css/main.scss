@@ -16,8 +16,15 @@ $text_size: 22px/2;
 $hover_color: #3377aa;
 $notice_color: #df5001;
 
+$win_bgcolor: #666;
+$card_bgcolor: #f2f2f2;
+
 $space: 30px/2;
 $radius: 6px/2;
+
+$zindex_card: 10;
+$zindex_overlay: 100;
+$zindex_step: 10;
 
 $nav_height: 85px/2;
 
@@ -28,7 +35,7 @@ html {
 body {
   font:$text_size Helvetica,sans-serif;
   color:$text_color;
-  background:#666;
+  background:$win_bgcolor;
   line-height:1.7;
 }
 
@@ -40,6 +47,7 @@ a {
 
 .btn {
   display:inline-block;
+  padding:0;
   width: (160px/2);
   height: (56px/2);
   @include border-radius($radius);
@@ -65,90 +73,115 @@ a {
 
 }
 
-.btn.default {
-  border-color:#0C518C;
+.btn[data-default=true] {
+  background-color: #81858b;
+  border: solid 1px #9f9f9f;
   @include background-image(linear-gradient(bottom, #1366a4, #278cd7));
   color:#fff;
   @include text-shadow(0 1px #000);
 
   &:hover {
-    border-color:#0A5B97;
-    @include box-shadow(inset 0 2px 3px rgba(117,117,117,.51));
+    background-color: #81858b;
+    @include box-shadow(0 1px #fff, inset 0 2px 3px rgba(117,117,117,.51));
     @include background-image(linear-gradient(bottom, #1366a4, #278cd7));
   }
 
 }
 
-
 .ck-header {
-  position:fixed;
-  top:0;
-  left:0;
-  z-index:100;
-  width:100%;
-  background:#000;
+  z-index:$zindex_step;
   @include user-select(none);
-  @include transform(translateY(-$nav_height));
-  @include transition(transform 400ms ease-in-out);
-}
-
-.bigtext {
-  font-size: $big_size;
 }
 
 .ck-topbar {
   height: $nav_height;
   @include border-radius($radius $radius 0 0);
-  @include background(linear-gradient(bottom, #78624f, #846f5b));
   @include box-shadow(0 2px 3px rgba(0,0,0,.35), inset 0 1px #90806a);
+}
 
-  .ck-title {
-    font-size:$head_size;
-    color:#fff;
-    @include text-shadow(0px 1px 0px rgba(0,0,0,1));
-    line-height: $nav_height;
-    text-align:center;
-    display:block;
-    margin:0 $space + 40px;
+.ck-top-title {
+  font-size:$head_size;
+  line-height: $nav_height;
+  text-align:center;
+  display:block;
+  margin:0 $space + 40px;
+}
+
+.ck-baseview {
+  @include transform-origin(50% 0);
+  @include transition(transform 400ms ease-in-out 200ms);
+
+  .ck-header {
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    background:#000;
+    @include transform(translateY(-$nav_height));
+    @include transition(transform 400ms ease-in-out);
   }
 
-  $btn-size: 15px;
+  .ck-topbar {
+    @include background(linear-gradient(bottom, #78624f, #846f5b));
 
-  .ck-top-nav {
-    width:$btn-size;
-    height:$btn-size;
-    position:absolute;
-    top:$space;
-    left:$space;
-    @include box-shadow(inset 0px 0px 2px #000); // @TODO
-  }
+    $btn-size: 15px;
 
-  .ck-top-action {
-    @extend .ck-top-nav;
-    left:auto;
-    right:$space;
-    padding:0;
-    border:0;
-    background:none;
-  }
+    .ck-top-nav {
+      width:$btn-size;
+      height:$btn-size;
+      position:absolute;
+      top:$space;
+      left:$space;
+      @include box-shadow(inset 0px 0px 2px #000); // @TODO
+    }
 
-  .ck-top-search {
-    @extend .ck-top-action;
-    right:$space*2 + $btn-size;
+    .ck-top-title {
+      color:#fff;
+      @include text-shadow(0px 1px 0px rgba(0,0,0,1));
+    }
+
+    .ck-top-action {
+      @extend .ck-top-nav;
+      left:auto;
+      right:$space;
+      padding:0;
+      border:0;
+      background:none;
+    }
+
+    .ck-top-search {
+      @extend .ck-top-action;
+      right:$space*2 + $btn-size;
+    }
+
   }
 
 }
 
 .ck-wrapper {
-  background:#666;
+  //background:$win_bgcolor;
   width:100%;
   overflow:hidden;
+}
+
+.ck-footer {
+  height:15px;
+  padding:5px 0 15px 0;
+  background:$card_bgcolor;
+  text-align:center;
+  
+  .copyright {
+    font-size:$text_size;
+    color:$desc_color;
+    margin:5px 0;
+  }
+
 }
 
 .ck-card {
   width:100%;
   padding-top:$nav_height;
-  background:#f2f2f2;
+  background:$card_bgcolor;
   @include box-shadow(-3px 0px 10px 0px rgba(0,0,0,.35));
   @include user-select(none);
   overflow-y:auto;
@@ -172,6 +205,17 @@ a {
 
   }
 
+}
+
+.ck-interim {
+  position:absolute;
+  top:0;
+  left:0;
+}
+
+.ck-moving {
+  position:relative;
+  z-index:$zindex_card;
 }
 
 .ck-box {
@@ -246,27 +290,80 @@ a {
   @extend .btn:hover;
 }
 
-.ck-interim {
+.moui-modalview {
+  visibility:hidden;
   position:absolute;
   top:0;
   left:0;
-}
+  width:100%;
+  height:100%;
+  padding-top:50px;
+  z-index: $zindex_overlay + $zindex_step;
 
-.ck-moving {
-  position:relative;
-  z-index:10;
-}
+  .wrapper {
+    @include transform(translateY(0px));
+    @include transition(transform 400ms ease-in-out);
 
-.ck-footer {
-  height:15px;
-  padding:5px 0 15px 0;
-  background:#f2f2f2;
-  text-align:center;
-  
-  .copyright {
-    font-size:$text_size;
-    color:$desc_color;
-    margin:5px 0;
+    & > header {
+      @extend .ck-header;
+      position:relative;
+
+      & > div {
+        @extend .ck-topbar;
+        @include box-shadow(0 2px 3px rgba(0,0,0,.2)); 
+        @include background-image(linear-gradient(bottom, #dfdfdf, #fcfcfc));
+      }
+
+      h1 {
+        @extend .ck-top-title;
+      }
+
+      $padding: 15px/2;
+
+      div.confirm, div.cancel {
+        display:inline-block;
+        margin:$padding 0 0 $padding;
+        float:left;
+      }
+
+      div.confirm {
+        margin:$padding $padding 0 0;
+        float:right;
+      }
+
+      button {
+        @extend .btn;
+        width:55px;
+      }
+
+    }
+
   }
 
+  .shd {
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    opacity:0;
+    @include background-image(radial-gradient(rgba(127,127,127,0.5), rgba(0,0,0,0.7)));
+    @include transition(opacity 400ms ease-in-out);
+  }
+
+  &.active {
+    visibility:visible;
+
+    .shd {
+      opacity:1;
+    }
+
+  }
+
+}
+
+.moui-modalview-content {
+  overflow-y:scroll;
+  -webkit-overflow-scrolling: touch;
+  background:$card_bgcolor;
 }

@@ -12,10 +12,11 @@
  * vim: et:ts=4:sw=4:sts=4
  */
 define("choreo", [
-    "mo/lang", 
+    "mo/lang/es5", 
+    "mo/lang/mix", 
     "mo/mainloop", 
     "eventmaster"
-], function(_, mainloop, Event){
+], function(es5, _, mainloop, Event){
 
     var window = this,
         VENDORS = ['', 'Moz', 'webkit', 'ms', 'O'],

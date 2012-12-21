@@ -20,6 +20,42 @@ define([
 
         TPL_LOADING_CARD = '<div class="ck-card" cktype="loading" id="ckLoading"><span>加载中...</span></div>';
 
+    var tap_events = {
+
+        '.ck-link': link_handler,
+        '.ck-link *': link_handler,
+
+        '.ck-modal': function(){
+            var me = $(this),
+                target_id = me.data('target');
+            modal.set({
+                title: me.data('title'),
+                content: target_id ? $('#' + target_id).html() : undefined,
+                url: me.data('url')
+            }).open();
+        }
+    
+    };
+
+    modal.event.bind('open', function(modal){
+        var wph = window.innerHeight - 50,
+            h = Math.round(wph - view.headerHeight);
+        view.disableView = true;
+        view.showTopbar();
+        modal._wrapper.css('marginTop', wph + 'px');
+        modal._content.css('height', h + 'px');
+        choreo.transform(modal._wrapper[0], 'translateY', 0 - wph + 'px');
+        choreo.transform(view.header.parent()[0], 'scale', 0.75);
+        choreo.transform(view.header.parent()[0], 'translateY', '10px');
+    });
+
+    modal.event.bind('close', function(modal){
+        view.disableView = false;
+        choreo.transform(modal._wrapper[0], 'translateY', '0');
+        choreo.transform(view.header.parent()[0], 'scale', 1);
+        choreo.transform(view.header.parent()[0], 'translateY', '0');
+    });
+
     var view = {
 
         init: function(opt){
@@ -32,10 +68,6 @@ define([
             this.defaultCard = $('#ckDefault');
             this.headerHeight = this.header.height();
             this.windowFullHeight = Infinity;
-
-            if (header.length === 0) {
-                return;
-            }
 
             this.render();
             this.showTopbar();
@@ -94,7 +126,6 @@ define([
 
             $(window).bind('resize', function(e){
                 view.updateSize();
-                //console.info('resize', window.pageYOffset, window.scrollY, window.innerHeight);
             });
 
             this.hideAddressbar();
@@ -103,10 +134,7 @@ define([
             soviet(document, {
                 matchesSelector: true,
                 preventDefault: true
-            }).on('click', {
-                'a': link_handler,
-                'a *': link_handler
-            });
+            }).on('click', tap_events);
 
             var startY, currentY;
 
@@ -119,6 +147,9 @@ define([
             });
 
             $(body).bind('touchend', function(){
+                if (view.disableView) {
+                    return;
+                }
                 var direction = currentY - startY;
                 if (direction < -20) {
                     view.hideAddressbar();
@@ -144,7 +175,7 @@ define([
         },
 
         hideTopbar: function(){
-            if (this.topbarEnable) {
+            if (this.topbarEnable && !this.disableView) {
                 this.topbarEnable = false;
                 choreo.transform(view.header[0], 'translateY', '-' + this.headerHeight + 'px');
             }
@@ -201,11 +232,11 @@ define([
                     }
                 }
             });
-        }
+        },
+
+        modal: modal
 
     };
-
-    view.modal = modal;
 
     function link_handler(next_id, true_link){
         var me, is_forward = typeof next_id === 'string';

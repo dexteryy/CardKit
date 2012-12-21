@@ -1,8 +1,9 @@
-define('cardkit/view/modal', [
-    'dollar',
-    'modal'
-], function($, Modal) {
+define([
+    'moui/modalview'
+], function(Modal) {
+
     var modal = Modal();
 
     return modal;
+
 });

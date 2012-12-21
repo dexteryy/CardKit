@@ -9,9 +9,13 @@
  * Copyright (C) 2010-2012, Dexter.Yy, MIT License
  * vim: et:ts=4:sw=4:sts=4
  */
-define("eventmaster", ["mo/lang"], function(_){
+define("eventmaster", [
+    "mo/lang/es5",
+    "mo/lang/mix",
+    "mo/lang/struct"
+], function(es5, _, struct){
 
-    var fnQueue = _.fnQueue,
+    var fnQueue = struct.fnQueue,
         slice = Array.prototype.slice,
         pipes = ['notify', 'fire', 'error', 
             'resolve', 'reject', 'reset', 'disable', 'enable'];

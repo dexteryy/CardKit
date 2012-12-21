@@ -7,9 +7,15 @@
  * Copyright (C) 2010-2012, Dexter.Yy, MIT License
  * vim: et:ts=4:sw=4:sts=4
  */
-define('soviet', ['mo/lang', 'dollar'], function(_, $){
+define('soviet', [
+    "mo/lang/es5",
+    "mo/lang/mix",
+    "mo/lang/struct",
+    'dollar'
+], function(es5, _, struct, $){
 
-    var _matches_selector = $.find.matchesSelector,
+    var fnQueue = struct.fnQueue,
+        _matches_selector = $.find.matchesSelector,
         _default_config = {
             preventDefault: false,
             matchesSelector: false,
@@ -181,7 +187,7 @@ define('soviet', ['mo/lang', 'dollar'], function(_, $){
             lib[key] = handler;
         } else if (handler) {
             if (!old) {
-                old = lib[key] = _.FnQueue();
+                old = lib[key] = fnQueue();
             }
             old.push(handler);
         }
