@@ -10,11 +10,13 @@
 define('soviet', [
     "mo/lang/es5",
     "mo/lang/mix",
+    "mo/lang/type",
     "mo/lang/struct",
     'dollar'
-], function(es5, _, struct, $){
+], function(es5, _, type, struct, $){
 
     var fnQueue = struct.fnQueue,
+        isFunction = type.isFunction,
         _matches_selector = $.find.matchesSelector,
         _default_config = {
             preventDefault: false,
@@ -37,14 +39,18 @@ define('soviet', [
     Soviet.prototype = {
 
         on: function(event, selector, handler){
-            if (typeof selector !== 'string') {
+            if (isFunction(selector)) {
+                handler = selector;
+                selector = undefined;
+            }
+            if (typeof selector === 'object') {
                 for (var i in selector) {
                     this.on(event, i, selector[i]);
                 }
             } else {
                 var table = this.events[event];
                 if (!table) {
-                    this.target.bind(event, _handler.bind(this));
+                    this.target.bind(event, this.trigger.bind(this));
                     this.reset(event);
                     table = this.events[event];
                 }
@@ -55,12 +61,14 @@ define('soviet', [
         },
 
         off: function(event, selector, handler){
+            if (isFunction(selector)) {
+                handler = selector;
+                selector = undefined;
+            }
             var table = this.events[event];
-            if (table && selector) {
+            if (table) {
                 _accessor.call(this, table, selector,
                     handler, _remove_handler);
-            } else {
-                this.reset(event);
             }
             return this;
         },
@@ -122,7 +130,7 @@ define('soviet', [
 
         trigger: function(e){
             var self = this,
-                result = _run_handler(),
+                result,
                 t = e.target, 
                 locks = this.locks[e.type] || {},
                 table = this.events[e.type];
@@ -150,22 +158,16 @@ define('soviet', [
                     }
                 }
             }
+            if (table._self_) {
+                result = _run_handler.call(this, table._self_, t, e);
+            }
             return result;
         }
     
     };
 
-    function _handler(e){
-        var result = this.trigger(e);
-        if (result !== "NOMATCH") {
-            if (this.preventDefault && result === undefined) { 
-                e.preventDefault();
-            }
-            return result;
-        }
-    }
-
     function _run_handler(handler, t, e){
+        var result;
         if (handler) {
             if (this.trace) {
                 this.traceStack.unshift('<' + t.nodeName 
@@ -175,10 +177,12 @@ define('soviet', [
                     this.traceStack.pop();
                 }
             }
-            return handler.call(t, e);
-        } else {
-            return 'NOMATCH';
+            result = handler.call(t, e);
+            if (this.preventDefault && !result) { 
+                e.preventDefault();
+            }
         }
+        return result;
     }
 
     function _add_handler(lib, key, handler, override){
@@ -215,7 +219,9 @@ define('soviet', [
         if (override === undefined) {
             override = this.autoOverride;
         }
-        if (!this.matchesSelector) {
+        if (!selector) {
+            selector = '_self_';
+        } else if (!this.matchesSelector) {
             var prefix = (/^[\.#]/.exec(selector) || ['&'])[0];
             selector = selector.substr(prefix !== '&' ? 1 : 0);
             table = table[prefix];

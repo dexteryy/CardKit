@@ -83,14 +83,22 @@ define('moui/overlay', [
         },
 
         open: function() {
+            if (this.opened) {
+                return;
+            }
+            this.opened = true;
             this._node.appendTo(body).addClass('active');
             this.event.fire('open', [this]);
             return this;
         },
 
         close: function() {
-            this._node.removeClass('active');
+            if (!this.opened) {
+                return;
+            }
+            this.opened = false;
             this.event.fire('close', [this]);
+            this._node.removeClass('active');
             return this;
         },
 
@@ -103,7 +111,7 @@ define('moui/overlay', [
     };
 
     function exports(opt) {
-        return new Overlay(opt);
+        return new exports.Overlay(opt);
     }
 
     exports.Overlay = Overlay;

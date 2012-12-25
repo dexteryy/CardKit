@@ -12,8 +12,8 @@ define("mo/lang/oop", [
 
     var mix = _.mix;
 
-    function _apply(base, args){
-        return base.apply(this, args);
+    function _apply(base, self, args){
+        return base.apply(self, args);
     }
 
     exports.construct = function(base, mixes, factory){
@@ -26,7 +26,7 @@ define("mo/lang/oop", [
                 this.constructor = constructor;
                 this.superConstructor = function(){
                     _apply.prototype = base.prototype;
-                    var su = new _apply(base, arguments);
+                    var su = new _apply(base, self, arguments);
                     for (var i in su) {
                         if (!self[i]) {
                             self[i] = supr[i] = su[i];
