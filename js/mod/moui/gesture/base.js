@@ -1,13 +1,15 @@
 
 define('moui/gesture/base', [
-    'dollar',
-    'mo/lang'
-], function($, _){
+    'mo/lang/es5',
+    'mo/lang/type',
+    'mo/lang/mix'
+], function(es5, type, _){
 
-    var gid = 0;
+    var isFunction = type.isFunction,
+        gid = 0;
 
     function GestureBase(elm, opt, cb){
-        if (_.isFunction(opt)) {
+        if (isFunction(opt)) {
             cb = opt;
             opt = {};
         }
@@ -17,7 +19,7 @@ define('moui/gesture/base', [
         this.EVENTS.forEach(function(ev){
             this[ev] = ev + (cb ? '_' + eid : '');
         }, this.event);
-        this.node = $(elm);
+        this.node = elm;
         this._config = {
             event: this.EVENTS[0]
         };
@@ -42,7 +44,7 @@ define('moui/gesture/base', [
 
         enable: function(){
             var self = this;
-            self.node.bind(self.PRESS, 
+            self.bind(self.PRESS, 
                     self._press || (self._press = self.press.bind(self)))
                 .bind(self.MOVE, 
                     self._move || (self._move = self.move.bind(self)))
@@ -51,26 +53,32 @@ define('moui/gesture/base', [
                 .bind(self.RELEASE, 
                     self._release || (self._release = self.release.bind(self)));
             if (self._listener) {
-                self.node.bind(this.event[this._config.event], self._listener);
+                self.bind(this.event[this._config.event], self._listener);
             }
             return self;
         },
 
         disable: function(){
             var self = this;
-            self.node.unbind(self.PRESS, self._press)
+            self.unbind(self.PRESS, self._press)
                 .unbind(self.MOVE, self._move)
                 //.unbind(self.CANCEL, self._cancel)
                 .unbind(self.RELEASE, self._release);
             if (self._listener) {
-                self.node.unbind(this.event[this._config.event], self._listener);
+                self.unbind(this.event[this._config.event], self._listener);
             }
             return self;
         },
 
-        trigger: function(e, ev){
-            $(e.target).trigger(ev);
-        },
+        // implement
+
+        bind: nothing,
+
+        unbind: nothing,
+
+        trigger: nothing,
+
+        // extension
 
         press: nothing,
 

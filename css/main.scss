@@ -191,6 +191,10 @@ a {
 
 }
 
+.ck-raw {
+  display:none;
+}
+
 // ===========
 //  卡片
 // ===========
@@ -213,7 +217,9 @@ a {
   &.paper {
 
     .ck-text {
-      padding:0;
+      padding:(28px/2) 0;
+      border-bottom:1px solid $border_color;
+      //margin-bottom:40px;
     }
 
   }
@@ -244,7 +250,10 @@ a {
     display:block;
     //height:100%;
     padding:50% 0 50% 0;
-    margin:0;
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
   }
 
   .ck-footer * {
@@ -264,6 +273,7 @@ a {
 
 // 自定义模块
 .ck-box {
+  overflow:hidden;
   margin:$space;
   background-color:#fff;
   border:1px solid rgb(255,255,255);
@@ -281,6 +291,13 @@ a {
 
   p {
     margin:(50px/2) 0;
+  }
+
+  .ckd-hd {
+    font-size:$headtitle_size;
+    padding-bottom:10px;
+    border-bottom:1px solid $border_color;
+    margin-bottom:30px;
   }
 
 }
@@ -352,10 +369,6 @@ a {
 .ck-link {
   -webkit-touch-callout: inherit;
   @include user-select(none);
-}
-
-.ck-link-img {
-  @extend .ck-link;
 }
 
 .ck-modal {

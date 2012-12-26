@@ -47,7 +47,12 @@ module.exports = function(grunt) {
             }
         },
         oz: {
-        
+            main: {
+                jstemplate: {
+                    src: 'tpl/',
+                    dest: 'js/tpl/'
+                }
+            }
         },
         ozma: {
             main: {
@@ -136,6 +141,9 @@ module.exports = function(grunt) {
         }, {
             files: 'css/**/*.scss',
             tasks: 'compass copy:dist2serve'
+        }, {
+            files: 'tpl/**/*.tpl',
+            tasks: 'oz'
         }],
         jshint: {},
         uglify: {}
@@ -148,6 +156,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
     
     grunt.registerTask('default', [
+        'oz:main', 
         'ozma:main', 
         'compass:main',
         'concat',

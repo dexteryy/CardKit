@@ -21,7 +21,8 @@ define("mo/lang/oop", [
             factory = mixes;
         }
         var proto = Object.create(base.prototype),
-                constructor = function(){
+            supr = Object.create(base.prototype),
+            constructor = function(){
                 var self = this;
                 this.constructor = constructor;
                 this.superConstructor = function(){
@@ -38,9 +39,10 @@ define("mo/lang/oop", [
             };
         constructor.prototype = proto;
         if (mixes) {
-            mix(proto, mix.apply(this, mixes));
+            mixes = mix.apply(this, mixes);
+            mix(proto, mixes);
+            mix(supr, mixes);
         }
-        var supr = _.copy(proto);
         return constructor;
     };
 

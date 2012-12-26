@@ -228,6 +228,10 @@ a {
   margin: 5px 0;
 }
 
+.ck-raw {
+  display: none;
+}
+
 .ck-card {
   display: none;
   width: 100%;
@@ -242,7 +246,8 @@ a {
   margin-top: 57.5px;
 }
 .ck-card.paper .ck-text {
-  padding: 0;
+  padding: 14px 0;
+  border-bottom: 1px solid #dadada;
 }
 .ck-card.moving {
   position: absolute;
@@ -265,13 +270,17 @@ a {
 #ckLoading span {
   display: block;
   padding: 50% 0 50% 0;
-  margin: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
 }
 #ckLoading .ck-footer * {
   display: none;
 }
 
 .ck-box, .ck-list {
+  overflow: hidden;
   margin: 15px;
   background-color: #fff;
   border: 1px solid white;
@@ -296,6 +305,12 @@ a {
 .ck-text p {
   margin: 25px 0;
 }
+.ck-text .ckd-hd {
+  font-size: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #dadada;
+  margin-bottom: 30px;
+}
 
 .ck-list .ck-item {
   border-bottom: 1px solid #dadada;
@@ -303,7 +318,7 @@ a {
   padding: 8.5px 0;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
-.ck-list .ck-item .ck-link, .ck-list .ck-item .ck-link-img {
+.ck-list .ck-item .ck-link {
   padding: 6.5px 0;
   font-size: 15px;
   color: #252525;
@@ -321,7 +336,7 @@ a {
   margin: 0 10px;
   border: none;
 }
-.ck-list .ck-item:active .ck-link, .ck-list .ck-item:active .ck-link-img {
+.ck-list .ck-item:active .ck-link {
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   -ms-border-radius: 3px;
@@ -335,7 +350,7 @@ a {
   border-top: 1px solid #dadada;
 }
 
-.ck-link, .ck-link-img {
+.ck-link {
   -webkit-touch-callout: inherit;
   -webkit-user-select: none;
   -moz-user-select: none;

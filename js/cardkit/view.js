@@ -2,17 +2,21 @@ define([
     'dollar',
     'mo/lang',
     'mo/template',
+    'soviet',
+    'choreo',
+    'moui/gesture/base',
     'moui/gesture/tap',
     'moui/gesture/swipe',
     'moui/gesture/drag',
-    'soviet',
-    'choreo',
+    'moui/gesture/scroll',
     './bus',
     './pagesession',
     './view/parser',
     './view/modal',
     'mo/domready'
-], function($, _, tpl, tap, swipe, drag, soviet, choreo, bus, pageSession, htmlparser, modal){
+], function($, _, tpl, soviet, choreo, 
+    baseGeste, tapGeste, swipeGeste, dragGeste, scrollGeste, 
+    bus, pageSession, htmlparser, modal){
 
     var window = this,
         location = window.location,
@@ -22,6 +26,21 @@ define([
         SUPPORT_ORIENT = "orientation" in window && "onorientationchange" in window,
         SUPPORT_OVERFLOWSCROLL = "overflowScrolling" in body;
 
+    _.mix(baseGeste.GestureBase.prototype, {
+        bind: function(ev, handler){
+            $(this.node).bind(ev, handler);
+            return this;
+        },
+        unbind: function(ev, handler){
+            $(this.node).unbind(ev, handler);
+            return this;
+        },
+        trigger: function(e, ev){
+            $(e.target).trigger(ev);
+            return this;
+        }
+    });
+
     var tap_events = {
 
         'a': link_handler,
@@ -29,11 +48,13 @@ define([
 
         '.ck-modal': function(e){
             var me = $(this),
+                json_url = me.data('jsonUrl'),
                 target_id = me.data('target');
             view.openModal({
                 title: me.data('title'),
                 content: target_id ? $('#' + target_id).html() : undefined,
-                url: me.data('url')
+                url: me.data('url') || json_url,
+                urlType: json_url && 'json'
             });
         }
     
@@ -73,7 +94,8 @@ define([
             this.hideAddressbar();
             this.windowFullHeight = window.innerHeight;
 
-            tap(document, {});
+            tapGeste(document, {});
+            scrollGeste(document, {});
 
             soviet(document, {
                 matchesSelector: true,
@@ -83,39 +105,13 @@ define([
                 'a *': nothing
             }).on('tap', tap_events);
 
-            //soviet(document, {
-                //preventDefault: true
-            //}).on('doubletap', '.ck-link', function(){
-                //this.innerHTML = 'doubletap'
-            //}).on('hold', '.ck-link', function(){
-                //this.innerHTML = 'hold'
-            //}).on('tap', '.ck-link', function(){
-                //this.innerHTML = 'tap'
-            //});
-
-            var startY, currentY;
-
-            $(body).bind('touchstart', function(e){
-                startY = e.touches[0].clientY;
-            });
-
-            $(body).bind('touchmove', function(e){
-                currentY = e.touches[0].clientY;
-            });
-
-            $(body).bind('touchend', function(){
-                if (view.disableView) {
-                    return;
+            $(document).bind('scrolldown', function(e){
+                view.hideAddressbar();
+                if (view.viewport[0].scrollTop >= view.headerHeight) {
+                    view.hideTopbar();
                 }
-                var direction = currentY - startY;
-                if (direction < -20) {
-                    view.hideAddressbar();
-                    if (view.viewport[0].scrollTop >= view.headerHeight) {
-                        view.hideTopbar();
-                    }
-                } else if (direction > 0) {
-                    view.showTopbar();
-                }
+            }).bind('scrollup', function(e){
+                view.showTopbar();
             });
 
         },
@@ -128,7 +124,7 @@ define([
 
         initState: function(){
 
-            window.addEventListener("popstate", function(e){
+            $(window).bind("popstate", function(e){
                 var loading = view.viewport[0].id === 'ckLoading';
                 //alert(['pop', 
                  //e.state && [e.state.prev, e.state.next], 
@@ -160,7 +156,7 @@ define([
                     // back to other page, need show loading first
                     back_handler('ckLoading');
                 }
-            }, false);
+            });
 
             pageSession.init();
 

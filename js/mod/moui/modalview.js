@@ -98,9 +98,12 @@ define('moui/modalview', [
                 self.showLoading();
                 net.ajax({
                     url: opt.url,
-                    dataType: 'text',
-                    success: function(html){
-                        self.setContent(html);
+                    dataType: opt.urlType || 'text',
+                    success: function(data){
+                        if (opt.urlType === 'json') {
+                            data = data.html;
+                        }
+                        self.setContent(data);
                         self.hideLoading();
                     }
                 });

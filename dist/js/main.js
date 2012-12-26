@@ -1406,7 +1406,8 @@ define("mo/lang/oop", [
             factory = mixes;
         }
         var proto = Object.create(base.prototype),
-                constructor = function(){
+            supr = Object.create(base.prototype),
+            constructor = function(){
                 var self = this;
                 this.constructor = constructor;
                 this.superConstructor = function(){
@@ -1423,9 +1424,10 @@ define("mo/lang/oop", [
             };
         constructor.prototype = proto;
         if (mixes) {
-            mix(proto, mix.apply(this, mixes));
+            mixes = mix.apply(this, mixes);
+            mix(proto, mixes);
+            mix(supr, mixes);
         }
-        var supr = _.copy(proto);
         return constructor;
     };
 
@@ -1883,6 +1885,12 @@ define("dollar", [
                 : foreach_farg(this, str, 'textContent', function(node, str){
                     node.textContent = str;
                 });
+        },
+
+        clone: function(){
+            return this.map(function(node){
+                return node.cloneNode(true);
+            });
         },
 
         css: kv_access(function(node, name, value){
@@ -2837,9 +2845,12 @@ define('moui/modalview', [
                 self.showLoading();
                 net.ajax({
                     url: opt.url,
-                    dataType: 'text',
-                    success: function(html){
-                        self.setContent(html);
+                    dataType: opt.urlType || 'text',
+                    success: function(data){
+                        if (opt.urlType === 'json') {
+                            data = data.html;
+                        }
+                        self.setContent(data);
                         self.hideLoading();
                     }
                 });
@@ -2902,35 +2913,105 @@ define("../cardkit/view/modal", [
 
 });
 
+/* @source ../tpl/items.js */;
+
+define("../tpl/items", [], function(){
+
+    return {"template":"\n<ul>\n{% mod.items.forEach(function(item){ %}\n    <li class=\"ck-item\">\n        <a class=\"ck-link\" href=\"{%= item.href %}\">{%= item.title %}</a>\n        <span class=\"info\">{%= item.info %}</span>\n    </li>\n{% }); %}\n</ul>\n"}; 
+
+});
 /* @source ../cardkit/view/parser.js */;
 
 define("../cardkit/view/parser", [
   "dollar",
   "mo/lang",
-  "mo/template"
-], function($, _, tpl){
+  "mo/template",
+  "tpl/items"
+], function($, _, tpl, tpl_items){
     
     function exports(wrapper){
 
-        var cards = $('.ck-card', wrapper),
-            listContents = $('.ck-list', wrapper);
+        var raw = wrapper.find('.ck-raw'),
+            cards = wrapper.find('.ck-card'),
+            listContents = wrapper.find('.ck-list');
 
-        listContents.find('.ck-link').forEach(function(item){
-            item = $(item);
-            var target_id = (item.attr('href')
-                    .replace(location.href, '')
-                    .match(/^#(.+)/) || [])[1],
-                hd = $('#' + target_id).find('.ck-hd').html();
-            if (hd) {
-                item.html(hd.trim());
-            } else {
-                var card = item.parent().parent();
-                item.parent().remove();
-                if (!/\S/.test(card.html())) {
-                    card.remove();
+        wrapper.find('.ck-list').forEach(function(list){
+            list = $(list);
+            var source = get_source(list);
+            if (!source) {
+                list.find('.ck-item').forEach(function(item){
+                    item = $(item);
+                    var source = get_source(item);
+                    if (!source || !source[0]) {
+                        return;
+                    }
+                    var link = item.find('.ck-link');
+                    if (!link[0]) {
+                        link = source.find('.ckd-link').clone();
+                        link[0].className = 'ck-link';
+                        //link.append()
+                    } else {
+                        var hd = source.find('.ckd-hd').html();
+                        if (hd) {
+                            item.find('.ck-link').html(hd.trim());
+                        } else {
+                            item.remove();
+                        }
+                    }
+                });
+            } else if (source[0]) {
+                var items = source.find('.ckd-item').map(function(item){
+                    var link = $('.ckd-link', item),
+                        info = $('.ckd-info', item);
+                    return {
+                        href: link.attr('href'),
+                        title: link.text(),
+                        info: info.text()
+                    };
+                });
+                if (!items.length) {
+                    return;
                 }
+                list[0].innerHTML = tpl.convertTpl(tpl_items.template, {
+                    items: items
+                }, 'mod');
             }
         });
+
+        wrapper.find('.ck-text').forEach(render_content);
+
+        function render_content(mod){
+            mod = $(mod);
+            var source = get_source(mod);
+            if (!source) {
+                return mod.find('.ckd-content').forEach(render_content);
+            } else if (!source[0]) {
+                return;
+            }
+            var content = source.find('.ckd-content');
+            if (!content[0]) {
+                content = source.html();
+                if (!/<\w+/.test(content)) {
+                    return;
+                }
+            } else {
+                content = content.clone();
+            }
+            if (mod.hasClass('ck-text')) {
+                mod.empty().append(content);
+            } else {
+                mod.replaceWith(content);
+            }
+        }
+
+        function get_source(me){
+            var source_id = me.data('source');
+            if (!source_id) {
+                return false;
+            }
+            var source = raw.find('.' + source_id);
+            return source;
+        }
 
     }
 
@@ -2999,6 +3080,262 @@ define("../cardkit/bus", [
 ], function(Event){
 
     return Event();
+
+});
+
+/* @source moui/gesture/base.js */;
+
+
+define('moui/gesture/base', [
+  "mo/lang/es5",
+  "mo/lang/type",
+  "mo/lang/mix"
+], function(es5, type, _){
+
+    var isFunction = type.isFunction,
+        gid = 0;
+
+    function GestureBase(elm, opt, cb){
+        if (isFunction(opt)) {
+            cb = opt;
+            opt = {};
+        }
+        this._listener = cb;
+        var eid = cb && ++gid;
+        this.event = {};
+        this.EVENTS.forEach(function(ev){
+            this[ev] = ev + (cb ? '_' + eid : '');
+        }, this.event);
+        this.node = elm;
+        this._config = {
+            event: this.EVENTS[0]
+        };
+        this.config(opt);
+        this.enable();
+    }
+
+    GestureBase.prototype = {
+
+        PRESS: 'touchstart',
+        MOVE: 'touchmove',
+        RELEASE: 'touchend',
+        //CANCEL: 'touchcancel',
+
+        EVENTS: [],
+        DEFAULT_CONFIG: {},
+
+        config: function(opt){
+            _.merge(_.mix(this._config, opt), this.DEFAULT_CONFIG);
+            return this;
+        },
+
+        enable: function(){
+            var self = this;
+            self.bind(self.PRESS, 
+                    self._press || (self._press = self.press.bind(self)))
+                .bind(self.MOVE, 
+                    self._move || (self._move = self.move.bind(self)))
+                //.bind(self.CANCEL, 
+                    //self._cancel || (self._cancel = self.cancel.bind(self)))
+                .bind(self.RELEASE, 
+                    self._release || (self._release = self.release.bind(self)));
+            if (self._listener) {
+                self.bind(this.event[this._config.event], self._listener);
+            }
+            return self;
+        },
+
+        disable: function(){
+            var self = this;
+            self.unbind(self.PRESS, self._press)
+                .unbind(self.MOVE, self._move)
+                //.unbind(self.CANCEL, self._cancel)
+                .unbind(self.RELEASE, self._release);
+            if (self._listener) {
+                self.unbind(this.event[this._config.event], self._listener);
+            }
+            return self;
+        },
+
+        // implement
+
+        bind: nothing,
+
+        unbind: nothing,
+
+        trigger: nothing,
+
+        // extension
+
+        press: nothing,
+
+        move: nothing,
+
+        release: nothing,
+
+        cancel: nothing
+    
+    };
+
+    function nothing(){}
+
+    function exports(elm, opt, cb){
+        return new exports.GestureBase(elm, opt, cb);
+    }
+
+    exports.GestureBase = GestureBase;
+
+    return exports;
+
+});
+
+/* @source moui/gesture/scroll.js */;
+
+
+define('moui/gesture/scroll', [
+  "mo/lang",
+  "moui/gesture/base"
+], function(_, gesture){
+
+    var ScrollGesture = _.construct(gesture.GestureBase, function(elm, opt, cb){
+        this._startPos = { x: 0, y: 0 };
+        this._movePos = { x: 0, y: 0 };
+        return this.superConstructor(elm, opt, cb);
+    });
+
+    _.mix(ScrollGesture.prototype, {
+
+        EVENTS: ['scrolldown', 'scrollup'],
+        DEFAULT_CONFIG: {
+            'directThreshold': 20
+        },
+
+        press: function(e){
+            this._startTime = +new Date();
+            var t = e.touches[0];
+            this._startPos.y = t.clientY;
+            this._movePos.y = 0;
+        },
+
+        move: function(e){
+            var t = e.touches[0];
+            this._movePos.y = t.clientY;
+        },
+
+        release: function(e){
+            var self = this;
+            var d = self._movePos.y - self._startPos.y,
+                threshold = this._config.directThreshold;
+            if (d < 0 - threshold) {
+                self.trigger(e, self.event.scrolldown);
+            } else if (d > threshold) {
+                self.trigger(e, self.event.scrollup);
+            }
+        }
+    
+    });
+
+    function exports(elm, opt, cb){
+        return new exports.ScrollGesture(elm, opt, cb);
+    }
+
+    exports.ScrollGesture = ScrollGesture;
+
+    return exports;
+
+});
+
+/* @source moui/gesture/drag.js */;
+
+
+define('moui/gesture/drag', [
+  "mo/lang",
+  "moui/gesture/base"
+], function(_, gesture){
+
+});
+
+/* @source moui/gesture/swipe.js */;
+
+
+define('moui/gesture/swipe', [
+  "mo/lang",
+  "moui/gesture/base"
+], function(_, gesture){
+
+});
+
+/* @source moui/gesture/tap.js */;
+
+
+define('moui/gesture/tap', [
+  "mo/lang",
+  "moui/gesture/base"
+], function(_, gesture){
+
+    var TapGesture = _.construct(gesture.GestureBase, function(elm, opt, cb){
+        this._startPos = { x: 0, y: 0 };
+        this._movePos = { x: 0, y: 0 };
+        return this.superConstructor(elm, opt, cb);
+    });
+
+    _.mix(TapGesture.prototype, {
+
+        EVENTS: ['tap', 'doubletap', 'hold'],
+        DEFAULT_CONFIG: {
+            'tapRadius': 5,
+            'doubleTimeout': 300,
+            'holdThreshold': 500
+        },
+
+        press: function(e){
+            clearTimeout(this._doubleTimer);
+            this._startTime = +new Date();
+            var t = e.touches[0];
+            this._startPos.x = t.clientX;
+            this._startPos.y = t.clientY;
+            this._movePos.x = this._movePos.y = NaN;
+        },
+
+        move: function(e){
+            var t = e.touches[0];
+            this._movePos.x = t.clientX;
+            this._movePos.y = t.clientY;
+        },
+
+        release: function(e){
+            var self = this,
+                is_double = self._isDouble,
+                d = +new Date();
+            self._isDouble = false;
+            if (Math.abs(self._movePos.x - self._startPos.x) > self._config.tapRadius
+                    || Math.abs(self._movePos.y - self._startPos.y) > self._config.tapRadius) {
+                return;
+            }
+            if (d - self._startTime > self._config.holdThreshold) {
+                self.trigger(e, self.event.hold);
+            } else {
+                if (is_double) {
+                    self.trigger(e, self.event.doubletap);
+                } else {
+                    self.trigger(e, self.event.tap);
+                    self._isDouble = true;
+                    self._doubleTimer = setTimeout(function(){
+                        self._isDouble = false;
+                    }, 300);
+                }
+            }
+        }
+    
+    });
+
+    function exports(elm, opt, cb){
+        return new exports.TapGesture(elm, opt, cb);
+    }
+
+    exports.TapGesture = TapGesture;
+
+    return exports;
 
 });
 
@@ -4083,217 +4420,27 @@ define('soviet', [
 
 });
 
-/* @source moui/gesture/base.js */;
-
-
-define('moui/gesture/base', [
-  "dollar",
-  "mo/lang"
-], function($, _){
-
-    var gid = 0;
-
-    function GestureBase(elm, opt, cb){
-        if (_.isFunction(opt)) {
-            cb = opt;
-            opt = {};
-        }
-        this._listener = cb;
-        var eid = cb && ++gid;
-        this.event = {};
-        this.EVENTS.forEach(function(ev){
-            this[ev] = ev + (cb ? '_' + eid : '');
-        }, this.event);
-        this.node = $(elm);
-        this._config = {
-            event: this.EVENTS[0]
-        };
-        this.config(opt);
-        this.enable();
-    }
-
-    GestureBase.prototype = {
-
-        PRESS: 'touchstart',
-        MOVE: 'touchmove',
-        RELEASE: 'touchend',
-        //CANCEL: 'touchcancel',
-
-        EVENTS: [],
-        DEFAULT_CONFIG: {},
-
-        config: function(opt){
-            _.merge(_.mix(this._config, opt), this.DEFAULT_CONFIG);
-            return this;
-        },
-
-        enable: function(){
-            var self = this;
-            self.node.bind(self.PRESS, 
-                    self._press || (self._press = self.press.bind(self)))
-                .bind(self.MOVE, 
-                    self._move || (self._move = self.move.bind(self)))
-                //.bind(self.CANCEL, 
-                    //self._cancel || (self._cancel = self.cancel.bind(self)))
-                .bind(self.RELEASE, 
-                    self._release || (self._release = self.release.bind(self)));
-            if (self._listener) {
-                self.node.bind(this.event[this._config.event], self._listener);
-            }
-            return self;
-        },
-
-        disable: function(){
-            var self = this;
-            self.node.unbind(self.PRESS, self._press)
-                .unbind(self.MOVE, self._move)
-                //.unbind(self.CANCEL, self._cancel)
-                .unbind(self.RELEASE, self._release);
-            if (self._listener) {
-                self.node.unbind(this.event[this._config.event], self._listener);
-            }
-            return self;
-        },
-
-        trigger: function(e, ev){
-            $(e.target).trigger(ev);
-        },
-
-        press: nothing,
-
-        move: nothing,
-
-        release: nothing,
-
-        cancel: nothing
-    
-    };
-
-    function nothing(){}
-
-    function exports(elm, opt, cb){
-        return new exports.GestureBase(elm, opt, cb);
-    }
-
-    exports.GestureBase = GestureBase;
-
-    return exports;
-
-});
-
-/* @source moui/gesture/drag.js */;
-
-
-define('moui/gesture/drag', [
-  "mo/lang",
-  "moui/gesture/base"
-], function(_, gesture){
-
-});
-
-/* @source moui/gesture/swipe.js */;
-
-
-define('moui/gesture/swipe', [
-  "mo/lang",
-  "moui/gesture/base"
-], function(_, gesture){
-
-});
-
-/* @source moui/gesture/tap.js */;
-
-
-define('moui/gesture/tap', [
-  "mo/lang",
-  "moui/gesture/base"
-], function(_, gesture){
-
-    var TapGesture = _.construct(gesture.GestureBase, function(elm, opt, cb){
-        this._startPos = { x: 0, y: 0 };
-        this._movePos = { x: 0, y: 0 };
-        return this.superConstructor(elm, opt, cb);
-    });
-
-    _.mix(TapGesture.prototype, {
-
-        EVENTS: ['tap', 'doubletap', 'hold'],
-        DEFAULT_CONFIG: {
-            'tapRadius': 20,
-            'doubleTimeout': 300,
-            'holdThreshold': 500
-        },
-
-        press: function(e){
-            clearTimeout(this._doubleTimer);
-            this._startTime = +new Date();
-            var t = e.touches[0];
-            this._startPos.x = t.screenX;
-            this._startPos.y = t.screenY;
-            this._movePos.x = 0;
-            this._movePos.y = 0;
-        },
-
-        move: function(e){
-            var t = e.touches[0];
-            this._movePos.x = t.screenX;
-            this._movePos.y = t.screenY;
-        },
-
-        release: function(e){
-            var self = this,
-                is_double = self._isDouble,
-                d = +new Date();
-            self._isDouble = false;
-            if (self._movePos.x - self._startPos.x > self._config.tapRadius
-                    || self._movePos.y - self._startPos.y > self._config.tapRadius) {
-                return;
-            }
-            if (d - self._startTime > self._config.holdThreshold) {
-                self.trigger(e, self.event.hold);
-            } else {
-                if (is_double) {
-                    self.trigger(e, self.event.doubletap);
-                } else {
-                    self.trigger(e, self.event.tap);
-                    self._isDouble = true;
-                    self._doubleTimer = setTimeout(function(){
-                        self._isDouble = false;
-                    }, 300);
-                }
-            }
-        }
-    
-    });
-
-    function exports(elm, opt, cb){
-        return new exports.TapGesture(elm, opt, cb);
-    }
-
-    exports.TapGesture = TapGesture;
-
-
-    return exports;
-
-});
-
 /* @source ../cardkit/view.js */;
 
 define("../cardkit/view", [
   "dollar",
   "mo/lang",
   "mo/template",
+  "soviet",
+  "choreo",
+  "moui/gesture/base",
   "moui/gesture/tap",
   "moui/gesture/swipe",
   "moui/gesture/drag",
-  "soviet",
-  "choreo",
+  "moui/gesture/scroll",
   "../cardkit/bus",
   "../cardkit/pagesession",
   "../cardkit/view/parser",
   "../cardkit/view/modal",
   "mo/domready"
-], function($, _, tpl, tap, swipe, drag, soviet, choreo, bus, pageSession, htmlparser, modal){
+], function($, _, tpl, soviet, choreo, 
+    baseGeste, tapGeste, swipeGeste, dragGeste, scrollGeste, 
+    bus, pageSession, htmlparser, modal){
 
     var window = this,
         location = window.location,
@@ -4303,6 +4450,21 @@ define("../cardkit/view", [
         SUPPORT_ORIENT = "orientation" in window && "onorientationchange" in window,
         SUPPORT_OVERFLOWSCROLL = "overflowScrolling" in body;
 
+    _.mix(baseGeste.GestureBase.prototype, {
+        bind: function(ev, handler){
+            $(this.node).bind(ev, handler);
+            return this;
+        },
+        unbind: function(ev, handler){
+            $(this.node).unbind(ev, handler);
+            return this;
+        },
+        trigger: function(e, ev){
+            $(e.target).trigger(ev);
+            return this;
+        }
+    });
+
     var tap_events = {
 
         'a': link_handler,
@@ -4310,11 +4472,13 @@ define("../cardkit/view", [
 
         '.ck-modal': function(e){
             var me = $(this),
+                json_url = me.data('jsonUrl'),
                 target_id = me.data('target');
             view.openModal({
                 title: me.data('title'),
                 content: target_id ? $('#' + target_id).html() : undefined,
-                url: me.data('url')
+                url: me.data('url') || json_url,
+                urlType: json_url && 'json'
             });
         }
     
@@ -4354,7 +4518,8 @@ define("../cardkit/view", [
             this.hideAddressbar();
             this.windowFullHeight = window.innerHeight;
 
-            tap(document, {});
+            tapGeste(document, {});
+            scrollGeste(document, {});
 
             soviet(document, {
                 matchesSelector: true,
@@ -4364,39 +4529,13 @@ define("../cardkit/view", [
                 'a *': nothing
             }).on('tap', tap_events);
 
-            //soviet(document, {
-                //preventDefault: true
-            //}).on('doubletap', '.ck-link', function(){
-                //this.innerHTML = 'doubletap'
-            //}).on('hold', '.ck-link', function(){
-                //this.innerHTML = 'hold'
-            //}).on('tap', '.ck-link', function(){
-                //this.innerHTML = 'tap'
-            //});
-
-            var startY, currentY;
-
-            $(body).bind('touchstart', function(e){
-                startY = e.touches[0].clientY;
-            });
-
-            $(body).bind('touchmove', function(e){
-                currentY = e.touches[0].clientY;
-            });
-
-            $(body).bind('touchend', function(){
-                if (view.disableView) {
-                    return;
+            $(document).bind('scrolldown', function(e){
+                view.hideAddressbar();
+                if (view.viewport[0].scrollTop >= view.headerHeight) {
+                    view.hideTopbar();
                 }
-                var direction = currentY - startY;
-                if (direction < -20) {
-                    view.hideAddressbar();
-                    if (view.viewport[0].scrollTop >= view.headerHeight) {
-                        view.hideTopbar();
-                    }
-                } else if (direction > 0) {
-                    view.showTopbar();
-                }
+            }).bind('scrollup', function(e){
+                view.showTopbar();
             });
 
         },
@@ -4409,7 +4548,7 @@ define("../cardkit/view", [
 
         initState: function(){
 
-            window.addEventListener("popstate", function(e){
+            $(window).bind("popstate", function(e){
                 var loading = view.viewport[0].id === 'ckLoading';
                 //alert(['pop', 
                  //e.state && [e.state.prev, e.state.next], 
@@ -4441,7 +4580,7 @@ define("../cardkit/view", [
                     // back to other page, need show loading first
                     back_handler('ckLoading');
                 }
-            }, false);
+            });
 
             pageSession.init();
 
@@ -4660,6 +4799,7 @@ require.config({
     baseUrl: 'js/mod/',
     distUrl: 'dist/js/mod/',
     aliases: {
+        'tpl': '../tpl/',
         'cardkit': '../cardkit/'
     }
 });

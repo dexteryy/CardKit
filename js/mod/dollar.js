@@ -299,6 +299,12 @@ define("dollar", [
                 });
         },
 
+        clone: function(){
+            return this.map(function(node){
+                return node.cloneNode(true);
+            });
+        },
+
         css: kv_access(function(node, name, value){
             var prop = css_prop(name);
             if (!value && value !== 0) {

@@ -14,7 +14,7 @@ define('moui/gesture/tap', [
 
         EVENTS: ['tap', 'doubletap', 'hold'],
         DEFAULT_CONFIG: {
-            'tapRadius': 20,
+            'tapRadius': 5,
             'doubleTimeout': 300,
             'holdThreshold': 500
         },
@@ -23,16 +23,15 @@ define('moui/gesture/tap', [
             clearTimeout(this._doubleTimer);
             this._startTime = +new Date();
             var t = e.touches[0];
-            this._startPos.x = t.screenX;
-            this._startPos.y = t.screenY;
-            this._movePos.x = 0;
-            this._movePos.y = 0;
+            this._startPos.x = t.clientX;
+            this._startPos.y = t.clientY;
+            this._movePos.x = this._movePos.y = NaN;
         },
 
         move: function(e){
             var t = e.touches[0];
-            this._movePos.x = t.screenX;
-            this._movePos.y = t.screenY;
+            this._movePos.x = t.clientX;
+            this._movePos.y = t.clientY;
         },
 
         release: function(e){
@@ -40,8 +39,8 @@ define('moui/gesture/tap', [
                 is_double = self._isDouble,
                 d = +new Date();
             self._isDouble = false;
-            if (self._movePos.x - self._startPos.x > self._config.tapRadius
-                    || self._movePos.y - self._startPos.y > self._config.tapRadius) {
+            if (Math.abs(self._movePos.x - self._startPos.x) > self._config.tapRadius
+                    || Math.abs(self._movePos.y - self._startPos.y) > self._config.tapRadius) {
                 return;
             }
             if (d - self._startTime > self._config.holdThreshold) {
@@ -66,7 +65,6 @@ define('moui/gesture/tap', [
     }
 
     exports.TapGesture = TapGesture;
-
 
     return exports;
 
