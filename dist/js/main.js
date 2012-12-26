@@ -4350,7 +4350,7 @@ define("../cardkit/view", [
 
 /* @source ../cardkit/app.js */;
 
-define("../cardkit/app", [
+define("cardkit/app", [
   "mo/lang",
   "../cardkit/bus",
   "../cardkit/view"
