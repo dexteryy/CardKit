@@ -1,14 +1,17 @@
 
 module.exports = function(grunt) {
 
+    //TODO: change the following variable to your shire_for_mobile directory
+    var shireForMobileDir = '/Users/dexteryy/code/douban/vagrant/shire-git/'
+
     grunt.initConfig({
         pkg: '<json:package.json>',
         meta: {
             distDir: 'dist',
             staticDir: 'static',
-            jsServeDir: '/Users/dexteryy/code/douban/vagrant/shire-git/static/js/cardkit',
-            cssServeDir: '/Users/dexteryy/code/douban/vagrant/shire-git/static/css/cardkit',
-            picsServeDir: '/Users/dexteryy/code/douban/vagrant/shire-git/pics/cardkit'
+            jsServeDir: shireForMobileDir + 'static/js/cardkit',
+            cssServeDir: shireForMobileDir + 'static/css/cardkit',
+            picsServeDir: shireForMobileDir + 'pics/cardkit'
         },
         istatic: {
             main: {
