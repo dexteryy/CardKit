@@ -5,3 +5,4 @@ syncdb_dumps.bak
 .statictmp
 node_modules/
 .sass-cache/
+grunt.js

@@ -134,10 +134,6 @@ a {
 
 .ck-header, .moui-modalview .wrapper > header {
   height: 42.5px;
-  -webkit-border-radius: 3px 3px 0 0;
-  -moz-border-radius: 3px 3px 0 0;
-  -ms-border-radius: 3px 3px 0 0;
-  border-radius: 3px 3px 0 0;
   -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.35);
   -moz-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.35);
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.35);
@@ -216,9 +212,8 @@ a {
 }
 
 .ck-footer {
-  display: none;
   height: 15px;
-  padding: 5px 0 15px 0;
+  padding: 25px 0 15px 0;
   background: #f2f2f2;
   text-align: center;
 }
@@ -270,7 +265,10 @@ a {
 #ckLoading span {
   display: block;
   padding: 50% 0 50% 0;
-  margin: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
 }
 #ckLoading .ck-footer * {
   display: none;
@@ -310,6 +308,7 @@ a {
 }
 
 .ck-list .ck-item {
+  position: relative;
   border-bottom: 1px solid #dadada;
   margin: 0 20px;
   padding: 8.5px 0;
@@ -346,6 +345,20 @@ a {
 .ck-list .ck-item:active + .ck-item {
   border-top: 1px solid #dadada;
 }
+.ck-list .ck-item:active .info {
+  color: #fff;
+  right: 10px;
+  background: #3377aa;
+}
+.ck-list .ck-item .info {
+  position: absolute;
+  right: 0;
+  top: 12.5px;
+  font-size: 11px;
+  color: #787878;
+  padding: 6.5px 0;
+  background: #fff;
+}
 
 .ck-link {
   -webkit-touch-callout: inherit;
@@ -375,6 +388,10 @@ a {
 }
 .moui-modalview .wrapper > header {
   position: relative;
+  -webkit-border-radius: 3px 3px 0 0;
+  -moz-border-radius: 3px 3px 0 0;
+  -ms-border-radius: 3px 3px 0 0;
+  border-radius: 3px 3px 0 0;
   -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
   -moz-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
