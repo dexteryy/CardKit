@@ -8,7 +8,8 @@
 2. ruby gem: sass, animate-sass, compass
 
 ### 仓库
-[shire-for-mobile](http://code.dapps.douban.com/shire_for_mobile)，像shire一样进行配置，推荐[vagrant](http://dou.bz/siv)
+[shire-for-mobile](http://code.dapps.douban.com/shire_for_mobile)，像shire一样进行配置，推荐[vagrant](http://dou.bz/siv)。
+
 切换到mobileapp分支，进行日常开发。master仅用作和[shire](http://svn.douban.com/svn/shire)进行同步。
 
 ### 准备工作
