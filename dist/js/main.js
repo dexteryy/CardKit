@@ -2920,7 +2920,7 @@ define("../cardkit/view/modal", [
 
 /* @source ../tpl/items.js */;
 
-define("../tpl/items", [], function(){
+define("tpl/items", [], function(){
 
     return {"template":"\n<ul>\n{% mod.items.forEach(function(item){ %}\n    <li class=\"ck-item\">\n        <a class=\"ck-link\" href=\"{%= item.href %}\">{%= item.title %}</a>\n        <span class=\"info\">{%= item.info %}</span>\n    </li>\n{% }); %}\n</ul>\n"}; 
 
@@ -4825,7 +4825,7 @@ define("../cardkit/view", [
 
 /* @source ../cardkit/app.js */;
 
-define("../cardkit/app", [
+define("cardkit/app", [
   "mo/lang",
   "../cardkit/bus",
   "../cardkit/view"
