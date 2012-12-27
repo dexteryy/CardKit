@@ -114,6 +114,59 @@ define([
                 view.showTopbar();
             });
 
+            var _startY, 
+                _prevent_down_inited,
+                _prevent_up_inited;
+
+            $(document).bind('touchstart', function(e){
+                var t = e.touches[0], 
+                    _prevented,
+                    vp = view.viewport[0];
+                _startY = t.clientY;
+                if (vp.scrollTop + vp.offsetHeight >= vp.scrollHeight
+                        && !_prevent_up_inited) {
+                    $(document).bind('touchmove', prevent_up);
+                    _prevent_up_inited = true;
+                    _prevented = true;
+                }
+                if (vp.scrollTop <= 0 && !_prevent_down_inited) {
+                    $(document).bind('touchmove', prevent_down);
+                    _prevent_down_inited = true;
+                    _prevented = true;
+                }
+                if (!_prevented){
+                    $(document).unbind('touchmove', prevent_up);
+                    $(document).unbind('touchmove', prevent_down);
+                    _prevent_down_inited = false;
+                    _prevent_up_inited = false;
+                }
+            });
+
+            function prevent_up(e){
+                var t = e.touches[0];
+                if (t.clientY <= _startY) {
+                    confirm('[待实现]要显示地址栏么？', function(){
+                        view.viewport[0].scrollTop = 100;
+                    });
+                    e.preventDefault();
+                } else {
+                    $(document).unbind('touchmove', prevent_up);
+                    _prevent_up_inited = false;
+                }
+            }
+            function prevent_down(e){
+                var t = e.touches[0];
+                if (t.clientY >= _startY) {
+                    confirm('[待实现]要立刻返回顶部么？', function(){
+                    
+                    });
+                    e.preventDefault();
+                } else {
+                    $(document).unbind('touchmove', prevent_down);
+                    _prevent_down_inited = false;
+                }
+            }
+
         },
 
         render: function(){

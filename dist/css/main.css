@@ -134,10 +134,6 @@ a {
 
 .ck-header, .moui-modalview .wrapper > header {
   height: 42.5px;
-  -webkit-border-radius: 3px 3px 0 0;
-  -moz-border-radius: 3px 3px 0 0;
-  -ms-border-radius: 3px 3px 0 0;
-  border-radius: 3px 3px 0 0;
   -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.35);
   -moz-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.35);
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.35);
@@ -378,6 +374,10 @@ a {
 }
 .moui-modalview .wrapper > header {
   position: relative;
+  -webkit-border-radius: 3px 3px 0 0;
+  -moz-border-radius: 3px 3px 0 0;
+  -ms-border-radius: 3px 3px 0 0;
+  border-radius: 3px 3px 0 0;
   -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
   -moz-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);

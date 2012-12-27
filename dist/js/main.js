@@ -1405,6 +1405,11 @@ define("mo/lang/oop", [
         if (mixes && !Array.isArray(mixes)) {
             factory = mixes;
         }
+        if (!factory) {
+            factory = function(){
+                this.superConstructor.apply(this, arguments);
+            };
+        }
         var proto = Object.create(base.prototype),
             supr = Object.create(base.prototype),
             constructor = function(){
@@ -3197,11 +3202,7 @@ define('moui/gesture/scroll', [
   "moui/gesture/base"
 ], function(_, gesture){
 
-    var ScrollGesture = _.construct(gesture.GestureBase, function(elm, opt, cb){
-        this._startPos = { x: 0, y: 0 };
-        this._movePos = { x: 0, y: 0 };
-        return this.superConstructor(elm, opt, cb);
-    });
+    var ScrollGesture = _.construct(gesture.GestureBase);
 
     _.mix(ScrollGesture.prototype, {
 
@@ -3211,20 +3212,19 @@ define('moui/gesture/scroll', [
         },
 
         press: function(e){
-            this._startTime = +new Date();
             var t = e.touches[0];
-            this._startPos.y = t.clientY;
-            this._movePos.y = 0;
+            this._startY = t.clientY;
+            this._moveY = NaN;
         },
 
         move: function(e){
             var t = e.touches[0];
-            this._movePos.y = t.clientY;
+            this._moveY = t.clientY;
         },
 
         release: function(e){
             var self = this;
-            var d = self._movePos.y - self._startPos.y,
+            var d = self._moveY - self._startY,
                 threshold = this._config.directThreshold;
             if (d < 0 - threshold) {
                 self.trigger(e, self.event.scrolldown);
@@ -4537,6 +4537,59 @@ define("../cardkit/view", [
             }).bind('scrollup', function(e){
                 view.showTopbar();
             });
+
+            var _startY, 
+                _prevent_down_inited,
+                _prevent_up_inited;
+
+            $(document).bind('touchstart', function(e){
+                var t = e.touches[0], 
+                    _prevented,
+                    vp = view.viewport[0];
+                _startY = t.clientY;
+                if (vp.scrollTop + vp.offsetHeight >= vp.scrollHeight
+                        && !_prevent_up_inited) {
+                    $(document).bind('touchmove', prevent_up);
+                    _prevent_up_inited = true;
+                    _prevented = true;
+                }
+                if (vp.scrollTop <= 0 && !_prevent_down_inited) {
+                    $(document).bind('touchmove', prevent_down);
+                    _prevent_down_inited = true;
+                    _prevented = true;
+                }
+                if (!_prevented){
+                    $(document).unbind('touchmove', prevent_up);
+                    $(document).unbind('touchmove', prevent_down);
+                    _prevent_down_inited = false;
+                    _prevent_up_inited = false;
+                }
+            });
+
+            function prevent_up(e){
+                var t = e.touches[0];
+                if (t.clientY <= _startY) {
+                    confirm('[待实现]要显示地址栏么？', function(){
+                        view.viewport[0].scrollTop = 100;
+                    });
+                    e.preventDefault();
+                } else {
+                    $(document).unbind('touchmove', prevent_up);
+                    _prevent_up_inited = false;
+                }
+            }
+            function prevent_down(e){
+                var t = e.touches[0];
+                if (t.clientY >= _startY) {
+                    confirm('[待实现]要立刻返回顶部么？', function(){
+                    
+                    });
+                    e.preventDefault();
+                } else {
+                    $(document).unbind('touchmove', prevent_down);
+                    _prevent_down_inited = false;
+                }
+            }
 
         },
 

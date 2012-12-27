@@ -20,6 +20,11 @@ define("mo/lang/oop", [
         if (mixes && !Array.isArray(mixes)) {
             factory = mixes;
         }
+        if (!factory) {
+            factory = function(){
+                this.superConstructor.apply(this, arguments);
+            };
+        }
         var proto = Object.create(base.prototype),
             supr = Object.create(base.prototype),
             constructor = function(){

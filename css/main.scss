@@ -108,7 +108,6 @@ a {
 
 .ck-header {
   height: $nav_height;
-  @include border-radius($radius $radius 0 0);
   @include box-shadow(0 2px 3px rgba(0,0,0,.35));
   z-index:$zindex_step;
   @include user-select(none);
@@ -402,6 +401,7 @@ a {
     & > header {
       @extend .ck-header;
       position:relative;
+      @include border-radius($radius $radius 0 0);
       @include box-shadow(0 2px 3px rgba(0,0,0,.2)); 
       @include background-image(linear-gradient(bottom, #dfdfdf, #fcfcfc));
 

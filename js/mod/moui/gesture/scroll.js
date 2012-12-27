@@ -4,11 +4,7 @@ define('moui/gesture/scroll', [
     'moui/gesture/base'
 ], function(_, gesture){
 
-    var ScrollGesture = _.construct(gesture.GestureBase, function(elm, opt, cb){
-        this._startPos = { x: 0, y: 0 };
-        this._movePos = { x: 0, y: 0 };
-        return this.superConstructor(elm, opt, cb);
-    });
+    var ScrollGesture = _.construct(gesture.GestureBase);
 
     _.mix(ScrollGesture.prototype, {
 
@@ -18,20 +14,19 @@ define('moui/gesture/scroll', [
         },
 
         press: function(e){
-            this._startTime = +new Date();
             var t = e.touches[0];
-            this._startPos.y = t.clientY;
-            this._movePos.y = 0;
+            this._startY = t.clientY;
+            this._moveY = NaN;
         },
 
         move: function(e){
             var t = e.touches[0];
-            this._movePos.y = t.clientY;
+            this._moveY = t.clientY;
         },
 
         release: function(e){
             var self = this;
-            var d = self._movePos.y - self._startPos.y,
+            var d = self._moveY - self._startY,
                 threshold = this._config.directThreshold;
             if (d < 0 - threshold) {
                 self.trigger(e, self.event.scrolldown);
