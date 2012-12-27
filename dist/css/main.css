@@ -212,9 +212,8 @@ a {
 }
 
 .ck-footer {
-  display: none;
   height: 15px;
-  padding: 5px 0 15px 0;
+  padding: 25px 0 15px 0;
   background: #f2f2f2;
   text-align: center;
 }
@@ -309,6 +308,7 @@ a {
 }
 
 .ck-list .ck-item {
+  position: relative;
   border-bottom: 1px solid #dadada;
   margin: 0 20px;
   padding: 8.5px 0;
@@ -344,6 +344,20 @@ a {
 }
 .ck-list .ck-item:active + .ck-item {
   border-top: 1px solid #dadada;
+}
+.ck-list .ck-item:active .info {
+  color: #fff;
+  right: 10px;
+  background: #3377aa;
+}
+.ck-list .ck-item .info {
+  position: absolute;
+  right: 0;
+  top: 12.5px;
+  font-size: 11px;
+  color: #787878;
+  padding: 6.5px 0;
+  background: #fff;
 }
 
 .ck-link {

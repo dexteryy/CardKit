@@ -176,9 +176,8 @@ a {
 }
 
 .ck-footer {
-  display:none;
   height:15px;
-  padding:5px 0 15px 0;
+  padding:25px 0 15px 0;
   background:$card_bgcolor;
   text-align:center;
   
@@ -288,6 +287,14 @@ a {
   padding:(28px/2) $text_space 0 $text_space;
   @include user-select(text);
 
+  &.plain {
+  
+  }
+
+  &.paper {
+  
+  }
+
   p {
     margin:(50px/2) 0;
   }
@@ -311,6 +318,7 @@ a {
   @extend .ck-box;
 
   .ck-item {
+    position:relative;
     border-bottom:1px solid $border_color;
     margin:0 20px;
     padding:($space/2 + 1) 0;
@@ -349,7 +357,23 @@ a {
       &+.ck-item {
         border-top:1px solid $border_color;
       }
+
+      .info {
+        color:#fff;
+        right:10px;
+        background:$hover_color;
+      }
     
+    }
+
+    .info {
+      position:absolute;
+      right:0;
+      top:$space/2 + 5;
+      font-size:$text_size;
+      color:$desc_color;
+      padding:($space/2 - 1) 0;
+      background:#fff;
     }
 
   }

@@ -9,7 +9,13 @@ define([
 
         var raw = wrapper.find('.ck-raw'),
             cards = wrapper.find('.ck-card'),
-            listContents = wrapper.find('.ck-list');
+            footer = wrapper.find('.ck-footer');
+
+        cards.forEach(function(card){
+            this.clone().appendTo(card);
+        }, footer);
+
+        footer.remove();
 
         wrapper.find('.ck-list').forEach(function(list){
             list = $(list);

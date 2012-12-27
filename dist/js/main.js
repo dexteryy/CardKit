@@ -2938,7 +2938,13 @@ define("../cardkit/view/parser", [
 
         var raw = wrapper.find('.ck-raw'),
             cards = wrapper.find('.ck-card'),
-            listContents = wrapper.find('.ck-list');
+            footer = wrapper.find('.ck-footer');
+
+        cards.forEach(function(card){
+            this.clone().appendTo(card);
+        }, footer);
+
+        footer.remove();
 
         wrapper.find('.ck-list').forEach(function(list){
             list = $(list);
@@ -4501,7 +4507,6 @@ define("../cardkit/view", [
         init: function(opt){
             var wrapper = this.wrapper = opt.wrapper;
             this.header = opt.header,
-            this.footer = $('.ck-footer', wrapper);
             this.loadingCard = $('#ckLoading');
             this.defaultCard = $('#ckDefault');
             this.headerHeight = this.header.height();
@@ -4569,21 +4574,22 @@ define("../cardkit/view", [
             function prevent_up(e){
                 var t = e.touches[0];
                 if (t.clientY <= _startY) {
-                    confirm('[待实现]要显示地址栏么？', function(){
-                        view.viewport[0].scrollTop = 100;
-                    });
+                    //confirm('[待实现]要显示地址栏么？', function(){
+                        //view.viewport[0].scrollTop = 100;
+                    //});
                     e.preventDefault();
                 } else {
                     $(document).unbind('touchmove', prevent_up);
                     _prevent_up_inited = false;
                 }
             }
+
             function prevent_down(e){
                 var t = e.touches[0];
                 if (t.clientY >= _startY) {
-                    confirm('[待实现]要立刻返回顶部么？', function(){
+                    //confirm('[待实现]要立刻返回顶部么？', function(){
                     
-                    });
+                    //});
                     e.preventDefault();
                 } else {
                     $(document).unbind('touchmove', prevent_down);
@@ -4596,7 +4602,6 @@ define("../cardkit/view", [
         render: function(){
             htmlparser(this.wrapper);
             this.loadingCard.hide();
-            this.footer.show();
         },
 
         initState: function(){
@@ -4669,7 +4674,6 @@ define("../cardkit/view", [
                 card = $('#' + card);
             }
             this.viewport = card.show();
-            card.append(this.footer);
             this.updateSize();
             //card[0].scrollTop = this.topbarEnable ? 0 : this.headerHeight;
         },
