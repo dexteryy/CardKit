@@ -3,6 +3,7 @@ require.config({
     baseUrl: 'js/mod/',
     distUrl: 'dist/js/mod/',
     aliases: {
+        'tpl': '../tpl/',
         'cardkit': '../cardkit/'
     }
 });

@@ -14,11 +14,11 @@ define('moui/modalview', [
            '<div id="{{id}}" class="moui-modalview">\
                 <div class="shd"></div>\
                 <div class="wrapper">\
-                    <header><div>\
+                    <header>\
                         <div class="confirm"></div>\
                         <div class="cancel"></div>\
                         <h1></h1>\
-                    </div></header>\
+                    </header>\
                     <div class="moui-modalview-content"></div>\
                 </div>\
             </div>',
@@ -30,6 +30,7 @@ define('moui/modalview', [
                 text: '确定',
                 isDefault: true,
                 method: function(modal) {
+                    modal.event.fire('confirm', [modal]);
                     modal.submit(function() {
                         modal.hideLoading();
                         modal.close();
@@ -41,6 +42,7 @@ define('moui/modalview', [
                 type: 'cancel',
                 text: '取消',
                 method: function(modal) {
+                    modal.event.fire('cancel', [modal]);
                     modal.close();
                 }
             }
@@ -79,11 +81,12 @@ define('moui/modalview', [
 
             if (opt.buttons && opt.buttons.length > 0) {
                 var handlers = this._btnHandlers, 
-                    btn_lib = _.index(opt.buttons, 'type');
+                    btn_lib = _.index(opt.buttons.map(function(btn){
+                        return typeof btn === 'object' ? btn : { type: btn };
+                    }), 'type');
                 default_config.buttons.forEach(function(type) {
                     var btn = btn_lib[type];
-                    btn = btn && mix({}, button_config[type], 
-                        typeof btn === 'object' ? btn : {}) || {};
+                    btn = btn && mix({}, button_config[type], btn) || {};
                     handlers[type] = btn.method;
                     this['_' + type + 'Btn'].html(function(){
                         return btn && tpl.format(TPL_BTN, btn) || '';
@@ -95,9 +98,12 @@ define('moui/modalview', [
                 self.showLoading();
                 net.ajax({
                     url: opt.url,
-                    dataType: 'text',
-                    success: function(html){
-                        self.setContent(html);
+                    dataType: opt.urlType || 'text',
+                    success: function(data){
+                        if (opt.urlType === 'json') {
+                            data = data.html;
+                        }
+                        self.setContent(data);
                         self.hideLoading();
                     }
                 });
@@ -111,15 +117,6 @@ define('moui/modalview', [
             this._content.find('form').bind(callback).trigger('submit');
         },
 
-        close: function() {
-            var self = this;
-            this.event.fire('close', [this]);
-            setTimeout(function(){
-                self._node.removeClass('active');
-            }, 400);
-            return this;
-        },
-
         destroy: function() {
             this._btnHandlers = {};
             return this.superClass.destroy.call(this);
@@ -130,7 +127,7 @@ define('moui/modalview', [
     function nothing(){}
 
     function exports(opt) {
-        return new ModalView(opt);
+        return new exports.ModalView(opt);
     }
 
     exports.ModalView = ModalView;

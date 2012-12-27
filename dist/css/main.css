@@ -56,13 +56,15 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 
 html {
   -webkit-text-size-adjust: 100%;
+  overflow: hidden;
 }
 
 body {
   font: 11px Helvetica, sans-serif;
   color: #252525;
-  background: #666666;
+  background: #f2f2f2;
   line-height: 1.7;
+  overflow: hidden;
 }
 
 a {
@@ -73,9 +75,10 @@ a {
 
 .btn, .ck-modal, .moui-modalview .wrapper > header button {
   display: inline-block;
+  margin: 0 0 0 7px;
   padding: 0;
   width: 80px;
-  height: 28px;
+  height: 29px;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   -ms-border-radius: 3px;
@@ -89,9 +92,15 @@ a {
   color: #252525;
   text-shadow: 0 1px white;
   line-height: 28px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
-.btn:hover, .ck-modal:hover, .moui-modalview .wrapper > header button:hover {
+.btn:first-child, .ck-modal:first-child, .moui-modalview .wrapper > header button:first-child {
+  margin-left: 0;
+}
+.btn:active, .ck-modal:active, .moui-modalview .wrapper > header button:active {
   -webkit-box-shadow: inset 0 2px 3px rgba(129, 129, 129, 0.5);
   -moz-box-shadow: inset 0 2px 3px rgba(129, 129, 129, 0.5);
   box-shadow: inset 0 2px 3px rgba(129, 129, 129, 0.5);
@@ -99,7 +108,7 @@ a {
   background-image: -moz-linear-gradient(bottom, #cccccc, #ffffff);
   background-image: linear-gradient(bottom, #cccccc, #ffffff);
 }
-.btn:hover span, .ck-modal:hover span, .moui-modalview .wrapper > header button:hover span {
+.btn:active span, .ck-modal:active span, .moui-modalview .wrapper > header button:active span {
   position: relative;
   top: 1px;
 }
@@ -113,7 +122,7 @@ a {
   color: #fff;
   text-shadow: 0 1px black;
 }
-.btn[data-default=true]:hover, [data-default=true].ck-modal:hover, .moui-modalview .wrapper > header button[data-default=true]:hover {
+.btn[data-default=true]:active, [data-default=true].ck-modal:active, .moui-modalview .wrapper > header button[data-default=true]:active {
   background-color: #81858b;
   -webkit-box-shadow: 0 1px white, inset 0 2px 3px rgba(117, 117, 117, 0.51);
   -moz-box-shadow: 0 1px white, inset 0 2px 3px rgba(117, 117, 117, 0.51);
@@ -124,21 +133,14 @@ a {
 }
 
 .ck-header, .moui-modalview .wrapper > header {
+  height: 42.5px;
+  -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.35);
+  -moz-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.35);
   z-index: 10;
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
-}
-
-.ck-topbar, .moui-modalview .wrapper > header > div {
-  height: 42.5px;
-  -webkit-border-radius: 3px 3px 0 0;
-  -moz-border-radius: 3px 3px 0 0;
-  -ms-border-radius: 3px 3px 0 0;
-  border-radius: 3px 3px 0 0;
-  -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.35), inset 0 1px #90806a;
-  -moz-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.35), inset 0 1px #90806a;
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.35), inset 0 1px #90806a;
 }
 
 .ck-top-title, .moui-modalview .wrapper > header h1 {
@@ -150,21 +152,27 @@ a {
 }
 
 .ck-baseview {
+  -webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.35);
+  -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.35);
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.35);
   -webkit-transform-origin: 50% 0;
   -moz-transform-origin: 50% 0;
   -ms-transform-origin: 50% 0;
   transform-origin: 50% 0;
   -webkit-transition: -webkit-transform 400ms ease-in-out;
-  -webkit-transition-delay: 200ms;
-  -moz-transition: -moz-transform 400ms ease-in-out 200ms;
-  transition: transform 400ms ease-in-out 200ms;
+  -webkit-transition-delay: 100ms;
+  -moz-transition: -moz-transform 400ms ease-in-out 100ms;
+  transition: transform 400ms ease-in-out 100ms;
 }
 .ck-baseview .ck-header, .ck-baseview .moui-modalview .wrapper > header, .moui-modalview .ck-baseview .wrapper > header {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  background: #000;
+  background: -webkit-linear-gradient(bottom, #78624f, #846f5b);
+  background: -moz-linear-gradient(bottom, #78624f, #846f5b);
+  background: linear-gradient(bottom, #78624f, #846f5b);
+  z-index: 100;
   -webkit-transform: translateY(-42.5px);
   -moz-transform: translateY(-42.5px);
   -ms-transform: translateY(-42.5px);
@@ -173,12 +181,7 @@ a {
   -moz-transition: -moz-transform 400ms ease-in-out;
   transition: transform 400ms ease-in-out;
 }
-.ck-baseview .ck-topbar, .ck-baseview .moui-modalview .wrapper > header > div, .moui-modalview .ck-baseview .wrapper > header > div {
-  background: -webkit-linear-gradient(bottom, #78624f, #846f5b);
-  background: -moz-linear-gradient(bottom, #78624f, #846f5b);
-  background: linear-gradient(bottom, #78624f, #846f5b);
-}
-.ck-baseview .ck-topbar .ck-top-nav, .ck-baseview .moui-modalview .wrapper > header > div .ck-top-nav, .moui-modalview .ck-baseview .wrapper > header > div .ck-top-nav, .ck-baseview .ck-topbar .ck-top-action, .ck-baseview .moui-modalview .wrapper > header > div .ck-topbar .ck-top-action, .ck-baseview .ck-topbar .moui-modalview .wrapper > header > div .ck-top-action, .moui-modalview .ck-baseview .wrapper > header > div .ck-topbar .ck-top-action, .moui-modalview .ck-baseview .ck-topbar .wrapper > header > div .ck-top-action, .ck-baseview .ck-topbar .moui-modalview .wrapper > header > div .ck-top-action, .ck-baseview .moui-modalview .wrapper > header > div .ck-topbar .ck-top-action, .ck-baseview .moui-modalview .wrapper > header > div .ck-top-action, .moui-modalview .ck-baseview .moui-modalview .wrapper > header > div .ck-top-action, .moui-modalview .ck-baseview .ck-topbar .wrapper > header > div .ck-top-action, .moui-modalview .ck-baseview .wrapper > header > div .ck-topbar .ck-top-action, .ck-baseview .moui-modalview .ck-baseview .wrapper > header > div .ck-top-action, .moui-modalview .ck-baseview .wrapper > header > div .ck-top-action, .ck-baseview .ck-topbar .ck-top-search, .ck-baseview .moui-modalview .wrapper > header > div .ck-topbar .ck-top-search, .ck-baseview .ck-topbar .moui-modalview .wrapper > header > div .ck-top-search, .moui-modalview .ck-baseview .wrapper > header > div .ck-topbar .ck-top-search, .moui-modalview .ck-baseview .ck-topbar .wrapper > header > div .ck-top-search, .ck-baseview .moui-modalview .wrapper > header > div .ck-topbar .ck-top-search, .ck-baseview .moui-modalview .wrapper > header > div .ck-topbar .ck-top-search, .moui-modalview .ck-baseview .moui-modalview .wrapper > header > div .ck-topbar .ck-top-search, .ck-baseview .ck-topbar .moui-modalview .wrapper > header > div .ck-top-search, .ck-baseview .ck-topbar .moui-modalview .wrapper > header > div .ck-top-search, .moui-modalview .ck-baseview .ck-topbar .moui-modalview .wrapper > header > div .ck-top-search, .moui-modalview .ck-baseview .wrapper > header > div .ck-topbar .ck-top-search, .ck-baseview .moui-modalview .ck-baseview .wrapper > header > div .ck-topbar .ck-top-search, .moui-modalview .ck-baseview .wrapper > header > div .ck-topbar .ck-top-search, .moui-modalview .ck-baseview .ck-topbar .wrapper > header > div .ck-top-search, .ck-baseview .moui-modalview .ck-baseview .ck-topbar .wrapper > header > div .ck-top-search, .moui-modalview .ck-baseview .ck-topbar .wrapper > header > div .ck-top-search, .ck-baseview .ck-topbar .moui-modalview .wrapper > header > div .ck-top-search, .ck-baseview .moui-modalview .wrapper > header > div .ck-topbar .ck-top-search, .ck-baseview .moui-modalview .wrapper > header > div .ck-top-search, .moui-modalview .ck-baseview .moui-modalview .wrapper > header > div .ck-top-search, .moui-modalview .ck-baseview .ck-topbar .moui-modalview .wrapper > header > div .ck-top-search, .moui-modalview .ck-baseview .moui-modalview .wrapper > header > div .ck-topbar .ck-top-search, .moui-modalview .ck-baseview .moui-modalview .wrapper > header > div .ck-top-search, .moui-modalview .ck-baseview .moui-modalview .wrapper > header > div .ck-top-search, .ck-baseview .ck-topbar .moui-modalview .ck-baseview .wrapper > header > div .ck-top-search, .ck-baseview .moui-modalview .ck-baseview .wrapper > header > div .ck-topbar .ck-top-search, .ck-baseview .moui-modalview .ck-baseview .wrapper > header > div .ck-top-search, .ck-baseview .moui-modalview .ck-baseview .wrapper > header > div .ck-top-search, .moui-modalview .ck-baseview .ck-topbar .wrapper > header > div .ck-top-search, .moui-modalview .ck-baseview .wrapper > header > div .ck-topbar .ck-top-search, .ck-baseview .moui-modalview .ck-baseview .wrapper > header > div .ck-top-search, .moui-modalview .ck-baseview .wrapper > header > div .ck-top-search {
+.ck-baseview .ck-header .ck-top-nav, .ck-baseview .moui-modalview .wrapper > header .ck-top-nav, .moui-modalview .ck-baseview .wrapper > header .ck-top-nav, .ck-baseview .ck-header .ck-top-action, .ck-baseview .moui-modalview .wrapper > header .ck-header .ck-top-action, .ck-baseview .ck-header .moui-modalview .wrapper > header .ck-top-action, .moui-modalview .ck-baseview .wrapper > header .ck-header .ck-top-action, .moui-modalview .ck-baseview .ck-header .wrapper > header .ck-top-action, .ck-baseview .ck-header .moui-modalview .wrapper > header .ck-top-action, .ck-baseview .moui-modalview .wrapper > header .ck-header .ck-top-action, .ck-baseview .moui-modalview .wrapper > header .ck-top-action, .moui-modalview .ck-baseview .moui-modalview .wrapper > header .ck-top-action, .moui-modalview .ck-baseview .ck-header .wrapper > header .ck-top-action, .moui-modalview .ck-baseview .wrapper > header .ck-header .ck-top-action, .ck-baseview .moui-modalview .ck-baseview .wrapper > header .ck-top-action, .moui-modalview .ck-baseview .wrapper > header .ck-top-action, .ck-baseview .ck-header .ck-top-search, .ck-baseview .moui-modalview .wrapper > header .ck-header .ck-top-search, .ck-baseview .ck-header .moui-modalview .wrapper > header .ck-top-search, .moui-modalview .ck-baseview .wrapper > header .ck-header .ck-top-search, .moui-modalview .ck-baseview .ck-header .wrapper > header .ck-top-search, .ck-baseview .moui-modalview .wrapper > header .ck-header .ck-top-search, .ck-baseview .moui-modalview .wrapper > header .ck-header .ck-top-search, .moui-modalview .ck-baseview .moui-modalview .wrapper > header .ck-header .ck-top-search, .ck-baseview .ck-header .moui-modalview .wrapper > header .ck-top-search, .ck-baseview .ck-header .moui-modalview .wrapper > header .ck-top-search, .moui-modalview .ck-baseview .ck-header .moui-modalview .wrapper > header .ck-top-search, .moui-modalview .ck-baseview .wrapper > header .ck-header .ck-top-search, .ck-baseview .moui-modalview .ck-baseview .wrapper > header .ck-header .ck-top-search, .moui-modalview .ck-baseview .wrapper > header .ck-header .ck-top-search, .moui-modalview .ck-baseview .ck-header .wrapper > header .ck-top-search, .ck-baseview .moui-modalview .ck-baseview .ck-header .wrapper > header .ck-top-search, .moui-modalview .ck-baseview .ck-header .wrapper > header .ck-top-search, .ck-baseview .ck-header .moui-modalview .wrapper > header .ck-top-search, .ck-baseview .moui-modalview .wrapper > header .ck-header .ck-top-search, .ck-baseview .moui-modalview .wrapper > header .ck-top-search, .moui-modalview .ck-baseview .moui-modalview .wrapper > header .ck-top-search, .moui-modalview .ck-baseview .ck-header .moui-modalview .wrapper > header .ck-top-search, .moui-modalview .ck-baseview .moui-modalview .wrapper > header .ck-header .ck-top-search, .moui-modalview .ck-baseview .moui-modalview .wrapper > header .ck-top-search, .moui-modalview .ck-baseview .moui-modalview .wrapper > header .ck-top-search, .ck-baseview .ck-header .moui-modalview .ck-baseview .wrapper > header .ck-top-search, .ck-baseview .moui-modalview .ck-baseview .wrapper > header .ck-header .ck-top-search, .ck-baseview .moui-modalview .ck-baseview .wrapper > header .ck-top-search, .ck-baseview .moui-modalview .ck-baseview .wrapper > header .ck-top-search, .moui-modalview .ck-baseview .ck-header .wrapper > header .ck-top-search, .moui-modalview .ck-baseview .wrapper > header .ck-header .ck-top-search, .ck-baseview .moui-modalview .ck-baseview .wrapper > header .ck-top-search, .moui-modalview .ck-baseview .wrapper > header .ck-top-search {
   width: 15px;
   height: 15px;
   position: absolute;
@@ -188,27 +191,28 @@ a {
   -moz-box-shadow: inset 0px 0px 2px black;
   box-shadow: inset 0px 0px 2px black;
 }
-.ck-baseview .ck-topbar .ck-top-title, .ck-baseview .moui-modalview .wrapper > header > div .ck-top-title, .moui-modalview .ck-baseview .wrapper > header > div .ck-top-title, .ck-baseview .ck-topbar .moui-modalview .wrapper > header h1, .moui-modalview .wrapper > header .ck-baseview .ck-topbar h1, .ck-baseview .moui-modalview .wrapper > header > div h1, .moui-modalview .ck-baseview .wrapper > header > div h1 {
+.ck-baseview .ck-header .ck-top-title, .ck-baseview .moui-modalview .wrapper > header .ck-top-title, .moui-modalview .ck-baseview .wrapper > header .ck-top-title, .ck-baseview .ck-header .moui-modalview .wrapper > header h1, .moui-modalview .wrapper > header .ck-baseview .ck-header h1, .ck-baseview .moui-modalview .wrapper > header h1, .moui-modalview .ck-baseview .wrapper > header h1 {
   color: #fff;
   text-shadow: 0px 1px 0px black;
 }
-.ck-baseview .ck-topbar .ck-top-action, .ck-baseview .moui-modalview .wrapper > header > div .ck-top-action, .moui-modalview .ck-baseview .wrapper > header > div .ck-top-action, .ck-baseview .ck-topbar .ck-top-search, .ck-baseview .moui-modalview .wrapper > header > div .ck-topbar .ck-top-search, .ck-baseview .ck-topbar .moui-modalview .wrapper > header > div .ck-top-search, .moui-modalview .ck-baseview .wrapper > header > div .ck-topbar .ck-top-search, .moui-modalview .ck-baseview .ck-topbar .wrapper > header > div .ck-top-search, .ck-baseview .ck-topbar .moui-modalview .wrapper > header > div .ck-top-search, .ck-baseview .moui-modalview .wrapper > header > div .ck-topbar .ck-top-search, .ck-baseview .moui-modalview .wrapper > header > div .ck-top-search, .moui-modalview .ck-baseview .moui-modalview .wrapper > header > div .ck-top-search, .moui-modalview .ck-baseview .ck-topbar .wrapper > header > div .ck-top-search, .moui-modalview .ck-baseview .wrapper > header > div .ck-topbar .ck-top-search, .ck-baseview .moui-modalview .ck-baseview .wrapper > header > div .ck-top-search, .moui-modalview .ck-baseview .wrapper > header > div .ck-top-search {
+.ck-baseview .ck-header .ck-top-action, .ck-baseview .moui-modalview .wrapper > header .ck-top-action, .moui-modalview .ck-baseview .wrapper > header .ck-top-action, .ck-baseview .ck-header .ck-top-search, .ck-baseview .moui-modalview .wrapper > header .ck-header .ck-top-search, .ck-baseview .ck-header .moui-modalview .wrapper > header .ck-top-search, .moui-modalview .ck-baseview .wrapper > header .ck-header .ck-top-search, .moui-modalview .ck-baseview .ck-header .wrapper > header .ck-top-search, .ck-baseview .ck-header .moui-modalview .wrapper > header .ck-top-search, .ck-baseview .moui-modalview .wrapper > header .ck-header .ck-top-search, .ck-baseview .moui-modalview .wrapper > header .ck-top-search, .moui-modalview .ck-baseview .moui-modalview .wrapper > header .ck-top-search, .moui-modalview .ck-baseview .ck-header .wrapper > header .ck-top-search, .moui-modalview .ck-baseview .wrapper > header .ck-header .ck-top-search, .ck-baseview .moui-modalview .ck-baseview .wrapper > header .ck-top-search, .moui-modalview .ck-baseview .wrapper > header .ck-top-search {
   left: auto;
   right: 15px;
   padding: 0;
   border: 0;
   background: none;
 }
-.ck-baseview .ck-topbar .ck-top-search, .ck-baseview .moui-modalview .wrapper > header > div .ck-top-search, .moui-modalview .ck-baseview .wrapper > header > div .ck-top-search {
+.ck-baseview .ck-header .ck-top-search, .ck-baseview .moui-modalview .wrapper > header .ck-top-search, .moui-modalview .ck-baseview .wrapper > header .ck-top-search {
   right: 45px;
 }
 
 .ck-wrapper {
   width: 100%;
-  overflow: hidden;
+  position: relative;
 }
 
 .ck-footer {
+  display: none;
   height: 15px;
   padding: 5px 0 15px 0;
   background: #f2f2f2;
@@ -220,43 +224,59 @@ a {
   margin: 5px 0;
 }
 
+.ck-raw {
+  display: none;
+}
+
 .ck-card {
+  display: none;
   width: 100%;
-  padding-top: 42.5px;
   background: #f2f2f2;
-  -webkit-box-shadow: -3px 0px 10px 0px rgba(0, 0, 0, 0.35);
-  -moz-box-shadow: -3px 0px 10px 0px rgba(0, 0, 0, 0.35);
-  box-shadow: -3px 0px 10px 0px rgba(0, 0, 0, 0.35);
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  display: none;
 }
-.ck-card[cktype="loading"] {
-  font-size: 15px;
-  color: #787878;
-  text-align: center;
+.ck-card > *:first-child {
+  margin-top: 57.5px;
 }
-.ck-card[cktype="loading"] span {
-  display: block;
-  height: 100%;
-  padding-top: 50%;
+.ck-card.paper .ck-text {
+  padding: 14px 0;
+  border-bottom: 1px solid #dadada;
 }
-
-.ck-interim {
+.ck-card.moving {
   position: absolute;
   top: 0;
   left: 0;
+  z-index: 10;
+  -webkit-transform: translateX(100%);
+  -moz-transform: translateX(100%);
+  -ms-transform: translateX(100%);
+  transform: translateX(100%);
 }
 
-.ck-moving {
-  position: relative;
-  z-index: 10;
+#ckLoading {
+  display: block;
+  font-size: 20px;
+  color: #787878;
+  text-align: center;
+  overflow: hidden;
+}
+#ckLoading span {
+  display: block;
+  padding: 50% 0 50% 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+#ckLoading .ck-footer * {
+  display: none;
 }
 
 .ck-box, .ck-list {
+  overflow: hidden;
   margin: 15px;
   background-color: #fff;
   border: 1px solid white;
@@ -270,19 +290,31 @@ a {
 }
 
 .ck-text {
+  font-size: 17px;
+  line-height: 60px/2;
   margin: 15px;
+  padding: 14px 20px 0 20px;
   -webkit-user-select: text;
   -moz-user-select: text;
   user-select: text;
 }
+.ck-text p {
+  margin: 25px 0;
+}
+.ck-text .ckd-hd {
+  font-size: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #dadada;
+  margin-bottom: 30px;
+}
 
-.ck-item {
+.ck-list .ck-item {
   border-bottom: 1px solid #dadada;
   margin: 0 20px;
   padding: 8.5px 0;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
-.ck-item .ck-link {
+.ck-list .ck-item .ck-link {
   padding: 6.5px 0;
   font-size: 15px;
   color: #252525;
@@ -291,15 +323,16 @@ a {
   background-repeat: no-repeat;
   background-position: right;
   background-size: 5.5px 10px;
+  -webkit-touch-callout: none;
 }
-.ck-item:last-child {
+.ck-list .ck-item:last-child {
   border: none;
 }
-.ck-item:hover {
+.ck-list .ck-item:active {
   margin: 0 10px;
   border: none;
 }
-.ck-item:hover .ck-link {
+.ck-list .ck-item:active .ck-link {
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   -ms-border-radius: 3px;
@@ -309,12 +342,15 @@ a {
   padding-left: 10px;
   padding-right: 10px;
 }
-.ck-item:hover + .ck-item {
+.ck-list .ck-item:active + .ck-item {
   border-top: 1px solid #dadada;
 }
 
-.ck-link-img {
+.ck-link {
   -webkit-touch-callout: inherit;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
 }
 
 .moui-modalview {
@@ -338,8 +374,10 @@ a {
 }
 .moui-modalview .wrapper > header {
   position: relative;
-}
-.moui-modalview .wrapper > header > div {
+  -webkit-border-radius: 3px 3px 0 0;
+  -moz-border-radius: 3px 3px 0 0;
+  -ms-border-radius: 3px 3px 0 0;
+  border-radius: 3px 3px 0 0;
   -webkit-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
   -moz-box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
@@ -366,9 +404,9 @@ a {
   width: 100%;
   height: 100%;
   opacity: 0;
-  background-image: -webkit-radial-gradient(rgba(127, 127, 127, 0.5), rgba(0, 0, 0, 0.7));
-  background-image: -moz-radial-gradient(rgba(127, 127, 127, 0.5), rgba(0, 0, 0, 0.7));
-  background-image: radial-gradient(rgba(127, 127, 127, 0.5), rgba(0, 0, 0, 0.7));
+  background-image: -webkit-radial-gradient(rgba(127, 127, 127, 0.3), rgba(0, 0, 0, 0.7));
+  background-image: -moz-radial-gradient(rgba(127, 127, 127, 0.3), rgba(0, 0, 0, 0.7));
+  background-image: radial-gradient(rgba(127, 127, 127, 0.3), rgba(0, 0, 0, 0.7));
   -webkit-transition: opacity 400ms ease-in-out;
   -moz-transition: opacity 400ms ease-in-out;
   transition: opacity 400ms ease-in-out;

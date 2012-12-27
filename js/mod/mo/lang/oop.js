@@ -12,21 +12,27 @@ define("mo/lang/oop", [
 
     var mix = _.mix;
 
-    function _apply(base, args){
-        return base.apply(this, args);
+    function _apply(base, self, args){
+        return base.apply(self, args);
     }
 
     exports.construct = function(base, mixes, factory){
         if (mixes && !Array.isArray(mixes)) {
             factory = mixes;
         }
+        if (!factory) {
+            factory = function(){
+                this.superConstructor.apply(this, arguments);
+            };
+        }
         var proto = Object.create(base.prototype),
-                constructor = function(){
+            supr = Object.create(base.prototype),
+            constructor = function(){
                 var self = this;
                 this.constructor = constructor;
                 this.superConstructor = function(){
                     _apply.prototype = base.prototype;
-                    var su = new _apply(base, arguments);
+                    var su = new _apply(base, self, arguments);
                     for (var i in su) {
                         if (!self[i]) {
                             self[i] = supr[i] = su[i];
@@ -38,9 +44,10 @@ define("mo/lang/oop", [
             };
         constructor.prototype = proto;
         if (mixes) {
-            mix(proto, mix.apply(this, mixes));
+            mixes = mix.apply(this, mixes);
+            mix(proto, mixes);
+            mix(supr, mixes);
         }
-        var supr = _.copy(proto);
         return constructor;
     };
 

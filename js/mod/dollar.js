@@ -299,6 +299,12 @@ define("dollar", [
                 });
         },
 
+        clone: function(){
+            return this.map(function(node){
+                return node.cloneNode(true);
+            });
+        },
+
         css: kv_access(function(node, name, value){
             var prop = css_prop(name);
             if (!value && value !== 0) {
@@ -559,24 +565,19 @@ define("dollar", [
     }
 
     function event_access(action){
-        return function(subject, cb){
-            var ev = [];
-            if (typeof subject !== 'string') {
+        function access(subject, cb){
+            if (typeof subject === 'object') {
                 for (var i in subject) {
-                    ev.push([action, i, subject[i]]);
+                    access.call(this, [i, subject[i]]);
                 }
-            } else if (!cb) {
-                return this; // not support 'removeAllEventListener'
-            } else {
-                ev.push([action, subject, cb]);
-            }
-            this.forEach(function(node){
-                this.forEach(function(pair){
-                    this[pair[0] + 'EventListener'](pair[1], pair[2], false);
-                }, node);
-            }, ev);
+            } else if (cb) {
+                this.forEach(function(node){
+                    node[action + 'EventListener'](subject, this, false);
+                }, cb);
+            }  // not support 'removeAllEventListener'
             return this;
-        };
+        }
+        return access;
     }
 
     function Event(type, props) {

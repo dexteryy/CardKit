@@ -4,40 +4,48 @@
 //@import "map1/*.png";
 //@include all-map1-sprites;
 
-$text_color: #252525;
-$desc_color: #787878;
-$border_color: #dadada;
+$text_color: #252525; // 正文、白背景UI上的内容或标题
+$desc_color: #787878; // 次要、与白背景UI混为一体的文字
+$border_color: #dadada; // 白背景UI上的边框、分割线
 
-$head_size: 34px/2;
-$title_size: 30px/2;
-$big_size: 26px/2;
-$text_size: 22px/2;
+$hover_color: #3377aa; // 文本内的链接、触碰状态
+$notice_color: #df5001; // 红色提示
 
-$hover_color: #3377aa;
-$notice_color: #df5001;
+$win_bgcolor: #666; // 窗口背景
+$card_bgcolor: #f2f2f2; // 视图背景
 
-$win_bgcolor: #666;
-$card_bgcolor: #f2f2f2;
+$headtitle_size: 40px/2; // 文章正文
+$article_size: 34px/2; // 文章正文
+$maintitle_size: 30px/2; // 标题
+$title_size: 26px/2;  // 按钮
+$text_size: 22px/2; // 内容
 
 $space: 30px/2;
 $radius: 6px/2;
+$text_space: 40px/2;
 
-$zindex_card: 10;
-$zindex_overlay: 100;
-$zindex_step: 10;
+$zindex_card: 10; // 视图内的层级
+$zindex_overlay: 100; // 弹出物的层级
+$zindex_step: 10; // 间距
 
 $nav_height: 85px/2;
 
 html {
   -webkit-text-size-adjust: 100%;
+  overflow:hidden;
 }
 
 body {
   font:$text_size Helvetica,sans-serif;
   color:$text_color;
-  background:$win_bgcolor;
+  background:$card_bgcolor;
   line-height:1.7;
+  overflow:hidden;
 }
+
+// ===========
+//  UI元素
+// ===========
 
 a {
   text-decoration:none;
@@ -47,20 +55,26 @@ a {
 
 .btn {
   display:inline-block;
+  margin:0 0 0 7px;
   padding:0;
   width: (160px/2);
-  height: (56px/2);
+  height: (58px/2);
   @include border-radius($radius);
   background-color: #81858b;
   border: solid 1px #bcbcbc;
   @include background-image(linear-gradient(bottom, #ccc, #fff));
-  font-size:$big_size;
+  font-size:$title_size;
   color:$text_color;
   @include text-shadow(0 1px #fff);
   line-height:(56px/2);
+  @include user-select(none);
   -webkit-tap-highlight-color: rgba(0,0,0,0);
 
-  &:hover {
+  &:first-child {
+    margin-left:0;
+  }
+
+  &:active {
     @include box-shadow(inset 0 2px 3px rgba(129,129,129,.5));
     @include background-image(linear-gradient(bottom, #ccc, #fff));
 
@@ -80,7 +94,7 @@ a {
   color:#fff;
   @include text-shadow(0 1px #000);
 
-  &:hover {
+  &:active {
     background-color: #81858b;
     @include box-shadow(0 1px #fff, inset 0 2px 3px rgba(117,117,117,.51));
     @include background-image(linear-gradient(bottom, #1366a4, #278cd7));
@@ -88,19 +102,19 @@ a {
 
 }
 
+// ===========
+//  布局
+// ===========
+
 .ck-header {
+  height: $nav_height;
+  @include box-shadow(0 2px 3px rgba(0,0,0,.35));
   z-index:$zindex_step;
   @include user-select(none);
 }
 
-.ck-topbar {
-  height: $nav_height;
-  @include border-radius($radius $radius 0 0);
-  @include box-shadow(0 2px 3px rgba(0,0,0,.35), inset 0 1px #90806a);
-}
-
 .ck-top-title {
-  font-size:$head_size;
+  font-size:$article_size;
   line-height: $nav_height;
   text-align:center;
   display:block;
@@ -108,21 +122,19 @@ a {
 }
 
 .ck-baseview {
+  @include box-shadow(0px 0px 10px rgba(0,0,0,.35));
   @include transform-origin(50% 0);
-  @include transition(transform 400ms ease-in-out 200ms);
+  @include transition(transform 400ms ease-in-out 100ms);
 
   .ck-header {
     position:fixed;
     top:0;
     left:0;
     width:100%;
-    background:#000;
+    @include background(linear-gradient(bottom, #78624f, #846f5b));
+    z-index: $zindex_overlay;
     @include transform(translateY(-$nav_height));
     @include transition(transform 400ms ease-in-out);
-  }
-
-  .ck-topbar {
-    @include background(linear-gradient(bottom, #78624f, #846f5b));
 
     $btn-size: 15px;
 
@@ -159,12 +171,12 @@ a {
 }
 
 .ck-wrapper {
-  //background:$win_bgcolor;
   width:100%;
-  overflow:hidden;
+  position:relative;
 }
 
 .ck-footer {
+  display:none;
   height:15px;
   padding:5px 0 15px 0;
   background:$card_bgcolor;
@@ -178,47 +190,89 @@ a {
 
 }
 
+.ck-raw {
+  display:none;
+}
+
+// ===========
+//  卡片
+// ===========
+
 .ck-card {
+  display:none;
   width:100%;
-  padding-top:$nav_height;
+  //padding-top:$nav_height + $space;
   background:$card_bgcolor;
-  @include box-shadow(-3px 0px 10px 0px rgba(0,0,0,.35));
+  //@include box-shadow(-3px 0px 10px 0px rgba(0,0,0,.35));
   @include user-select(none);
   overflow-y:auto;
   -webkit-overflow-scrolling: touch;
-  display:none;
 
-  //.ck-card:first-child {
-    //margin-top:(58px/2);
-  //}
+  & > *:first-child {
+    margin-top:$nav_height + $space;
+  }
 
-  &[cktype="loading"] {
-    font-size:$title_size;
-    color:$desc_color;
-    text-align:center;
+  // 文章视图
+  &.paper {
 
-    span {
-      display:block;
-      height:100%;
-      padding-top:50%;
+    .ck-text {
+      padding:(28px/2) 0;
+      border-bottom:1px solid $border_color;
+      //margin-bottom:40px;
     }
 
   }
 
+  &.moving {
+    position:absolute;
+    top:0;
+    left:0;
+    z-index:$zindex_card;
+    @include transform(translateX(100%));
+  }
+
 }
 
-.ck-interim {
-  position:absolute;
-  top:0;
-  left:0;
+// 默认首屏视图
+#ckDefault {
+
 }
 
-.ck-moving {
-  position:relative;
-  z-index:$zindex_card;
+#ckLoading {
+  display:block;
+  font-size:$headtitle_size;
+  color:$desc_color;
+  text-align:center;
+  overflow:hidden;
+
+  span {
+    display:block;
+    //height:100%;
+    padding:50% 0 50% 0;
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+  }
+
+  .ck-footer * {
+    display:none;
+  }
+
 }
 
+// ===========
+//  模块
+// ===========
+
+// 无格式模块
+.ck-plain {
+
+}
+
+// 自定义模块
 .ck-box {
+  overflow:hidden;
   margin:$space;
   background-color:#fff;
   border:1px solid rgb(255,255,255);
@@ -226,69 +280,109 @@ a {
   @include box-shadow(0px 1px 4px 0px rgba(0,0,0,0.3));
 }
 
+// 文本模块
+.ck-text {
+  font-size:$article_size;
+  line-height:60px/2;
+  margin:$space;
+  padding:(28px/2) $text_space 0 $text_space;
+  @include user-select(text);
+
+  p {
+    margin:(50px/2) 0;
+  }
+
+  .ckd-hd {
+    font-size:$headtitle_size;
+    padding-bottom:10px;
+    border-bottom:1px solid $border_color;
+    margin-bottom:30px;
+  }
+
+}
+
+// 表单模块
+.ck-form {
+
+}
+
+// 列表模块
 .ck-list {
   @extend .ck-box;
-}
 
-.ck-text {
-  margin:$space;
-  @include user-select(text);
-}
-
-.ck-item {
-  border-bottom:1px solid $border_color;
-  margin:0 20px;
-  padding:($space/2 + 1) 0;
-  -webkit-tap-highlight-color: rgba(0,0,0,0);
-
-  .ck-link {
-    padding:($space/2 - 1) 0;
-    font-size:$title_size;
-    color:$text_color;
-    display:block;
-    background: {
-      image: inline-image('drawer_icon.png');
-      repeat: no-repeat;
-      position: right;
-      size: 5.5px 10px;
-    }
-  }
-
-  &:last-child {
-    border:none;
-  }
-
-  &:hover {
-    margin:0 10px;
-    border:none;
+  .ck-item {
+    border-bottom:1px solid $border_color;
+    margin:0 20px;
+    padding:($space/2 + 1) 0;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
 
     .ck-link {
-      @include border-radius($radius);
-      background:$hover_color;
-      color:#fff;
-      padding-left:10px;
-      padding-right:10px;
+      padding:($space/2 - 1) 0;
+      font-size:$maintitle_size;
+      color:$text_color;
+      display:block;
+      background: {
+        image: inline-image('drawer_icon.png');
+        repeat: no-repeat;
+        position: right;
+        size: 5.5px 10px;
+      }
+      -webkit-touch-callout: none;
     }
 
-    &+.ck-item {
-      border-top:1px solid $border_color;
+    &:last-child {
+      border:none;
     }
-  
+
+    &:active {
+      margin:0 10px;
+      border:none;
+
+      .ck-link {
+        @include border-radius($radius);
+        background:$hover_color;
+        color:#fff;
+        padding-left:10px;
+        padding-right:10px;
+      }
+
+      &+.ck-item {
+        border-top:1px solid $border_color;
+      }
+    
+    }
+
   }
 
 }
 
-.ck-link-img {
-    -webkit-touch-callout: inherit;
+// 大列表模块
+.ck-biglist {
+
+}
+
+// ===========
+//  标签
+// ===========
+
+.ck-link {
+  -webkit-touch-callout: inherit;
+  @include user-select(none);
 }
 
 .ck-modal {
   @extend .btn;
 }
 
-.ck-modal:hover {
-  @extend .btn:hover;
+.ck-modal:active {
+  @extend .btn:active;
 }
+
+// ===========
+//  组件
+// ===========
+
+// modalView
 
 .moui-modalview {
   visibility:hidden;
@@ -307,12 +401,9 @@ a {
     & > header {
       @extend .ck-header;
       position:relative;
-
-      & > div {
-        @extend .ck-topbar;
-        @include box-shadow(0 2px 3px rgba(0,0,0,.2)); 
-        @include background-image(linear-gradient(bottom, #dfdfdf, #fcfcfc));
-      }
+      @include border-radius($radius $radius 0 0);
+      @include box-shadow(0 2px 3px rgba(0,0,0,.2)); 
+      @include background-image(linear-gradient(bottom, #dfdfdf, #fcfcfc));
 
       h1 {
         @extend .ck-top-title;
@@ -347,7 +438,7 @@ a {
     width:100%;
     height:100%;
     opacity:0;
-    @include background-image(radial-gradient(rgba(127,127,127,0.5), rgba(0,0,0,0.7)));
+    @include background-image(radial-gradient(rgba(127,127,127,0.3), rgba(0,0,0,0.7)));
     @include transition(opacity 400ms ease-in-out);
   }
 
@@ -367,3 +458,5 @@ a {
   -webkit-overflow-scrolling: touch;
   background:$card_bgcolor;
 }
+
+

@@ -4,11 +4,19 @@ define([
     'mo/template',
     'soviet',
     'choreo',
+    'moui/gesture/base',
+    'moui/gesture/tap',
+    'moui/gesture/swipe',
+    'moui/gesture/drag',
+    'moui/gesture/scroll',
     './bus',
     './pagesession',
+    './view/parser',
     './view/modal',
     'mo/domready'
-], function($, _, tpl, soviet, choreo, bus, pageSession, modal){
+], function($, _, tpl, soviet, choreo, 
+    baseGeste, tapGeste, swipeGeste, dragGeste, scrollGeste, 
+    bus, pageSession, htmlparser, modal){
 
     var window = this,
         location = window.location,
@@ -16,23 +24,38 @@ define([
         body = document.body,
 
         SUPPORT_ORIENT = "orientation" in window && "onorientationchange" in window,
-        SUPPORT_OVERFLOWSCROLL = "overflowScrolling" in body,
+        SUPPORT_OVERFLOWSCROLL = "overflowScrolling" in body;
 
-        TPL_LOADING_CARD = '<div class="ck-card" cktype="loading" id="ckLoading"><span>加载中...</span></div>';
+    _.mix(baseGeste.GestureBase.prototype, {
+        bind: function(ev, handler){
+            $(this.node).bind(ev, handler);
+            return this;
+        },
+        unbind: function(ev, handler){
+            $(this.node).unbind(ev, handler);
+            return this;
+        },
+        trigger: function(e, ev){
+            $(e.target).trigger(ev);
+            return this;
+        }
+    });
 
     var tap_events = {
 
-        '.ck-link': link_handler,
-        '.ck-link *': link_handler,
+        'a': link_handler,
+        'a *': link_handler,
 
-        '.ck-modal': function(){
+        '.ck-modal': function(e){
             var me = $(this),
+                json_url = me.data('jsonUrl'),
                 target_id = me.data('target');
-            modal.set({
+            view.openModal({
                 title: me.data('title'),
                 content: target_id ? $('#' + target_id).html() : undefined,
-                url: me.data('url')
-            }).open();
+                url: me.data('url') || json_url,
+                urlType: json_url && 'json'
+            });
         }
     
     };
@@ -49,42 +72,128 @@ define([
         choreo.transform(view.header.parent()[0], 'translateY', '10px');
     });
 
-    modal.event.bind('close', function(modal){
-        view.disableView = false;
-        choreo.transform(modal._wrapper[0], 'translateY', '0');
-        choreo.transform(view.header.parent()[0], 'scale', 1);
-        choreo.transform(view.header.parent()[0], 'translateY', '0');
-    });
-
     var view = {
 
         init: function(opt){
             var wrapper = this.wrapper = opt.wrapper;
             this.header = opt.header,
             this.footer = $('.ck-footer', wrapper);
-            this.cards = $('.ck-card', wrapper);
-            this.listContents = $('.ck-list', wrapper);
-            this.loadingCard = $(TPL_LOADING_CARD).appendTo(wrapper);
+            this.loadingCard = $('#ckLoading');
             this.defaultCard = $('#ckDefault');
             this.headerHeight = this.header.height();
             this.windowFullHeight = Infinity;
 
             this.render();
             this.showTopbar();
+            this.initState();
+
+            $(window).bind('resize', function(e){
+                view.updateSize();
+            });
+
+            this.hideAddressbar();
+            this.windowFullHeight = window.innerHeight;
+
+            tapGeste(document, {});
+            scrollGeste(document, {});
+
+            soviet(document, {
+                matchesSelector: true,
+                preventDefault: true
+            }).on('click', {
+                'a': nothing,
+                'a *': nothing
+            }).on('tap', tap_events);
+
+            $(document).bind('scrolldown', function(e){
+                view.hideAddressbar();
+                if (view.viewport[0].scrollTop >= view.headerHeight) {
+                    view.hideTopbar();
+                }
+            }).bind('scrollup', function(e){
+                view.showTopbar();
+            });
+
+            var _startY, 
+                _prevent_down_inited,
+                _prevent_up_inited;
+
+            $(document).bind('touchstart', function(e){
+                var t = e.touches[0], 
+                    _prevented,
+                    vp = view.viewport[0];
+                _startY = t.clientY;
+                if (vp.scrollTop + vp.offsetHeight >= vp.scrollHeight
+                        && !_prevent_up_inited) {
+                    $(document).bind('touchmove', prevent_up);
+                    _prevent_up_inited = true;
+                    _prevented = true;
+                }
+                if (vp.scrollTop <= 0 && !_prevent_down_inited) {
+                    $(document).bind('touchmove', prevent_down);
+                    _prevent_down_inited = true;
+                    _prevented = true;
+                }
+                if (!_prevented){
+                    $(document).unbind('touchmove', prevent_up);
+                    $(document).unbind('touchmove', prevent_down);
+                    _prevent_down_inited = false;
+                    _prevent_up_inited = false;
+                }
+            });
+
+            function prevent_up(e){
+                var t = e.touches[0];
+                if (t.clientY <= _startY) {
+                    confirm('[待实现]要显示地址栏么？', function(){
+                        view.viewport[0].scrollTop = 100;
+                    });
+                    e.preventDefault();
+                } else {
+                    $(document).unbind('touchmove', prevent_up);
+                    _prevent_up_inited = false;
+                }
+            }
+            function prevent_down(e){
+                var t = e.touches[0];
+                if (t.clientY >= _startY) {
+                    confirm('[待实现]要立刻返回顶部么？', function(){
+                    
+                    });
+                    e.preventDefault();
+                } else {
+                    $(document).unbind('touchmove', prevent_down);
+                    _prevent_down_inited = false;
+                }
+            }
+
+        },
+
+        render: function(){
+            htmlparser(this.wrapper);
+            this.loadingCard.hide();
+            this.footer.show();
+        },
+
+        initState: function(){
 
             $(window).bind("popstate", function(e){
                 var loading = view.viewport[0].id === 'ckLoading';
                 //alert(['pop', 
-                //  e.state && [e.state.prev, e.state.next], 
-                //  view.viewport && view.viewport[0].id].join(', '))
+                 //e.state && [e.state.prev, e.state.next], 
+                 //view.viewport && view.viewport[0].id].join(', '))
                 if (e.state) {
-                    if (e.state.next === 'ckLoading' && loading) {
+                    if (e.state.next === '_modal_') {
+                        modal.set(e.state.opt).open();
+                    } else if (modal.opened) {
+                        view.closeModal();
+                    } else if (e.state.next === 'ckLoading' && loading) {
                         // back from other page
                         history.back();
                     } else if (loading) {
                         // from other page, need hide loading immediately
                         view.showTopbar();
-                        view.changeView($('#' + e.state.next));
+                        view.changeView(e.state.next);
                         view.loadingCard.hide();
                     } else if (e.state.prev === view.viewport[0].id) {
                         // forward from inner view
@@ -103,14 +212,19 @@ define([
             });
 
             pageSession.init();
-            
-            var current_state = history.state;
+
+            var current_state = history.state,
+                restore_state = current_state && current_state.next;
             //alert(['init', 
-            //  current_state && [current_state.prev, current_state.next], 
-            //  view.viewport && view.viewport[0].id].join(', '))
-            if (current_state && current_state.next) {
-                this.changeView($('#' + current_state.next));
-                if (current_state.next === 'ckLoading') {
+             //current_state && [current_state.prev, current_state.next], 
+             //view.viewport && view.viewport[0].id].join(', '))
+            if (restore_state === '_modal_') { // @TODO
+                restore_state = current_state.prev;
+                modal.set(history.state.opt).open();
+            }
+            if (restore_state) {
+                view.changeView(restore_state);
+                if (restore_state === 'ckLoading') {
                     history.back();
                 }
             } else {
@@ -124,54 +238,20 @@ define([
                 }
             }
 
-            $(window).bind('resize', function(e){
-                view.updateSize();
-            });
-
-            this.hideAddressbar();
-            this.windowFullHeight = window.innerHeight;
-
-            soviet(document, {
-                matchesSelector: true,
-                preventDefault: true
-            }).on('click', tap_events);
-
-            var startY, currentY;
-
-            $(body).bind('touchstart', function(e){
-                startY = e.touches[0].clientY;
-            });
-
-            $(body).bind('touchmove', function(e){
-                currentY = e.touches[0].clientY;
-            });
-
-            $(body).bind('touchend', function(){
-                if (view.disableView) {
-                    return;
-                }
-                var direction = currentY - startY;
-                if (direction < -20) {
-                    view.hideAddressbar();
-                    if (view.viewport[0].scrollTop >= view.headerHeight) {
-                        view.hideTopbar();
-                    }
-                } else if (direction > 0) {
-                    view.showTopbar();
-                }
-            });
-
         },
 
-        changeView: function(pile){
-            this.viewport = pile.show();
-            pile.append(this.footer);
+        changeView: function(card){
+            if (typeof card === 'string') {
+                card = $('#' + card);
+            }
+            this.viewport = card.show();
+            card.append(this.footer);
             this.updateSize();
-            pile[0].scrollTop = this.topbarEnable ? 0 : this.headerHeight;
+            //card[0].scrollTop = this.topbarEnable ? 0 : this.headerHeight;
         },
 
         updateSize: function(){
-            this.viewport[0].style.height = window.innerHeight - this.headerHeight + 'px';
+            this.viewport[0].style.height = window.innerHeight + 'px';
         },
 
         hideTopbar: function(){
@@ -197,46 +277,46 @@ define([
             }
         },
 
-        showAddressbar: function(){
+        //showAddressbar: function(){
             //setTimeout(function() {
                 //window.scrollTo(0, 0);
                 //view.updateSize();
             //}, 0);
-        },
+        //},
 
-        getOrientation : function() {
-            var is_portrait = true;
-            if (SUPPORT_ORIENT) {
-                is_portrait = ({ "0": true, "180": true })[window.orientation];
-            } else {
-                is_portrait = body.clientWidth / body.clientHeight < 1.1;
+        //getOrientation : function() {
+            //var is_portrait = true;
+            //if (SUPPORT_ORIENT) {
+                //is_portrait = ({ "0": true, "180": true })[window.orientation];
+            //} else {
+                //is_portrait = body.clientWidth / body.clientHeight < 1.1;
+            //}
+
+            //return is_portrait ? "portrait" : "landscape";
+        //},
+
+        openModal: function(opt){
+            if (!modal.opened) {
+                push_history(view.viewport[0].id, '_modal_', false, opt);
             }
-
-            return is_portrait ? "portrait" : "landscape";
+            modal.set(opt).open();
         },
 
-        render: function(){
-            this.listContents.find('.ck-link').forEach(function(item){
-                item = $(item);
-                var target_id = (item.attr('href')
-                        .replace(location.href, '')
-                        .match(/^#(.+)/) || [])[1],
-                    hd = $('#' + target_id).find('.ck-hd').html();
-                if (hd) {
-                    item.html(hd.trim());
-                } else {
-                    var card = item.parent().parent();
-                    item.parent().remove();
-                    if (!/\S/.test(card.html())) {
-                        card.remove();
-                    }
-                }
-            });
+        closeModal: function(){
+            view.disableView = false;
+            choreo.transform(modal._wrapper[0], 'translateY', '0');
+            choreo.transform(view.header.parent()[0], 'scale', 1);
+            choreo.transform(view.header.parent()[0], 'translateY', '0');
+            setTimeout(function(){
+                modal.close();
+            }, 400);
         },
 
         modal: modal
 
     };
+
+    function nothing(){}
 
     function link_handler(next_id, true_link){
         var me, is_forward = typeof next_id === 'string';
@@ -262,19 +342,19 @@ define([
                 return;
             }
         }
-        var current = view.viewport.addClass('ck-interim');
+        var current = view.viewport;
         if (!is_forward) {
             push_history(current[0].id, next_id, true_link);
         }
-        choreo.transform(next[0], 'translateX', window.innerWidth + 'px');
-        next.addClass('ck-moving');
         view.showTopbar();
         view.changeView(next);
-        choreo().play().actor(next[0], {
-            'transform': 'translateX(0)'
+        next.addClass('moving');
+        choreo().play().actor(view.wrapper[0], {
+            'transform': 'translateX(' + (0 - window.innerWidth) + 'px)'
         }, 400, 'easeInOut').follow().done(function(){
-            next.removeClass('ck-moving');
-            current.hide().removeClass('ck-interim');
+            current.hide();
+            choreo.transform(view.wrapper[0], 'translateX', '0');
+            next.removeClass('moving');
             if (true_link) {
                 if (is_forward) {
                     history.forward();
@@ -288,16 +368,16 @@ define([
 
     function back_handler(prev_id){
         var prev = $('#' + prev_id);
-        var current = view.viewport.addClass('ck-moving');
-        prev.addClass('ck-interim');
+        var current = view.viewport;
         view.showTopbar();
         view.changeView(prev);
-        choreo().play().actor(current[0], {
-            'transform': 'translateX(' + window.innerWidth + 'px)'
+        choreo.transform(view.wrapper[0], 'translateX', 0 - window.innerWidth + 'px');
+        current.addClass('moving');
+        prev.show();
+        choreo().play().actor(view.wrapper[0], {
+            'transform': 'translateX(0)'
         }, 400, 'easeInOut').follow().done(function(){
-            current.hide().removeClass('ck-moving');
-            choreo.transform(current[0], 'translateX', '0px');
-            prev.removeClass('ck-interim');
+            current.hide().removeClass('moving');
             if (prev_id === 'ckLoading') {
                 history.back();
             }
@@ -305,11 +385,12 @@ define([
         });
     }
 
-    function push_history(prev_id, next_id, link){
+    function push_history(prev_id, next_id, link, opt){
         history.pushState({
             prev: prev_id,
             next: next_id,
             link: link,
+            opt: opt,
             i: history.length
         }, document.title, location.href);
     }
