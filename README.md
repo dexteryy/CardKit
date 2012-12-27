@@ -13,6 +13,7 @@
 
 ### 准备工作
 1. `npm install`
+   grunt-contrib-compass有点bug，fix方法：将node_modules/grunt-contrib-compass/tasks/compass.js中的38行改为 `var options = this.data.options;`
 2. `cp grunt.js.tmpl grunt.js`
 3. 按照grunt.js内的TODO，编辑它
 4. `grunt`, 执行默认任务，编译dist和static文件
