@@ -11,12 +11,12 @@ define([
     'moui/gesture/scroll',
     './bus',
     './pagesession',
-    './view/parser',
+    './view/render',
     './view/modal',
     'mo/domready'
 ], function($, _, tpl, soviet, choreo, 
     baseGeste, tapGeste, swipeGeste, dragGeste, scrollGeste, 
-    bus, pageSession, htmlparser, modal){
+    bus, pageSession, render, modal){
 
     var window = this,
         location = window.location,
@@ -82,7 +82,8 @@ define([
             this.headerHeight = this.header.height();
             this.windowFullHeight = Infinity;
 
-            this.render();
+            render(wrapper);
+            this.loadingCard.hide();
             this.showTopbar();
             this.initState();
 
@@ -167,11 +168,6 @@ define([
                 }
             }
 
-        },
-
-        render: function(){
-            htmlparser(this.wrapper);
-            this.loadingCard.hide();
         },
 
         initState: function(){

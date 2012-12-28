@@ -8,7 +8,7 @@ define('moui/gesture/scroll', [
 
     _.mix(ScrollGesture.prototype, {
 
-        EVENTS: ['scrolldown', 'scrollup'],
+        EVENTS: ['scrolldown', 'scrollup'], // @TODO scrollstart
         DEFAULT_CONFIG: {
             'directThreshold': 20
         },

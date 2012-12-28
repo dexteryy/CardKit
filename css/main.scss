@@ -207,19 +207,8 @@ a {
   overflow-y:auto;
   -webkit-overflow-scrolling: touch;
 
-  & > *:first-child {
+  .ck-wrapper & > *:first-child {
     margin-top:$nav_height + $space;
-  }
-
-  // 文章视图
-  &.paper {
-
-    .ck-text {
-      padding:(28px/2) 0;
-      border-bottom:1px solid $border_color;
-      //margin-bottom:40px;
-    }
-
   }
 
   &.moving {
@@ -264,13 +253,8 @@ a {
 //  模块
 // ===========
 
-// 无格式模块
-.ck-plain {
-
-}
-
 // 自定义模块
-.ck-box {
+%ck-cell {
   overflow:hidden;
   margin:$space;
   background-color:#fff;
@@ -280,42 +264,43 @@ a {
 }
 
 // 文本模块
-.ck-text {
-  font-size:$article_size;
-  line-height:60px/2;
-  margin:$space;
+.ck-cell-box {
+  @extend %ck-cell;
+  //margin:$space*(4/3) $space;
   padding:(28px/2) $text_space 0 $text_space;
-  @include user-select(text);
 
-  &.plain {
-  
+  &[data-cfg-plain] {
+    padding:0;
+    background:none;
+    border:none;
+    @include border-radius(0);
+    @include box-shadow(none);
   }
 
-  &.paper {
-  
+  &[data-style="paper"] {
+    font-size:$article_size;
+    line-height:60px/2;
+    padding:(28px/2) 0;
+    border-bottom:1px solid $border_color;
+    @include user-select(text);
   }
 
   p {
     margin:(50px/2) 0;
   }
 
-  .ckd-hd {
-    font-size:$headtitle_size;
-    padding-bottom:10px;
-    border-bottom:1px solid $border_color;
-    margin-bottom:30px;
-  }
-
-}
-
-// 表单模块
-.ck-form {
+  //.ckd-hd {
+    //font-size:$headtitle_size;
+    //padding-bottom:10px;
+    //border-bottom:1px solid $border_color;
+    //margin-bottom:30px;
+  //}
 
 }
 
 // 列表模块
-.ck-list {
-  @extend .ck-box;
+.ck-cell-list {
+  @extend %ck-cell;
 
   .ck-item {
     position:relative;
@@ -380,8 +365,12 @@ a {
 
 }
 
-// 大列表模块
-.ck-biglist {
+.ck-cell-mini {
+
+}
+
+// 表单模块
+.ck-cell-form {
 
 }
 
