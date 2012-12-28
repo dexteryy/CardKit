@@ -6,3 +6,5 @@ syncdb_dumps.bak
 node_modules/
 .sass-cache/
 grunt.js
+dist/
+static/
