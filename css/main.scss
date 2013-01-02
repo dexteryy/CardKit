@@ -1,4 +1,5 @@
 @import "base";
+@import "animation";
 
 //@import "animate/animations/attention-seekers/bounce";
 //@import "map1/*.png";
@@ -32,7 +33,6 @@ $nav_height: 85px/2;
 
 html {
   -webkit-text-size-adjust: 100%;
-  overflow:hidden;
 }
 
 body {
@@ -40,7 +40,6 @@ body {
   color:$text_color;
   background:$card_bgcolor;
   line-height:1.7;
-  overflow:hidden;
 }
 
 // ===========
@@ -111,6 +110,11 @@ a {
   @include box-shadow(0 2px 3px rgba(0,0,0,.35));
   z-index:$zindex_step;
   @include user-select(none);
+
+  a {
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+  }
+
 }
 
 .ck-top-title {
@@ -172,10 +176,11 @@ a {
 
 .ck-wrapper {
   width:100%;
-  position:relative;
+  //position:relative;
 }
 
 .ck-footer {
+  display:none;
   height:15px;
   padding:25px 0 15px 0;
   background:$card_bgcolor;
@@ -208,7 +213,11 @@ a {
   -webkit-overflow-scrolling: touch;
 
   .ck-wrapper & > *:first-child {
-    margin-top:$nav_height + $space;
+    margin-top:$nav_height + $space*2;
+  }
+
+  .ck-footer {
+    display:block;
   }
 
   &.moving {
@@ -231,22 +240,61 @@ a {
   font-size:$headtitle_size;
   color:$desc_color;
   text-align:center;
-  overflow:hidden;
+  overflow-y:visible;
 
-  span {
+  div {
     display:block;
-    //height:100%;
-    padding:50% 0 50% 0;
-    position:absolute;
-    top:0;
-    left:0;
+    margin:0;
     width:100%;
+    position:fixed;
+    bottom:50px;
+    left:0;
   }
 
-  .ck-footer * {
+  span {
+    width:20px;
+    height:20px;
+    background:#666;
+    display:inline-block;
+    margin:5px;
+    font-size:0;
+    @include border-radius(10px);
+    @include transform-origin(50% 50%);
+    @include animation(loading-dot 1.5s steps(1, start) 0.5s infinite);
+
+    &:first-child {
+      @include animation(loading-dot 1.5s steps(1, start) 0s infinite);
+    }
+
+    &:last-child {
+      @include animation(loading-dot 1.5s steps(1, start) 1s infinite);
+    }
+
+  }
+  
+  .ck-footer {
     display:none;
   }
 
+}
+
+@include keyframes(loading-dot) {
+  0% {
+    background:#666;
+    //@include transform(scale(1));
+  }
+  33% {
+    background:#ccc;
+    //@include transform(scale(0.8));
+  }
+  66% {
+    background:#ccc;
+    //@include transform(scale(0.8));
+  }
+  100% {
+    background:#666;
+    //@include transform(scale(1));
+  }
 }
 
 // ===========
@@ -472,4 +520,26 @@ a {
   background:$card_bgcolor;
 }
 
+// Growl
+
+.moui-growl {
+  display:none;
+  position:fixed;
+  top:30%;
+  left:20px;
+  right:20px;
+  z-index: $zindex_overlay + $zindex_step;
+  padding:20px 10px;
+  background:#000;
+  opacity:0.8;
+  color:#fff;
+  font-size:$headtitle_size;
+  text-align:center;
+  @include border-radius(5px);
+
+  &.active {
+    display:block;
+  }
+
+}
 

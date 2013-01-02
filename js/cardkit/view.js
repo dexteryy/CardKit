@@ -13,10 +13,11 @@ define([
     './pagesession',
     './view/render',
     './view/modal',
+    './view/growl',
     'mo/domready'
 ], function($, _, tpl, soviet, choreo, 
     baseGeste, tapGeste, swipeGeste, dragGeste, scrollGeste, 
-    bus, pageSession, render, modal){
+    bus, pageSession, render, modal, growl){
 
     var window = this,
         location = window.location,
@@ -83,16 +84,16 @@ define([
             this.windowFullHeight = Infinity;
 
             render(wrapper);
-            this.loadingCard.hide();
             this.showTopbar();
             this.initState();
 
-            $(window).bind('resize', function(e){
-                view.updateSize();
-            });
+            //$(window).bind('resize', function(e){
+                //view.updateSize();
+            //});
 
             this.hideAddressbar();
             this.windowFullHeight = window.innerHeight;
+            this.loadingCard.hide();
 
             tapGeste(document, {});
             scrollGeste(document, {});
@@ -114,59 +115,44 @@ define([
                 view.showTopbar();
             });
 
-            var _startY, 
-                _prevent_down_inited,
-                _prevent_up_inited;
-
             $(document).bind('touchstart', function(e){
                 var t = e.touches[0], 
-                    _prevented,
-                    vp = view.viewport[0];
-                _startY = t.clientY;
-                if (vp.scrollTop + vp.offsetHeight >= vp.scrollHeight
-                        && !_prevent_up_inited) {
-                    $(document).bind('touchmove', prevent_up);
-                    _prevent_up_inited = true;
-                    _prevented = true;
-                }
-                if (vp.scrollTop <= 0 && !_prevent_down_inited) {
-                    $(document).bind('touchmove', prevent_down);
-                    _prevent_down_inited = true;
-                    _prevented = true;
-                }
-                if (!_prevented){
-                    $(document).unbind('touchmove', prevent_up);
-                    $(document).unbind('touchmove', prevent_down);
-                    _prevent_down_inited = false;
-                    _prevent_up_inited = false;
+                    vp = view.viewport[0],
+                    bottom;
+                if (vp.scrollTop <= 1) {
+                    vp.scrollTop = 1;
+                } else if (vp.scrollTop >= (bottom = vp.scrollHeight - vp.offsetHeight - 1)) {
+                    vp.scrollTop = bottom;
                 }
             });
 
-            function prevent_up(e){
-                var t = e.touches[0];
-                if (t.clientY <= _startY) {
-                    //confirm('[待实现]要显示地址栏么？', function(){
-                        //view.viewport[0].scrollTop = 100;
-                    //});
-                    e.preventDefault();
-                } else {
-                    $(document).unbind('touchmove', prevent_up);
-                    _prevent_up_inited = false;
+            var startY,
+                hold_timer, 
+                holded,
+                cancel_hold = function(){
+                    clearTimeout(hold_timer);
+                    if (holded) {
+                        holded = false;
+                        view.viewport[0].style.overflow = '';
+                        growl.tip.close();
+                    }
+                };
+            this.header.bind('touchstart', function(e){
+                startY = e.touches[0].clientY;
+                hold_timer = setTimeout(function(){
+                    holded = true;
+                    view.viewport[0].style.overflow = 'hidden';
+                    growl.tip.set({
+                        content: '向下拖动显示地址栏'
+                    }).open();
+                }, 200);
+            }).bind('touchmove', function(e){
+                clearTimeout(hold_timer);
+                if (holded && e.touches[0].clientY < startY) {
+                    cancel_hold();
+                    view.hideAddressbar();
                 }
-            }
-
-            function prevent_down(e){
-                var t = e.touches[0];
-                if (t.clientY >= _startY) {
-                    //confirm('[待实现]要立刻返回顶部么？', function(){
-                    
-                    //});
-                    e.preventDefault();
-                } else {
-                    $(document).unbind('touchmove', prevent_down);
-                    _prevent_down_inited = false;
-                }
-            }
+            }).bind('touchend', cancel_hold).bind('touchcancel', cancel_hold);
 
         },
 
