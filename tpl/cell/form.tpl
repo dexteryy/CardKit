@@ -1,5 +1,5 @@
 
-<article class="{%= data.style %}">
+<article>
 
     {% if (data.hd) { %}
     <header>
@@ -9,10 +9,10 @@
         <span>{%= data.hd %}</span>
         {% } %}
         {% if (data.subtitle) { %}
-        <span class="subtitle">{%= data.subtitle %}</span>
+        <span class="ck-subtitle">{%= data.subtitle %}</span>
         {% } %}
         {% if (data.info) { %}
-        <span class="info">{%= data.info %}</span>
+        <span class="ck-info">{%= data.info %}</span>
         {% } %}
     </header>
     {% } %}

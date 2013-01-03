@@ -61,6 +61,7 @@ a {
   @include border-radius($radius);
   background-color: #81858b;
   border: solid 1px #bcbcbc;
+  //@include box-shadow(0 1px #fff, inset 0 2px #fff);
   @include background-image(linear-gradient(bottom, #ccc, #fff));
   font-size:$title_size;
   color:$text_color;
@@ -125,7 +126,7 @@ a {
   margin:0 $space + 40px;
 }
 
-.ck-baseview {
+.ck-root {
   @include box-shadow(0px 0px 10px rgba(0,0,0,.35));
   @include transform-origin(50% 0);
   @include transition(transform 400ms ease-in-out 100ms);
@@ -194,6 +195,16 @@ a {
 
 }
 
+.ck-top-tips {
+  text-align:center;
+  font-size:$title_size;
+  color:#999;
+  border:1px solid $border_color;
+  padding:5px 10px;
+  margin:0px 30px ($nav_height - $title_size - 12 + $space) 30px;
+  @include border-radius($radius);
+}
+
 .ck-raw {
   display:none;
 }
@@ -212,9 +223,9 @@ a {
   overflow-y:auto;
   -webkit-overflow-scrolling: touch;
 
-  .ck-wrapper & > *:first-child {
-    margin-top:$nav_height + $space*2;
-  }
+  //.ck-wrapper & > *:first-child {
+    //margin-top:$nav_height + $space*2;
+  //}
 
   .ck-footer {
     display:block;
@@ -309,13 +320,89 @@ a {
   border:1px solid rgb(255,255,255);
   @include border-radius($radius);
   @include box-shadow(0px 1px 4px 0px rgba(0,0,0,0.3));
+
+  & > article > header {
+    @extend %item;
+
+    .ck-link, span {
+      @extend %item-inner;
+    }
+
+    .ck-link {
+      @extend %more-link;
+
+      &:active {
+        @extend %item-inner-active;
+      }
+
+    }
+
+  }
+
+  & > article > footer {
+    @extend %info-text;
+    border-top:1px solid $border_color;
+    margin:0 20px;
+    padding:($space) 0;
+  }
+
+}
+
+%item {
+  border-bottom:1px solid $border_color;
+  margin:0 20px;
+  padding:($space/2) 0;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+%item-inner {
+  overflow:hidden;
+  padding:($space/2) 0;
+  font-size:$maintitle_size;
+  color:$text_color;
+  display:block;
+  -webkit-touch-callout: none;
+}
+
+%item-inverse {
+  background:$hover_color!important;
+  color:#fff;
+}
+
+%item-inner-active {
+  @extend %item-inverse;
+  @include border-radius($radius);
+  padding-left:10px;
+  padding-right:10px;
+  margin-left:-20px;
+  @include transform(translateX(10px));
+}
+
+%more-link {
+  background: {
+    image: inline-image('drawer_icon.png');
+    repeat: no-repeat;
+    position: right;
+    size: 5.5px 10px;
+  }
+}
+
+%info-text {
+  font-size:$text_size;
+  color:$desc_color;
 }
 
 // 文本模块
 .ck-cell-box {
-  @extend %ck-cell;
-  //margin:$space*(4/3) $space;
-  padding:(28px/2) $text_space 0 $text_space;
+
+  &:not([data-cfg-paper]) {
+    @extend %ck-cell;
+  }
+
+  & > article > section {
+    padding:(28px/2) $text_space;
+    font-size:$title_size;
+  }
 
   &[data-cfg-plain] {
     padding:0;
@@ -325,24 +412,34 @@ a {
     @include box-shadow(none);
   }
 
-  &[data-style="paper"] {
-    font-size:$article_size;
-    line-height:60px/2;
-    padding:(28px/2) 0;
+  &[data-cfg-paper] {
+    margin:$space;
+    padding:0 0 ($space) 0;
     border-bottom:1px solid $border_color;
     @include user-select(text);
-  }
 
-  p {
-    margin:(50px/2) 0;
-  }
+    & > article > header {
+      border-bottom:1px solid $border_color;
+      padding:0 0 $space 0;
 
-  //.ckd-hd {
-    //font-size:$headtitle_size;
-    //padding-bottom:10px;
-    //border-bottom:1px solid $border_color;
-    //margin-bottom:30px;
-  //}
+      .ck-link, span {
+        font-size: $headtitle_size;
+      }
+
+    }
+
+    & > article > section {
+      padding:50px 0 $space 0;
+      font-size:$article_size;
+      line-height:60px/2;
+
+      p {
+        padding:0 0 (50px/2) 0;
+      }
+
+    }
+
+  }
 
 }
 
@@ -351,69 +448,260 @@ a {
   @extend %ck-cell;
 
   .ck-item {
-    position:relative;
-    border-bottom:1px solid $border_color;
-    margin:0 20px;
-    padding:($space/2 + 1) 0;
-    -webkit-tap-highlight-color: rgba(0,0,0,0);
-
-    .ck-link {
-      padding:($space/2 - 1) 0;
-      font-size:$maintitle_size;
-      color:$text_color;
-      display:block;
-      background: {
-        image: inline-image('drawer_icon.png');
-        repeat: no-repeat;
-        position: right;
-        size: 5.5px 10px;
-      }
-      -webkit-touch-callout: none;
-    }
+    @extend %item;
 
     &:last-child {
       border:none;
     }
 
-    &:active {
-      margin:0 10px;
+  }
+
+  .ck-initem {
+    @extend %item-inner;
+
+    &.ck-link:active {
+      @extend %item-inner-active;
+
+      .ck-info, .ck-subtitle {
+        color:#ccc;
+      }
+
+    }
+
+  }
+
+  .ck-icon {
+    width:(60px / 2);
+    min-height:30px;
+    background:#666;
+    float:left;
+    margin:0 10px 0 0;
+  }
+
+  .ck-info {
+    @extend %info-text;
+    float:right;
+    margin-left:10px;
+  }
+
+  .ck-title, .ck-initem .ck-link {
+    font-size:$title_size;
+    display:block;
+    line-height:140%;
+  }
+
+  .ck-title {
+    padding-right:10px;
+  }
+
+  .ck-subtitle {
+    @extend %info-text;
+    display:block;
+    line-height:130%;
+  }
+
+  .ck-content {
+    font-size:$title_size;
+    display:block;
+  }
+
+  .ck-meta {
+    @extend %info-text;
+  }
+
+  &[data-style="more"] {
+
+    .ck-info, .ck-icon, .ck-subtitle {
+      display:none;
+    }
+
+    .ck-initem {
+      @extend %more-link;
+
+    }
+
+    .ck-title {
+      font-size:$maintitle_size;
+    }
+  
+  }
+
+  &[data-style="menu"] {
+
+    .ck-icon, .ck-subtitle, .ck-meta, .ck-content {
+      display:none;
+    }
+
+  }
+
+  &[data-style="post"] {
+  
+  }
+
+  &[data-style="grid"] {
+  
+    .ck-info, .ck-subtitle, .ck-meta, .ck-content {
+      display:none;
+    }
+
+    & > article > ul {
+      overflow:hidden;
+      margin:0 20px;
+      padding:10px 0;
+      border-bottom:1px solid $border_color;
+
+      &:last-child {
+        border-bottom:none;
+      }
+
+    }
+
+    footer {
+      border-top:none;
+    }
+
+    .ck-item {
+      float:left;
+      padding:0;
+      margin:0;
       border:none;
-
-      .ck-link {
-        @include border-radius($radius);
-        background:$hover_color;
-        color:#fff;
-        padding-left:10px;
-        padding-right:10px;
-      }
-
-      &+.ck-item {
-        border-top:1px solid $border_color;
-      }
-
-      .info {
-        color:#fff;
-        right:10px;
-        background:$hover_color;
-      }
-    
+      text-align:center;
     }
 
-    .info {
-      position:absolute;
-      right:0;
-      top:$space/2 + 5;
-      font-size:$text_size;
-      color:$desc_color;
-      padding:($space/2 - 1) 0;
-      background:#fff;
+    .ck-initem {
+      margin:0;
+      padding:($space/2) 5px;
+
+      &.ck-link:active {
+        padding:($space/2) 5px;
+        margin:0;
+        @include transform(translateX(0));
+      }
     }
 
+    .ck-icon {
+      float:none;
+      margin:0;
+    }
+
+    .ck-title {
+      padding:0;
+    }
+  
   }
 
 }
 
 .ck-cell-mini {
+  @extend %ck-cell;
+
+  .ck-item {
+    @extend %item;
+    border:none;
+  }
+
+  .ck-title {
+    font-size:$maintitle_size;
+    line-height:140%;
+  }
+
+  .ck-content {
+    font-size:$title_size;
+    padding:($space/2) 0;
+  }
+
+  .ck-info {
+    @extend %info-text;
+    display:block;
+  }
+
+  .ck-initem {
+    overflow:hidden;
+    border-top:1px solid $border_color;
+    padding:($space/2) 0;
+  }
+
+  .ck-icon {
+    width:(60px / 2);
+    min-height:30px;
+    background:#666;
+    float:left;
+    margin:0 10px 0 0;
+  }
+
+  .ck-author {
+    font-size:$title_size;
+    display:block;
+    line-height:140%;
+  }
+
+  .ck-subtitle {
+    @extend %info-text;
+    display:block;
+    line-height:130%;
+  }
+
+  .ck-meta {
+    @extend %info-text;
+  }
+
+
+  &[data-style="slide"] {
+
+    & > article > header {
+      border-bottom:none;
+    }
+
+    & > article > footer {
+      border-top:none;
+    }
+
+    .ck-slide {
+      background:$card_bgcolor;
+      margin:0 10px;
+      overflow:hidden;
+      position:relative;
+    }
+
+    .ck-inslide {
+    }
+ 
+    .ck-item {
+      padding-left:10px;
+      padding-right:10px;
+      margin:0;
+      display:none;
+
+      &:first-child {
+        display:block;
+      }
+
+    }
+
+    .ck-page {
+      text-align:center;
+    
+      span {
+        display:inline-block;
+        margin:0 10px 0 0;
+        width: (12px/2);
+        height: (12px/2);
+        @include border-radius(6px/2);
+        background:#D6D6D6;
+        border: solid 1px #b3b3b3;
+
+        &:first-child {
+          background-color: #252525;
+          border: solid 1px #0058ba;
+          @include background-image(linear-gradient(bottom, #0084ff, #00a2ff));
+        }
+
+      }
+
+    }
+
+
+  }
 
 }
 

@@ -9,6 +9,7 @@ define([
         cell = $(cell);
         var source = util.getSource(cell, raw),
             config = {
+                paper: cell.data('cfgPaper'),
                 plain: cell.data('cfgPlain')
             },
             hd = get_hd(source && source.find('.ckd-hd')),
@@ -17,22 +18,24 @@ define([
                 .map(function(node){
                     return node.outerHTML;
                 }).join('') || source.html()),
-            custom_hd = util.getCustom('.ckd-hd', cell, raw, get_hd)[0],
-            custom_ft = util.getCustom('.ckd-ft', cell, raw, get_hd)[0];
+            custom_hd = (util.getCustom('.ckd-hd', cell, raw, get_hd) || [{}])[0],
+            custom_ft = (util.getCustom('.ckd-ft', cell, raw, get_hd) || [{}])[0];
         util.getCustom('.ckd-content', cell, raw, replace_content);
         var data = {
             config: config,
             style: cell.data('style'),
             content: cell[0].innerHTML + (contents || ''),
             hd: custom_hd.html || hd.html,
-            hd_url: custom_hd.href || hd.href,
+            hd_url: custom_hd.href || custom_hd.href !== null && hd.href,
             ft: custom_ft.html || ft.html
         };
         return data;
     }
 
     function replace_content(source, custom){
-        $(custom).replaceWith(source.clone());
+        if (custom) {
+            $(custom).replaceWith(source.clone());
+        }
     }
 
     function get_hd(source, custom){
@@ -41,7 +44,7 @@ define([
             html: source.html(),
             href: source.attr('href')
         } || {};
-        if (custom) {
+        if (custom && typeof custom === 'object') {
             var custom_data = get_hd(custom);
             for (var i in custom_data) {
                 if (custom_data[i]) {

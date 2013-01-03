@@ -1,5 +1,5 @@
 
-<article class="{%= data.style %}">
+<article>
 
     {% if (data.hd) { %}
     <header>

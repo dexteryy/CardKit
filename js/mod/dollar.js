@@ -58,6 +58,8 @@ define("dollar", [
             } else {
                 return ext.find(selector);
             }
+        } else if (this === window) {
+            return new $();
         }
     }
 

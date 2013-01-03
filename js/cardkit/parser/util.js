@@ -17,7 +17,7 @@ define([
         getCustom: function(tag, cell, raw, fn){
             var tags = cell.find(tag);
             if (!tags.length) {
-                return [{}];
+                return;
             }
             return tags.map(function(elm){
                 var source = exports.getSource(elm, raw);

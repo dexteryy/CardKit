@@ -1,41 +1,43 @@
 
 {% function get_item(item){ %}
     {% if (item.href && !item.author_url) { %}
-        <a href="{%= item.href %}" class="ck-link">{% get_content(item); %}</a>
+        <a href="{%= item.href %}" class="ck-link ck-initem">{% get_content(item); %}</a>
     {% } else { %}
-        <p>{% get_content(item); %}</p>
+        <p class="ck-initem">{% get_content(item); %}</p>
     {% } %}
 {% } %}
 
 {% function get_content(item){ %}
 
+    {% if (item.info) { %}
+    <span class="ck-info">{%= item.info %}</span>
+    {% } %}
+
     {% if (item.icon) { %}
-    <img src="{%= item.icon %}" class="icon"/>
+    <img src="{%= item.icon %}" class="ck-icon"/>
     {% } %}
 
     {% if (item.title) { %}
-    <strong>{%= item.title %}</strong>
+    <span class="ck-title">{%= item.title %}</span>
     {% } %}
 
-    {% if (data.style !== 'more') { %}
-        {% if (item.author_url) { %}
-        <a href="{%= item.author_url %}" class="ck-link">{%= item.author %}</a>
-        {% } else if (item.author) { %}
-        <span>{%= item.author %}</span>
+    {% if (data.style === 'post' || data.style === 'grid') { %}
+        {% if (!item.title) { %}
+            {% if (item.author_url) { %}
+            <a href="{%= item.author_url %}" class="ck-link">{%= item.author %}</a>
+            {% } else if (item.author) { %}
+            <span class="ck-title">{%= item.author %}</span>
+            {% } %}
         {% } %}
         {% if (item.subtitle) { %}
-        <span class="subtitle">{%= item.subtitle %}</span>
+        <span class="ck-subtitle">{%= item.subtitle %}</span>
         {% } %}
-    {% } %}
-
-    {% if (item.info) { %}
-    <span class="info">{%= item.info %}</span>
     {% } %}
 
 {% } %}
 
 
-<article class="{%= data.style %}{%= (data.config.plain ? ' plain' : '') %}">
+<article>
 
     {% if (data.hd) { %}
     <header>
@@ -51,7 +53,6 @@
 
     <nav>
     {% data.items.forEach(function(item){ %}
-        {% if (!item.title) { return; } %}
         <div class="ck-item">
             {% get_item(item); %}
         </div>
@@ -60,16 +61,18 @@
 
     {% } else { %}
 
-    <ul class="{%= ('col' + data.config.col) %}">
-    {% data.items.forEach(function(item){ %}
-        {% if (!item.title && !item.author) { return; } %}
-        <li class="ck-item">
+    <ul>
+    {% data.items.forEach(function(item, i){ %}
+        {% if (i && (i % data.config.col === 0)) { %}
+            </ul><ul>
+        {% } %}
+        <li class="ck-item" style="width:{%= (data.config.col ? Math.floor(1000/data.config.col)/10 + '%' : '') %};">
             {% get_item(item); %}
             {% if (item.content) { %}
-            <span class="content">{%= item.content %}</span>
+            <span class="ck-content">{%= item.content %}</span>
             {% } %}
-            {% if (item.meta) { %}
-            <span class="meta">{%= item.meta %}</span>
+            {% if (item.meta && item.meta.length) { %}
+            <span class="ck-meta">{%= item.meta.join('</span><span class="ck-meta">') %}</span>
             {% } %}
         </li>
     {% }); %}

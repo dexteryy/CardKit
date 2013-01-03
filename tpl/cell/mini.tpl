@@ -1,5 +1,5 @@
 
-<article class="{%= data.style %}">
+<article>
 
     {% if (data.hd) { %}
     <header>
@@ -12,42 +12,48 @@
     {% } %}
 
     {% if (data.style === 'slide') { %}
-    <div class="wrapper">
+    <div class="ck-slide"><div class="ck-inslide">
     {% } %}
 
         {% data.items.forEach(function(item){ %}
-        <section>
-            <div class="content">{%= item.content %}</div>
-            {% if (item.title || item.author) { %}
-            <p>
-                {% if (item.icon) { %}
-                <img src="{%= item.icon %}" class="icon"/>
+        <div class="ck-item">
+            {% if (item.title) { %}
+            <p class="ck-title">{%= item.title %}</p>
+            {% } %}
+            <div class="ck-content">
+                {%= item.content.join('') %}
+                {% if (item.info) { %}
+                <span class="ck-info">{%= item.info %}</span>
                 {% } %}
-                <strong>{%= item.title %}</strong>
+            </div>
+            {% if (item.author) { %}
+
+            <p class="ck-initem">
+                {% if (item.icon) { %}
+                <img src="{%= item.icon %}" class="ck-icon"/>
+                {% } %}
                 {% if (item.author_url) { %}
-                <a href="{%= item.author_url %}" class="ck-link">{%= item.author %}</a>
+                <a href="{%= item.author_url %}" class="ck-author ck-link">{%= item.author %}</a>
                 {% } else if (item.author) { %}
-                <span>{%= item.author %}</span>
+                <span class="ck-author">{%= item.author %}</span>
                 {% } %}
                 {% if (item.subtitle) { %}
-                <span class="subtitle">{%= item.subtitle %}</span>
-                {% } %}
-                {% if (item.info) { %}
-                <span class="info">{%= item.info %}</span>
-                {% } %}
-                {% if (item.opt) { %}
-                <span class="opt">{%= item.opt %}</span>
+                <span class="ck-subtitle">{%= item.subtitle %}</span>
                 {% } %}
             </p>
+            {% if (item.meta && item.meta.length) { %}
+            <span class="ck-meta">{%= item.meta.join('</span><span class="ck-meta">') %}</span>
             {% } %}
-        </section>
+
+            {% } %}
+        </div>
         {% }); %}
 
     {% if (data.style === 'slide') { %}
-    </div>
+    </div></div>
     <footer>
         {% if (data.items.length > 1) { %}
-        <div class="page">
+        <div class="ck-page">
         {% data.items.forEach(function(){ %}
             <span></span>
         {% }); %}
