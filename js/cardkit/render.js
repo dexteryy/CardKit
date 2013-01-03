@@ -3,14 +3,14 @@ define([
     'dollar',
     'mo/lang',
     'mo/template',
-    '../tpl/box',
-    '../tpl/list',
-    '../tpl/mini',
-    '../tpl/form',
-    '../parser/box',
-    '../parser/list',
-    '../parser/mini',
-    '../parser/form'
+    './tpl/box',
+    './tpl/list',
+    './tpl/mini',
+    './tpl/form',
+    './parser/box',
+    './parser/list',
+    './parser/mini',
+    './parser/form'
 ], function($, _, tpl, 
     tpl_box, tpl_list, tpl_mini, tpl_form,
     boxParser, listParser, miniParser, formParser){

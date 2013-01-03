@@ -15,7 +15,7 @@ require([
     'cardkit/app'
 ], function($, app){
 
-    app.setup({
+    app.init({
         header: $('.ck-header'),
         wrapper: $('.ck-wrapper')
     });
