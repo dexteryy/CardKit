@@ -2,7 +2,7 @@
 module.exports = function(grunt) {
 
     //TODO: change the following variable to your shire_for_mobile directory
-    var shireForMobileDir = '/Users/dexteryy/code/douban/vagrant/shire-git/'
+    var shireForMobileDir = '/Users/dexteryy/code/douban/vagrant/shire-git/';
 
     grunt.initConfig({
         pkg: '<json:package.json>',
@@ -80,6 +80,7 @@ module.exports = function(grunt) {
                     outputStyle: 'expanded',
                     noLineComments: false,
                     require: [
+                        'animation',
                         'animate-sass'
                     ],
                     environment: 'production'
@@ -141,9 +142,11 @@ module.exports = function(grunt) {
         watch: [{
             files: 'js/**/*.js',
             tasks: 'ozma copy:dist2serve'
+            //tasks: 'ozma'
         }, {
             files: 'css/**/*.scss',
             tasks: 'compass copy:dist2serve'
+            //tasks: 'compass'
         }, {
             files: 'tpl/**/*.tpl',
             tasks: 'oz'

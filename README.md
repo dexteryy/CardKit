@@ -5,8 +5,15 @@
 
 ### 安装
 
-1. node, npm
-2. ruby gem: sass, animate-sass, compass
+1. `npm install`
+    * grunt-contrib-compass有一个bug，fix方法：将node_modules/grunt-contrib-compass/tasks/compass.js中的38行改为 `var options = this.data.options;`
+2. 安装以下compass插件:
+    * `gem install animation --pre`
+    * `gem install animate-sass`
+3. `cp grunt.js.tmpl grunt.js`
+4. 按照grunt.js内的TODO，编辑它
+5. `grunt`, 测试默认任务，编译dist和static文件
+6. `grunt watch`
 
 ### 仓库
 
@@ -22,10 +29,3 @@
 * -> `shire_for_mobile:pre`（用于每日构建，只做git svn dcommit，dcommit前后需做git pull和push）
 * -> `^/branches/lifei/cardkit` （在fili上checkout出来用于预发布/线上数据测试）
 
-### 准备工作
-
-1. `npm install`
-   grunt-contrib-compass有点bug，fix方法：将node_modules/grunt-contrib-compass/tasks/compass.js中的38行改为 `var options = this.data.options;`
-2. `cp grunt.js.tmpl grunt.js`
-3. 按照grunt.js内的TODO，编辑它
-4. `grunt`, 执行默认任务，编译dist和static文件
