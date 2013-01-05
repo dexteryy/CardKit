@@ -309,7 +309,7 @@ define("eventmaster", [
         return methods;
     })({});
 
-    EventAPI.wait = EventAPI.then;
+    EventAPI.once = EventAPI.wait = EventAPI.then;
     EventAPI.on = EventAPI.bind;
     EventAPI.off = EventAPI.unbind;
 

@@ -27,6 +27,7 @@ $text_space: 40px/2;
 
 $zindex_card: 10; // 视图内的层级
 $zindex_overlay: 100; // 弹出物的层级
+$zindex_mask: 1000;
 $zindex_step: 10; // 间距
 
 $nav_height: 85px/2;
@@ -177,7 +178,11 @@ a {
 
 .ck-wrapper {
   width:100%;
-  //position:relative;
+
+  &.inited { 
+
+  }
+
 }
 
 .ck-footer {
@@ -205,6 +210,19 @@ a {
   @include border-radius($radius);
 }
 
+.ck-globalmask {
+  display:none;
+  background:#f00;
+  opacity:0;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  padding-bottom:60px;
+  z-index: $zindex_mask;
+}
+
 .ck-raw {
   display:none;
 }
@@ -220,7 +238,7 @@ a {
   background:$card_bgcolor;
   //@include box-shadow(-3px 0px 10px 0px rgba(0,0,0,.35));
   @include user-select(none);
-  overflow-y:auto;
+  overflow-y:scroll;
   -webkit-overflow-scrolling: touch;
 
   //.ck-wrapper & > *:first-child {
@@ -232,7 +250,7 @@ a {
   }
 
   &.moving {
-    position:absolute;
+    position:absolute!important;
     top:0;
     left:0;
     z-index:$zindex_card;
@@ -246,8 +264,14 @@ a {
 
 }
 
-#ckLoading {
+.ck-loading {
   display:block;
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:$card_bgcolor;
   font-size:$headtitle_size;
   color:$desc_color;
   text-align:center;

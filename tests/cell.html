@@ -33,6 +33,13 @@
     
     <div class="ck-card" id="ckDefault">
 
+        <div class="ck-cell-list" data-style="more">
+            <div class="ckd-item"><a class="ckd-title" href="#listCard1">查看更多列表类型（页内切换）</a></div>
+            <div class="ckd-item"><a class="ckd-title" href="#paperCard1">查看正文（页内切换）</a></div>
+            <div class="ckd-item" data-source="ckdBox1Sub2"></div>
+            <div class="ckd-item" data-source="ckdBox1Sub2"><a class="ckd-title">（覆盖内容）</a></div>
+            <div class="ckd-item" data-source="ckdBox1Sub2"><a class="ckd-title" href="#paperCard1">（覆盖内容和链接）</a></div>
+        </div>
 
         <div class="ck-cell-box">
             <a href="" class="ckd-hd" data-source="ckdBox1"></a>
@@ -49,14 +56,6 @@
                 <button class="ck-modal" data-url="form.html" data-title="多字段的表单页">表单页1</button>
                 <button class="ck-modal" data-url="form.html" data-title="单个提交框的表单页">表单页2</button>
             </div>
-        </div>
-
-        <div class="ck-cell-list" data-style="more">
-            <div class="ckd-item"><a class="ckd-title" href="#listCard1">查看更多列表类型（页内切换）</a></div>
-            <div class="ckd-item"><a class="ckd-title" href="#paperCard1">查看正文（页内切换）</a></div>
-            <div class="ckd-item" data-source="ckdBox1Sub2"></div>
-            <div class="ckd-item" data-source="ckdBox1Sub2"><a class="ckd-title">（覆盖内容）</a></div>
-            <div class="ckd-item" data-source="ckdBox1Sub2"><a class="ckd-title" href="#paperCard1">（覆盖内容和链接）</a></div>
         </div>
 
         <div class="ck-cell-mini" data-source="ckdBox1Sub4">
@@ -111,7 +110,7 @@
 
     </div>
 
-    <div class="ck-card" id="ckLoading">
+    <div class="ck-card ck-loading" id="ckLoading">
         <div>
             <p><span></span><span></span><span></span></p>
             <p>加载中...</p>
