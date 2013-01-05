@@ -66,7 +66,9 @@ define('moui/gesture/scroll', [
             }
             // end
             if (self._scrollY !== null) {
-                if (self._scrollY < 0 || Math.abs(self.scrollingNode.scrollTop - self._scrollY) 
+                var vp = self.scrollingNode;
+                if (self._scrollY >= 0 && self._scrollY <= vp.scrollHeight - vp.offsetHeight
+                        && Math.abs(vp.scrollTop - self._scrollY) 
                         < self._config.scrollEndGap) {
                     self.trigger(node, self.event.scrollend);
                 } else {
@@ -77,7 +79,7 @@ define('moui/gesture/scroll', [
                             self._scrolling = false;
                             self.trigger(node, self.event.scrollend);
                         }
-                    }, self.scrollingNode);
+                    }, vp);
                 }
             }
             self._scrollY = null;

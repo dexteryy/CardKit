@@ -206,7 +206,7 @@ a {
   color:#999;
   border:1px solid $border_color;
   padding:5px 10px;
-  margin:0px 30px ($nav_height - $title_size - 12 + $space) 30px;
+  margin:10px 30px ($nav_height - $title_size - 12 + $space) 30px;
   @include border-radius($radius);
 }
 

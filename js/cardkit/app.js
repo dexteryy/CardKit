@@ -124,18 +124,10 @@ define([
                 ck.globalMask.show();
             }).bind('scrollend', function(){
                 ck.globalMask.hide();
+                prevent_window_scroll();
             });
 
-            $(document).bind('touchstart', function(e){
-                var t = e.touches[0], 
-                    vp = ck.viewport[0],
-                    bottom;
-                if (vp.scrollTop <= 1) {
-                    vp.scrollTop = 1;
-                } else if (vp.scrollTop >= (bottom = vp.scrollHeight - vp.offsetHeight - 1)) {
-                    vp.scrollTop = bottom;
-                }
-            });
+            $(document).bind('touchstart', prevent_window_scroll);
 
             var startY,
                 hold_timer, 
@@ -424,6 +416,17 @@ define([
             opt: opt,
             i: history.length
         }, document.title, location.href);
+    }
+
+    function prevent_window_scroll(){
+        var vp = ck.viewport[0],
+            bottom;
+        if (vp.scrollTop <= 1) {
+            vp.scrollTop = 1;
+        } else if (vp.scrollTop >= (bottom = vp.scrollHeight 
+                - vp.offsetHeight - 1)) {
+            vp.scrollTop = bottom;
+        }
     }
 
     return ck;
