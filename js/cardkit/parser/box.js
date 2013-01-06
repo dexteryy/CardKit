@@ -14,10 +14,10 @@ define([
             },
             hd = get_hd(source && source.find('.ckd-hd')),
             ft = get_hd(source && source.find('.ckd-ft')),
-            contents = source && (source.find('.ckd-content')
-                .map(function(node){
-                    return node.outerHTML;
-                }).join('') || source.html()),
+            contents = source && (
+                util.getOuterHTML(source.find('.ckd-content'))
+                || util.getInnerHTML(source)
+            ),
             custom_hd = (util.getCustom('.ckd-hd', cell, raw, get_hd) || [{}])[0],
             custom_ft = (util.getCustom('.ckd-ft', cell, raw, get_hd) || [{}])[0];
         util.getCustom('.ckd-content', cell, raw, replace_content);
@@ -25,9 +25,9 @@ define([
             config: config,
             style: cell.data('style'),
             content: cell[0].innerHTML + (contents || ''),
-            hd: custom_hd.html || hd.html,
+            hd: custom_hd.html === undefined ? hd.html : custom_hd.html,
             hd_url: custom_hd.href || custom_hd.href !== null && hd.href,
-            ft: custom_ft.html || ft.html
+            ft: custom_ft.html === undefined ? ft.html : custom_ft.html
         };
         return data;
     }
@@ -41,8 +41,8 @@ define([
     function get_hd(source, custom){
         source = $(source);
         var data = source && {
-            html: source.html(),
-            href: source.attr('href')
+            html: util.getText(source),
+            href: util.getHref(source)
         } || {};
         if (custom && typeof custom === 'object') {
             var custom_data = get_hd(custom);

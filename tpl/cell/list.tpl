@@ -1,6 +1,6 @@
 
 {% function get_item(item){ %}
-    {% if (item.href && !item.author_url) { %}
+    {% if (item.href) { %}
         <a href="{%= item.href %}" class="ck-link ck-initem">{% get_content(item); %}</a>
     {% } else { %}
         <p class="ck-initem">{% get_content(item); %}</p>

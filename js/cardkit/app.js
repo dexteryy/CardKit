@@ -71,9 +71,11 @@ define([
         ck.showTopbar();
         modal._wrapper.css('marginTop', wph + 'px');
         modal._content.css('height', h + 'px');
-        choreo.transform(modal._wrapper[0], 'translateY', 0 - wph + 'px');
-        choreo.transform(ck.header.parent()[0], 'scale', 0.75);
-        choreo.transform(ck.header.parent()[0], 'translateY', '10px');
+        setTimeout(function(){
+            choreo.transform(modal._wrapper[0], 'translateY', 0 - wph + 'px');
+            choreo.transform(ck.header.parent()[0], 'scale', 0.75);
+            choreo.transform(ck.header.parent()[0], 'translateY', '10px');
+        }, 0);
     });
 
     var ck = {
@@ -366,8 +368,8 @@ define([
         }
         ck.globalMask.show();
         ck.showTopbar();
-        ck.changeView(next);
         next.addClass('moving');
+        ck.changeView(next);
         choreo().play().actor(ck.wrapper[0], {
             'transform': 'translateX(' + (0 - window.innerWidth) + 'px)'
         }, 400, 'easeInOut').follow().done(function(){
@@ -390,10 +392,10 @@ define([
         var current = ck.viewport;
         ck.globalMask.show();
         ck.showTopbar();
-        ck.changeView(prev);
         choreo.transform(ck.wrapper[0], 'translateX', 0 - window.innerWidth + 'px');
         current.addClass('moving');
         prev.show();
+        ck.changeView(prev);
         choreo().play().actor(ck.wrapper[0], {
             'transform': 'translateX(0)'
         }, 400, 'easeInOut').follow().done(function(){

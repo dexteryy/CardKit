@@ -206,7 +206,7 @@ a {
   color:#999;
   border:1px solid $border_color;
   padding:5px 10px;
-  margin:10px 30px ($nav_height - $title_size - 12 + $space) 30px;
+  margin:8px 30px ($nav_height - $title_size - 20 + $space) 30px;
   @include border-radius($radius);
 }
 
@@ -421,11 +421,29 @@ a {
 
   &:not([data-cfg-paper]) {
     @extend %ck-cell;
+
+    & > article > header {
+      margin-bottom:(28px/2);
+    }
+
+    & > article > footer {
+      margin-top:(28px/2);
+    }
+
   }
 
   & > article > section {
-    padding:(28px/2) $text_space;
+    padding:0 $text_space;
     font-size:$title_size;
+
+    &:first-child {
+      padding-top:(28px/2);
+    }
+
+    &:last-child {
+      padding-bottom:(28px/2);
+    }
+
   }
 
   &[data-cfg-plain] {
@@ -434,6 +452,20 @@ a {
     border:none;
     @include border-radius(0);
     @include box-shadow(none);
+
+    & > article > header {
+      padding:0;
+    }
+
+    & > article > footer {
+      padding:0;
+    }
+
+    & > article > section {
+      padding-top:0;
+      padding-bottom:0;
+    }
+
   }
 
   &[data-cfg-paper] {

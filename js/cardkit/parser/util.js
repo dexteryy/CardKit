@@ -30,6 +30,33 @@ define([
                 }
                 return fn(elm);
             });
+        },
+
+        getHref: function(nodes){
+            for (var href, i = 0, l = nodes.length; i < l; i++) {
+                href = nodes[i].href;
+                if (href) {
+                    return href;
+                }
+            }
+        },
+
+        getText: function(nodes){
+            return nodes.map(function(elm){
+                return elm.textContent;
+            }).join('');
+        },
+
+        getInnerHTML: function(nodes){
+            return nodes.map(function(elm){
+                return elm.innerHTML;
+            }, $).join('');
+        },
+
+        getOuterHTML: function(nodes){
+            return nodes.map(function(elm){
+                return elm.outerHTML;
+            }, $).join('');
         }
 
     }; 

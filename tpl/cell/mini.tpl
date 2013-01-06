@@ -21,7 +21,7 @@
             <p class="ck-title">{%= item.title %}</p>
             {% } %}
             <div class="ck-content">
-                {%= item.content.join('') %}
+                {%= item.content %}
                 {% if (item.info) { %}
                 <span class="ck-info">{%= item.info %}</span>
                 {% } %}

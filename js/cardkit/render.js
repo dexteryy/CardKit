@@ -25,6 +25,8 @@ define([
             var data = boxParser(cell, raw);
             if (data.content) {
                 cell.innerHTML = tpl.convertTpl(tpl_box.template, data, 'data');
+            } else {
+                $(cell).remove();
             }
         });
 
@@ -50,6 +52,8 @@ define([
             }
             if (data.items.length) {
                 cell.innerHTML = tpl.convertTpl(tpl_list.template, data, 'data');
+            } else {
+                $(cell).remove();
             }
         });
 
@@ -70,6 +74,8 @@ define([
             }
             if (data.items.length) {
                 cell.innerHTML = tpl.convertTpl(tpl_mini.template, data, 'data');
+            } else {
+                $(cell).remove();
             }
         });
 
