@@ -37,6 +37,9 @@ define([
         item = $(item);
         var title = item.find('.ckd-title'),
             author = item.find('.ckd-author');
+        if (!title[0] && util.getHref(item)) {
+            title = item;
+        }
         var data = {
             title: getText(title),
             href: util.getHref(title),

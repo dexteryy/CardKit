@@ -22,7 +22,7 @@
     {% } %}
 
     {% if (data.style === 'post' || data.style === 'grid') { %}
-        {% if (!item.title) { %}
+        {% if (!item.href) { %}
             {% if (item.author_url) { %}
             <a href="{%= item.author_url %}" class="ck-link">{%= item.author %}</a>
             {% } else if (item.author) { %}

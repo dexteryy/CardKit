@@ -21,7 +21,7 @@ define([
         if (source && !items[0]) {
             items = source;
         }
-        items = items.map(get_item);
+        items = items && items.map(get_item);
         var data = {
             config: config,
             style: cell.data('style'),
