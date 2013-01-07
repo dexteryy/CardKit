@@ -30,8 +30,9 @@
 * -> `^/branches/lifei/cardkit` （在fili上checkout出来用于预发布/线上数据测试）
 
 #### 如何将shire\_for\_mobile与svn仓库关联起来
-`git svn init http://svn.douban.com/svn/shire -T trunk -b /branches/your_svn_name`
-`cp .git/refs/heads/master .git/refs/remotes/trunk`
+
+    git svn init http://svn.douban.com/svn/shire -T trunk -b /branches/your_svn_name
+    cp .git/refs/heads/master .git/refs/remotes/trunk
 
 ##### master分支 (同步trunk)
 1. `git svn fetch`
