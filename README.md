@@ -41,7 +41,7 @@
 
 1. 在.git/config里添加remote：
 
-   [svn-remote "lifei"]
+    [svn-remote "lifei"]
        url = http://svn.douban.com/svn/shire
        branches = branches/lifei/*:refs/remotes/lifei/*
 
