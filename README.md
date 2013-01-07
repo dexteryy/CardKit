@@ -35,8 +35,9 @@
     cp .git/refs/heads/master .git/refs/remotes/trunk
 
 ##### master分支 (同步trunk)
-1. `git svn fetch`
-2. `git svn rebase`
+
+    git svn fetch
+    git svn rebase
 
 ##### pre分支 (每日构建)
 
