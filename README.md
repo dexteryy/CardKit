@@ -40,11 +40,11 @@
 ##### pre分支 (每日构建)
 
 1. 在.git/config里添加remote：
-
+    <code>
     [svn-remote "lifei"]
        url = http://svn.douban.com/svn/shire
        branches = branches/lifei/*:refs/remotes/lifei/*
-
+    </code>
 2. `git svn fetch -R lifei -r "/branches/lifei/cardkit/上最新revision号"` 这一步会耗费很长时间。
    完成后，`git branch -a`会看到`remotes/lifei/cardkit`
 3. `git checkout -b pre lifei/cardkit` 建立pre分支，与lifei/cardkit关联
