@@ -81,7 +81,9 @@ define([
 
         var footer = wrapper.find('.ck-footer');
         wrapper.find('.ck-card').forEach(function(card){
-            $(card).append(this.clone()).prepend(TPL_TIPS);
+            $(card).append(this.clone())
+                //.prepend($('.ck-cell-parent', card))
+                .prepend(TPL_TIPS);
         }, footer);
         footer.remove();
 

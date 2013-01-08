@@ -4,56 +4,52 @@ define('moui/gesture/tap', [
     'moui/gesture/base'
 ], function(_, gesture){
 
-    var TapGesture = _.construct(gesture.GestureBase, function(elm, opt, cb){
-        this._startPos = { x: 0, y: 0 };
-        this._movePos = { x: 0, y: 0 };
-        return this.superConstructor(elm, opt, cb);
-    });
+    var TapGesture = _.construct(gesture.GestureBase);
 
     _.mix(TapGesture.prototype, {
 
         EVENTS: ['tap', 'doubletap', 'hold'],
         DEFAULT_CONFIG: {
-            'tapRadius': 5,
+            'tapRadius': 10,
             'doubleTimeout': 300,
             'holdThreshold': 500
         },
 
         press: function(e){
-            clearTimeout(this._doubleTimer);
-            this._startTime = +new Date();
             var t = e.touches[0];
-            this._startPos.x = t.clientX;
-            this._startPos.y = t.clientY;
-            this._movePos.x = this._movePos.y = NaN;
+            this._startTime = e.timeStamp;
+            this._startTarget = t.target;
+            this._startPosX = t.clientX;
+            this._startPosY = t.clientY;
+            this._movePosX = this._movePosY = this._moveTarget = NaN;
         },
 
         move: function(e){
             var t = e.touches[0];
-            this._movePos.x = t.clientX;
-            this._movePos.y = t.clientY;
+            this._moveTarget = t.target;
+            this._movePosX = t.clientX;
+            this._movePosY = t.clientY;
         },
 
         release: function(e){
             var self = this,
-                is_double = self._isDouble,
-                d = +new Date();
-            self._isDouble = false;
-            if (Math.abs(self._movePos.x - self._startPos.x) > self._config.tapRadius
-                    || Math.abs(self._movePos.y - self._startPos.y) > self._config.tapRadius) {
+                tm = e.timeStamp;
+            if (this._moveTarget && this._moveTarget !== this._startTarget 
+                    || Math.abs(self._movePosX - self._startPosX) > self._config.tapRadius
+                    || Math.abs(self._movePosY - self._startPosY) > self._config.tapRadius) {
                 return;
             }
-            if (d - self._startTime > self._config.holdThreshold) {
+            if (tm - self._startTime > self._config.holdThreshold) {
                 self.trigger(e, self.event.hold);
             } else {
-                if (is_double) {
+                if (self._lastTap 
+                        && (tm - self._lastTap < self._config.doubleTimeout)) {
+                    e.preventDefault();
                     self.trigger(e, self.event.doubletap);
+                    self._lastTap = 0;
                 } else {
                     self.trigger(e, self.event.tap);
-                    self._isDouble = true;
-                    self._doubleTimer = setTimeout(function(){
-                        self._isDouble = false;
-                    }, 300);
+                    self._lastTap = tm;
                 }
             }
         }

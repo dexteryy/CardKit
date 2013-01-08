@@ -32,12 +32,13 @@ define('moui/gesture/scroll', [
             if (self.scrollingNode) {
                 var scrolling = self._scrolling;
                 self._scrolling = false;
-                var tm = self._tm = +new Date();
+                var tm = self._tm = e.timeStamp;
                 self.once(self.MOVE, function(){
                     self.once('scroll', function(){
                         if (tm === self._tm) {
                             self._scrollY = self.scrollingNode.scrollTop;
                             if (!scrolling) {
+                                self._started = true;
                                 self.trigger({ target: self.node }, self.event.scrollstart);
                             }
                         }
@@ -66,10 +67,11 @@ define('moui/gesture/scroll', [
             }
             // end
             if (self._scrollY !== null) {
-                var vp = self.scrollingNode;
-                if (self._scrollY >= 0 && self._scrollY <= vp.scrollHeight - vp.offsetHeight
-                        && Math.abs(vp.scrollTop - self._scrollY) 
-                        < self._config.scrollEndGap) {
+                var vp = self.scrollingNode,
+                    gap = Math.abs(vp.scrollTop - self._scrollY);
+                if (self._scrollY >= 0 && (self._scrollY <= vp.scrollHeight + vp.offsetHeight)
+                        && (gap && gap < self._config.scrollEndGap)) {
+                    self._started = false;
                     self.trigger(node, self.event.scrollend);
                 } else {
                     var tm = self._tm;
@@ -77,12 +79,16 @@ define('moui/gesture/scroll', [
                     self.once('scroll', function(){
                         if (tm === self._tm) {
                             self._scrolling = false;
+                            self._started = false;
                             self.trigger(node, self.event.scrollend);
                         }
                     }, vp);
                 }
+                self._scrollY = null;
+            } else if (self._started) {
+                self._started = false;
+                self.trigger(node, self.event.scrollend);
             }
-            self._scrollY = null;
         }
     
     });

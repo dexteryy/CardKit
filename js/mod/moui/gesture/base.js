@@ -48,8 +48,8 @@ define('moui/gesture/base', [
                     self._press || (self._press = self.press.bind(self)))
                 .bind(self.MOVE, 
                     self._move || (self._move = self.move.bind(self)))
-                //.bind(self.CANCEL, 
-                    //self._cancel || (self._cancel = self.cancel.bind(self)))
+                .bind(self.CANCEL, 
+                    self._cancel || (self._cancel = self.cancel.bind(self)))
                 .bind(self.RELEASE, 
                     self._release || (self._release = self.release.bind(self)));
             if (self._listener) {
@@ -62,7 +62,7 @@ define('moui/gesture/base', [
             var self = this;
             self.unbind(self.PRESS, self._press)
                 .unbind(self.MOVE, self._move)
-                //.unbind(self.CANCEL, self._cancel)
+                .unbind(self.CANCEL, self._cancel)
                 .unbind(self.RELEASE, self._release);
             if (self._listener) {
                 self.unbind(this.event[this._config.event], self._listener);
