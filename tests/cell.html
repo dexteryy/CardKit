@@ -20,12 +20,10 @@
     
 <header class="ck-header">
     
-
-<a class="ck-top-nav" href="/"></a>
+<span class="opt ck-top-nav"><a class="btn" href="/"></a></span>
+<span class="opt ck-top-action"><button class="btn">...</button></span>
+<span class="opt ck-top-create"><button class="btn">发表</button></span>
 <a class="ck-top-title" href="/">豆瓣读书</a>
-<button class="ck-top-action"></button>
-<button class="ck-top-search"></button>
-
 
 </header>
 
@@ -91,6 +89,9 @@
 
         <div class="ck-cell-list" data-style="grid" data-source="ckdBox1" data-cfg-col="3">
             <div class="ckd-hd">列表（"grid" style）</div>
+        </div>
+
+        <div class="ck-cell-box" data-cfg-plain="true" data-source="ckdBox3">
         </div>
 
     </div>
@@ -172,7 +173,9 @@
                     <span class="ckd-meta">更多信息2</span>
                     <span class="ckd-meta">更多信息3</span>
                     <img class="ckd-icon" src="http://img3.douban.com/lpic/s24428953.jpg" />
-                    <span class="ckd-content"><em>内容摘要</em><em>内容摘要</em><em>内容摘要</em></span>
+                    <span class="ckd-content">
+                        <em>内容摘要</em><em>内容摘要</em><em>内容摘要</em>
+                    </span>
                 </li>
                 <li class="ckd-item">
                     <h6 class="ckd-title">主标题（不带链接）</h6>
@@ -196,6 +199,9 @@
             </div>
         </div>
 
+        <div class="box ckd-source ckdBox3">
+            <button class="ck-modal ckd-create" data-url="form.html" data-title="发表"></button>
+        </div>
 
     </div>
         

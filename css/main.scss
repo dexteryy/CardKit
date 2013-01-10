@@ -21,6 +21,8 @@ $maintitle_size: 30px/2; // 标题
 $title_size: 26px/2;  // 按钮
 $text_size: 22px/2; // 内容
 
+$top_btn_size: 48px/2;
+
 $space: 30px/2;
 $radius: 6px/2;
 $text_space: 40px/2;
@@ -41,6 +43,19 @@ body {
   color:$text_color;
   background:$card_bgcolor;
   line-height:1.7;
+
+  &.bg {
+    background: $win_bgcolor;
+  }
+
+  &.modal_view {
+
+    .ck-root {
+      @include transform(scale(0.8));
+    }
+
+  }
+
 }
 
 // ===========
@@ -117,6 +132,34 @@ a {
     -webkit-tap-highlight-color: rgba(0,0,0,0);
   }
 
+  .ck-top-title {
+    color:#fff;
+    @include text-shadow(0px 1px 0px rgba(0,0,0,1));
+  }
+
+  $top_btn_space: 8px;
+
+  .opt {
+    display:block;
+    position:absolute;
+    top:$top_btn_space;
+    left:$top_btn_space;
+  }
+
+  .ck-top-nav {
+
+  }
+
+  .ck-top-action {
+    left:auto;
+    right:$top_btn_space;
+  }
+
+  .ck-top-create {
+    left:auto;
+    right:$top_btn_space*2 + $top_btn_size;
+  }
+
 }
 
 .ck-top-title {
@@ -129,9 +172,10 @@ a {
 
 .ck-root {
   @include box-shadow(0px 0px 10px rgba(0,0,0,.35));
-  @include transform-origin(50% 0);
-  @include transition(transform 400ms ease-in-out 100ms);
-
+  @include transform-origin(50% 50%);
+  //@include transform-style(preserve-3d);
+  @include transition(transform 0.4s ease-in-out);
+  
   .ck-header {
     position:fixed;
     top:0;
@@ -142,34 +186,11 @@ a {
     @include transform(translateY(-$nav_height));
     @include transition(transform 400ms ease-in-out);
 
-    $btn-size: 15px;
-
-    .ck-top-nav {
-      width:$btn-size;
-      height:$btn-size;
-      position:absolute;
-      top:$space;
-      left:$space;
-      @include box-shadow(inset 0px 0px 2px #000); // @TODO
-    }
-
-    .ck-top-title {
-      color:#fff;
-      @include text-shadow(0px 1px 0px rgba(0,0,0,1));
-    }
-
-    .ck-top-action {
-      @extend .ck-top-nav;
-      left:auto;
-      right:$space;
-      padding:0;
-      border:0;
-      background:none;
-    }
-
-    .ck-top-search {
-      @extend .ck-top-action;
-      right:$space*2 + $btn-size;
+    .btn {
+      width:$top_btn_size;
+      height:$top_btn_size;
+      background:#fff;
+      border:1px solid #ccc;
     }
 
   }
@@ -247,6 +268,10 @@ a {
 
   .ck-footer {
     display:block;
+  }
+
+  .ckd-create {
+    display:none;
   }
 
   &.moving {
@@ -807,16 +832,19 @@ a {
   left:0;
   width:100%;
   height:100%;
-  padding-top:50px;
   z-index: $zindex_overlay + $zindex_step;
+  @include user-select(none);
 
   .wrapper {
-    @include transform(translateY(0px));
-    @include transition(transform 400ms ease-in-out);
+    @include transform(translateY(100%));
+    @include transition(transform 0.4s ease-in-out);
 
     & > header {
       @extend .ck-header;
-      position:relative;
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
       @include border-radius($radius $radius 0 0);
       @include box-shadow(0 2px 3px rgba(0,0,0,.2)); 
       @include background-image(linear-gradient(bottom, #dfdfdf, #fcfcfc));
@@ -845,6 +873,18 @@ a {
 
     }
 
+    & > article {
+      height:1000px;
+      background:$card_bgcolor;
+      overflow-y:scroll;
+      -webkit-overflow-scrolling: touch;
+
+      & > .content {
+        padding:50px 0 0 0;
+      }
+
+    }
+
   }
 
   .shd {
@@ -853,26 +893,12 @@ a {
     left:0;
     width:100%;
     height:100%;
-    opacity:0;
-    @include background-image(radial-gradient(rgba(127,127,127,0.3), rgba(0,0,0,0.7)));
-    @include transition(opacity 400ms ease-in-out);
   }
 
   &.active {
     visibility:visible;
-
-    .shd {
-      opacity:1;
-    }
-
   }
 
-}
-
-.moui-modalview-content {
-  overflow-y:scroll;
-  -webkit-overflow-scrolling: touch;
-  background:$card_bgcolor;
 }
 
 // Growl

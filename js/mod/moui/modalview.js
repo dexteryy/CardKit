@@ -19,7 +19,7 @@ define('moui/modalview', [
                         <div class="cancel"></div>\
                         <h1></h1>\
                     </header>\
-                    <div class="moui-modalview-content"></div>\
+                    <article><div class="content"></div></article>\
                 </div>\
             </div>',
         TPL_BTN = '<button class="{{type}}" data-default={{isDefault}}>{{text}}</button>',
@@ -59,7 +59,8 @@ define('moui/modalview', [
         var self = this,
             handlers = this._btnHandlers = {};
         this._wrapper = this._node.find('.wrapper').eq(0);
-        this._content = this._wrapper.find('.moui-modalview-content');
+        this._contentWrapper = this._wrapper.find('article').eq(0);
+        this._content = this._contentWrapper.find('.content').eq(0);
         this._confirmBtn = this._header.find('.confirm');
         this._cancelBtn = this._header.find('.cancel');
         this._confirmBtn.concat(this._cancelBtn).bind('click', function(e){

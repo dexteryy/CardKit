@@ -11,7 +11,7 @@ define('moui/overlay', [
         TPL_VIEW =
            '<div id="{{id}}" class="moui-overlay">\
                 <header><h2></h2></header>\
-                <div class="moui-overlay-content"></div>\
+                <article></article>\
             </div>',
         LOADING_DOTS = '<span class="loading"><i>.</i><i>.</i><i>.</i></span>',
         LOADING_DEFAULT = '加载中',
@@ -45,7 +45,7 @@ define('moui/overlay', [
             this._node = $('#' + this.id);
             this._header = this._node.find('header').eq(0);
             this._title = this._header.find('h1');
-            this._content = this._node.find('.moui-overlay-content');
+            this._content = this._node.find('article').eq(0);
         },
 
         set: function(opt) {

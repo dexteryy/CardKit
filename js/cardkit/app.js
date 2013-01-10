@@ -65,17 +65,19 @@ define([
     };
 
     modal.event.bind('open', function(modal){
-        var wph = window.innerHeight - 50,
-            h = Math.round(wph - ck.headerHeight);
         ck.disableView = true;
         ck.showTopbar();
-        modal._wrapper.css('marginTop', wph + 'px');
-        modal._content.css('height', h + 'px');
+        $(body).addClass('bg').addClass('modal_view');
         setTimeout(function(){
-            choreo.transform(modal._wrapper[0], 'translateY', 0 - wph + 'px');
-            choreo.transform(ck.header.parent()[0], 'scale', 0.75);
-            choreo.transform(ck.header.parent()[0], 'translateY', '10px');
-        }, 0);
+            choreo.transform(modal._wrapper[0], 'translateY', '0');
+            var prev = ck.viewport,
+                current = modal._contentWrapper;
+            ck.changeView(current);
+            modal._content[0].style.minHeight = current[0].offsetHeight + 'px';
+            modal.event.once('close', function(){
+                ck.changeView(prev);
+            });
+        }, 200);
     });
 
     var ck = {
@@ -241,6 +243,7 @@ define([
                 this.updateSize();
             }
             this.watchScroll(this.viewport);
+            this.settingUI();
         },
 
         updateSize: function(){
@@ -248,16 +251,25 @@ define([
                 window.innerHeight : (screen.availHeight + 60)) + 'px';
             // enable scrollable when height is not enough 
             var ft = this.viewport.find('.ck-footer')[0];
-            var d = screen.availHeight - (ft.offsetTop 
-                    + ft.offsetHeight + this.viewport[0].scrollTop); 
-            if (d > 0) {
-                ft.style.paddingTop = (parseFloat(ft.style.paddingTop) || 0) + d + 100 + 'px';
+            if (ft) {
+                var d = screen.availHeight - (ft.offsetTop 
+                        + ft.offsetHeight + this.viewport[0].scrollTop); 
+                if (d > 0) {
+                    ft.style.paddingTop = (parseFloat(ft.style.paddingTop) || 0) + d + 100 + 'px';
+                }
             }
-
         },
 
         watchScroll: function(card){
             this.scrollGesture.watchScroll(card[0]);
+        },
+
+        settingUI: function(){
+            var top_submit = this.header.find('.ck-top-create').empty();
+            var create_btn = this.viewport.find('.ckd-create');
+            if (create_btn[0]) {
+                top_submit.append(create_btn.clone());
+            }
         },
 
         hideLoading: function() {
@@ -324,10 +336,10 @@ define([
 
         closeModal: function(){
             ck.disableView = false;
-            choreo.transform(modal._wrapper[0], 'translateY', '0');
-            choreo.transform(ck.header.parent()[0], 'scale', 1);
-            choreo.transform(ck.header.parent()[0], 'translateY', '0');
+            $(body).removeClass('modal_view');
+            choreo.transform(modal._wrapper[0], 'translateY', '100%');
             setTimeout(function(){
+                $(body).removeClass('bg');
                 modal.close();
             }, 400);
         },

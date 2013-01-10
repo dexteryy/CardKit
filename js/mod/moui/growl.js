@@ -9,7 +9,7 @@ define('moui/growl', [
         TPL_VIEW =
            '<div id="{{id}}" class="moui-growl">\
                 <header><h2></h2></header>\
-                <div class="moui-overlay-content"></div>\
+                <article></article>\
             </div>';
 
     var Growl = _.construct(overlay.Overlay);
