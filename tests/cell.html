@@ -34,14 +34,6 @@
     
     <div class="ck-card" id="ckDefault">
 
-        <div class="ck-cell-list" data-style="more">
-            <div class="ckd-item"><a class="ckd-title" href="#listCard1">查看更多列表类型（页内切换）</a></div>
-            <div class="ckd-item"><a class="ckd-title" href="#paperCard1">查看正文（页内切换）</a></div>
-            <div class="ckd-item" data-source="ckdBox1Sub2"></div>
-            <div class="ckd-item" data-source="ckdBox1Sub2"><a class="ckd-title">（覆盖内容）</a></div>
-            <div class="ckd-item" data-source="ckdBox1Sub2"><a class="ckd-title" href="#paperCard1">（覆盖内容和链接）</a></div>
-        </div>
-
         <div class="ck-cell-box" data-cfg-plain="true" data-source="ckdBox2">
             <div class="button-box">
                 <button class="ck-modal" data-url="form.html" data-title="ajax的表单页">ajax</button>
@@ -49,6 +41,14 @@
                 <button class="ck-modal" data-iframe-url="formpage.html" data-title="iframe的表单页">iframe</button>
                 <button class="ck-modal" data-source="formBox" data-title="inline的表单页">inline</button>
             </div>
+        </div>
+
+        <div class="ck-cell-list" data-style="more">
+            <div class="ckd-item"><a class="ckd-title" href="#listCard1">查看更多列表类型（页内切换）</a></div>
+            <div class="ckd-item"><a class="ckd-title" href="#paperCard1">查看正文（页内切换）</a></div>
+            <div class="ckd-item" data-source="ckdBox1Sub2"></div>
+            <div class="ckd-item" data-source="ckdBox1Sub2"><a class="ckd-title">（覆盖内容）</a></div>
+            <div class="ckd-item" data-source="ckdBox1Sub2"><a class="ckd-title" href="#paperCard1">（覆盖内容和链接）</a></div>
         </div>
 
         <div class="ck-cell-box">
@@ -210,10 +210,38 @@
 
         <script type="text/template" class="formBox">
             <div class="ck-cell-form">
-                <textarea>testesarfe few fwef </textarea>
+
+                <form action="#" id="inlineForm1">
+
+                <input type="text" value="1" name="a">
+
+                <textarea name="b">testesarfe few fwef </textarea>
+
+                </form>
+
             </div>
             <script>
             console.info('inline loaded');
+            require([
+                'dollar', 
+                'mo/network', 
+                'cardkit/view/modal'
+            ], function($, net, modal){
+                modal.event.once('confirm', function(modal, done){
+                    modal.showLoading();
+                    net.ajax({
+                        url: 'post_result.html',
+                        type: 'post',
+                        data: new FormData($('#inlineForm1')[0]),
+                        processData: false,
+                        contentType: false,
+                        success: function(){
+                            modal.hideLoading();
+                            modal.done();
+                        }
+                    });
+                });
+            });
             </script>
         </script>
 

@@ -1,13 +1,36 @@
 
 <div class="ck-cell-form">
 
-    <textarea>testesarfe few fwef </textarea>
+    <form action="#" id="ajaxForm1">
+
+    <input type="text" value="1" name="a">
+
+    <textarea name="b">testesarfe few fwef </textarea>
+
+    </form>
 
 </div>
 
 <script>
 console.info('ajax loaded');
-require(['cardkit/view/modal'], function(modal){
-    console.info(modal);
+require([
+    'dollar', 
+    'mo/network', 
+    'cardkit/view/modal'
+], function($, net, modal){
+    modal.event.once('confirm', function(modal, done){
+        modal.showLoading();
+        net.ajax({
+            url: 'post_result.html',
+            type: 'post',
+            data: new FormData($('#ajaxForm1')[0]),
+            processData: false,
+            contentType: false,
+            success: function(){
+                modal.hideLoading();
+                modal.done();
+            }
+        });
+    });
 });
 </script>

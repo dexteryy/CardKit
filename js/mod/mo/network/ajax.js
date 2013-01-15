@@ -34,7 +34,7 @@ define("mo/network/ajax", [
             username: s.username || null,
             password: s.password || null,
             timeout: s.timeout || 0,
-            processData: s.processData || true,
+            processData: s.processData === undefined ? true : s.processData,
             beforeSend: s.beforeSend || function(){},
             complete: s.complete || function(){},
             handleError: s.handleError || function(){},

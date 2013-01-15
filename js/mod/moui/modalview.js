@@ -31,11 +31,6 @@ define('moui/modalview', [
                 isDefault: true,
                 method: function(modal) {
                     modal.event.fire('confirm', [modal]);
-                    modal.submit(function() {
-                        modal.hideLoading();
-                        modal.close();
-                    });
-                    modal.showLoading('提交中');
                 }
             }, 
             'cancel': {
@@ -43,7 +38,7 @@ define('moui/modalview', [
                 text: '取消',
                 method: function(modal) {
                     modal.event.fire('cancel', [modal]);
-                    modal.close();
+                    modal.done();
                 }
             }
         },
@@ -146,6 +141,10 @@ define('moui/modalview', [
             }
         },
 
+        done: function(){
+            this.close();
+        },
+
         open: function(){
             this.superClass.open.call(this);
             if (this._config.iframeUrl) {
@@ -157,10 +156,6 @@ define('moui/modalview', [
         close: function(){
             this.clearIframeContent();
             return this.superClass.close.call(this);
-        },
-
-        submit: function(callback){
-            this._content.find('form').bind(callback).trigger('submit');
         },
 
         destroy: function() {

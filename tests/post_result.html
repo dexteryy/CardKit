@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>豆瓣读书</title>
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+
+<link href="../dist/css/main.css" rel="stylesheet">
+<style>
+</style>
+</head>
+<body>
+
+
+<p>提交成功！</p>
+
+<script>
+parent.require([
+    'cardkit/view/modal'
+], function(modal){
+    setTimeout(function(){
+        modal.done();
+    }, 400);
+});
+</script>
+
+</body>

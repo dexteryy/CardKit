@@ -96,7 +96,7 @@ define("dollar", [
                 nodes.prevObject = contexts = this;
             }
             if (/^#/.test(selector)) {
-                var elm = doc.getElementById(selector.substr(1));
+                var elm = (contexts[0] || doc).getElementById(selector.substr(1));
                 if (elm) {
                     nodes.push(elm);
                 }

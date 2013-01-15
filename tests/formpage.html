@@ -15,18 +15,30 @@
 
 <div class="ck-cell-form">
 
-    <textarea style="width:100%;margin:0 0 100px 0;">testesarfe few fwef </textarea>
+    <form action="post_result.html" id="iframeForm1" method="post">
 
-    <textarea style="width:100%;margin:0 0 100px 0;">testesarfe few fwef </textarea>
+    <input type="text" value="" name="a">
 
-    <textarea style="width:100%;margin:0 0 100px 0;">testesarfe few fwef </textarea>
+    <textarea name="b">testesarfe few fwef </textarea>
 
-    <textarea style="width:100%;margin:0 0 100px 0;">testesarfe few fwef </textarea>
+    </form>
 
 </div>
 
 <script>
 console.info('iframe loaded');
+parent.require([
+    'dollar', 
+    'cardkit/view/modal'
+], function($, modal){
+    modal.event.once('confirm', function(modal, done){
+        modal.showLoading();
+        $('#iframeForm1', document).bind('submit', function(e){
+            console.info(e, this)
+            modal.hideLoading();
+        }).trigger('submit');
+    });
+});
 </script>
 
 </body>
