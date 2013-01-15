@@ -132,11 +132,6 @@ a {
     -webkit-tap-highlight-color: rgba(0,0,0,0);
   }
 
-  .ck-top-title {
-    color:#fff;
-    @include text-shadow(0px 1px 0px rgba(0,0,0,1));
-  }
-
   $top_btn_space: 8px;
 
   .opt {
@@ -185,6 +180,11 @@ a {
     z-index: $zindex_overlay;
     @include transform(translateY(-$nav_height));
     @include transition(transform 400ms ease-in-out);
+
+    .ck-top-title {
+      color:#fff;
+      @include text-shadow(0px 1px 0px rgba(0,0,0,1));
+    }
 
     .btn {
       width:$top_btn_size;
@@ -880,7 +880,7 @@ a {
       -webkit-overflow-scrolling: touch;
 
       & > .content {
-        padding:50px 0 0 0;
+        padding:$nav_height 0 0 0;
       }
 
     }

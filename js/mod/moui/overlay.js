@@ -99,6 +99,7 @@ define('moui/overlay', [
             this.opened = false;
             this.event.fire('close', [this]);
             this._node.removeClass('active');
+            this._content.empty();
             return this;
         },
 

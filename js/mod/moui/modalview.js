@@ -77,11 +77,11 @@ define('moui/modalview', [
 
         set: function(opt) {
 
-            this.superClass.set.call(this, opt);
             var self = this;
+            self.superClass.set.call(self, opt);
 
             if (opt.buttons && opt.buttons.length > 0) {
-                var handlers = this._btnHandlers, 
+                var handlers = self._btnHandlers, 
                     btn_lib = _.index(opt.buttons.map(function(btn){
                         return typeof btn === 'object' ? btn : { type: btn };
                     }), 'type');
@@ -92,7 +92,11 @@ define('moui/modalview', [
                     this['_' + type + 'Btn'].html(function(){
                         return btn && tpl.format(TPL_BTN, btn) || '';
                     });
-                }, this);
+                }, self);
+            }
+
+            if (opt.iframeUrl) {
+                self.setIframeContent(opt);
             }
 
             if (opt.url) {
@@ -110,8 +114,49 @@ define('moui/modalview', [
                 });
             }
 
-            return this;
+            return self;
 
+        },
+
+        setIframeContent: function(opt){
+            var self = this;
+            this.clearIframeContent();
+            self.setContent('');
+            self.showLoading();
+            self._iframeContent = $('<iframe class="moui-modalview-iframebd" '
+                    + 'frameborder="0" scrolling="no" style="visibility:hidden;width:100%;"></iframe>')
+                .bind('load', function(e){
+                    try {
+                        self._iframeWindow = $(this.contentWindow);
+                        if (!self._iframeContent
+                            && self._iframeWindow[0].location.href !== self._config.iframeUrl) {
+                            return;
+                        }
+                        self._iframeContent[0].style.visibility = '';
+                        self.event.fire("frameOnload", [self]);
+                        self.hideLoading();
+                    } catch(ex) {}
+                }).appendTo(self._content);
+        },
+
+        clearIframeContent: function(){
+            if (this._iframeContent) {
+                this._iframeContent.remove();
+                this._iframeContent = null;
+            }
+        },
+
+        open: function(){
+            this.superClass.open.call(this);
+            if (this._config.iframeUrl) {
+                this._iframeContent.attr('src', this._config.iframeUrl);
+            }
+            return this;
+        },
+
+        close: function(){
+            this.clearIframeContent();
+            return this.superClass.close.call(this);
         },
 
         submit: function(callback){

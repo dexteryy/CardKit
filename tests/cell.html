@@ -7,7 +7,10 @@
 <meta name="format-detection" content="telephone=no">
 
 <link href="../dist/css/main.css" rel="stylesheet">
-<style type="text/css">
+<style>
+.button-box .ck-modal {
+    margin:5px;
+}
 .ck-cell-mini header .opt{
     font-size:12px;
     float:right;
@@ -39,6 +42,15 @@
             <div class="ckd-item" data-source="ckdBox1Sub2"><a class="ckd-title" href="#paperCard1">（覆盖内容和链接）</a></div>
         </div>
 
+        <div class="ck-cell-box" data-cfg-plain="true" data-source="ckdBox2">
+            <div class="button-box">
+                <button class="ck-modal" data-url="form.html" data-title="ajax的表单页">ajax</button>
+                <button class="ck-modal" data-json-url="form.json" data-title="json的表单页">json</button>
+                <button class="ck-modal" data-iframe-url="formpage.html" data-title="iframe的表单页">iframe</button>
+                <button class="ck-modal" data-source="formBox" data-title="inline的表单页">inline</button>
+            </div>
+        </div>
+
         <div class="ck-cell-box">
             <a href="" class="ckd-hd" data-source="ckdBox1"></a>
             <div style="background:#eee;">
@@ -47,13 +59,6 @@
             </div>
             <div class="ckd-content" data-source="ckdBox2"></div>
             <div class="ckd-ft">底部信息</div>
-        </div>
-
-        <div class="ck-cell-box" data-cfg-plain="true" data-source="ckdBox2">
-            <div class="button-box">
-                <button class="ck-modal" data-url="form.html" data-title="多字段的表单页">表单页1</button>
-                <button class="ck-modal" data-url="form.html" data-title="单个提交框的表单页">表单页2</button>
-            </div>
         </div>
 
         <div class="ck-cell-mini" data-source="ckdBox1Sub4">
@@ -202,6 +207,15 @@
         <div class="box ckd-source ckdBox3">
             <button class="ck-modal ckd-create" data-url="form.html" data-title="发表"></button>
         </div>
+
+        <script type="text/template" class="formBox">
+            <div class="ck-cell-form">
+                <textarea>testesarfe few fwef </textarea>
+            </div>
+            <script>
+            console.info('inline loaded');
+            </script>
+        </script>
 
     </div>
         

@@ -53,10 +53,13 @@ define([
         '.ck-modal': function(e){
             var me = $(this),
                 json_url = me.data('jsonUrl'),
-                target_id = me.data('target');
+                source_id = me.data('source');
             ck.openModal({
                 title: me.data('title'),
-                content: target_id ? $('#' + target_id).html() : undefined,
+                content: source_id ? $('.' + source_id).map(function(elm){
+                    return elm.innerHTML;
+                }).join('') : undefined,
+                iframeUrl: me.data('iframeUrl'),
                 url: me.data('url') || json_url,
                 urlType: json_url && 'json'
             });
@@ -73,7 +76,14 @@ define([
             var prev = ck.viewport,
                 current = modal._contentWrapper;
             ck.changeView(current, { is_modal: true });
-            modal._content[0].style.minHeight = current[0].offsetHeight + 'px';
+            modal._content.css('minHeight', current[0].offsetHeight + 'px');
+            if (modal._iframeContent) {
+                modal._iframeContent.css({
+                    width: current[0].offsetWidth + 'px',
+                    height: current[0].offsetHeight - ck.headerHeight + 'px'
+                });
+                modal._iframeWindow.bind('touchstart', prevent_window_scroll);
+            }
             modal.event.once('close', function(){
                 ck.changeView(prev);
             });

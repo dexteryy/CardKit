@@ -47,9 +47,8 @@ define("dollar", [
                 return selector;
             } else if (typeof selector !== 'string') {
                 var nodes = new $();
-                _array_push[selector.length !== undefined
-                    && selector !== window ? 'apply' : 'call'
-                ](nodes, selector);
+                _array_push[selector.push === _array_push 
+                    ? 'apply' : 'call'](nodes, selector);
                 return nodes;
             } else if (RE_HTMLTAG.test(selector)) {
                 return create_nodes(selector);
@@ -422,7 +421,10 @@ define("dollar", [
 
         remove: function(){
             this.forEach(function(node){
-                node.parentNode.removeChild(node);
+                var parent = node.parentNode;
+                if (parent) {
+                    parent.removeChild(node);
+                }
             });
             return this;
         },
