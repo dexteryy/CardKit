@@ -157,7 +157,7 @@ a {
 
   .ck-top-create {
     left:auto;
-    right:$top_btn_space*2 + $top_btn_size;
+    right:$top_btn_space*3 + $top_btn_size;
   }
 
 }
@@ -167,7 +167,7 @@ a {
   line-height: $nav_height;
   text-align:center;
   display:block;
-  margin:0 $space + 40px;
+  margin:0 $space*4 + 40px;
 }
 
 .ck-root {

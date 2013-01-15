@@ -72,7 +72,7 @@ define([
             choreo.transform(modal._wrapper[0], 'translateY', '0');
             var prev = ck.viewport,
                 current = modal._contentWrapper;
-            ck.changeView(current);
+            ck.changeView(current, { is_modal: true });
             modal._content[0].style.minHeight = current[0].offsetHeight + 'px';
             modal.event.once('close', function(){
                 ck.changeView(prev);
@@ -119,9 +119,12 @@ define([
                 setTimeout(function(){
                     ck.hideAddressbar();
                 }, 0);
-                //if (ck.viewport[0].scrollTop >= ck.headerHeight) {
-                    //ck.hideTopbar();
-                //}
+                if (ck.viewport[0].scrollTop >= ck.headerHeight) {
+                    ck.hideTopbar();
+                } else {
+                    $(document).bind('touchmove', delay_hide_topbar)
+                        .bind('touchend', delay_hide_topbar);
+                }
             }).bind('scrollup', function(e){
                 ck.showTopbar();
             }).bind('scrollstart', function(){
@@ -134,7 +137,7 @@ define([
             $(document).bind('touchstart', prevent_window_scroll);
 
             var startY,
-                hold_timer, 
+                hold_timer,
                 holded,
                 cancel_hold = function(){
                     clearTimeout(hold_timer);
@@ -156,6 +159,8 @@ define([
                 clearTimeout(hold_timer);
                 if (holded && e.touches[0].clientY < startY) {
                     cancel_hold();
+                    holded = true;
+                    ck.windowFullHeight = Infinity;
                     ck.hideAddressbar();
                 }
             }).bind('touchend', cancel_hold).bind('touchcancel', cancel_hold);
@@ -234,7 +239,8 @@ define([
 
         },
 
-        changeView: function(card){
+        changeView: function(card, opt){
+            opt = opt || {};
             if (typeof card === 'string') {
                 card = $('#' + card);
             }
@@ -243,7 +249,9 @@ define([
                 this.updateSize();
             }
             this.watchScroll(this.viewport);
-            this.settingUI();
+            if (!opt.is_modal) {
+                this.settingUI();
+            }
         },
 
         updateSize: function(){
@@ -328,6 +336,7 @@ define([
         //},
 
         openModal: function(opt){
+            this.hideAddressbar();
             if (!modal.opened) {
                 push_history(ck.viewport[0].id, '_modal_', false, opt);
             }
@@ -440,6 +449,14 @@ define([
         } else if (vp.scrollTop >= (bottom = vp.scrollHeight 
                 - vp.offsetHeight - 1)) {
             vp.scrollTop = bottom;
+        }
+    }
+
+    function delay_hide_topbar(){
+        if (ck.viewport[0].scrollTop >= ck.headerHeight) {
+            ck.hideTopbar();
+            $(document).unbind('touchmove', delay_hide_topbar)
+                .unbind('touchend', delay_hide_topbar);
         }
     }
 

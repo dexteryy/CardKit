@@ -15,7 +15,7 @@ define('moui/gesture/scroll', [
             'scrollend'
         ],
         DEFAULT_CONFIG: {
-            'directThreshold': 20,
+            'directThreshold': 0,
             'scrollEndGap': 5
         },
 
@@ -23,11 +23,27 @@ define('moui/gesture/scroll', [
             this.scrollingNode = elm;
         },
 
+        checkScollDirection: function(d){
+            var node = { target: this.node },
+                threshold = this._config.directThreshold;
+            if (d < 0 - threshold) {
+                if (this._scrollDown !== true) {
+                    this.trigger(node, this.event.scrolldown);
+                }
+                this._scrollDown = true;
+            } else if (d > threshold) {
+                if (this._scrollDown !== false) {
+                    this.trigger(node, this.event.scrollup);
+                }
+                this._scrollDown = false;
+            }
+        },
+
         press: function(e){
             var self = this;
             var t = e.touches[0];
-            self._startY = t.clientY;
-            self._moveY = NaN;
+            self._scrollDown = null;
+            self._lastY = t.clientY;
             self._scrollY = null;
             if (self.scrollingNode) {
                 var scrolling = self._scrolling;
@@ -49,22 +65,19 @@ define('moui/gesture/scroll', [
 
         move: function(e){
             var t = e.touches[0];
-            this._moveY = t.clientY;
+            this.checkScollDirection(t.clientY - this._lastY);
+            this._lastY = t.clientY;
             if (this.scrollingNode) {
                 this._scrollY = this.scrollingNode.scrollTop;
             }
         },
 
-        release: function(){
-            var self = this, node = { target: self.node };
+        release: function(e){
+            var self = this, 
+                t = e.changedTouches[0],
+                node = { target: self.node };
             // up/down
-            var d = self._moveY - self._startY,
-                threshold = self._config.directThreshold;
-            if (d < 0 - threshold) {
-                self.trigger(node, self.event.scrolldown);
-            } else if (d > threshold) {
-                self.trigger(node, self.event.scrollup);
-            }
+            this.checkScollDirection(t.clientY - this._lastY);
             // end
             if (self._scrollY !== null) {
                 var vp = self.scrollingNode,
