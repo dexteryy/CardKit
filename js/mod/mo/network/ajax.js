@@ -59,7 +59,7 @@ define("mo/network/ajax", [
         var status, data, requestDone = false, xhr = window.ActiveXObject ? new ActiveXObject("Microsoft.XMLHTTP") : new XMLHttpRequest();
         xhr.open( options.type, options.url, true, options.username, options.password );
         try {
-            if ( options.data && options.contentType !== false)
+            if ( options.data && options.contentType !== false )
                 xhr.setRequestHeader("Content-Type", options.contentType);
             xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
             xhr.setRequestHeader("Accept", s.dataType && options.accepts[ s.dataType ] ?
