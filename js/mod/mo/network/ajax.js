@@ -30,7 +30,7 @@ define("mo/network/ajax", [
             url: s.url || "",
             data: s.data || null,
             dataType: s.dataType,
-            contentType: s.contentType || "application/x-www-form-urlencoded",
+            contentType: s.contentType === false? false : (s.contentType || "application/x-www-form-urlencoded"),
             username: s.username || null,
             password: s.password || null,
             timeout: s.timeout || 0,
@@ -59,7 +59,7 @@ define("mo/network/ajax", [
         var status, data, requestDone = false, xhr = window.ActiveXObject ? new ActiveXObject("Microsoft.XMLHTTP") : new XMLHttpRequest();
         xhr.open( options.type, options.url, true, options.username, options.password );
         try {
-            if ( options.data )
+            if ( options.data && options.contentType !== false )
                 xhr.setRequestHeader("Content-Type", options.contentType);
             xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
             xhr.setRequestHeader("Accept", s.dataType && options.accepts[ s.dataType ] ?
