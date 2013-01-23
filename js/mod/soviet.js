@@ -1,5 +1,7 @@
 /**
  * SovietJS
+* Standalone UI event delegate implementation
+* Provide multiple styles/modes: override, automatically preventDefault, partial matching, exact matching...
  *
  * using AMD (Asynchronous Module Definition) API with OzJS
  * see http://ozjs.org for details
