@@ -23,7 +23,7 @@ require([
         net.ajax({
             url: 'post_result.html',
             type: 'post',
-            data: new FormData($('#ajaxForm1')[0]),
+            data: new FormData($('#ajaxForm1')[0]), // @TODO android 2.x
             processData: false,
             contentType: false,
             success: function(){
