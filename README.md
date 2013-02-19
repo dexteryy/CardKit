@@ -6,18 +6,9 @@
 ### 安装
 
 1. `npm install`
-
-    grunt-contrib-compass有一个bug，fix方法：将node\_modules/grunt-contrib-compass/tasks/compass.js中的38行改为 `var options = this.data.options;`
-
-2. 安装以下compass插件:
-
-    ```
-    gem install animation --pre
-    gem install animate-sass
-    ```
-
-3. `cp grunt.js.tmpl grunt.js`
-4. 按照grunt.js内的TODO，编辑它
+2. `bundle install`
+3. `cp Gruntfile.js.tmpl Gruntfile.js`
+4. 按照Gruntfile.js内的TODO，编辑它
 5. `grunt`, 测试默认任务，编译dist和static文件
 6. `grunt watch`
 

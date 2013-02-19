@@ -29,13 +29,13 @@ define("mo/mainloop", ["mo/lang"], function(_){
                 return b + c * x;
             },
             easeIn: function (x, t, b, c, d) {
-                return c*(t/=d)*t + b;
+                return c*(t /= d)*t + b;
             },
             easeOut: function (x, t, b, c, d) {
-                return -c *(t/=d)*(t-2) + b;
+                return -c *(t /= d)*(t-2) + b;
             },
             easeInOut: function (x, t, b, c, d) {
-                if ((t/=d/2) < 1) return c/2*t*t + b;
+                if ((t /= d/2) < 1) return c/2*t*t + b;
                 return -c/2 * ((--t)*(t-2) - 1) + b;
             }
         },

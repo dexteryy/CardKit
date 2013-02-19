@@ -1,7 +1,5 @@
 
-define(['mo/lang'], function(_){
-
-    var window = this;
+define(['mo/lang'], function(){
 
     var exports = {
 

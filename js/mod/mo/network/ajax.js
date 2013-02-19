@@ -109,7 +109,7 @@ define("mo/network/ajax", [
 
         function httpSuccess(r) {
             try {
-                return !r.status && location.protocol == "file:" || ( r.status >= 200 && r.status < 300 ) || r.status == 304 || r.status == 1223 || browsers.safari && r.status == undefined;
+                return !r.status && location.protocol == "file:" || ( r.status >= 200 && r.status < 300 ) || r.status == 304 || r.status == 1223 || browsers.safari && !r.status;
             } catch(e){}
             return false;
         }

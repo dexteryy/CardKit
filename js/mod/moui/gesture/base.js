@@ -72,8 +72,8 @@ define('moui/gesture/base', [
 
         once: function(ev, handler, node){
             var self = this;
-            this.bind(ev, function(){
-                self.unbind(ev, arguments.callee, node);
+            this.bind(ev, function fn(){
+                self.unbind(ev, fn, node);
                 handler.apply(this, arguments);
             }, node);
         },

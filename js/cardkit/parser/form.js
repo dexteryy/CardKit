@@ -3,11 +3,7 @@ define([
     'dollar',
     'mo/lang',
     './util'
-], function($, _, util){
+], function(){
     
-    function exports(cell, raw){
-    }
-
-    return exports;
 
 });

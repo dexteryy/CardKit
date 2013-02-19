@@ -13,7 +13,7 @@ define("mo/lang/type", [
         _aproto = Array.prototype,
         _typeMap = {};
 
-    _aproto.forEach.call("Boolean Number String Function Array Date RegExp Object".split(" "), function(name , i){
+    _aproto.forEach.call("Boolean Number String Function Array Date RegExp Object".split(" "), function(name){
         this[ "[object " + name + "]" ] = name.toLowerCase();
     }, _typeMap);
 
@@ -35,6 +35,7 @@ define("mo/lang/type", [
 
 	exports.isEmptyObject = function(obj) {
         for (var name in obj) {
+            name = null;
             return false;
         }
         return true;

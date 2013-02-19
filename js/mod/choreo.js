@@ -39,20 +39,16 @@ define("choreo", [
             + ' translateX(0px) translateY(0px) translateZ(0px)'
             + ' scaleX(1) scaleY(1) scaleZ(1) skewX(0deg) skewY(0deg)',
         ACTOR_OPS = ['target', 'prop', 'duration', 'easing', 'delay', 'to'],
-        RE_TRANSFORM = /(\w+)\(([^\)]+)/,
         RE_PROP_SPLIT = /\)\s+/,
-        RE_UNIT = /^[-\d\.]+/,
+        RE_UNIT = /^[\-\d\.]+/,
         test_elm = window.document.body,
-        _arry_push = Array.prototype.push,
         _array_slice = Array.prototype.slice,
         _getComputedStyle = (document.defaultView || {}).getComputedStyle,
         vendor_prop = { 'transform': '', 'transition': '' },
         useCSS = false,
-        parent_id = 0,
         hash_id = 0,
         stage_id = 0,
         render_id = 0,
-        _hash_pool = [],
         _stage = {},
         _transition_sets = {},
         _transform_promise = {},
@@ -67,13 +63,13 @@ define("choreo", [
                 return b + c * x;
             },
             easeIn: function (x, t, b, c, d) {
-                return c*(t/=d)*t + b;
+                return c*(t /= d)*t + b;
             },
             easeOut: function (x, t, b, c, d) {
-                return -c *(t/=d)*(t-2) + b;
+                return -c *(t /= d)*(t-2) + b;
             },
             easeInOut: function (x, t, b, c, d) {
-                if ((t/=d/2) < 1) return c/2*t*t + b;
+                if ((t /= d/2) < 1) return c/2*t*t + b;
                 return -c/2 * ((--t)*(t-2) - 1) + b;
             }
         };
@@ -324,7 +320,7 @@ define("choreo", [
             return actorObj;
         },
 
-        group: function(actor){
+        group: function(){
             var self = this,
                 actorObj,
                 actors = _array_slice.call(arguments).filter(function(actor){
@@ -628,6 +624,9 @@ define("choreo", [
     }
 
     function when_transition_end(e){
+        if (e.target !== this) {
+            return;
+        }
         var self = this,
             hash = this._oz_fx,
             sets = _transition_sets[hash];
@@ -806,7 +805,7 @@ define("choreo", [
 
     _.mix(exports, {
 
-        VERSION: '1.0.1',
+        VERSION: '1.0.3',
         renderMode: useCSS ? 'css' : 'js',
         Stage: Stage,
         Actor: Actor,

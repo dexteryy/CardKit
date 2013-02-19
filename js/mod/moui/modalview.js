@@ -6,8 +6,7 @@ define('moui/modalview', [
     'moui/overlay'
 ], function($, _, net, tpl, overlay) {
 
-    var body = $('body'),
-        mix = _.mix,
+    var mix = _.mix,
 
         NS = 'mouiModalView',
         TPL_VIEW =
@@ -113,14 +112,14 @@ define('moui/modalview', [
 
         },
 
-        setIframeContent: function(opt){
+        setIframeContent: function(){
             var self = this;
             this.clearIframeContent();
             self.setContent('');
             self.showLoading();
             self._iframeContent = $('<iframe class="moui-modalview-iframebd" '
                     + 'frameborder="0" scrolling="no" style="visibility:hidden;width:100%;"></iframe>')
-                .bind('load', function(e){
+                .bind('load', function(){
                     try {
                         self._iframeWindow = $(this.contentWindow);
                         if (!self._iframeContent

@@ -1,0 +1,25 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    animate-sass (0.1.1)
+      compass (>= 0.11.5)
+    animation (0.1.alpha.3)
+      compass (>= 0.12.0)
+      sass (>= 3.2.0.alpha.95)
+    ceaser-easing (0.6.1)
+      compass (>= 0.12.2)
+    chunky_png (1.2.7)
+    compass (0.12.2)
+      chunky_png (~> 1.2)
+      fssm (>= 0.2.7)
+      sass (~> 3.1)
+    fssm (0.2.10)
+    sass (3.3.0.alpha.88)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  animate-sass (~> 0.1.1)
+  animation (~> 0.1.alpha.0)
+  ceaser-easing (~> 0.6.1)

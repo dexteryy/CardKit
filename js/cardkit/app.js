@@ -25,10 +25,10 @@ define([
         body = document.body,
         _back_timeout,
 
-        TPL_MASK = '<div class="ck-globalmask"></div>',
-
-        SUPPORT_ORIENT = "orientation" in window && "onorientationchange" in window,
-        SUPPORT_OVERFLOWSCROLL = "overflowScrolling" in body;
+        //SUPPORT_ORIENT = "orientation" in window && "onorientationchange" in window,
+        //SUPPORT_OVERFLOWSCROLL = "overflowScrolling" in body,
+        //
+        TPL_MASK = '<div class="ck-globalmask"></div>';
 
     _.mix(baseGeste.GestureBase.prototype, {
         bind: function(ev, handler, elm){
@@ -50,7 +50,7 @@ define([
         'a': link_handler,
         'a *': link_handler,
 
-        '.ck-modal': function(e){
+        '.ck-modal': function(){
             var me = $(this),
                 json_url = me.data('jsonUrl'),
                 source_id = me.data('source');
@@ -125,7 +125,7 @@ define([
                 'a *': nothing
             }).on('tap', tap_events);
 
-            $(document).bind('scrolldown', function(e){
+            $(document).bind('scrolldown', function(){
                 setTimeout(function(){
                     ck.hideAddressbar();
                 }, 0);
@@ -135,7 +135,7 @@ define([
                     $(document).bind('touchmove', delay_hide_topbar)
                         .bind('touchend', delay_hide_topbar);
                 }
-            }).bind('scrollup', function(e){
+            }).bind('scrollup', function(){
                 ck.showTopbar();
             }).bind('scrollstart', function(){
                 ck.globalMask.show();

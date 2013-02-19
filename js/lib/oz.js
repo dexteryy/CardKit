@@ -176,7 +176,7 @@ function require(deps, block, _self_mod) {
  * @private execute modules in a sequence of dependency
  * @param {object[]} [module object]
  */ 
-function exec(list){
+var exec = function(list){
     var mod, mid, tid, result, isAsync, deps,
         depObjs, exportObj, moduleObj, rmod,
         wt = _waitings;
@@ -269,14 +269,14 @@ function exec(list){
             break;
         }
     }
-}
+};
 
 /**
  * @private observer for script loader, prevent duplicate requests
  * @param {object} module object
  * @param {function} callback
  */ 
-function fetch(m, cb){
+var fetch = function(m, cb){
     var url = m.url,
         observers = _scripts[url];
     if (!observers) {
@@ -325,7 +325,7 @@ function fetch(m, cb){
     } else {
         observers.push([cb, m]);
     }
-}
+};
 
 /**
  * @private search and sequence all dependencies, based on DFS

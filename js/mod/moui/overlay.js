@@ -50,7 +50,6 @@ define('moui/overlay', [
 
         set: function(opt) {
 
-            var self = this;
             this._config = _.mix(this._config, opt);
 
             if (typeof opt.title === 'string') {

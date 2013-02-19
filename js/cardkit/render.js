@@ -3,17 +3,17 @@ define([
     'dollar',
     'mo/lang',
     'mo/template',
-    './tpl/box',
-    './tpl/list',
-    './tpl/mini',
-    './tpl/form',
+    './tpl/cell/box',
+    './tpl/cell/list',
+    './tpl/cell/mini',
+    './tpl/cell/form',
     './parser/box',
     './parser/list',
     './parser/mini',
     './parser/form'
 ], function($, _, tpl, 
     tpl_box, tpl_list, tpl_mini, tpl_form,
-    boxParser, listParser, miniParser, formParser){
+    boxParser, listParser, miniParser){
 
     var TPL_TIPS = '<div class="ck-top-tips">长按顶部导航条，可拖出浏览器地址栏</div>';
 
@@ -60,7 +60,6 @@ define([
         wrapper.find('.ck-cell-mini').forEach(function(cell){
             var data = miniParser(cell, raw);
             data.items = data.items.filter(function(item){
-                var style = this.style;
                 if (!item.content || !item.content.length) {
                     return false;
                 }

@@ -2,7 +2,7 @@
 define([
     'dollar',
     'mo/lang'
-], function($, _){
+], function($){
 
     var exports = {
 
