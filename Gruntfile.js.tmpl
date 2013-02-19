@@ -9,6 +9,7 @@ module.exports = function(grunt) {
         meta: {
             distDir: 'dist',
             staticDir: 'static',
+            examplesDistDir: 'examples/',
             jsServeDir: shireForMobileDir + 'static/js/cardkit',
             cssServeDir: shireForMobileDir + 'static/css/cardkit',
             picsServeDir: shireForMobileDir + 'pics/cardkit'
@@ -132,6 +133,15 @@ module.exports = function(grunt) {
         },
 
         copy: {
+            dist2examples: {
+                files: {
+                    "<%= meta.examplesDistDir %>/": [
+                        "<%= meta.distDir %>/js/**", 
+                        "<%= meta.distDir %>/css/**"
+                    ],
+                    "<%= meta.examplesDistDir %>/dist/": "pics/**"
+                }
+            },
             dist2serve: {
                 files: {
                     "<%= meta.jsServeDir %>/": ["<%= meta.distDir %>/js/**"],
@@ -150,16 +160,24 @@ module.exports = function(grunt) {
 
         watch: [{
             files: 'js/**/*.js',
-            tasks: ['ozma', 'copy:dist2serve']
-            //tasks: 'ozma'
+            tasks: ['ozma', 'copy:dist2serve', 'copy:dist2examples']
         }, {
             files: 'css/**/*.scss',
-            tasks: ['compass', 'copy:dist2serve']
-            //tasks: 'compass'
+            tasks: ['compass', 'copy:dist2serve', 'copy:dist2examples']
         }, {
             files: 'tpl/**/*.tpl',
             tasks: ['furnace:tpl']
         }],
+
+        connect: {
+            examples: {
+                options: {
+                    port: 9001,
+                    base: 'examples/',
+                    keepalive: true
+                }
+            }
+        },
 
         jshint: {
             options: {
@@ -221,6 +239,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-compass');
+    grunt.loadNpmTasks('grunt-contrib-connect');
 
     grunt.loadNpmTasks('grunt-istatic');
     grunt.loadNpmTasks('grunt-furnace');
@@ -235,6 +254,7 @@ module.exports = function(grunt) {
         'concat',
         'uglify', 
         'cssmin', 
+        'copy:dist2examples',
         'copy:static2serve'
     ]);
 

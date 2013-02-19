@@ -8,3 +8,4 @@ node_modules/
 Gruntfile.js
 dist/
 static/
+examples/dist/
