@@ -8,9 +8,9 @@
  * vim: et:ts=4:sw=4:sts=4
  */
 define("mo/template", [
-    "mo/lang",
-    "mo/template/string",
-    "mo/template/micro"
+    "./lang",
+    "./template/string",
+    "./template/micro"
 ], function(_, stpl, microtpl, require, exports){
 
     _.mix(exports, stpl, microtpl);

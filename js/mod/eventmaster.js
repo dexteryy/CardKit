@@ -342,7 +342,7 @@ define("eventmaster", [
     exports.when = when;
     exports.pipe = pipe;
 
-    exports.VERSION = '2.0.0';
+    exports.VERSION = '2.1.0';
 
     return exports;
 });

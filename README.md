@@ -1,16 +1,26 @@
 
 # CardKit
 
-## 如何开始开发
+## Getting started
 
-### 安装
+### Require
+
+1. node, npm
+2. [grunt v0.4](http://gruntjs.com/getting-started) - `npm install grunt-cli -g`
+3. [istatic](https://ozjs.org/istatic) - `node install node-istatic -g`
+5. ruby, gem, [bundler](http://gembundler.com/)
+
+### Install dependencies
 
 1. `npm install`
 2. `bundle install`
-3. `cp Gruntfile.js.tmpl Gruntfile.js`
-4. 按照Gruntfile.js内的TODO，编辑它
-5. `grunt`, 测试默认任务，编译dist和static文件
-6. `grunt watch`
+2. `istatic pull`
+
+### Build and test
+
+1. `grunt`
+2. `grunt connect` - see [http://localhost:9100/examples](http://localhost:9001/examples)
+3. `grunt watch:dev` or `grunt watch:pub`
 
 ### 仓库
 

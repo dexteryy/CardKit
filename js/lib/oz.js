@@ -283,7 +283,7 @@ var fetch = function(m, cb){
         var mname = m.name, delays = _delays;
         if (m.deps && m.deps.length && delays[mname] !== 1) {
             delays[mname] = [m.deps.length, cb];
-            m.deps.forEach(function(dep){
+            forEach.call(m.deps, function(dep){
                 var d = _config.mods[realname(dep)];
                 if (this[dep] !== 1 && d.url && d.loaded !== 2) {
                     if (!this[dep]) {
@@ -310,7 +310,7 @@ var fetch = function(m, cb){
             });
             _scripts[url] = 1;
             if (_refers[mname] && _refers[mname] !== 1) {
-                _refers[mname].forEach(function(dm){
+                forEach.call(_refers[mname], function(dm){
                     var b = this[dm.name];
                     if (--b[0] <= 0) {
                         this[dm.name] = 1;
@@ -561,7 +561,7 @@ function clone(obj) { // be careful of using `delete`
 }
 
 var oz = {
-    VERSION: '2.5.1',
+    VERSION: '2.5.2',
     define: define,
     require: require,
     config: config,

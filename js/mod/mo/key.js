@@ -8,7 +8,7 @@
  * Copyright (C) 2010-2012, Dexter.Yy, MIT License
  * vim: et:ts=4:sw=4:sts=4
  */
-define("mo/key", ["jquery", "mo/lang"], function($, _){
+define("mo/key", ["jquery", "./lang"], function($, _){
 
     var specialKeys = {
             8: "backspace", 9: "tab", 13: "return", 16: "shift", 17: "ctrl", 18: "alt", 19: "pause",

@@ -8,11 +8,11 @@
  * vim: et:ts=4:sw=4:sts=4
  */
 define("mo/lang", [
-    "mo/lang/es5",
-    "mo/lang/type",
-    "mo/lang/mix",
-    "mo/lang/struct",
-    "mo/lang/oop"
+    "./lang/es5",
+    "./lang/type",
+    "./lang/mix",
+    "./lang/struct",
+    "./lang/oop"
 ], function(es5, detect, _, struct, oo, require, exports){
 
     var host = this,

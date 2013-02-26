@@ -22,7 +22,7 @@ define("mo/browsers", [], function(){
         };
 
     try {
-        var ua = navigator.userAgent.toLowerCase(),
+        var ua = this.navigator.userAgent.toLowerCase(),
             rmobilesafari = /apple.*mobile.*safari/,
             rwebkit = /(webkit)[ \/]([\w.]+)/,
             ropera = /(opera)(?:.*version)?[ \/]([\w.]+)/,

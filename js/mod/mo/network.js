@@ -8,8 +8,8 @@
  * vim: et:ts=4:sw=4:sts=4
  */
 define("mo/network", [
-    "mo/lang", 
-    "mo/network/ajax"
+    "./lang", 
+    "./network/ajax"
 ], function(_, net, require, exports){
 
     var window = this,

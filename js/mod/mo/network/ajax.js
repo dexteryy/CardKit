@@ -6,7 +6,7 @@
  * vim: et:ts=4:sw=4:sts=4
  */
 define("mo/network/ajax", [
-    "mo/browsers"
+    "../browsers"
 ], function(browsers, require, exports){
 
     var httpParam = function(a) {

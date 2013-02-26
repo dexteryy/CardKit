@@ -6,7 +6,7 @@
  * vim: et:ts=4:sw=4:sts=4
  */
 define("mo/lang/type", [
-    "mo/lang/es5"
+    "./es5"
 ], function(_0, require, exports){
 
     var _toString = Object.prototype.toString,

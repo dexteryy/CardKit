@@ -6,8 +6,8 @@
  * vim: et:ts=4:sw=4:sts=4
  */
 define("mo/lang/mix", [
-    "mo/lang/es5",
-    "mo/lang/type"
+    "./es5",
+    "./type"
 ], function(_0, _, require, exports){
 
     var type = _.type;

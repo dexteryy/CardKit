@@ -8,9 +8,10 @@
  * Copyright (C) 2010-2012, Dexter.Yy, MIT License
  * vim: et:ts=4:sw=4:sts=4
  */
-define("mo/mainloop", ["mo/lang"], function(_){
+define("mo/mainloop", ["./lang"], function(_){
 
-    var ANIMATE_FRAME = "RequestAnimationFrame",
+    var window = this,
+        ANIMATE_FRAME = "RequestAnimationFrame",
         LONG_AFTER = 4000000000000,
 
         animateFrame = window['webkit' + ANIMATE_FRAME] || 

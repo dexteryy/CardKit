@@ -6,8 +6,8 @@
  * vim: et:ts=4:sw=4:sts=4
  */
 define("mo/template/micro", [
-    "mo/lang",
-    "mo/template/string"
+    "../lang",
+    "./string"
 ], function(_, stpl, require, exports){
 
     var document = this.document;

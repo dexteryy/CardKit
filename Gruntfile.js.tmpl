@@ -2,54 +2,23 @@
 module.exports = function(grunt) {
 
     //TODO: change the following variable to your shire_for_mobile directory
-    var shireForMobileDir = '/Users/dexteryy/code/douban/vagrant/shire-git/';
+    var publicDir = '/Users/dexteryy/code/douban/vagrant/shire-git';
 
     grunt.initConfig({
-        pkg: "<%= grunt.file.readJSON('package.json') %>",
+        pkg: grunt.file.readJSON('package.json'),
         meta: {
             distDir: 'dist',
             staticDir: 'static',
-            examplesDistDir: 'examples/',
-            jsServeDir: shireForMobileDir + 'static/js/cardkit',
-            cssServeDir: shireForMobileDir + 'static/css/cardkit',
-            picsServeDir: shireForMobileDir + 'pics/cardkit'
+            examplesDir: 'examples',
+            jsPublicDir: publicDir + '/static/js/<%= pkg.name %>',
+            cssPublicDir: publicDir + '/static/css/<%= pkg.name %>',
+            picsPublicDir: publicDir + '/pics/<%= pkg.name %>'
         },
 
-        istatic: {
-            main: {
-                repos: {
-                    'dexteryy/OzJS': {
-                        file: {
-                            'oz.js': 'js/lib/'
-                        }
-                    },
-                    'dexteryy/mo': {
-                        file: {
-                            '': 'js/mod/mo/'
-                        }
-                    },
-                    'dexteryy/DollarJS': {
-                        file: {
-                            'dollar.js': 'js/mod/'
-                        }
-                    },
-                    'dexteryy/EventMaster': {
-                        file: {
-                            'eventmaster.js': 'js/mod/'
-                        }
-                    },
-                    'dexteryy/SovietJS': {
-                        file: {
-                            'soviet.js': 'js/mod/'
-                        }
-                    },
-                    'dexteryy/ChoreoJS': {
-                        file: {
-                            'choreo.js': 'js/mod/'
-                        }
-                    }
-                }
-            }
+        clean: {
+            dist: ["<%= meta.distDir %>"],
+            test: ["<%= meta.examplesDir %>/dist"],
+            statics: ["<%= meta.staticDir %>"]
         },
 
         furnace: {
@@ -58,13 +27,11 @@ module.exports = function(grunt) {
                     importas: 'tpl',
                     exportas: 'amd',
                 },
-                //src: 'tpl/**/*.tpl',
-                //dest: 'js/cardkit/tpl/'
                 files: [{
                     expand: true,     // Enable dynamic expansion.
                     cwd: 'tpl/',
                     src: ['**/*.tpl'], // Actual pattern(s) to match.
-                    dest: 'js/cardkit/tpl/',   // Destination path prefix.
+                    dest: 'js/<%= pkg.name %>/tpl/',   // Destination path prefix.
                     ext: '.js'
                 }]
             }
@@ -88,8 +55,8 @@ module.exports = function(grunt) {
                 options: {
                     config: 'css/config.rb',
                     sassDir: 'css',
-                    cssDir: 'dist/css',
-                    imagesDir: 'pics',
+                    cssDir: '<%= meta.distDir %>/css',
+                    imagesDir: '<%= meta.distDir %>/pics',
                     relativeAssets: true,
                     outputStyle: 'expanded',
                     noLineComments: false,
@@ -99,6 +66,17 @@ module.exports = function(grunt) {
                         'ceaser-easing'
                     ],
                     environment: 'production'
+                }
+            }
+        },
+
+        imagemin: {
+            main: {
+                options: {
+                    optimizationLevel: 3
+                },
+                files: {
+                    '<%= meta.distDir %>/pics/': 'pics/**.{png,jpg}',
                 }
             }
         },
@@ -135,39 +113,37 @@ module.exports = function(grunt) {
         copy: {
             dist2examples: {
                 files: {
-                    "<%= meta.examplesDistDir %>/": [
+                    "<%= meta.examplesDir %>/": [
                         "<%= meta.distDir %>/js/**", 
-                        "<%= meta.distDir %>/css/**"
-                    ],
-                    "<%= meta.examplesDistDir %>/dist/": "pics/**"
+                        "<%= meta.distDir %>/css/**",
+                        "<%= meta.distDir %>/pics/**"
+                    ]
                 }
             },
-            dist2serve: {
+            dist2pub: {
                 files: {
-                    "<%= meta.jsServeDir %>/": ["<%= meta.distDir %>/js/**"],
-                    "<%= meta.cssServeDir %>/": ["<%= meta.distDir %>/css/**"]
-                    //"<%= meta.picsServeDir %>/": ["<%= meta.distDir %>/pics/**"]
+                    "<%= meta.jsPublicDir %>/": ["<%= meta.distDir %>/js/**"],
+                    "<%= meta.cssPublicDir %>/": ["<%= meta.distDir %>/css/**"]
                 }
             },
-            static2serve: {
+            static2pub: {
                 files: {
-                    "<%= meta.jsServeDir %>/": ["<%= meta.staticDir %>/js/**"],
-                    "<%= meta.cssServeDir %>/": ["<%= meta.staticDir %>/css/**"]
-                    //"<%= meta.picsServeDir %>/": ["<%= meta.staticDir %>/pics/**"]
+                    "<%= meta.jsPublicDir %>/": ["<%= meta.staticDir %>/js/**"],
+                    "<%= meta.cssPublicDir %>/": ["<%= meta.staticDir %>/css/**"]
                 }
             }
         },
 
-        watch: [{
-            files: 'js/**/*.js',
-            tasks: ['ozma', 'copy:dist2serve', 'copy:dist2examples']
-        }, {
-            files: 'css/**/*.scss',
-            tasks: ['compass', 'copy:dist2serve', 'copy:dist2examples']
-        }, {
-            files: 'tpl/**/*.tpl',
-            tasks: ['furnace:tpl']
-        }],
+        watch: {
+            dev: {
+                files: ['tpl/**/*.tpl', 'pics/**/*.{png,jpg}', 'js/**/*.js', 'css/**/*.scss'],
+                tasks: ['furnace:tpl', 'imagemin', 'ozma', 'compass', 'copy:dist2examples']
+            },
+            pub: {
+                files: ['tpl/**/*.tpl', 'pics/**/*.{png,jpg}', 'js/**/*.js', 'css/**/*.scss'],
+                tasks: ['furnace:tpl', 'imagemin', 'ozma', 'compass', 'copy:dist2examples', 'copy:dist2pub']
+            }
+        },
 
         connect: {
             examples: {
@@ -233,29 +209,45 @@ module.exports = function(grunt) {
     });
 
     grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-copy');
-    grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-contrib-imagemin');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-compass');
+    grunt.loadNpmTasks('grunt-contrib-livereload');
     grunt.loadNpmTasks('grunt-contrib-connect');
 
-    grunt.loadNpmTasks('grunt-istatic');
     grunt.loadNpmTasks('grunt-furnace');
     grunt.loadNpmTasks('grunt-ozjs');
     
-    grunt.registerTask('default', [
-        //'istatic',
+    grunt.registerTask('dev', [
         'jshint',
+        'clean:dist',
         'furnace:tpl',
         'ozma',
-        'compass',
+        'imagemin',
+        'compass'
+    ]);
+
+    grunt.registerTask('test', [
+        'clean:test',
+        'copy:dist2examples'
+    ]);
+
+    grunt.registerTask('deploy', [
+        'clean:statics',
         'concat',
         'uglify', 
-        'cssmin', 
-        'copy:dist2examples',
-        'copy:static2serve'
+        'cssmin'
+    ]);
+
+    grunt.registerTask('default', [
+        'dev',
+        'test',
+        'deploy'
     ]);
 
 };

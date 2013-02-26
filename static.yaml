@@ -1,0 +1,26 @@
+
+repos: 
+
+  dexteryy/OzJS:
+    file:
+      oz.js: js/lib/
+
+  dexteryy/mo:
+    file:
+      ./: js/mod/mo/
+
+  dexteryy/DollarJS': 
+    file: 
+      dollar.js: js/mod/
+
+  dexteryy/EventMaster:
+    file: 
+      eventmaster.js: js/mod/
+
+  dexteryy/SovietJS:
+    file:
+      soviet.js: js/mod/
+
+  dexteryy/ChoreoJS': 
+    file:
+      choreo.js: js/mod/
