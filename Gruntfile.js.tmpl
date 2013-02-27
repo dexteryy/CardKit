@@ -25,7 +25,7 @@ module.exports = function(grunt) {
             tpl: {
                 options: {
                     importas: 'tpl',
-                    exportas: 'amd',
+                    exportas: 'amd'
                 },
                 files: [{
                     expand: true,     // Enable dynamic expansion.
@@ -76,7 +76,7 @@ module.exports = function(grunt) {
                     optimizationLevel: 3
                 },
                 files: {
-                    '<%= meta.distDir %>/pics/': 'pics/**.{png,jpg}',
+                    '<%= meta.distDir %>/pics/': 'pics/**.{png,jpg}'
                 }
             }
         },
@@ -84,7 +84,7 @@ module.exports = function(grunt) {
         concat: {
             options: {
               stripBanners: true,
-              banner: '/*! <%= pkg.name %> - v<%= pkg.version %>'
+              banner: '/*! <%= pkg.name %> - v<%= pkg.version %> */\n'
             },
             js_main: {
                 src: ['<%= meta.distDir %>/js/main.js'],
@@ -121,16 +121,30 @@ module.exports = function(grunt) {
                 }
             },
             dist2pub: {
-                files: {
-                    "<%= meta.jsPublicDir %>/": ["<%= meta.distDir %>/js/**"],
-                    "<%= meta.cssPublicDir %>/": ["<%= meta.distDir %>/css/**"]
-                }
+                files: [{
+                    expand: true,
+                    cwd: '<%= meta.distDir %>/js/',
+                    src: ['**'],
+                    dest: '<%= meta.jsPublicDir %>/'
+                }, {
+                    expand: true,
+                    cwd: '<%= meta.distDir %>/css/',
+                    src: ['**'],
+                    dest: '<%= meta.cssPublicDir %>/'
+                }]
             },
             static2pub: {
-                files: {
-                    "<%= meta.jsPublicDir %>/": ["<%= meta.staticDir %>/js/**"],
-                    "<%= meta.cssPublicDir %>/": ["<%= meta.staticDir %>/css/**"]
-                }
+                files: [{
+                    expand: true,
+                    cwd: '<%= meta.staticDir %>/js/',
+                    src: ['**'],
+                    dest: '<%= meta.jsPublicDir %>/'
+                }, {
+                    expand: true,
+                    cwd: '<%= meta.staticDir %>/css/',
+                    src: ['**'],
+                    dest: '<%= meta.cssPublicDir %>/'
+                }]
             }
         },
 
