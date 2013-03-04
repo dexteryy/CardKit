@@ -788,8 +788,29 @@ a {
 
 // 表单模块
 .ck-cell-form {
-
-}
+  @extend %ck-cell;
+   .ck-item {
+      @extend %item;
+      &:last-child {
+        border:none;
+      }
+    }
+    .ck-input {
+        display: block;
+        font-size: 13px;
+        margin: 10px auto;
+        width: 100%;
+        border: 1px solid #ccc;
+        padding: 5px;
+        @include border-radius(3px);
+        @include box-shadow(0px 1px 0px #ccc inset);
+    }
+    textarea {
+        @extend .ck-input;
+        height: 250px;
+        font-size: 13x;
+    }
+ }
 
 //
 .ck-cell-parent {
