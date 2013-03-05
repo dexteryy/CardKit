@@ -46,7 +46,7 @@ define([
             author: getText(author),
             author_url: util.getHref(author),
             info: getText(item.find('.ckd-info')),
-            subtitle: getText(item.find('.ckd-subtitle')),
+            subtitle: util.getInnerHTML(item.find('.ckd-subtitle')),
             meta: item.find('.ckd-meta').map(function(node){
                 return node.innerHTML;
             }),
