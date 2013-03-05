@@ -126,6 +126,9 @@ define([
             }).on('tap', tap_events);
 
             $(document).bind('scrolldown', function(){
+                if (topbar_holded) {
+                    return;
+                }
                 setTimeout(function(){
                     ck.hideAddressbar();
                 }, 0);
@@ -148,18 +151,18 @@ define([
 
             var startY,
                 hold_timer,
-                holded,
+                topbar_holded,
                 cancel_hold = function(){
                     clearTimeout(hold_timer);
-                    if (holded) {
-                        holded = false;
+                    if (topbar_holded) {
+                        topbar_holded = false;
                         growl.tip.close();
                     }
                 };
             this.header.bind('touchstart', function(e){
                 startY = e.touches[0].clientY;
                 hold_timer = setTimeout(function(){
-                    holded = true;
+                    topbar_holded = true;
                     ck.viewport[0].scrollTop = 0;
                     growl.tip.set({
                         content: '向下拖动显示地址栏'
@@ -167,9 +170,9 @@ define([
                 }, 200);
             }).bind('touchmove', function(e){
                 clearTimeout(hold_timer);
-                if (holded && e.touches[0].clientY < startY) {
+                if (topbar_holded && e.touches[0].clientY < startY) {
                     cancel_hold();
-                    holded = true;
+                    topbar_holded = true;
                     ck.windowFullHeight = Infinity;
                     ck.hideAddressbar();
                 }
