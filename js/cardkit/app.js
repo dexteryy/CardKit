@@ -47,10 +47,7 @@ define([
 
     var tap_events = {
 
-        'a': link_handler,
-        'a *': link_handler,
-
-        '.ck-modal': function(){
+        '.ck-modal, .ck-modal-link': function(){
             var me = $(this),
                 json_url = me.data('jsonUrl'),
                 source_id = me.data('source');
@@ -63,8 +60,9 @@ define([
                 url: me.data('url') || json_url,
                 urlType: json_url && 'json'
             });
-        }
-    
+        },
+        'a': link_handler,
+        'a *': link_handler
     };
 
     modal.event.bind('open', function(modal){
