@@ -190,7 +190,18 @@ a {
       width:$top_btn_size;
       height:$top_btn_size;
       background:#fff;
-      border:1px solid #ccc;
+      @include background(linear-gradient(bottom, #78624f, #846f5b));
+      background-size:24px;
+      border:1px solid transparent;
+    }
+    .ck-top-nav .btn {
+      background-image:inline-image('menu.png');
+    }
+    .ck-top-action .btn {
+      background-image:inline-image('more.png');
+    }
+    .ck-top-create .btn {
+      background-image:inline-image('compose.png');
     }
 
   }
