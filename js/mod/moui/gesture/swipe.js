@@ -26,7 +26,7 @@ define('moui/gesture/swipe', [
             this._moveX = NaN;
             this._moveY = NaN;
 
-            this._startTime = new Date().getTime();
+            this._startTime = e.timeStamp;
         },
 
         move: function(e) {
@@ -46,8 +46,8 @@ define('moui/gesture/swipe', [
                     y: self._moveY
                 },
 
-                distance = utils.getDistance(startPos, movePos),
-                direction = utils.getDirection(startPos, movePos),
+                distance = get_distance(startPos, movePos),
+                direction = get_direction(startPos, movePos),
                 touchTime = new Date().getTime() - self._startTime;
             if (touchTime < self._config.timeThreshold &&
                 distance > self._config.distanceThreshold) {
@@ -55,36 +55,37 @@ define('moui/gesture/swipe', [
                 self.trigger(e, self.event['swipe' + direction]);
             }
         }
+
     });
 
-    var utils = {
-        getDistance: function(pos1, pos2) {
-            var x = pos2.x - pos1.x,
-                y = pos2.y - pos1.y;
-            return Math.sqrt((x * x) + (y * y));
-        },
-        getAngle: function(pos1, pos2) {
-            return Math.atan2(pos2.y - pos1.y, pos2.x - pos1.x) * 180 / Math.PI;
-        },
-        getDirection: function(pos1, pos2) {
-            var angle = utils.getAngle(pos1, pos2);
-            var directions = {
-                down: angle >= 45 && angle < 135, //90
-                left: angle >= 135 || angle <= -135, //180
-                up: angle < -45 && angle > -135, //270
-                right: angle >= -45 && angle <= 45 //0
-            };
+    function get_distance(pos1, pos2) {
+        var x = pos2.x - pos1.x,
+            y = pos2.y - pos1.y;
+        return Math.sqrt((x * x) + (y * y));
+    }
 
-            var direction, key;
-            for(key in directions){
-                if(directions[key]){
-                    direction = key;
-                    break;
-                }
+    function get_angle(pos1, pos2) {
+        return Math.atan2(pos2.y - pos1.y, pos2.x - pos1.x) * 180 / Math.PI;
+    }
+
+    function get_direction(pos1, pos2) {
+        var angle = get_angle(pos1, pos2);
+        var directions = {
+            down: angle >= 45 && angle < 135, //90
+            left: angle >= 135 || angle <= -135, //180
+            up: angle < -45 && angle > -135, //270
+            right: angle >= -45 && angle <= 45 //0
+        };
+
+        var direction, key;
+        for(key in directions){
+            if(directions[key]){
+                direction = key;
+                break;
             }
-            return direction;
         }
-    };
+        return direction;
+    }
 
     function exports(elm, opt, cb){
         return new exports.SwipeGesture(elm, opt, cb);
