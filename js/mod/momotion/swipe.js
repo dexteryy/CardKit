@@ -1,12 +1,12 @@
 
-define('moui/gesture/swipe', [
+define('momotion/swipe', [
     'mo/lang',
-    'moui/gesture/base'
-], function(_, gesture){
+    'momotion/base'
+], function(_, momoBase){
 
-    var SwipeGesture = _.construct(gesture.GestureBase);
+    var MomoSwipe = _.construct(momoBase.Class);
 
-    _.mix(SwipeGesture.prototype, {
+    _.mix(MomoSwipe.prototype, {
 
         EVENTS: [
             'swipeup',
@@ -88,12 +88,11 @@ define('moui/gesture/swipe', [
     }
 
     function exports(elm, opt, cb){
-        return new exports.SwipeGesture(elm, opt, cb);
+        return new exports.Class(elm, opt, cb);
     }
 
-    exports.SwipeGesture = SwipeGesture;
+    exports.Class = MomoSwipe;
 
     return exports;
-
 
 });

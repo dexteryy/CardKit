@@ -61,9 +61,11 @@ module.exports = function(grunt) {
                     outputStyle: 'expanded',
                     noLineComments: false,
                     require: [
+                        'compass-normalize',
                         'animation',
                         'animate-sass',
-                        'ceaser-easing'
+                        'ceaser-easing',
+                        'compass-recipes'
                     ],
                     environment: 'production'
                 }
@@ -148,28 +150,6 @@ module.exports = function(grunt) {
             }
         },
 
-        watch: {
-            dev: {
-                files: ['tpl/**/*.tpl', 'pics/**/*.{png,jpg}', 'js/**/*.js', 'css/**/*.scss'],
-                tasks: ['furnace:tpl', 'imagemin', 'ozma', 'compass', 'copy:dist2examples']
-            },
-            pub: {
-                files: ['tpl/**/*.tpl', 'pics/**/*.{png,jpg}', 'js/**/*.js', 'css/**/*.scss'],
-                tasks: ['furnace:tpl', 'imagemin', 'ozma', 'compass', 'copy:dist2examples', 'copy:dist2pub']
-            }
-        },
-
-        connect: {
-            examples: {
-                options: {
-                    hostname: 'ck.douban.com',
-                    port: 9001,
-                    base: 'examples/',
-                    keepalive: true
-                }
-            }
-        },
-
         jshint: {
             options: {
                 // Settings
@@ -219,6 +199,55 @@ module.exports = function(grunt) {
                 "multistr": true               // suppresses warnings about multi-line strings
             },
             main: ['./*.js', 'js/**/*.js']
+        },
+
+        connect: {
+            examples: {
+                options: {
+                    hostname: 'ck.douban.com',
+                    port: 9001,
+                    base: 'examples/',
+                    keepalive: true
+                }
+            }
+        },
+
+        watch: {
+            dev: {
+                files: [
+                    'tpl/**/*.tpl', 
+                    'pics/**/*.{png,jpg}', 
+                    'js/**/*.js', 
+                    'css/**/*.scss'
+                ],
+                tasks: [
+                    'clean:dist', 
+                    'clean:test', 
+                    'furnace:tpl', 
+                    'imagemin', 
+                    'ozma', 
+                    'compass', 
+                    'copy:dist2examples'
+                ]
+            },
+            pub: {
+                files: [
+                    'tpl/**/*.tpl', 
+                    'pics/**/*.{png,jpg}', 
+                    'js/**/*.js', 
+                    'css/**/*.scss'
+                ],
+                tasks: [
+                    'clean:dist', 
+                    'clean:test', 
+                    'furnace:tpl', 
+                    'imagemin', 
+                    'ozma', 
+                    'compass', 
+                    'copy:dist2examples', 
+                    'copy:dist2pub'
+                ]
+            }
         }
 
     });

@@ -1,12 +1,12 @@
 
-define('moui/gesture/scroll', [
+define('momotion/scroll', [
     'mo/lang',
-    'moui/gesture/base'
-], function(_, gesture){
+    'momotion/base'
+], function(_, momoBase){
 
-    var ScrollGesture = _.construct(gesture.GestureBase);
+    var MomoScroll = _.construct(momoBase.Class);
 
-    _.mix(ScrollGesture.prototype, {
+    _.mix(MomoScroll.prototype, {
 
         EVENTS: [
             'scrolldown', 
@@ -110,10 +110,10 @@ define('moui/gesture/scroll', [
     });
 
     function exports(elm, opt, cb){
-        return new exports.ScrollGesture(elm, opt, cb);
+        return new exports.Class(elm, opt, cb);
     }
 
-    exports.ScrollGesture = ScrollGesture;
+    exports.Class = MomoScroll;
 
     return exports;
 
