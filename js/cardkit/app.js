@@ -4,11 +4,11 @@ define([
     'mo/template',
     'soviet',
     'choreo',
-    'moui/gesture/base',
-    'moui/gesture/tap',
-    'moui/gesture/swipe',
-    'moui/gesture/drag',
-    'moui/gesture/scroll',
+    'momotion/base',
+    'momotion/tap',
+    'momotion/swipe',
+    'momotion/drag',
+    'momotion/scroll',
     './bus',
     './pagesession',
     './render',
@@ -16,7 +16,7 @@ define([
     './view/growl',
     'mo/domready'
 ], function($, _, tpl, soviet, choreo, 
-    baseGeste, tapGeste, swipeGeste, dragGeste, scrollGeste, 
+    momoBase, momoTap, momoSwipe, momoDrag, momoScroll, 
     bus, pageSession, render, modal, growl){
 
     var window = this,
@@ -30,7 +30,7 @@ define([
         //
         TPL_MASK = '<div class="ck-globalmask"></div>';
 
-    _.mix(baseGeste.GestureBase.prototype, {
+    _.mix(momoBase.Class.prototype, {
         bind: function(ev, handler, elm){
             $(elm || this.node).bind(ev, handler);
             return this;
@@ -102,8 +102,8 @@ define([
             this.windowFullHeight = Infinity;
             this.inited = false;
 
-            this.scrollGesture = scrollGeste(document, {});
-            tapGeste(document, {});
+            this.scrollGesture = momoScroll(document);
+            momoTap(document);
 
             render(wrapper);
             this.initState();

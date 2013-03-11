@@ -1,12 +1,12 @@
 
-define('moui/gesture/tap', [
+define('momotion/tap', [
     'mo/lang',
-    'moui/gesture/base'
-], function(_, gesture){
+    'momotion/base'
+], function(_, momoBase){
 
-    var TapGesture = _.construct(gesture.GestureBase);
+    var MomoTap = _.construct(momoBase.Class);
 
-    _.mix(TapGesture.prototype, {
+    _.mix(MomoTap.prototype, {
 
         EVENTS: ['tap', 'doubletap', 'hold'],
         DEFAULT_CONFIG: {
@@ -57,10 +57,10 @@ define('moui/gesture/tap', [
     });
 
     function exports(elm, opt, cb){
-        return new exports.TapGesture(elm, opt, cb);
+        return new exports.Class(elm, opt, cb);
     }
 
-    exports.TapGesture = TapGesture;
+    exports.Class = MomoTap;
 
     return exports;
 
