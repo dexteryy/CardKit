@@ -29,7 +29,7 @@
 console.info('iframe loaded');
 parent.require([
     'dollar', 
-    'cardkit/view/modal'
+    'cardkit/view/modalview'
 ], function($, modal){
     modal.event.once('confirm', function(modal, done){
         modal.showLoading();

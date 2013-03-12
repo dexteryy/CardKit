@@ -16,7 +16,7 @@ console.info('ajax loaded');
 require([
     'dollar', 
     'mo/network', 
-    'cardkit/view/modal'
+    'cardkit/view/modalview'
 ], function($, net, modal){
     modal.event.once('confirm', function(modal, done){
         modal.showLoading();

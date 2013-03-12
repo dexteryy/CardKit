@@ -1,0 +1,43 @@
+
+.moui-switch {
+  @extend %block;
+  @extend %block-pressed;
+  position:relative;
+  width:75px;
+  overflow:hidden;
+
+  .block {
+    @extend %block;
+    width:36px;
+    height: (58px/2) - 4px;
+    position:relative;
+    float:left;
+    @include transition(left 0.1s ease-in);
+  }
+
+  .enable-text,
+  .disable-text {
+    @extend %block-pressed;
+    border:0;
+    width:36px;
+    position:absolute;
+    right:0;
+    top:0;
+  }
+
+  .enable-text {
+    background:#278cd7;
+    color:#fff;
+    left:0;
+    right:auto;
+  }
+
+  &.enabled {
+  
+    .block {
+      left: 75px - 36px - 4px;
+    }
+
+  }
+
+}

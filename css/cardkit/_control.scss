@@ -1,0 +1,29 @@
+@import "moui/control/_switch";
+
+
+.ck-link {
+  -webkit-touch-callout: inherit;
+  @include user-select(none);
+}
+
+.ck-button {
+  @extend %button;
+}
+
+.ck-post-button {
+  @extend %button;
+
+  &.enabled {
+    @extend %block-pressed;
+  }
+
+}
+
+.ck-switch {
+  @extend .moui-switch;
+}
+
+.ck-modal-button {
+  @extend %button;
+}
+

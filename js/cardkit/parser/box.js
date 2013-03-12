@@ -38,21 +38,21 @@ define([
         }
     }
 
-    function get_hd(source, custom){
+    function get_hd(source, custom_source){
         source = $(source);
         var data = source && {
             html: util.getText(source),
             href: util.getHref(source)
         } || {};
-        if (custom && typeof custom === 'object') {
-            var custom_data = get_hd(custom);
+        if (custom_source && typeof custom_source === 'object') {
+            var custom_data = get_hd(custom_source);
             for (var i in custom_data) {
                 if (custom_data[i]) {
                     data[i] = custom_data[i];
                 }
             }
-            $(custom).remove();
         }
+        source.remove();
         return data;
     }
 

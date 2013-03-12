@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>demo</title>
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+
+<link href="dist/css/main.css" rel="stylesheet">
+<style>
+.demobox fieldset {
+    padding:15px 0;
+}
+.demobox fieldset legend {
+    font-size:14px;
+    margin:0px 0;
+    padding:5px 0;
+    display:block;
+    width:100%;
+    border-bottom:1px dashed #ccc;
+}
+.demobox p {
+    margin:5px 0;
+    color:#787878;
+}
+.post1 {
+    width:160px;
+}
+.myicon {
+    width:130px;
+    padding:0 0 0 30px;
+    color:#fff;
+    text-align:left;
+    background:#666 url(dist/pics/compose.png) no-repeat 10px center;
+    background-size:20px;
+}
+</style>
+</head>
+<body>
+
+<div class="ck-root">
+    
+<header class="ck-header">
+    
+<a class="ck-top-title" href="/">DEMO</a>
+<span class="opt ck-top-nav"><a class="btn" href="/"></a></span>
+<span class="opt ck-top-action"><button class="btn">...</button></span>
+<span class="opt ck-top-create"><button class="btn">发表</button></span>
+
+</header>
+
+<div class="ck-wrapper">
+    
+    <div class="ck-card" id="ckDefault">
+
+        <div class="ck-cell-box">
+            <h2 class="ckd-hd">moui / control</h2>
+            <div class="demobox">
+                <fieldset>
+                    <legend>Switch</legend>
+                    <p>
+                        <button class="ck-switch switch1" value="0" 
+                                data-enable-url="data/enable.txt"
+                                data-enable-val="1"
+                                data-label="false">
+                            <span class="enable-text">开启</span>
+                            <span class="disable-text">关闭</span>
+                            <span class="block"></span>
+                        </button>
+                    </p>
+                </fieldset>
+                <fieldset>
+                    <legend>Post button</legend>
+                    <p>
+                        <input class="ck-post-button post1" type="button" value="Post Button 1" 
+                            data-enable-json-url="data/form.json"
+                            data-enable-label="Post Button 1 (clicked)">
+                    </p>
+                    <p>fixed width, json response</p>
+                    <p>
+                        <button class="ck-post-button post2"
+                                data-fluid="true"
+                                data-enable-url="data/enable.txt"
+                                data-disable-url="data/disable.txt"
+                                data-enable-label="Post Button 2" 
+                                data-label="span">
+                            <span>Post Button 2</span>
+                        </button>
+                    </p>
+                    <p>fluid width</p>
+                    <p>
+                        <input class="ck-post-button post3" type="button" value="Button(0)"
+                                data-enable-val="Button(1)" 
+                                data-is-default="true">
+                    </p>
+                    <p>default width</p>
+                    <p>
+                        <a href="#" class="ck-post-button ck-unlink post4"
+                            data-enable-label="Button Link (clicked)" 
+                            data-fluid="true">Button Link</a>
+                        <p>fluid width, link element</p>
+                    </p>
+                </fieldset>
+                <fieldset>
+                    <legend>Post Link</legend>
+                    <p>
+                        <a href="#" class="ck-post-link ck-unlink link1"
+                            data-enable-label="Post Link (clicked)" 
+                            data-enable-url="data/enable.txt"
+                        >Post Link</a>
+                    </p>
+                </fieldset>
+                <!--segment-->
+            </div>
+        </div>
+
+    </div>
+
+    <div class="ck-card ck-loading" id="ckLoading">
+        <div>
+            <p><span></span><span></span><span></span></p>
+            <p>加载中...</p>
+        </div>
+    </div>
+
+    <footer class="ck-footer">
+        <div class="copyright">&copy; 2005－2012 douban.com, all rights reserved</div>
+    </footer>
+
+</div>
+
+</div>
+
+<script src="dist/js/main.js"></script>
+<!-- COLLECTED JS -->
+<script>
+require([
+    'dollar',
+    'cardkit/app'
+], function($, ck){
+
+    ck.control($('.switch1')).event.bind('enable', show_result);
+
+    ck.control($('.post1')).event.bind('enable', show_result);
+
+    ck.control($('.post2')).event.bind('enable', show_result)
+        .bind('disable', show_result);
+
+    ck.control($('.link1')).event.bind('enable', show_result);
+
+    function show_result(controler){
+        var result = controler.responseData;
+        console.info('response: ', result);
+        alert('response: ' + result);
+    }
+
+});
+</script>
+<script>
+</script>
+<!-- vagrant-->
+</body>
+</html>

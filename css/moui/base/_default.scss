@@ -1,0 +1,117 @@
+
+// http://compass-style.org/reference/compass/reset/
+@import "compass/reset";
+// http://compass-style.org/reference/compass/css3/
+@import "compass/css3";
+// http://compass-style.org/reference/compass/css3/user_interface/
+@import "compass/css3/user-interface";
+// http://compass-style.org/reference/compass/support/
+$support-for-original-webkit-gradients : false;
+$experimental-support-for-opera : false;
+$experimental-support-for-khtml : false;
+// https://github.com/ericam/compass-animation
+@import "animation"; 
+// https://github.com/jhardy/compass-ceaser-easing
+@import "ceaser-easing";
+// https://github.com/adamstac/animate.sass
+@import "animate/shared";
+
+
+$text_color: #252525;
+$desc_color: #787878;
+$border_color: #dadada;
+$view_color: #f2f2f2;
+$active_color: #006ae2;
+$notice_color: #df5001;
+
+$title_size: 26px/2;
+$radius: 6px/2;
+
+$zindex_view: 10;
+$zindex_overlay: 100;
+$zindex_mask: 1000;
+$zindex_step: 10;
+
+
+%block {
+  display:inline-block;
+  width: (160px/2);
+  height: (58px/2);
+  margin:0;
+  padding:0;
+  text-decoration:none;
+  @include user-select(none);
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+
+  background-color: #81858b;
+  @include background-image(linear-gradient(bottom, #ccc, #fff));
+  border: solid 1px #bcbcbc;
+  @include border-radius($radius);
+  //@include box-shadow(0 1px #fff, inset 0 2px #fff);
+
+  line-height:(56px/2);
+  font-size:$title_size;
+  color:$text_color;
+  text-align:center;
+  @include text-shadow(0 1px #fff);
+}
+
+%block-pressed {
+  @include box-shadow(inset 0 2px 3px rgba(129,129,129,.5));
+  @include background-image(linear-gradient(bottom, #ccc, #fff));
+}
+
+%block-enabled {
+  background-color: #81858b;
+  border: solid 1px #9f9f9f;
+  @include background-image(linear-gradient(bottom, #1366a4, #278cd7));
+  color:#fff;
+  @include text-shadow(0 1px #000);
+}
+
+%block-enabled-active {
+  background-color: #81858b;
+  @include box-shadow(0 1px #fff, inset 0 2px 3px rgba(117,117,117,.51));
+  @include background-image(linear-gradient(bottom, #1366a4, #278cd7));
+}
+
+
+%button {
+  @extend %block;
+  margin:0 0 0 7px;
+
+  &:first-child {
+    margin-left:0;
+  }
+
+  &[data-fluid="true"] {
+    width:auto;
+    padding:0 10px;
+  }
+
+  &[data-is-default="true"] {
+    @extend %button-default;
+  }
+
+  &:active {
+    @extend %block-pressed;
+
+    span {
+      position:relative;
+      top:1px;
+    }
+
+  }
+
+}
+
+%button-default {
+  @extend %block-enabled;
+
+  &:active {
+    @extend %block-enabled-active;
+  }
+
+}
+
+

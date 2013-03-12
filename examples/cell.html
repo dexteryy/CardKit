@@ -8,7 +8,7 @@
 
 <link href="dist/css/main.css" rel="stylesheet">
 <style>
-.button-box .ck-modal {
+.button-box .ck-modal-button {
     margin:5px;
 }
 .ck-cell-mini header .opt{
@@ -36,10 +36,10 @@
 
         <div class="ck-cell-box" data-cfg-plain="true" data-source="ckdBox2">
             <div class="button-box">
-                <button class="ck-modal" data-url="form.html" data-title="ajax的表单页">ajax</button>
-                <button class="ck-modal" data-json-url="form.json" data-title="json的表单页">json</button>
-                <button class="ck-modal" data-iframe-url="formpage.html" data-title="iframe的表单页">iframe</button>
-                <button class="ck-modal" data-source="formBox" data-title="inline的表单页">inline</button>
+                <button class="ck-modal-button" data-url="form.html" data-title="ajax的表单页">ajax</button>
+                <button class="ck-modal-button" data-json-url="data/form.json" data-title="json的表单页">json</button>
+                <button class="ck-modal-button" data-iframe-url="formpage.html" data-title="iframe的表单页">iframe</button>
+                <button class="ck-modal-button" data-source="formBox" data-title="inline的表单页">inline</button>
             </div>
         </div>
 
@@ -205,7 +205,7 @@
         </div>
 
         <div class="box ckd-source ckdBox3">
-            <button class="ck-modal ckd-create" data-url="form.html" data-title="发表"></button>
+            <button class="ck-modal-button ckd-create" data-url="form.html" data-title="发表"></button>
         </div>
 
         <script type="text/template" class="formBox">
@@ -225,7 +225,7 @@
             require([
                 'dollar', 
                 'mo/network', 
-                'cardkit/view/modal'
+                'cardkit/view/modalview'
             ], function($, net, modal){
                 modal.event.once('confirm', function(modal, done){
                     modal.showLoading();

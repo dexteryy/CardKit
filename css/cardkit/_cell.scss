@@ -1,0 +1,441 @@
+
+// 自定义模块
+%ck-cell {
+  overflow:hidden;
+  margin:$space;
+  background-color:#fff;
+  border:1px solid rgb(255,255,255);
+  @include border-radius($radius);
+  @include box-shadow(0px 1px 4px 0px rgba(0,0,0,0.3));
+
+  & > article > header {
+    @extend %item;
+
+    .ck-link, span {
+      @extend %item-inner;
+    }
+
+    .ck-link {
+      @extend %more-link;
+
+      &:active {
+        @extend %item-inner-active;
+      }
+
+    }
+
+  }
+
+  & > article > footer {
+    @extend %info-text;
+    border-top:1px solid $border_color;
+    margin:0 20px;
+    padding:($space) 0;
+  }
+
+}
+
+%item {
+  border-bottom:1px solid $border_color;
+  margin:0 20px;
+  padding:($space/2) 0;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+%item-inner {
+  overflow:hidden;
+  padding:($space/2) 0;
+  font-size:$maintitle_size;
+  color:$text_color;
+  display:block;
+  -webkit-touch-callout: none;
+}
+
+%item-inverse {
+  background:$active_color!important;
+  color:#fff;
+}
+
+%item-inner-active {
+  @extend %item-inverse;
+  @include border-radius($radius);
+  padding-left:10px;
+  padding-right:10px;
+  margin-left:-20px;
+  @include transform(translateX(10px));
+}
+
+%more-link {
+  background: {
+    image: inline-image('drawer_icon.png');
+    repeat: no-repeat;
+    position: right;
+    size: 5.5px 10px;
+  }
+}
+
+%info-text {
+  font-size:$text_size;
+  color:$desc_color;
+}
+
+// 文本模块
+.ck-cell-box {
+
+  &:not([data-cfg-paper]) {
+    @extend %ck-cell;
+
+    & > article > header {
+      margin-bottom:(28px/2);
+    }
+
+    & > article > footer {
+      margin-top:(28px/2);
+    }
+
+  }
+
+  & > article > section {
+    padding:0 $text_space;
+    font-size:$title_size;
+
+    &:first-child {
+      padding-top:(28px/2);
+    }
+
+    &:last-child {
+      padding-bottom:(28px/2);
+    }
+
+  }
+
+  &[data-cfg-plain] {
+    padding:0;
+    background:none;
+    border:none;
+    @include border-radius(0);
+    @include box-shadow(none);
+
+    & > article > header {
+      padding:0;
+    }
+
+    & > article > footer {
+      padding:0;
+    }
+
+    & > article > section {
+      padding-top:0;
+      padding-bottom:0;
+    }
+
+  }
+
+  &[data-cfg-paper] {
+    margin:$space;
+    padding:0 0 ($space) 0;
+    border-bottom:1px solid $border_color;
+    @include user-select(text);
+
+    & > article > header {
+      border-bottom:1px solid $border_color;
+      padding:0 0 $space 0;
+
+      .ck-link, span {
+        font-size: $headtitle_size;
+      }
+
+    }
+
+    & > article > section {
+      padding:50px 0 $space 0;
+      font-size:$article_size;
+      line-height:60px/2;
+
+      p {
+        padding:0 0 (50px/2) 0;
+      }
+
+    }
+
+  }
+
+}
+
+// 列表模块
+.ck-cell-list {
+  @extend %ck-cell;
+
+  .ck-item {
+    @extend %item;
+
+    &:last-child {
+      border:none;
+    }
+
+  }
+
+  .ck-initem {
+    @extend %item-inner;
+
+    &.ck-link:active {
+      @extend %item-inner-active;
+
+      .ck-info, .ck-subtitle {
+        color:#ccc;
+      }
+
+    }
+
+  }
+
+  .ck-icon {
+    width:(60px / 2);
+    min-height:30px;
+    background:#666;
+    float:left;
+    margin:0 10px 0 0;
+  }
+
+  .ck-info {
+    @extend %info-text;
+    float:right;
+    margin-left:10px;
+  }
+
+  .ck-title, .ck-initem .ck-link {
+    font-size:$title_size;
+    display:block;
+    line-height:140%;
+  }
+
+  .ck-title {
+    padding-right:10px;
+  }
+
+  .ck-subtitle {
+    @extend %info-text;
+    display:block;
+    line-height:130%;
+  }
+
+  .ck-content {
+    font-size:$title_size;
+    display:block;
+  }
+
+  .ck-meta {
+    @extend %info-text;
+  }
+
+  &[data-style="more"] {
+
+    .ck-info, .ck-icon, .ck-subtitle {
+      display:none;
+    }
+
+    .ck-initem {
+      @extend %more-link;
+
+    }
+
+    .ck-title {
+      font-size:$maintitle_size;
+    }
+  
+  }
+
+  &[data-style="menu"] {
+
+    .ck-icon, .ck-subtitle, .ck-meta, .ck-content {
+      display:none;
+    }
+
+  }
+
+  &[data-style="post"] {
+  
+  }
+
+  &[data-style="grid"] {
+  
+    .ck-info, .ck-subtitle, .ck-meta, .ck-content {
+      display:none;
+    }
+
+    & > article > ul {
+      overflow:hidden;
+      margin:0 20px;
+      padding:10px 0;
+      border-bottom:1px solid $border_color;
+
+      &:last-child {
+        border-bottom:none;
+      }
+
+    }
+
+    footer {
+      border-top:none;
+    }
+
+    .ck-item {
+      float:left;
+      padding:0;
+      margin:0;
+      border:none;
+      text-align:center;
+    }
+
+    .ck-initem {
+      margin:0;
+      padding:($space/2) 5px;
+
+      &.ck-link:active {
+        padding:($space/2) 5px;
+        margin:0;
+        @include transform(translateX(0));
+      }
+    }
+
+    .ck-icon {
+      float:none;
+      margin:0;
+    }
+
+    .ck-title {
+      padding:0;
+    }
+  
+  }
+
+}
+
+.ck-cell-mini {
+  @extend %ck-cell;
+
+  .ck-item {
+    @extend %item;
+    border:none;
+  }
+
+  .ck-title {
+    font-size:$maintitle_size;
+    line-height:140%;
+  }
+
+  .ck-content {
+    font-size:$title_size;
+    padding:($space/2) 0;
+  }
+
+  .ck-info {
+    @extend %info-text;
+    display:block;
+  }
+
+  .ck-initem {
+    overflow:hidden;
+    border-top:1px solid $border_color;
+    padding:($space/2) 0;
+  }
+
+  .ck-icon {
+    width:(60px / 2);
+    min-height:30px;
+    background:#666;
+    float:left;
+    margin:0 10px 0 0;
+  }
+
+  .ck-author {
+    font-size:$title_size;
+    display:block;
+    line-height:140%;
+  }
+
+  .ck-subtitle {
+    @extend %info-text;
+    display:block;
+    line-height:130%;
+  }
+
+  .ck-meta {
+    @extend %info-text;
+  }
+
+
+  &[data-style="slide"] {
+
+    & > article > header {
+      border-bottom:none;
+    }
+
+    & > article > footer {
+      border-top:none;
+    }
+
+    .ck-slide {
+      background:$view_color;
+      margin:0 10px;
+      overflow:hidden;
+      position:relative;
+    }
+
+    .ck-inslide {
+    }
+ 
+    .ck-item {
+      padding-left:10px;
+      padding-right:10px;
+      margin:0;
+      display:none;
+
+      &:first-child {
+        display:block;
+      }
+
+    }
+
+    .ck-page {
+      text-align:center;
+    
+      span {
+        display:inline-block;
+        margin:0 10px 0 0;
+        width: (12px/2);
+        height: (12px/2);
+        @include border-radius(6px/2);
+        background:#D6D6D6;
+        border: solid 1px #b3b3b3;
+
+        &:first-child {
+          background-color: #252525;
+          border: solid 1px #0058ba;
+          @include background-image(linear-gradient(bottom, #0084ff, #00a2ff));
+        }
+
+      }
+
+    }
+
+
+  }
+
+}
+
+// 表单模块
+.ck-cell-form {
+
+}
+
+//
+.ck-cell-parent {
+  background:#fff;
+  width:100%;
+  height:60px;
+  position:absolute;
+  top:0;
+  left:0;
+}
+
