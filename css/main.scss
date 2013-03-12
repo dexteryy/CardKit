@@ -795,6 +795,15 @@ a {
         border:none;
       }
     }
+    .ck-title, .ck-initem .ck-link {
+      font-size:$title_size;
+      display:block;
+      line-height:140%;
+    }
+   
+    .ck-title {
+      padding-right:10px;
+    }
     .ck-input {
         display: block;
         font-size: 13px;
