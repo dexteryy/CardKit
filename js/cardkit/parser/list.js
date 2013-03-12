@@ -7,24 +7,24 @@ define([
     
     var getText = util.getText;
 
-    function exports(cell, raw){
-        cell = $(cell);
-        var source = util.getSource(cell, raw),
+    function exports(unit, raw){
+        unit = $(unit);
+        var source = util.getSource(unit, raw),
             config = {
-                limit: cell.data('cfgLimit'),
-                col: cell.data('cfgCol'),
-                paper: cell.data('cfgPaper'),
-                plain: cell.data('cfgPlain')
+                limit: unit.data('cfgLimit'),
+                col: unit.data('cfgCol'),
+                paper: unit.data('cfgPaper'),
+                plain: unit.data('cfgPlain')
             },
             hd = get_hd(source && source.find('.ckd-hd')),
             ft = get_hd(source && source.find('.ckd-ft')),
             items = source && source.find('.ckd-item').map(get_item),
-            custom_hd = (util.getCustom('.ckd-hd', cell, raw, get_hd) || [{}])[0],
-            custom_ft = (util.getCustom('.ckd-ft', cell, raw, get_hd) || [{}])[0],
-            custom_items = util.getCustom('.ckd-item', cell, raw, get_item) || $();
+            custom_hd = (util.getCustom('.ckd-hd', unit, raw, get_hd) || [{}])[0],
+            custom_ft = (util.getCustom('.ckd-ft', unit, raw, get_hd) || [{}])[0],
+            custom_items = util.getCustom('.ckd-item', unit, raw, get_item) || $();
         var data = {
             config: config,
-            style: cell.data('style'),
+            style: unit.data('style'),
             items: custom_items.concat(items || $()),
             hd: custom_hd.html === undefined ? hd.html : custom_hd.html,
             hd_url: custom_hd.href || custom_hd.href !== null && hd.href,

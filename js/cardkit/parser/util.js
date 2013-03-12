@@ -14,8 +14,8 @@ define([
             }
         },
 
-        getCustom: function(tag, cell, raw, fn){
-            var tags = cell.find(tag);
+        getCustom: function(tag, unit, raw, fn){
+            var tags = unit.find(tag);
             if (!tags.length) {
                 return;
             }
