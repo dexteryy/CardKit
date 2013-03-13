@@ -1,10 +1,9 @@
 define('moui/modalview', [
     'dollar',
     'mo/lang',
-    'mo/network',
-    'mo/template',
+    'mo/template/string',
     'moui/overlay'
-], function($, _, net, tpl, overlay) {
+], function($, _, tpl, overlay) {
 
     var mix = _.mix,
 
@@ -21,7 +20,7 @@ define('moui/modalview', [
                     <article><div class="content"></div></article>\
                 </div>\
             </div>',
-        TPL_BTN = '<button class="{{type}}" data-default={{isDefault}}>{{text}}</button>',
+        TPL_BTN = '<button class="{{type}}" data-is-default="{{isDefault}}">{{text}}</button>',
 
         button_config = {
             'confirm': {
@@ -43,7 +42,6 @@ define('moui/modalview', [
         },
 
         default_config = mix(overlay.Overlay.prototype, {
-            url: null,
             buttons: ['confirm', 'cancel']
         });
 
@@ -89,25 +87,13 @@ define('moui/modalview', [
                 }, self);
             }
 
-            if (opt.iframeUrl) {
+            if (opt.content !== undefined) {
+                self._config.iframe = null;
+                self.setContent(opt.content);
+            } else if (opt.iframe) {
                 self.setIframeContent(opt);
-            }
-
-            if (opt.url) {
-                self.showLoading();
-                net.ajax({
-                    url: opt.url,
-                    dataType: opt.urlType || 'text',
-                    success: function(data){
-                        if (opt.urlType === 'json') {
-                            data = data.html;
-                        }
-                        self.setContent(data);
-                        self.hideLoading();
-                    }
-                });
-            }
-
+            } 
+            
             return self;
 
         },
@@ -123,7 +109,7 @@ define('moui/modalview', [
                     try {
                         self._iframeWindow = $(this.contentWindow);
                         if (!self._iframeContent
-                            && self._iframeWindow[0].location.href !== self._config.iframeUrl) {
+                            && self._iframeWindow[0].location.href !== self._config.iframe) {
                             return;
                         }
                         self._iframeContent[0].style.visibility = '';
@@ -146,8 +132,8 @@ define('moui/modalview', [
 
         open: function(){
             this.superClass.open.call(this);
-            if (this._config.iframeUrl) {
-                this._iframeContent.attr('src', this._config.iframeUrl);
+            if (this._config.iframe) {
+                this._iframeContent.attr('src', this._config.iframe);
             }
             return this;
         },

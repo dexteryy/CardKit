@@ -1,33 +1,3 @@
-// https://github.com/ksmandersen/compass-normalize
-//@import "normalize";
-
-// http://compass-style.org/reference/compass/reset/
-@import "compass/reset";
-
-// http://compass-style.org/reference/compass/css3/
-@import "compass/css3";
-
-// http://compass-style.org/reference/compass/css3/user_interface/
-@import "compass/css3/user-interface";
-
-// http://compass-style.org/reference/compass/support/
-$support-for-original-webkit-gradients : false;
-$experimental-support-for-opera : false;
-$experimental-support-for-khtml : false;
-
-// https://github.com/ericam/compass-animation
-@import "animation"; 
-
-// https://github.com/jhardy/compass-ceaser-easing
-@import "ceaser-easing";
-
-// https://github.com/adamstac/animate.sass
-@import "animate/shared";
-
-// https://github.com/MoOx/compass-recipes
-@import "recipes/layout/vertical-align";
-//@import "recipes/effect";
-
 
 @mixin retina-ready-image($width, $height, $image2x, $image) {
   @if not $image {
@@ -58,3 +28,4 @@ $experimental-support-for-khtml : false;
     }
   }
 }
+

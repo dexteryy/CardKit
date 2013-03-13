@@ -8,10 +8,10 @@
 
 <link href="dist/css/main.css" rel="stylesheet">
 <style>
-.button-box .ck-modal {
+.button-box .ck-modal-button {
     margin:5px;
 }
-.ck-cell-mini header .opt{
+.ck-mini-unit header .opt{
     font-size:12px;
     float:right;
 }
@@ -34,16 +34,16 @@
     
     <div class="ck-card" id="ckDefault">
 
-        <div class="ck-cell-box" data-cfg-plain="true" data-source="ckdBox2">
+        <div class="ck-box-unit" data-cfg-plain="true" data-source="ckdBox2">
             <div class="button-box">
-                <button class="ck-modal" data-url="form.html" data-title="ajax的表单页">ajax</button>
-                <button class="ck-modal" data-json-url="form.json" data-title="json的表单页">json</button>
-                <button class="ck-modal" data-iframe-url="formpage.html" data-title="iframe的表单页">iframe</button>
-                <button class="ck-modal" data-source="formBox" data-title="inline的表单页">inline</button>
+                <button class="ck-modal-button" data-url="form.html" data-title="ajax的表单页">ajax</button>
+                <button class="ck-modal-button" data-json-url="data/form.json" data-title="json的表单页">json</button>
+                <button class="ck-modal-button" data-iframe-url="formpage.html" data-title="iframe的表单页">iframe</button>
+                <button class="ck-modal-button" data-source="formBox" data-title="inline的表单页">inline</button>
             </div>
         </div>
 
-        <div class="ck-cell-list" data-style="more">
+        <div class="ck-list-unit" data-style="more">
             <div class="ckd-item"><a class="ckd-title" href="#listCard1">查看更多列表类型（页内切换）</a></div>
             <div class="ckd-item"><a class="ckd-title" href="#paperCard1">查看正文（页内切换）</a></div>
             <div class="ckd-item" data-source="ckdBox1Sub2"></div>
@@ -51,7 +51,7 @@
             <div class="ckd-item" data-source="ckdBox1Sub2"><a class="ckd-title" href="#paperCard1">（覆盖内容和链接）</a></div>
         </div>
 
-        <div class="ck-cell-box">
+        <div class="ck-box-unit">
             <a href="" class="ckd-hd" data-source="ckdBox1"></a>
             <div style="background:#eee;">
                 <div class="ckd-content" data-source="ckdBox1Sub1"></div>
@@ -61,7 +61,7 @@
             <div class="ckd-ft">底部信息</div>
         </div>
 
-        <div class="ck-cell-mini" data-source="ckdBox1Sub4">
+        <div class="ck-mini-unit" data-source="ckdBox1Sub4">
             <h6 class="ckd-hd">
                 <strong>摘要</strong>
                 <div class="opt">
@@ -71,7 +71,7 @@
             </h6>
         </div>
 
-        <div class="ck-cell-mini" data-style="slide" data-source="ckdBox1">
+        <div class="ck-mini-unit" data-style="slide" data-source="ckdBox1">
             <a href="" class="ckd-hd">摘要（"slide" style）</a>
         </div>
 
@@ -80,30 +80,30 @@
 
     <div class="ck-card" id="listCard1">
 
-        <div class="ck-cell-list" data-style="more" data-source="ckdBox1">
+        <div class="ck-list-unit" data-style="more" data-source="ckdBox1">
             <div class="ckd-hd">列表（"more" style）</div>
         </div>
 
-        <div class="ck-cell-list" data-style="menu" data-source="ckdBox1">
+        <div class="ck-list-unit" data-style="menu" data-source="ckdBox1">
             <div class="ckd-hd">列表（"menu" style）</div>
         </div>
 
-        <div class="ck-cell-list" data-style="post" data-source="ckdBox1">
+        <div class="ck-list-unit" data-style="post" data-source="ckdBox1">
             <a href="#listCard2" class="ckd-hd">列表（"post" style，带链接）</a>
         </div>
 
-        <div class="ck-cell-list" data-style="grid" data-source="ckdBox1" data-cfg-col="3">
+        <div class="ck-list-unit" data-style="grid" data-source="ckdBox1" data-cfg-col="3">
             <div class="ckd-hd">列表（"grid" style）</div>
         </div>
 
-        <div class="ck-cell-box" data-cfg-plain="true" data-source="ckdBox3">
+        <div class="ck-box-unit" data-cfg-plain="true" data-source="ckdBox3">
         </div>
 
     </div>
 
     <div class="ck-card" id="listCard2">
 
-        <div class="ck-cell-list" data-style="post" data-source="ckdBox1">
+        <div class="ck-list-unit" data-style="post" data-source="ckdBox1">
             <div class="ckd-hd"></div>
         </div>
 
@@ -111,7 +111,7 @@
 
     <div class="ck-card" id="paperCard1">
 
-        <div class="ck-cell-box" data-cfg-paper="true" data-source="ckdBox1">
+        <div class="ck-box-unit" data-cfg-paper="true" data-source="ckdBox1">
         </div>
 
     </div>
@@ -205,11 +205,11 @@
         </div>
 
         <div class="box ckd-source ckdBox3">
-            <button class="ck-modal ckd-create" data-url="form.html" data-title="发表"></button>
+            <button class="ck-modal-button ckd-create" data-url="form.html" data-title="发表"></button>
         </div>
 
         <script type="text/template" class="formBox">
-            <div class="ck-cell-form">
+            <div class="ck-form-unit">
 
                 <form action="#" id="inlineForm1">
 
@@ -225,7 +225,7 @@
             require([
                 'dollar', 
                 'mo/network', 
-                'cardkit/view/modal'
+                'cardkit/view/modalview'
             ], function($, net, modal){
                 modal.event.once('confirm', function(modal, done){
                     modal.showLoading();

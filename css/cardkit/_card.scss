@@ -1,0 +1,105 @@
+
+.ck-card {
+  display:none;
+  width:100%;
+  padding-top:$nav_height;
+  background:$view_color;
+  //@include box-shadow(-3px 0px 10px 0px rgba(0,0,0,.35));
+  @include user-select(none);
+  overflow-y:scroll;
+  -webkit-overflow-scrolling: touch;
+
+  //.ck-wrapper & > *:first-child {
+    //margin-top:$nav_height + $space*2;
+  //}
+
+  .ck-footer {
+    display:block;
+  }
+
+  .ckd-create {
+    display:none;
+  }
+
+  &.moving {
+    position:absolute!important;
+    top:0;
+    left:0;
+    z-index:$zindex_view;
+    @include transform(translateX(100%));
+  }
+
+}
+
+// 默认首屏视图
+#ckDefault {
+
+}
+
+.ck-loading {
+  display:block;
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:$view_color;
+  font-size:$headtitle_size;
+  color:$desc_color;
+  text-align:center;
+  overflow-y:visible;
+
+  div {
+    display:block;
+    margin:0;
+    width:100%;
+    position:fixed;
+    bottom:50px;
+    left:0;
+  }
+
+  span {
+    width:20px;
+    height:20px;
+    background:#666;
+    display:inline-block;
+    margin:5px;
+    font-size:0;
+    @include border-radius(10px);
+    @include transform-origin(50% 50%);
+    @include animation(loading-dot 1.5s steps(1, start) 0.5s infinite);
+
+    &:first-child {
+      @include animation(loading-dot 1.5s steps(1, start) 0s infinite);
+    }
+
+    &:last-child {
+      @include animation(loading-dot 1.5s steps(1, start) 1s infinite);
+    }
+
+  }
+  
+  .ck-footer, .ck-top-tips {
+    display:none;
+  }
+
+}
+
+@include keyframes(loading-dot) {
+  0% {
+    background:#666;
+    //@include transform(scale(1));
+  }
+  33% {
+    background:#ccc;
+    //@include transform(scale(0.8));
+  }
+  66% {
+    background:#ccc;
+    //@include transform(scale(0.8));
+  }
+  100% {
+    background:#666;
+    //@include transform(scale(1));
+  }
+}

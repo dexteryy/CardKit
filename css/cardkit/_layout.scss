@@ -1,0 +1,170 @@
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font:$text_size Helvetica,sans-serif;
+  color:$text_color;
+  background:$view_color;
+  line-height:1.7;
+
+  &.bg {
+    background: #666;
+  }
+
+  &.modal-view {
+
+    .ck-root {
+      @include transform(scale(0.8));
+    }
+
+  }
+
+}
+
+a {
+  text-decoration:none;
+  color:$active_color;
+  -webkit-touch-callout: none;
+}
+
+.ck-header {
+  height: $nav_height;
+  @include box-shadow(0 2px 3px rgba(0,0,0,.35));
+  z-index:$zindex_step;
+  @include user-select(none);
+
+  a {
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+  }
+
+  $top_btn_space: 8px;
+
+  .opt {
+    display:block;
+    position:absolute;
+    top:$top_btn_space;
+    left:$top_btn_space;
+  }
+
+  .ck-top-nav {
+
+  }
+
+  .ck-top-action {
+    left:auto;
+    right:$top_btn_space;
+  }
+
+  .ck-top-create {
+    left:auto;
+    right:$top_btn_space*3 + $top_btn_size;
+  }
+
+}
+
+.ck-top-title {
+  font-size:$article_size;
+  line-height: $nav_height;
+  text-align:center;
+  display:block;
+  margin:0 $space*4 + 20px;
+}
+
+.ck-root {
+  @include box-shadow(0px 0px 10px rgba(0,0,0,.35));
+  @include transform-origin(50% 50%);
+  //@include transform-style(preserve-3d);
+  @include transition(transform 0.4s ease-in-out);
+  
+  .ck-header {
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    @include background(linear-gradient(bottom, #78624f, #846f5b));
+    z-index: $zindex_overlay;
+    @include transform(translateY(-$nav_height));
+    @include transition(transform 400ms ease-in-out);
+
+    .ck-top-title {
+      color:#fff;
+      @include text-shadow(0px 1px 0px rgba(0,0,0,1));
+    }
+
+    .btn {
+      width:$top_btn_size;
+      height:$top_btn_size;
+      background:#fff;
+      @include background(linear-gradient(bottom, #78624f, #846f5b));
+      background-size:24px;
+      border:1px solid transparent;
+    }
+    .ck-top-nav .btn {
+      background-image:inline-image('menu.png');
+    }
+    .ck-top-action .btn {
+      background-image:inline-image('more.png');
+    }
+    .ck-top-create .btn {
+      background-image:inline-image('compose.png');
+    }
+    .ck-top-create .ck-btn-reply {
+      background-image:inline-image('reply.png');
+    }
+
+  }
+
+}
+
+.ck-wrapper {
+  width:100%;
+
+  &.inited { 
+
+  }
+
+}
+
+.ck-footer {
+  display:none;
+  height:15px;
+  padding:25px 0 15px 0;
+  background:$view_color;
+  text-align:center;
+  
+  .copyright {
+    font-size:$text_size;
+    color:$desc_color;
+    margin:5px 0;
+  }
+
+}
+
+.ck-top-tips {
+  text-align:center;
+  font-size:$title_size;
+  color:#999;
+  position:absolute;
+  top:8px;
+  left:0;
+  width:100%;
+}
+
+.ck-globalmask {
+  display:none;
+  background:#f00;
+  opacity:0;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  padding-bottom:60px;
+  z-index: $zindex_mask;
+}
+
+.ck-raw {
+  display:none;
+}

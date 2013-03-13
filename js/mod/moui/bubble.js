@@ -75,29 +75,29 @@ define('moui/bubble', [
         },
 
         show: function(){
-            if (this.opened) {
+            if (this.isOpened) {
                 return;
             }
-            this.opened = true;
+            this.isOpened = true;
             this._node.addClass('active');
             this.update();
             return this;
         },
 
         hide: function(){
-            if (!this.opened) {
+            if (!this.isOpened) {
                 return;
             }
-            this.opened = false;
+            this.isOpened = false;
             this._node.removeClass('active');
             return this;
         },
 
         destroy: function() {
-            if (!this.opened) {
+            if (!this.isOpened) {
                 return;
             }
-            this.opened = false;
+            this.isOpened = false;
             this._node.remove();
             return this;
         }

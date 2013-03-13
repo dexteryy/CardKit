@@ -3,7 +3,7 @@ define('moui/overlay', [
     'mo/lang',
     'mo/template',
     'eventmaster'
-], function($, _, tpl, Event) {
+], function($, _, tpl, event) {
 
     var body = $('body'),
 
@@ -37,7 +37,7 @@ define('moui/overlay', [
 
         init: function(opt){
             this.id = this._ns + (++_mid);
-            this.event = Event();
+            this.event = event();
             this._config = _.mix({}, this._defaults, opt);
             body.append(tpl.format(this._template, { 
                 id: this.id 
@@ -66,36 +66,41 @@ define('moui/overlay', [
 
         setTitle: function(text){
             this._title.html(text);
+            return this;
         },
 
         setContent: function(html){
             this._content.html(html);
+            return this;
         },
 
         showLoading: function(text) {
+            this._node.addClass('loading');
             this._title.html((text || LOADING_DEFAULT) + LOADING_DOTS);
             return this;
         },
 
         hideLoading: function(){
+            this._node.removeClass('loading');
             this._title.html(this._config.title);
+            return this;
         },
 
         open: function() {
-            if (this.opened) {
+            if (this.isOpened) {
                 return;
             }
-            this.opened = true;
+            this.isOpened = true;
             this._node.appendTo(body).addClass('active');
             this.event.fire('open', [this]);
             return this;
         },
 
         close: function() {
-            if (!this.opened) {
+            if (!this.isOpened) {
                 return;
             }
-            this.opened = false;
+            this.isOpened = false;
             this.event.fire('close', [this]);
             this._node.removeClass('active');
             this._content.empty();

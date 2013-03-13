@@ -78,15 +78,15 @@ module.exports = function(grunt) {
                     optimizationLevel: 3
                 },
                 files: {
-                    '<%= meta.distDir %>/pics/': 'pics/**.{png,jpg}'
+                    '<%= meta.distDir %>/pics/': 'pics/**/*.{png,jpg}'
                 }
             }
         },
 
         concat: {
             options: {
-              stripBanners: true,
-              banner: '/*! <%= pkg.name %> - v<%= pkg.version %> */\n'
+                stripBanners: true,
+                banner: '/*! <%= pkg.name %> - v<%= pkg.version %> */\n'
             },
             js_main: {
                 src: ['<%= meta.distDir %>/js/main.js'],
@@ -198,7 +198,7 @@ module.exports = function(grunt) {
                 "scripturl": true,             // Tolerate script-targeted URLs.
                 "multistr": true               // suppresses warnings about multi-line strings
             },
-            main: ['./*.js', 'js/**/*.js']
+            main: ['./*.js', 'js/**/*.js', '!js/mod/**']
         },
 
         connect: {

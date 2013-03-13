@@ -3,17 +3,17 @@ define([
     'dollar',
     'mo/lang',
     'mo/template',
-    './tpl/cell/box',
-    './tpl/cell/list',
-    './tpl/cell/mini',
-    './tpl/cell/form',
+    './tpl/unit/box',
+    './tpl/unit/list',
+    './tpl/unit/mini',
+    './tpl/unit/form',
     './parser/box',
     './parser/list',
     './parser/mini',
     './parser/form'
 ], function($, _, tpl, 
     tpl_box, tpl_list, tpl_mini, tpl_form,
-    boxParser, listParser, miniParser){
+    boxParser, listParser, miniParser, formParser){
 
     var TPL_TIPS = '<div class="ck-top-tips">长按顶部导航条，可拖出浏览器地址栏</div>';
 
@@ -21,17 +21,17 @@ define([
 
         var raw = wrapper.find('.ck-raw');
 
-        wrapper.find('.ck-cell-box').forEach(function(cell){
-            var data = boxParser(cell, raw);
+        wrapper.find('.ck-box-unit').forEach(function(unit){
+            var data = boxParser(unit, raw);
             if (data.content) {
-                cell.innerHTML = tpl.convertTpl(tpl_box.template, data, 'data');
+                unit.innerHTML = tpl.convertTpl(tpl_box.template, data, 'data');
             } else {
-                $(cell).remove();
+                $(unit).remove();
             }
         });
 
-        wrapper.find('.ck-cell-list').forEach(function(cell){
-            var data = listParser(cell, raw);
+        wrapper.find('.ck-list-unit').forEach(function(unit){
+            var data = listParser(unit, raw);
             data.items = data.items.filter(function(item){
                 var style = this.style;
                 if (style === 'more' || style === 'menu') {
@@ -51,14 +51,14 @@ define([
                 data.items.length = data.config.limit;
             }
             if (data.items.length) {
-                cell.innerHTML = tpl.convertTpl(tpl_list.template, data, 'data');
+                unit.innerHTML = tpl.convertTpl(tpl_list.template, data, 'data');
             } else {
-                $(cell).remove();
+                $(unit).remove();
             }
         });
 
-        wrapper.find('.ck-cell-mini').forEach(function(cell){
-            var data = miniParser(cell, raw);
+        wrapper.find('.ck-mini-unit').forEach(function(unit){
+            var data = miniParser(unit, raw);
             data.items = data.items.filter(function(item){
                 if (!item.content || !item.content.length) {
                     return false;
@@ -72,16 +72,25 @@ define([
                 data.items.length = data.config.limit;
             }
             if (data.items.length) {
-                cell.innerHTML = tpl.convertTpl(tpl_mini.template, data, 'data');
+                unit.innerHTML = tpl.convertTpl(tpl_mini.template, data, 'data');
             } else {
-                $(cell).remove();
+                $(unit).remove();
+            }
+        });
+
+        wrapper.find('.ck-form-unit').forEach(function(unit){
+            var data = formParser(unit, raw);
+            if (data.items.length) {
+                unit.innerHTML = tpl.convertTpl(tpl_form.template, data, 'data');
+            } else {
+                $(unit).remove();
             }
         });
 
         var footer = wrapper.find('.ck-footer');
         wrapper.find('.ck-card').forEach(function(card){
             $(card).append(this.clone())
-                //.prepend($('.ck-cell-parent', card))
+                .prepend($('.ck-banner-unit', card))
                 .prepend(TPL_TIPS);
         }, footer);
         footer.remove();

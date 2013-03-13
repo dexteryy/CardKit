@@ -196,6 +196,19 @@ define("dollar", [
             return false;
         },
 
+        isEmpty: function(){
+            return this.every(function(elm){
+                if (!elm.innerHTML) {
+                    elm.innerHTML = ' ';
+                    if (!elm.innerHTML) {
+                        return true;
+                    }
+                    elm.innerHTML = '';
+                }
+                return false;
+            });
+        },
+
         // Properties
 
         addClass: function(cname){
@@ -246,7 +259,9 @@ define("dollar", [
         data: kv_access(function(node, name, value){
             node.dataset[css_method(name)] = value;
         }, function(node, name){
-            return (node || {}).dataset[css_method(name)];
+            var data = (node || {}).dataset;
+            return name ? data[css_method(name)] 
+                : _.mix({}, data);
         }),
 
         removeData: function(name){
