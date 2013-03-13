@@ -50,19 +50,19 @@ define('moui/picker', [
                 return;
             }
             elm[OID] = ++this._uoid;
-            var controler = control(elm);
-            controler.bind('enable', change.bind(this))
+            var controller = control(elm);
+            controller.bind('enable', change.bind(this))
                 .bind('disable', change.bind(this));
-            this._options.push(controler);
+            this._options.push(controller);
             return this;
         },
 
         removeOption: function(elm){
             this.unselect(elm);
-            var controler = this.getOption(elm);
-            if (controler) {
+            var controller = this.getOption(elm);
+            if (controller) {
                 this._options.splice(
-                    this._options.indexOf(controler), 1);
+                    this._options.indexOf(controller), 1);
             }
             return this;
         },
@@ -71,14 +71,14 @@ define('moui/picker', [
             if (typeof elm === 'number') {
                 elm = this._options[elm];
             } else {
-                var oid = elm[OID], controler;
+                var oid = elm[OID], controller;
                 if (!oid) {
                     return null;
                 }
                 for (var i = 0, l = this._options.length; i < l; i++) {
-                    controler = this._options[i];
-                    if (controler[OID] === oid) {
-                        elm = controler;
+                    controller = this._options[i];
+                    if (controller[OID] === oid) {
+                        elm = controller;
                         break;
                     }
                 }
@@ -88,8 +88,8 @@ define('moui/picker', [
 
         val: function(v){
             if (this._config.multiSelect) {
-                return this._allSelected.map(function(controler){
-                    return controler.val();
+                return this._allSelected.map(function(controller){
+                    return controller.val();
                 });
             } else {
                 return this._lastSelected.val(v);
@@ -97,17 +97,17 @@ define('moui/picker', [
         },
 
         select: function(i){
-            var controler = this.getOption(i);
-            if (controler) {
-                controler.enable();
+            var controller = this.getOption(i);
+            if (controller) {
+                controller.enable();
                 this.hasSelected = true;
             }
         },
 
         unselect: function(i){
-            var controler = this.getOption(i);
-            if (controler) {
-                controler.disable();
+            var controller = this.getOption(i);
+            if (controller) {
+                controller.disable();
                 if (!this._config.multiSelect
                         || !this._allSelected.length) {
                     this.hasSelected = false;
@@ -117,20 +117,20 @@ define('moui/picker', [
 
     });
 
-    function change(controler){
+    function change(controller){
         if (this.subject === 'enable') {
             if (this._config.multiSelect) {
-                this._allSelected.push(controler);
+                this._allSelected.push(controller);
             } else {
                 this._lastSelected.disable();
-                this._lastSelected = controler;
+                this._lastSelected = controller;
             }
         } else {
             if (this._config.multiSelect) {
                 this._allSelected.splice(
-                    this._allSelected.indexOf(controler), 1);
+                    this._allSelected.indexOf(controller), 1);
             } else {
-                if (this._lastSelected === controler) {
+                if (this._lastSelected === controller) {
                     this._lastSelected = null;
                 }
             }

@@ -82,11 +82,11 @@ define([
     };
 
     function control_handler(){
-        var controler = control(this).toggle();
-        if (!controler.parentId) {
-            controler.parentId = ++gc_id;
+        var controller = control(this).toggle();
+        if (!controller.parentId) {
+            controller.parentId = ++gc_id;
         }
-        ck.viewportGarbage[controler.parentId] = 1;
+        ck.viewportGarbage[controller.parentId] = 1;
     } 
 
 
@@ -516,8 +516,8 @@ define([
         }
     }
 
-    function check_gc(controler){
-        return ck.viewportGarbage[controler.parentId];
+    function check_gc(controller){
+        return ck.viewportGarbage[controller.parentId];
     }
 
     return ck;

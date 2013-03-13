@@ -159,8 +159,8 @@ require([
 
     ck.control($('.link1')).event.bind('enable', show_result);
 
-    function show_result(controler){
-        var result = controler.responseData;
+    function show_result(controller){
+        var result = controller.responseData;
         console.info('response: ', result);
         alert('response: ' + result);
     }
