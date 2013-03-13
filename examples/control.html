@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>demo</title>
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
+<meta name="format-detection" content="telephone=no">
+
+<link href="dist/css/main.css" rel="stylesheet">
+<style>
+.post1 {
+    width:160px;
+}
+.topbox h2 {
+    font-size:20px;
+    border-bottom:1px solid #dadada;
+}
+.topbox .mods {
+    padding:10px 0 0 20px;
+}
+.topbox .mods li {
+    list-style:square;
+}
+</style>
+</head>
+<body>
+
+<div class="ck-root">
+    
+<header class="ck-header">
+    
+<a class="ck-top-title" href="/">DEMO</a>
+<span class="opt ck-top-nav"><a class="btn" href="/"></a></span>
+<span class="opt ck-top-action"><button class="btn">...</button></span>
+<span class="opt ck-top-create"><button class="btn">发表</button></span>
+
+</header>
+
+<div class="ck-wrapper">
+    
+    <div class="ck-card" id="ckDefault">
+
+        <div class="ck-banner-unit topbox">
+            <h2>Control</h2>
+            <ul class="mods">
+                <li><a href="#">moui/control</a></li>
+                <li><a href="#">cardkit/control</a></li>
+            </ul>
+        </div>
+
+        <div class="ck-form-unit">
+            <header class="ckd-hd">Switch</header>
+            <div class="ckd-item">
+                <button class="ck-switch switch1" value="0" 
+                        data-enable-url="data/enable.txt"
+                        data-enable-val="1"
+                        data-label="false">
+                    <span class="enable-text">开启</span>
+                    <span class="disable-text">关闭</span>
+                    <span class="block"></span>
+                </button>
+            </div>
+        </div>
+
+        <div class="ck-form-unit">
+            <header class="ckd-hd">Post button</header>
+            <div class="ckd-item">
+                <input class="ck-post-button post1" type="button" value="Post Button 1" 
+                    data-enable-json-url="data/form.json"
+                    data-enable-label="Post Button 1 (clicked)">
+                <p>
+                    <label><em>fixed width, json response</em></label>
+                </p>
+            </div>
+            <div class="ckd-item">
+                <button class="ck-post-button post2"
+                        data-fluid="true"
+                        data-enable-url="data/enable.txt"
+                        data-disable-url="data/disable.txt"
+                        data-enable-label="Post Button 2" 
+                        data-label="span">
+                    <span>Post Button 2</span>
+                </button>
+                <p>
+                    <label><em>fluid width</em></label>
+                </p>
+            </div>
+            <div class="ckd-item">
+                <input class="ck-post-button post3" type="button" value="Button(0)"
+                        data-enable-val="Button(1)" 
+                        data-is-default="true">
+                <p>
+                    <label><em>default width</em></label>
+                </p>
+            </div>
+            <div class="ckd-item">
+                <a href="#" class="ck-post-button ck-unlink post4"
+                    data-enable-label="Button Link (clicked)" 
+                    data-fluid="true">Button Link</a>
+                <p>
+                    <label><em>fluid width, link element</em></label>
+                </p>
+            </div>
+        </div>
+
+        <div class="ck-form-unit">
+            <header class="ckd-hd">Post Link</header>
+            <div class="ckd-item">
+                text text text text text text text <a href="#" class="ck-post-link ck-unlink link1"
+                    data-enable-label="Post Link (clicked)" 
+                    data-enable-url="data/enable.txt"
+                >Post Link</a> text text text text text text text text text text text text text text text 
+            </div>
+        </div>
+
+        <div class="ck-form-unit">
+            <header class="ckd-hd">Folder</header>
+            <div class="ckd-item">
+                <div class="ck-folder"
+                        data-enable-label="Hide the content" 
+                        data-label="header">
+                    <header>Show the content</header>
+                    <div class="content">Hidden content. Hidden content. Hidden content. Hidden content.</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="ck-card ck-loading" id="ckLoading">
+        <div>
+            <p><span></span><span></span><span></span></p>
+            <p>加载中...</p>
+        </div>
+    </div>
+
+    <footer class="ck-footer">
+        <div class="copyright">&copy; 2005－2012 douban.com, all rights reserved</div>
+    </footer>
+
+</div>
+
+</div>
+
+<script src="dist/js/main.js"></script>
+<!-- COLLECTED JS -->
+<script>
+require([
+    'dollar',
+    'cardkit/app'
+], function($, ck){
+
+    ck.control($('.switch1')).event.bind('enable', show_result);
+
+    ck.control($('.post1')).event.bind('enable', show_result);
+
+    ck.control($('.post2')).event.bind('enable', show_result)
+        .bind('disable', show_result);
+
+    ck.control($('.link1')).event.bind('enable', show_result);
+
+    function show_result(controller){
+        var result = controller.responseData;
+        console.info('response: ', result);
+        alert('response: ' + result);
+    }
+
+});
+</script>
+<script>
+</script>
+<!-- vagrant-->
+</body>
+</html>

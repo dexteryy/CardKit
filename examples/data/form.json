@@ -1,0 +1,6 @@
+{
+    "html": "<div class=\"ck-form-unit\"><textarea>testesarfe few fwef </textarea></div><script>console.info('json loaded')</script>", 
+    "extra_data": {
+        "name": "test"
+    }
+}

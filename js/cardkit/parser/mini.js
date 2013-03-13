@@ -7,24 +7,24 @@ define([
     
     var getText = util.getText;
 
-    function exports(cell, raw){
-        cell = $(cell);
-        var source = util.getSource(cell, raw),
+    function exports(unit, raw){
+        unit = $(unit);
+        var source = util.getSource(unit, raw),
             config = {
-                limit: cell.data('cfgLimit'),
-                plain: cell.data('cfgPlain')
+                limit: unit.data('cfgLimit'),
+                plain: unit.data('cfgPlain')
             },
             hd = get_hd(source && source.find('.ckd-hd')),
             items = source && source.find('.ckd-item'),
-            custom_hd = (util.getCustom('.ckd-hd', cell, raw, get_hd) || [{}])[0],
-            custom_items = util.getCustom('.ckd-item', cell, raw, get_item) || $();
+            custom_hd = (util.getCustom('.ckd-hd', unit, raw, get_hd) || [{}])[0],
+            custom_items = util.getCustom('.ckd-item', unit, raw, get_item) || $();
         if (source && !items[0]) {
             items = source;
         }
         items = items && items.map(get_item);
         var data = {
             config: config,
-            style: cell.data('style'),
+            style: unit.data('style'),
             items: custom_items.concat(items || $()),
             hd: custom_hd.html === undefined ? hd.html : custom_hd.html,
             hd_url: custom_hd.href || custom_hd.href !== null && hd.href

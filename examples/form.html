@@ -1,5 +1,6 @@
 
-<div class="ck-cell-form">
+<div class="ck-form-unit">
+
     <form action="#" id="ajaxForm1">
     <input type="text" value="1" name="a">
     <textarea name="b">testesarfe few fwef </textarea>
@@ -11,7 +12,7 @@ console.info('ajax loaded');
 require([
     'dollar', 
     'mo/network', 
-    'cardkit/view/modal'
+    'cardkit/view/modalview'
 ], function($, net, modal){
     modal.event.once('confirm', function(modal, done){
         modal.showLoading();

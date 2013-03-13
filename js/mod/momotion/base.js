@@ -1,5 +1,5 @@
 
-define('moui/gesture/base', [
+define('momotion/base', [
     'mo/lang/es5',
     'mo/lang/type',
     'mo/lang/mix'
@@ -8,8 +8,8 @@ define('moui/gesture/base', [
     var isFunction = type.isFunction,
         gid = 0;
 
-    function GestureBase(elm, opt, cb){
-        if (isFunction(opt)) {
+    function MomoBase(elm, opt, cb){
+        if (!opt || isFunction(opt)) {
             cb = opt;
             opt = {};
         }
@@ -27,7 +27,7 @@ define('moui/gesture/base', [
         this.enable();
     }
 
-    GestureBase.prototype = {
+    MomoBase.prototype = {
 
         PRESS: 'touchstart',
         MOVE: 'touchmove',
@@ -101,10 +101,10 @@ define('moui/gesture/base', [
     function nothing(){}
 
     function exports(elm, opt, cb){
-        return new exports.GestureBase(elm, opt, cb);
+        return new exports.Class(elm, opt, cb);
     }
 
-    exports.GestureBase = GestureBase;
+    exports.Class = MomoBase;
 
     return exports;
 

@@ -1,0 +1,76 @@
+
+.moui-modalview {
+  visibility:hidden;
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  z-index: $zindex_overlay + $zindex_step;
+  @include user-select(none);
+
+  .wrapper {
+    @include transform(translateY(100%));
+    @include transition(transform 0.4s ease-in-out);
+
+    & > header {
+      @extend .ck-header;
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      @include border-radius($radius $radius 0 0);
+      @include box-shadow(0 2px 3px rgba(0,0,0,.2)); 
+      @include background-image(linear-gradient(bottom, #dfdfdf, #fcfcfc));
+
+      h1 {
+        @extend .ck-top-title;
+      }
+
+      $padding: 15px/2;
+
+      div.confirm, div.cancel {
+        display:inline-block;
+        margin:$padding 0 0 $padding;
+        float:left;
+      }
+
+      div.confirm {
+        margin:$padding $padding 0 0;
+        float:right;
+      }
+
+      button {
+        @extend .btn;
+        width:55px;
+      }
+
+    }
+
+    & > article {
+      height:1000px;
+      background:$view_color;
+      overflow-y:scroll;
+      -webkit-overflow-scrolling: touch;
+
+      & > .content {
+        padding:$nav_height 0 0 0;
+      }
+
+    }
+
+  }
+
+  .shd {
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+  }
+
+  &.active {
+    visibility:visible;
+  }
+
+}

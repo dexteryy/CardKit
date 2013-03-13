@@ -1,12 +1,12 @@
 
-define('moui/gesture/scroll', [
+define('momotion/scroll', [
     'mo/lang',
-    'moui/gesture/base'
-], function(_, gesture){
+    'momotion/base'
+], function(_, momoBase){
 
-    var ScrollGesture = _.construct(gesture.GestureBase);
+    var MomoScroll = _.construct(momoBase.Class);
 
-    _.mix(ScrollGesture.prototype, {
+    _.mix(MomoScroll.prototype, {
 
         EVENTS: [
             'scrolldown', 
@@ -15,7 +15,7 @@ define('moui/gesture/scroll', [
             'scrollend'
         ],
         DEFAULT_CONFIG: {
-            'directThreshold': 0,
+            'directThreshold': 5,
             'scrollEndGap': 5
         },
 
@@ -23,18 +23,21 @@ define('moui/gesture/scroll', [
             this.scrollingNode = elm;
         },
 
-        checkScollDirection: function(d){
+        checkScollDirection: function(y){
             var node = { target: this.node },
+                d = y - this._lastY,
                 threshold = this._config.directThreshold;
             if (d < 0 - threshold) {
                 if (this._scrollDown !== true) {
                     this.trigger(node, this.event.scrolldown);
                 }
+                this._lastY = y;
                 this._scrollDown = true;
             } else if (d > threshold) {
                 if (this._scrollDown !== false) {
                     this.trigger(node, this.event.scrollup);
                 }
+                this._lastY = y;
                 this._scrollDown = false;
             }
         },
@@ -65,8 +68,8 @@ define('moui/gesture/scroll', [
 
         move: function(e){
             var t = e.touches[0];
-            this.checkScollDirection(t.clientY - this._lastY);
-            this._lastY = t.clientY;
+            this.checkScollDirection(t.clientY);
+            //this._lastY = t.clientY;
             if (this.scrollingNode) {
                 this._scrollY = this.scrollingNode.scrollTop;
             }
@@ -77,7 +80,7 @@ define('moui/gesture/scroll', [
                 t = e.changedTouches[0],
                 node = { target: self.node };
             // up/down
-            this.checkScollDirection(t.clientY - this._lastY);
+            this.checkScollDirection(t.clientY);
             // end
             if (self._scrollY !== null) {
                 var vp = self.scrollingNode,
@@ -107,10 +110,10 @@ define('moui/gesture/scroll', [
     });
 
     function exports(elm, opt, cb){
-        return new exports.ScrollGesture(elm, opt, cb);
+        return new exports.Class(elm, opt, cb);
     }
 
-    exports.ScrollGesture = ScrollGesture;
+    exports.Class = MomoScroll;
 
     return exports;
 

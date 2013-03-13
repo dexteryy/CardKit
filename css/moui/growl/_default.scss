@@ -1,0 +1,22 @@
+
+.moui-growl {
+  display:none;
+  position:fixed;
+  top:30%;
+  left:20px;
+  right:20px;
+  z-index: $zindex_overlay + $zindex_step;
+  padding:20px 10px;
+  background:#000;
+  opacity:0.8;
+  color:#fff;
+  font-size:$headtitle_size;
+  text-align:center;
+  @include border-radius(5px);
+
+  &.active {
+    display:block;
+  }
+
+}
+

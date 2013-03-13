@@ -8,21 +8,14 @@
         {% } else { %}
         <span>{%= data.hd %}</span>
         {% } %}
-        {% if (data.subtitle) { %}
-        <span class="ck-subtitle">{%= data.subtitle %}</span>
-        {% } %}
-        {% if (data.info) { %}
-        <span class="ck-info">{%= data.info %}</span>
-        {% } %}
     </header>
     {% } %}
 
     <fieldset>
     {% data.items.forEach(function(item){ %}
-        {% if (item.label) { %}
-        <label>{%= item.label %}</label>
-        {% } %}
-        {%= item.field %}
+        <div class="ck-item">
+            {%= item.content %}
+        </div>
     {% }); %}
     </fieldset>
 

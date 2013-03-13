@@ -4,33 +4,37 @@ define([
     'mo/template',
     'soviet',
     'choreo',
-    'moui/gesture/base',
-    'moui/gesture/tap',
-    'moui/gesture/swipe',
-    'moui/gesture/drag',
-    'moui/gesture/scroll',
+    'momotion/base',
+    'momotion/tap',
+    'momotion/swipe',
+    'momotion/drag',
+    'momotion/scroll',
+    './view/control',
+    './view/picker',
+    './view/modalview',
+    './view/growl',
     './bus',
     './pagesession',
     './render',
-    './view/modal',
-    './view/growl',
     'mo/domready'
 ], function($, _, tpl, soviet, choreo, 
-    baseGeste, tapGeste, swipeGeste, dragGeste, scrollGeste, 
-    bus, pageSession, render, modal, growl){
+    momoBase, momoTap, momoSwipe, momoDrag, momoScroll, 
+    control, picker, modalCard, growl,
+    bus, pageSession, render){
 
     var window = this,
         location = window.location,
         document = window.document,
         body = document.body,
-        _back_timeout,
+        back_timeout,
+        gc_id = 0,
 
         //SUPPORT_ORIENT = "orientation" in window && "onorientationchange" in window,
         //SUPPORT_OVERFLOWSCROLL = "overflowScrolling" in body,
         //
         TPL_MASK = '<div class="ck-globalmask"></div>';
 
-    _.mix(baseGeste.GestureBase.prototype, {
+    _.mix(momoBase.Class.prototype, {
         bind: function(ev, handler, elm){
             $(elm || this.node).bind(ev, handler);
             return this;
@@ -47,42 +51,63 @@ define([
 
     var tap_events = {
 
-        '.ck-modal, .ck-modal-link': function(){
-            var me = $(this),
-                json_url = me.data('jsonUrl'),
-                source_id = me.data('source');
-            ck.openModal({
-                title: me.data('title'),
-                content: source_id ? $('.' + source_id).map(function(elm){
-                    return elm.innerHTML;
-                }).join('') : undefined,
-                iframeUrl: me.data('iframeUrl'),
-                url: me.data('url') || json_url,
-                urlType: json_url && 'json'
-            });
-        },
         'a': link_handler,
-        'a *': link_handler
+        'a *': link_handler,
+
+        '.ck-card .ck-post-link': control_handler,
+
+        '.ck-card .ck-post-button': control_handler,
+        '.ck-card .ck-post-button span': function tap_ck_post(){
+            if (!$(this).hasClass('ck-post-button')) {
+                return tap_ck_post.call(this.parentNode);
+            }
+            control_handler.call(this);
+        },
+
+        '.ck-card .ck-switch span': function tap_ck_switch(){
+            if (!$(this).hasClass('ck-switch')) {
+                return tap_ck_switch.call(this.parentNode);
+            }
+            control_handler.call(this);
+        },
+
+        '.ck-modal-button': function(){
+            ck.openModal($(this).data());
+        },
+
+        '.ck-folder header': function(){
+            control(this.parentNode).toggle();
+        }
+    
     };
 
-    modal.event.bind('open', function(modal){
+    function control_handler(){
+        var controller = control(this).toggle();
+        if (!controller.parentId) {
+            controller.parentId = ++gc_id;
+        }
+        ck.viewportGarbage[controller.parentId] = 1;
+    } 
+
+
+    modalCard.event.bind('open', function(modalCard){
         ck.disableView = true;
         ck.showTopbar();
-        $(body).addClass('bg').addClass('modal_view');
+        $(body).addClass('bg').addClass('modal-view');
         setTimeout(function(){
-            choreo.transform(modal._wrapper[0], 'translateY', '0');
+            choreo.transform(modalCard._wrapper[0], 'translateY', '0');
             var prev = ck.viewport,
-                current = modal._contentWrapper;
+                current = modalCard._contentWrapper;
             ck.changeView(current, { is_modal: true });
-            modal._content.css('minHeight', current[0].offsetHeight + 'px');
-            if (modal._iframeContent) {
-                modal._iframeContent.css({
+            modalCard._content.css('minHeight', current[0].offsetHeight + 'px');
+            if (modalCard._iframeContent) {
+                modalCard._iframeContent.css({
                     width: current[0].offsetWidth + 'px',
                     height: current[0].offsetHeight - ck.headerHeight + 'px'
                 });
-                modal._iframeWindow.bind('touchstart', prevent_window_scroll);
+                modalCard._iframeWindow.bind('touchstart', prevent_window_scroll);
             }
-            modal.event.once('close', function(){
+            modalCard.event.once('close', function(){
                 ck.changeView(prev);
             });
         }, 200);
@@ -99,9 +124,10 @@ define([
             this.headerHeight = this.header.height();
             this.windowFullHeight = Infinity;
             this.inited = false;
+            this.viewportGarbage = {};
 
-            this.scrollGesture = scrollGeste(document, {});
-            tapGeste(document, {});
+            this.scrollGesture = momoScroll(document);
+            momoTap(document);
 
             render(wrapper);
             this.initState();
@@ -124,6 +150,9 @@ define([
             }).on('tap', tap_events);
 
             $(document).bind('scrolldown', function(){
+                if (topbar_holded) {
+                    return;
+                }
                 setTimeout(function(){
                     ck.hideAddressbar();
                 }, 0);
@@ -146,18 +175,18 @@ define([
 
             var startY,
                 hold_timer,
-                holded,
+                topbar_holded,
                 cancel_hold = function(){
                     clearTimeout(hold_timer);
-                    if (holded) {
-                        holded = false;
+                    if (topbar_holded) {
+                        topbar_holded = false;
                         growl.tip.close();
                     }
                 };
             this.header.bind('touchstart', function(e){
                 startY = e.touches[0].clientY;
                 hold_timer = setTimeout(function(){
-                    holded = true;
+                    topbar_holded = true;
                     ck.viewport[0].scrollTop = 0;
                     growl.tip.set({
                         content: '向下拖动显示地址栏'
@@ -165,9 +194,9 @@ define([
                 }, 200);
             }).bind('touchmove', function(e){
                 clearTimeout(hold_timer);
-                if (holded && e.touches[0].clientY < startY) {
+                if (topbar_holded && e.touches[0].clientY < startY) {
                     cancel_hold();
-                    holded = true;
+                    topbar_holded = true;
                     ck.windowFullHeight = Infinity;
                     ck.hideAddressbar();
                 }
@@ -178,13 +207,13 @@ define([
         initState: function(){
 
             $(window).bind("popstate", function(e){
-                clearTimeout(_back_timeout);
+                clearTimeout(back_timeout);
                 var loading = ck.viewport[0].id === 'ckLoading'; // alert(['pop', e.state && [e.state.prev, e.state.next], ck.viewport && ck.viewport[0].id].join(', '))
                 if (e.state) {
                     if (e.state.next === '_modal_') {
                         // 11. forward from normal card, show modal card.  alert(11)
-                        modal.set(e.state.opt).open();
-                    } else if (modal.opened) {
+                        modalCard.set(e.state.opt).open();
+                    } else if (modalCard.isOpened) {
                         // 12. back from modal card.  alert(12)
                         ck.closeModal();
                     } else if (loading) {
@@ -222,7 +251,7 @@ define([
                 restore_state = current_state && current_state.next; // alert(['init', current_state && [current_state.prev, current_state.next], ck.viewport && ck.viewport[0].id].join(', '))
             if (restore_state === '_modal_') { // @TODO
                 restore_state = current_state.prev;
-                modal.set(history.state.opt).open();
+                modalCard.set(history.state.opt).open();
             }
             if (restore_state) {
                 // 1. reload from normal card.  alert(0)
@@ -247,8 +276,23 @@ define([
 
         },
 
+        initView: function(){
+            //this.viewport.find('.ck-switch').forEach(function(elm){
+                //control(elm);
+            //});
+            this.watchScroll(this.viewport);
+        },
+
+        releaseView: function(){
+            control.gc(check_gc);
+            picker.gc(check_gc);
+            this.viewportGarbage = {};
+            gc_id = 0;
+        },
+
         changeView: function(card, opt){
             opt = opt || {};
+            //this.releaseView(); // @TODO release when modal open
             if (typeof card === 'string') {
                 card = $('#' + card);
             }
@@ -256,9 +300,9 @@ define([
             if (card !== this.loadingCard) {
                 this.updateSize();
             }
-            this.watchScroll(this.viewport);
+            this.initView();
             if (!opt.is_modal) {
-                this.settingUI();
+                this.updateHeader();
             }
         },
 
@@ -280,7 +324,7 @@ define([
             this.scrollGesture.watchScroll(card[0]);
         },
 
-        settingUI: function(){
+        updateHeader: function(){
             var top_submit = this.header.find('.ck-top-create').empty();
             var create_btn = this.viewport.find('.ckd-create');
             if (create_btn[0]) {
@@ -345,23 +389,25 @@ define([
 
         openModal: function(opt){
             this.hideAddressbar();
-            if (!modal.opened) {
+            if (!modalCard.isOpened) {
                 push_history(ck.viewport[0].id, '_modal_', false, opt);
             }
-            modal.set(opt).open();
+            modalCard.set(opt).open();
         },
 
         closeModal: function(){
             ck.disableView = false;
-            $(body).removeClass('modal_view');
-            choreo.transform(modal._wrapper[0], 'translateY', '100%');
+            $(body).removeClass('modal-view');
+            choreo.transform(modalCard._wrapper[0], 'translateY', '100%');
             setTimeout(function(){
                 $(body).removeClass('bg');
-                modal.close();
+                modalCard.close();
             }, 400);
         },
 
-        modal: modal
+        control: control,
+        picker: picker,
+        modalCard: modalCard 
 
     };
 
@@ -378,6 +424,8 @@ define([
             if ($(me).hasClass('ck-link')) {
                 next_id = (me.href.replace(location.href, '')
                     .match(/^#(.+)/) || [])[1];
+            } else if ($(me).hasClass('ck-unlink')) {
+                return;
             }
         }
         var next = next_id && $('#' + next_id);
@@ -432,7 +480,7 @@ define([
             ck.globalMask.hide();
             if (prev_id === 'ckLoading') {
                 history.back();
-                _back_timeout = setTimeout(function(){
+                back_timeout = setTimeout(function(){
                     location.reload();
                 }, 800);
             }
@@ -452,9 +500,9 @@ define([
     function prevent_window_scroll(){
         var vp = ck.viewport[0],
             bottom;
-        if (vp.scrollTop <= 1) {
+        if (vp.scrollTop < 1) {
             vp.scrollTop = 1;
-        } else if (vp.scrollTop >= (bottom = vp.scrollHeight 
+        } else if (vp.scrollTop > (bottom = vp.scrollHeight 
                 - vp.offsetHeight - 1)) {
             vp.scrollTop = bottom;
         }
@@ -466,6 +514,10 @@ define([
             $(document).unbind('touchmove', delay_hide_topbar)
                 .unbind('touchend', delay_hide_topbar);
         }
+    }
+
+    function check_gc(controller){
+        return ck.viewportGarbage[controller.parentId];
     }
 
     return ck;
