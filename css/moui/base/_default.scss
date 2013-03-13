@@ -78,10 +78,10 @@ $zindex_step: 10;
 
 %button {
   @extend %block;
-  margin:0 0 0 7px;
+  margin:0 7px 0 0;
 
-  &:first-child {
-    margin-left:0;
+  &:last-child {
+    margin-right:0;
   }
 
   &[data-fluid="true"] {

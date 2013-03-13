@@ -143,10 +143,10 @@ a {
   text-align:center;
   font-size:$title_size;
   color:#999;
-  border:1px solid $border_color;
-  padding:5px 10px;
-  margin:8px 30px ($nav_height - $title_size - 20 + $space) 30px;
-  @include border-radius($radius);
+  position:absolute;
+  top:8px;
+  left:0;
+  width:100%;
 }
 
 .ck-globalmask {

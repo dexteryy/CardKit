@@ -1,0 +1,28 @@
+
+$folder_icon: inline-image('fold_icon.png');
+
+.moui-folder {
+
+  header {
+    background:$folder_icon no-repeat left center;
+    background-size:10px;
+    font-size:$maintitle_size;
+    padding:0 0 0 (10px + 10px);
+    margin:0 0 $space 0;
+  }
+
+  .content {
+    height:0;
+    overflow:hidden;
+    @include transition(height 0.4s ease-in-out);
+  }
+
+  &.enabled {
+  
+    .content {
+      height:auto;
+    }
+
+  }
+
+}

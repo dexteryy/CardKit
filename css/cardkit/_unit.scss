@@ -1,5 +1,4 @@
 
-// 自定义模块
 %ck-unit {
   overflow:hidden;
   margin:$space;
@@ -79,7 +78,7 @@
   color:$desc_color;
 }
 
-// 文本模块
+
 .ck-box-unit {
 
   &:not([data-cfg-paper]) {
@@ -162,7 +161,7 @@
 
 }
 
-// 列表模块
+
 .ck-list-unit {
   @extend %ck-unit;
 
@@ -311,6 +310,7 @@
 
 }
 
+
 .ck-mini-unit {
   @extend %ck-unit;
 
@@ -424,18 +424,68 @@
 
 }
 
-// 表单模块
+
 .ck-form-unit {
+  @extend %ck-unit;
+
+  .ck-item {
+    @extend %item;
+    padding:$space 0;
+
+    &:last-child {
+      border:none;
+    }
+
+    label {
+      font-size:$maintitle_size;
+      margin:0 0 0 $space/2;
+
+      em {
+        color:$desc_color;
+        font-size:$title_size;
+        margin:0 0 0 $space/2;
+
+        &:first-child {
+          margin-left:0;
+        }
+
+      }
+
+      &:first-child {
+        margin-left:0;
+      }
+
+    }
+
+    .ck-title {
+      display:block;
+      margin:0 0 $space 0;
+    }
+
+    input[type="text"] {
+      font-size:$title_size;
+      color:$desc_color;
+      text-indent:10px;
+      width:100%;
+      height:20px;
+      line-height:20px;
+      padding:((60px/2) - 20px) 0;
+      border:1px solid rgb(185,185,185);
+      @include box-shadow(inset 0px 2px 3px 0px rgba(0,0,0,0.15));
+      @include border-radius($radius);
+    }
+
+  }
 
 }
 
-//
-.ck-parent-unit {
+
+.ck-banner-unit {
   background:#fff;
-  width:100%;
-  height:60px;
-  position:absolute;
-  top:0;
-  left:0;
+  padding: ($space) $space $space $space;
+  margin-top: $nav_height;
+  border:1px solid rgb(255,255,255);
+  @include box-shadow(0px 0px 6px 0px rgba(0,0,0,0.3));
+  //($nav_height - $title_size - 20 + $space)
 }
 

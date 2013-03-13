@@ -1,4 +1,5 @@
-@import "moui/control/_switch";
+@import "moui/control/switch";
+@import "moui/control/folder";
 
 
 .ck-link {
@@ -21,6 +22,10 @@
 
 .ck-switch {
   @extend .moui-switch;
+}
+
+.ck-folder {
+  @extend .moui-folder;
 }
 
 .ck-modal-button {

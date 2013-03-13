@@ -13,7 +13,7 @@ define([
     './parser/form'
 ], function($, _, tpl, 
     tpl_box, tpl_list, tpl_mini, tpl_form,
-    boxParser, listParser, miniParser){
+    boxParser, listParser, miniParser, formParser){
 
     var TPL_TIPS = '<div class="ck-top-tips">长按顶部导航条，可拖出浏览器地址栏</div>';
 
@@ -78,10 +78,19 @@ define([
             }
         });
 
+        wrapper.find('.ck-form-unit').forEach(function(unit){
+            var data = formParser(unit, raw);
+            if (data.items.length) {
+                unit.innerHTML = tpl.convertTpl(tpl_form.template, data, 'data');
+            } else {
+                $(unit).remove();
+            }
+        });
+
         var footer = wrapper.find('.ck-footer');
         wrapper.find('.ck-card').forEach(function(card){
             $(card).append(this.clone())
-                //.prepend($('.ck-parent-unit', card))
+                .prepend($('.ck-banner-unit', card))
                 .prepend(TPL_TIPS);
         }, footer);
         footer.remove();

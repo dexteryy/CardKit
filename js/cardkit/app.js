@@ -73,6 +73,10 @@ define([
 
         '.ck-modal-button': function(){
             ck.openModal($(this).data());
+        },
+
+        '.ck-folder header': function(){
+            control(this.parentNode).toggle();
         }
     
     };
