@@ -8,20 +8,15 @@
 
 <link href="dist/css/main.css" rel="stylesheet">
 <style>
-.demobox fieldset {
-    padding:15px 0;
+.topbox h2 {
+    font-size:20px;
+    border-bottom:1px solid #dadada;
 }
-.demobox fieldset legend {
-    font-size:14px;
-    margin:0px 0;
-    padding:5px 0;
-    display:block;
-    width:100%;
-    border-bottom:1px dashed #ccc;
+.topbox .mods {
+    padding:10px 0 0 20px;
 }
-.demobox p {
-    margin:5px 0;
-    color:#787878;
+.topbox .mods li {
+    list-style:square;
 }
 </style>
 </head>
@@ -42,29 +37,40 @@
     
     <div class="ck-card" id="ckDefault">
 
-        <div class="ck-box-unit">
-            <h2 class="ckd-hd">Picker</h2>
-            <div class="demobox">
-                <fieldset>
-                    <legend>Segmented selector</legend>
-                    <p>
-                    </p>
-                </fieldset>
-                <fieldset>
-                    <legend>Tag selector</legend>
-                    <p>
-                    </p>
-                </fieldset>
-                <fieldset>
-                    <legend>Actions</legend>
-                    <p>
-                    </p>
-                </fieldset>
-                <fieldset>
-                    <legend>Slider</legend>
-                    <p>
-                    </p>
-                </fieldset>
+        <div class="ck-banner-unit topbox">
+            <h2>Picker</h2>
+            <ul class="mods">
+                <li><a href="#">moui/picker</a></li>
+                <li><a href="#">cardkit/picker</a></li>
+            </ul>
+        </div>
+
+        <div class="ck-form-unit">
+            <header class="ckd-hd">Segmented selector</header>
+            <div class="ckd-item">
+                <div class="ck-segment">
+                    <button class="ck-post-button" value="1">Option 1</button>
+                    <button class="ck-post-button" value="2">Option 2</button>
+                    <button class="ck-post-button" value="3">Option 3</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="ck-form-unit">
+            <header class="ckd-hd">Tag selector</header>
+            <div class="ckd-item">
+            </div>
+        </div>
+
+        <div class="ck-form-unit">
+            <header class="ckd-hd">Actions</header>
+            <div class="ckd-item">
+            </div>
+        </div>
+
+        <div class="ck-form-unit">
+            <header class="ckd-hd">Slider</header>
+            <div class="ckd-item">
             </div>
         </div>
 

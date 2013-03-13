@@ -147,20 +147,20 @@
 <script>
 require([
     'dollar',
-    'cardkit/app'
+    'cardkit/app' // need domready
 ], function($, ck){
 
-    ck.control($('.switch1')).event.bind('enable', show_result);
+    $('.switch1').bind('control:enable', show_result);
 
-    ck.control($('.post1')).event.bind('enable', show_result);
+    $('.post1').bind('control:enable', show_result);
 
-    ck.control($('.post2')).event.bind('enable', show_result)
-        .bind('disable', show_result);
+    $('.post2').bind('control:enable', show_result)
+        .bind('control:disable', show_result);
 
-    ck.control($('.link1')).event.bind('enable', show_result);
+    $('.link1').bind('control:enable', show_result);
 
-    function show_result(controller){
-        var result = controller.responseData;
+    function show_result(e){
+        var result = e.component.responseData;
         console.info('response: ', result);
         alert('response: ' + result);
     }

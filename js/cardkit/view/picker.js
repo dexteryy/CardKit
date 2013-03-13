@@ -9,13 +9,23 @@ define([
         lib = {};
 
     function exports(elm, opt){
-        elm = $(elm)[0];
-        var id = elm[UID];
+        elm = $(elm);
+        var id = elm[0][UID];
         if (id && lib[id]) {
             return lib[id].set(opt);
         }
-        id = elm[UID] = ++uid;
-        return lib[id] = picker(elm, opt);
+        id = elm[0][UID] = ++uid;
+        var p = lib[id] = picker(elm, opt);
+        p.event.bind('enable', function(p){
+            elm.trigger('picker:enable', {
+                component: p 
+            });
+        }).bind('disable', function(p){
+            elm.trigger('picker:disable', {
+                component: p
+            });
+        });
+        return p;
     }
 
     exports.gc = function(check){
