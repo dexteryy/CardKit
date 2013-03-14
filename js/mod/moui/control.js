@@ -27,9 +27,11 @@ define('moui/control', [
         init: function(elm, opt){
             this.event = event();
             var node = this._node = $(elm);
-            opt = _.mix({}, this.data(), opt);
-            this._field = opt.field && $(opt.field, node) || node;
-            this._label = opt.label && $(opt.label, node) || node;
+            opt = _.mix({
+                field: node,
+                label: node
+            }, this.data(), opt);
+            this.setNodes(opt);
             if (this._label[0]) {
                 this._isLabelClose = this._label.isEmpty();
             }
@@ -40,15 +42,41 @@ define('moui/control', [
 
         set: function(opt){
             opt = opt || {};
-            this._config = _.mix(this._config, opt);
+            _.mix(this._config, opt);
+            this.setNodes(opt);
+            return this;
+        },
+
+        setNodes: function(opt){
+            if (opt.field !== undefined) {
+                if (opt.field) {
+                    this._field = $(opt.field, 
+                        typeof opt.field === 'string' && this._node);
+                } else {
+                    this._field = [];
+                }
+            }
+            if (opt.label !== undefined) {
+                if (opt.label) {
+                    this._label = $(opt.label, 
+                        typeof opt.label === 'string' && this._node);
+                } else {
+                    this._label = [];
+                }
+            }
             return this;
         },
 
         val: function(v){
-            return this._field.val(v);
+            if (this._field[0]) {
+                return this._field.val(v);
+            }
         },
 
         label: function(str){
+            if (!this._label[0]) {
+                return;
+            }
             if (this._isLabelClose) {
                 return this._label.val(str);
             } else {

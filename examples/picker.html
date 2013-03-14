@@ -48,29 +48,67 @@
         <div class="ck-form-unit">
             <header class="ckd-hd">Segmented selector</header>
             <div class="ckd-item">
-                <div class="ck-segment">
-                    <button class="ck-post-button" value="1">Option 1</button>
-                    <button class="ck-post-button" value="2">Option 2</button>
-                    <button class="ck-post-button" value="3">Option 3</button>
+                <!--component-->
+                <div class="ck-segment picker1"
+                        data-ignore-repeat="true">
+                    <button class="option" value="1">Option 1</button>
+                    <button class="option" value="2">Option 2</button>
+                    <button class="option" value="3">Option 3</button>
                 </div>
+                <!--component end-->
             </div>
         </div>
 
         <div class="ck-form-unit">
             <header class="ckd-hd">Tag selector</header>
             <div class="ckd-item">
+                <label class="ck-title">Single Select</label>
+                <!--component-->
+                <div class="ck-tagselector picker2">
+                    <input type="hidden" value="">
+                    <input class="option" type="button" value="linux">
+                    <input class="option" type="button" value="CSS">
+                    <input class="option" type="button" value="奇幻">
+                    <input class="option" type="button" value="史诗">
+                    <input class="option" type="button" value="ajax">
+                    <input class="option" type="button" value="RubyOnRails">
+                    <input class="option" type="button" value="javascript">
+                    <input class="option" type="button" value="OPENGL">
+                </div>
+                <!--component end-->
+            </div>
+            <div class="ckd-item">
+                <label class="ck-title">Multiple Select</label>
+                <!--component-->
+                <div class="ck-tagselector picker3"
+                        data-multiselect="true">
+                    <input type="hidden" value="">
+                    <input class="option" type="button" value="linux">
+                    <input class="option" type="button" value="CSS">
+                    <input class="option" type="button" value="奇幻">
+                    <input class="option" type="button" value="史诗">
+                    <input class="option" type="button" value="ajax">
+                    <input class="option" type="button" value="RubyOnRails">
+                    <input class="option" type="button" value="javascript">
+                    <input class="option" type="button" value="OPENGL">
+                </div>
+                <!--component end-->
             </div>
         </div>
 
         <div class="ck-form-unit">
             <header class="ckd-hd">Actions</header>
             <div class="ckd-item">
+                <!--component-->
+                <!--component end-->
             </div>
         </div>
 
         <div class="ck-form-unit">
             <header class="ckd-hd">Slider</header>
             <div class="ckd-item">
+                <!--component-->
+                <!--component end-->
             </div>
         </div>
 
@@ -99,7 +137,17 @@ require([
     'cardkit/app'
 ], function($, ck){
 
+    $('.picker1').bind('picker:change', show_result);
 
+    $('.picker2').bind('picker:change', show_result);
+
+    $('.picker3').bind('picker:change', show_result);
+
+    function show_result(e){
+        var result = e.component.val();
+        console.info('value: ', result);
+//        alert('value: ' + result);
+    }
 });
 </script>
 <script>

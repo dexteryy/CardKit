@@ -30,8 +30,8 @@ define([
         gc_id = 0,
 
         //SUPPORT_ORIENT = "orientation" in window && "onorientationchange" in window,
-        //SUPPORT_OVERFLOWSCROLL = "overflowScrolling" in body,
-        //
+        SUPPORT_OVERFLOWSCROLL = "webkitOverflowScrolling" in body.style,
+
         TPL_MASK = '<div class="ck-globalmask"></div>';
 
     _.mix(momoBase.Class.prototype, {
@@ -69,6 +69,16 @@ define([
                 return tap_ck_switch.call(this.parentNode);
             }
             control_handler.call(this);
+        },
+
+        '.ck-segment .option': function(){
+            var p = picker(this.parentNode);
+            p.select(this);
+        },
+
+        '.ck-tagselector .option': function(){
+            var p = picker(this.parentNode);
+            p.select(this);
         },
 
         '.ck-modal-button': function(){
@@ -116,8 +126,9 @@ define([
     var ck = {
 
         init: function(opt){
-            var wrapper = this.wrapper = opt.wrapper;
-            this.header = opt.header,
+            var root = this.root = opt.root;
+            var wrapper = this.wrapper = $('.ck-wrapper', root);
+            this.header = $('.ck-header', root);
             this.loadingCard = $('#ckLoading');
             this.defaultCard = $('#ckDefault');
             this.globalMask = $(TPL_MASK).appendTo(body);
@@ -129,6 +140,9 @@ define([
             this.scrollGesture = momoScroll(document);
             momoTap(document);
 
+            if (!SUPPORT_OVERFLOWSCROLL) {
+                root.addClass('no-overflow-scrolling');
+            }
             render(wrapper);
             this.initState();
 
@@ -306,7 +320,7 @@ define([
             }
         },
 
-        updateSize: function(){
+        updateSize: SUPPORT_OVERFLOWSCROLL ? function(){
             this.viewport[0].style.height = (this.inited ? 
                 window.innerHeight : (screen.availHeight + 60)) + 'px';
             // enable scrollable when height is not enough 
@@ -318,7 +332,7 @@ define([
                     ft.style.paddingTop = (parseFloat(ft.style.paddingTop) || 0) + d + 100 + 'px';
                 }
             }
-        },
+        } : function(){},
 
         watchScroll: function(card){
             this.scrollGesture.watchScroll(card[0]);

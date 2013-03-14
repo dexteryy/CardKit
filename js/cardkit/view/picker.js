@@ -16,13 +16,9 @@ define([
         }
         id = elm[0][UID] = ++uid;
         var p = lib[id] = picker(elm, opt);
-        p.event.bind('enable', function(p){
-            elm.trigger('picker:enable', {
+        p.event.bind('change', function(p){
+            elm.trigger('picker:change', {
                 component: p 
-            });
-        }).bind('disable', function(p){
-            elm.trigger('picker:disable', {
-                component: p
             });
         });
         return p;

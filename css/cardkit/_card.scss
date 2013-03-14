@@ -85,6 +85,15 @@
 
 }
 
+.no-overflow-scrolling {
+  
+  .ck-card {
+    overflow:visible;
+  }
+
+}
+
+
 @include keyframes(loading-dot) {
   0% {
     background:#666;

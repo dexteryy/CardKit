@@ -1,0 +1,16 @@
+
+.moui-segment {
+
+  .option {
+    @extend %button;
+    width:75px;
+    margin: 0 4px 0 0;
+
+    &.enabled {
+      @extend %block-pressed;
+    }
+
+  }
+
+}
+
