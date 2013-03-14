@@ -137,7 +137,6 @@ define('moui/picker', [
 
         showLoading: function(){
             this._node.addClass('loading');
-            this.label(this._config.loadingLabel);
             return this;
         },
 
@@ -165,12 +164,16 @@ define('moui/picker', [
         },
 
         unselect: function(i){
-            var controller = this.getOption(i);
-            if (controller) {
-                controller.disable();
-                if (!this._config.multiselect
-                        || !this._allSelected.length) {
-                    this.hasSelected = false;
+            if (!i) {
+                change.call(this, 'disable');
+            } else {
+                var controller = this.getOption(i);
+                if (controller) {
+                    controller.disable();
+                    if (!this._config.multiselect
+                            || !this._allSelected.length) {
+                        this.hasSelected = false;
+                    }
                 }
             }
             return this;
@@ -180,10 +183,12 @@ define('moui/picker', [
 
     function when_enable(controller){
         change.call(this, 'enable', controller);
+        this.event.fire('select', [this, controller]);
     }
 
     function when_disable(controller){
         change.call(this, 'disable', controller);
+        this.event.fire('unselect', [this, controller]);
     }
 
     function change(subject, controller){
@@ -199,10 +204,13 @@ define('moui/picker', [
             }
         } else {
             if (this._config.multiselect) {
-                this._allSelected.splice(
-                    this._allSelected.indexOf(controller), 1);
+                var i = this._allSelected.indexOf(controller);
+                if (i !== -1) {
+                    this._allSelected.splice(i, 1);
+                }
             } else {
-                if (this._lastSelected !== controller) {
+                if (controller 
+                        && this._lastSelected !== controller) {
                     return;
                 }
                 this._lastSelected = null;
@@ -211,7 +219,7 @@ define('moui/picker', [
         if (this._field[0]) {
             this._field.val(this.val());
         }
-        this.event.fire('change', [this]);
+        this.event.fire('change', [this, controller]);
     }
 
     function exports(elm, opt){
