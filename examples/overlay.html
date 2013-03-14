@@ -7,22 +7,8 @@
 <meta name="format-detection" content="telephone=no">
 
 <link href="dist/css/main.css" rel="stylesheet">
+<link href="css/common.css" rel="stylesheet">
 <style>
-.demobox fieldset {
-    padding:15px 0;
-}
-.demobox fieldset legend {
-    font-size:14px;
-    margin:0px 0;
-    padding:5px 0;
-    display:block;
-    width:100%;
-    border-bottom:1px dashed #ccc;
-}
-.demobox p {
-    margin:5px 0;
-    color:#787878;
-}
 </style>
 </head>
 <body>
@@ -31,10 +17,10 @@
     
 <header class="ck-header">
     
-<a class="ck-top-title" href="/">DEMO</a>
+<a class="ck-top-title" href="/">DEMO & DOCS</a>
 <span class="opt ck-top-nav"><a class="btn" href="/"></a></span>
-<span class="opt ck-top-action"><button class="btn">...</button></span>
-<span class="opt ck-top-create"><button class="btn">发表</button></span>
+<span class="opt ck-top-action"><button class="btn"></button></span>
+<span class="opt ck-top-create"><button class="btn"></button></span>
 
 </header>
 
@@ -42,31 +28,56 @@
     
     <div class="ck-card" id="ckDefault">
 
-        <div class="ck-box-unit">
-            <h2 class="ckd-hd">Overlay</h2>
-            <div class="demobox">
-                <fieldset>
-                    <legend>Modal view</legend>
-                    <p>
-                    </p>
-                </fieldset>
-                <fieldset>
-                    <legend>Action view</legend>
-                    <p>
-                        <button class="ck-filter"></button>
-                    </p>
-                    <p>
-                        <button class="ck-confirm"></button>
-                    </p>
-                    <p>
-                        <button class="ck-actions"></button>
-                    </p>
-                </fieldset>
-                <fieldset>
-                    <legend>Growl</legend>
-                    <p>
-                    </p>
-                </fieldset>
+        <div class="ck-banner-unit topbox">
+            <h2>Overlay</h2>
+            <ul class="mods">
+                <li><a href="#">cardkit/modalview</a></li>
+                <li><a href="#">cardkit/actionview</a></li>
+                <li><a href="#">cardkit/growl</a></li>
+            </ul>
+        </div>
+
+        <div class="ck-form-unit">
+            <header class="ckd-hd">Modal View</header>
+            <div class="ckd-item">
+                <!--component-->
+                <button class="ck-modal-button" data-url="form.html" data-title="ajax">Open</button>
+                <label>通过ajax接口加载内容</label>
+                <!--component end-->
+            </div>
+            <div class="ckd-item">
+                <!--component-->
+                <button class="ck-modal-button" data-json-url="data/form.json" data-title="json">Open</button>
+                <label>通过json接口加载内容</label>
+                <!--component end-->
+            </div>
+            <div class="ckd-item">
+                <!--component-->
+                <button class="ck-modal-button" data-iframe-url="formpage.html" data-title="iframe">Open</button>
+                <label>通过iframe加载内容</label>
+                <!--component end-->
+            </div>
+            <div class="ckd-item">
+                <!--component-->
+                <button class="ck-modal-button" data-source="formBox" data-title="inline html">Open</button>
+                <label>用隐藏的html作内容</label>
+                <!--component end-->
+            </div>
+        </div>
+
+        <div class="ck-form-unit">
+            <header class="ckd-hd">Action View</header>
+            <div class="ckd-item">
+                <!--component-->
+                <!--component end-->
+            </div>
+        </div>
+
+        <div class="ck-form-unit">
+            <header class="ckd-hd">Growl</header>
+            <div class="ckd-item">
+                <!--component-->
+                <!--component end-->
             </div>
         </div>
 
@@ -94,7 +105,6 @@ require([
     'dollar',
     'cardkit/app'
 ], function($, ck){
-
 
 });
 </script>

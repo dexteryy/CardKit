@@ -7,19 +7,10 @@
 <meta name="format-detection" content="telephone=no">
 
 <link href="dist/css/main.css" rel="stylesheet">
+<link href="css/common.css" rel="stylesheet">
 <style>
 .post1 {
     width:160px;
-}
-.topbox h2 {
-    font-size:20px;
-    border-bottom:1px solid #dadada;
-}
-.topbox .mods {
-    padding:10px 0 0 20px;
-}
-.topbox .mods li {
-    list-style:square;
 }
 </style>
 </head>
@@ -68,9 +59,10 @@
             <header class="ckd-hd">Post button</header>
             <div class="ckd-item">
                 <!--component-->
-                <input class="ck-post-button post1" type="button" value="Post Button 1" 
+                <input class="ck-post-button post1" type="button" value="Get JSON data" 
+                    data-request-method="get"
                     data-enable-json-url="data/form.json"
-                    data-enable-label="Post Button 1 (clicked)">
+                    data-enable-label="Get JSON (success!)">
                 <!--component end-->
                 <p>
                     <label><em>fixed width, json response</em></label>
@@ -82,9 +74,9 @@
                         data-fluid="true"
                         data-enable-url="data/enable.txt"
                         data-disable-url="data/disable.txt"
-                        data-enable-label="Post Button 2" 
+                        data-enable-label="Post Button (success!)" 
                         data-label="span">
-                    <span>Post Button 2</span>
+                    <span>Post Button</span>
                 </button>
                 <!--component end-->
                 <p>

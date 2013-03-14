@@ -24,6 +24,7 @@ define([
         toEnable: function(){
             var cfg = this.data();
             return this.request({
+                method: cfg.requestMethod,
                 url: cfg.enableUrl,
                 jsonUrl: cfg.enableJsonUrl
             }, function(){
@@ -34,6 +35,7 @@ define([
         toDisable: function(){
             var cfg = this.data();
             return this.request({
+                method: cfg.requestMethod,
                 url: cfg.disableUrl,
                 jsonUrl: cfg.disableJsonUrl
             }, function(){
@@ -48,6 +50,7 @@ define([
                 self.showLoading();
                 net.ajax({
                     url: url,
+                    type: cfg.method || 'post',
                     dataType: cfg.jsonUrl ? 'json' : 'text',
                     success: function(data){
                         self.hideLoading();

@@ -1,0 +1,11 @@
+
+.topbox h2 {
+    font-size:20px;
+    border-bottom:1px solid #dadada;
+}
+.topbox .mods {
+    padding:10px 0 0 20px;
+}
+.topbox .mods li {
+    list-style:square;
+}

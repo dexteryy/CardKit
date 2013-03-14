@@ -15,6 +15,7 @@ define([
         if (url) {
             net.ajax({
                 url: url,
+                type: cfg.method || 'post',
                 dataType: cfg.jsonUrl ? 'json' : 'text',
                 success: fn
             });
@@ -40,6 +41,7 @@ define([
             var cfg = controller._config;
             p.showLoading();
             request({
+                method: cfg.requestMethod,
                 url: cfg.enableUrl,
                 jsonUrl: cfg.enableJsonUrl
             }, function(data){
@@ -53,6 +55,7 @@ define([
             var cfg = controller._config;
             p.showLoading();
             request({
+                method: cfg.requestMethod,
                 url: cfg.disableUrl,
                 jsonUrl: cfg.disableJsonUrl
             }, function(data){

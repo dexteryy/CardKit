@@ -110,7 +110,7 @@ define('moui/control', [
 
         enable: function(){
             if (this.isEnabled) {
-                return;
+                return this;
             }
             this.isEnabled = true;
             this._node.addClass('enabled');
@@ -125,7 +125,7 @@ define('moui/control', [
 
         disable: function(){
             if (!this.isEnabled) {
-                return;
+                return this;
             }
             this.isEnabled = false;
             this._node.removeClass('enabled');

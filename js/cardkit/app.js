@@ -54,21 +54,21 @@ define([
         'a': link_handler,
         'a *': link_handler,
 
-        '.ck-card .ck-post-link': control_handler,
+        '.ck-card .ck-post-link': enable_control,
 
-        '.ck-card .ck-post-button': control_handler,
+        '.ck-card .ck-post-button': enable_control,
         '.ck-card .ck-post-button span': function tap_ck_post(){
             if (!$(this).hasClass('ck-post-button')) {
                 return tap_ck_post.call(this.parentNode);
             }
-            control_handler.call(this);
+            enable_control.call(this);
         },
 
         '.ck-card .ck-switch span': function tap_ck_switch(){
             if (!$(this).hasClass('ck-switch')) {
                 return tap_ck_switch.call(this.parentNode);
             }
-            control_handler.call(this);
+            toggle_control.call(this);
         },
 
         '.ck-segment .option': function(){
@@ -91,14 +91,25 @@ define([
     
     };
 
-    function control_handler(){
-        var controller = control(this).toggle();
-        if (!controller.parentId) {
-            controller.parentId = ++gc_id;
+    function enable_control(){
+        var controller = control(this);
+        if (!controller.isEnabled) {
+            controller.enable();
+            mark_gc(controller);
         }
-        ck.viewportGarbage[controller.parentId] = 1;
     } 
 
+    function toggle_control(){
+        var controller = control(this).toggle();
+        mark_gc(controller);
+    } 
+
+    function mark_gc(com){
+        if (!com.parentId) {
+            com.parentId = ++gc_id;
+        }
+        ck.viewportGarbage[com.parentId] = 1;
+    }
 
     modalCard.event.bind('open', function(modalCard){
         ck.disableView = true;
