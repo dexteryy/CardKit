@@ -436,9 +436,18 @@
       border:none;
     }
 
+    p {
+      margin:0 0 $space 0;
+
+      &:last-child {
+        margin-bottom:0;
+      }
+
+    }
+
     label {
       font-size:$maintitle_size;
-      margin:0 0 0 $space/2;
+      //margin:0 0 0 $space/2;
 
       em {
         color:$desc_color;
@@ -451,18 +460,15 @@
 
       }
 
-      &:first-child {
-        margin-left:0;
-      }
-
     }
 
     .ck-title {
       display:block;
+      line-height:$maintitle_size;
       margin:0 0 $space 0;
     }
 
-    input[type="text"] {
+    input[type="text"], textarea {
       font-size:$title_size;
       color:$desc_color;
       text-indent:10px;
@@ -476,17 +482,19 @@
     }
 
     textarea {
-        font-size:$title_size;
-        color:$desc_color;
-        text-indent:10px;
-        width:100%;
-        height:290px;
-        line-height:20px;
-        padding:((60px/2) - 20px) 0;
-        border:1px solid rgb(185,185,185);
-        @include box-shadow(inset 0px 2px 3px 0px rgba(0,0,0,0.15));
-        @include border-radius($radius);
+      font-size:$title_size;
+      color:$desc_color;
+      text-indent:10px;
+      width:100%;
+      height:290px;
+      line-height:20px;
+      padding:((60px/2) - 20px) 0;
+      border:1px solid rgb(185,185,185);
+      @include box-shadow(inset 0px 2px 3px 0px rgba(0,0,0,0.15));
+      @include border-radius($radius);
+      height:(352px/2);
     }
+
   }
 
 }

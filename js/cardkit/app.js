@@ -30,8 +30,8 @@ define([
         gc_id = 0,
 
         //SUPPORT_ORIENT = "orientation" in window && "onorientationchange" in window,
-        //SUPPORT_OVERFLOWSCROLL = "overflowScrolling" in body,
-        //
+        SUPPORT_OVERFLOWSCROLL = "webkitOverflowScrolling" in body.style,
+
         TPL_MASK = '<div class="ck-globalmask"></div>';
 
     _.mix(momoBase.Class.prototype, {
@@ -54,41 +54,70 @@ define([
         'a': link_handler,
         'a *': link_handler,
 
-        '.ck-card .ck-post-link': control_handler,
+        '.ck-card .ck-post-link': enable_control,
 
-        '.ck-card .ck-post-button': control_handler,
+        '.ck-card .ck-post-button': enable_control,
         '.ck-card .ck-post-button span': function tap_ck_post(){
             if (!$(this).hasClass('ck-post-button')) {
                 return tap_ck_post.call(this.parentNode);
             }
-            control_handler.call(this);
+            enable_control.call(this);
         },
 
         '.ck-card .ck-switch span': function tap_ck_switch(){
             if (!$(this).hasClass('ck-switch')) {
                 return tap_ck_switch.call(this.parentNode);
             }
-            control_handler.call(this);
+            toggle_control.call(this);
         },
 
-        '.ck-modal-button': function(){
-            ck.openModal($(this).data());
+        '.ck-segment .option': function(){
+            var p = picker(this.parentNode);
+            p.select(this);
         },
+
+        '.ck-tagselector .option': function(){
+            var p = picker(this.parentNode);
+            p.select(this);
+        },
+
+        '.ck-modal-button': open_modal_card,
 
         '.ck-folder header': function(){
             control(this.parentNode).toggle();
+        },
+
+        '.ck-top-create .btn': open_modal_card,
+
+        '.ck-top-action .btn': function(){
+        
         }
     
     };
 
-    function control_handler(){
-        var controller = control(this).toggle();
-        if (!controller.parentId) {
-            controller.parentId = ++gc_id;
+    function open_modal_card(){
+        ck.openModal($(this).data());
+    }
+
+    function enable_control(){
+        var controller = control(this);
+        if (!controller.isEnabled) {
+            controller.enable();
+            mark_gc(controller);
         }
-        ck.viewportGarbage[controller.parentId] = 1;
     } 
 
+    function toggle_control(){
+        var controller = control(this).toggle();
+        mark_gc(controller);
+    } 
+
+    function mark_gc(com){
+        if (!com.parentId) {
+            com.parentId = ++gc_id;
+        }
+        ck.viewportGarbage[com.parentId] = 1;
+    }
 
     modalCard.event.bind('open', function(modalCard){
         ck.disableView = true;
@@ -116,8 +145,11 @@ define([
     var ck = {
 
         init: function(opt){
-            var wrapper = this.wrapper = opt.wrapper;
-            this.header = opt.header,
+            var root = this.root = opt.root;
+            var wrapper = this.wrapper = $('.ck-wrapper', root);
+            this.header = $('.ck-header', root);
+            this.footer = $('.ck-footer', root);
+            this.raw = $('.ck-raw', root);
             this.loadingCard = $('#ckLoading');
             this.defaultCard = $('#ckDefault');
             this.globalMask = $(TPL_MASK).appendTo(body);
@@ -129,7 +161,9 @@ define([
             this.scrollGesture = momoScroll(document);
             momoTap(document);
 
-            render(wrapper);
+            if (!SUPPORT_OVERFLOWSCROLL) {
+                root.addClass('no-overflow-scrolling');
+            }
             this.initState();
 
             setTimeout(function(){
@@ -276,11 +310,14 @@ define([
 
         },
 
-        initView: function(){
-            //this.viewport.find('.ck-switch').forEach(function(elm){
-                //control(elm);
-            //});
-            this.watchScroll(this.viewport);
+        initView: function(card){
+            if (!card.data('rendered')) {
+                render(card, this.raw, this.footer);
+                if (card !== modalCard._contentWrapper) {
+                    card.data('rendered', '1');
+                }
+            }
+            this.watchScroll(card);
         },
 
         releaseView: function(){
@@ -296,17 +333,17 @@ define([
             if (typeof card === 'string') {
                 card = $('#' + card);
             }
+            this.initView(card);
             this.viewport = card.show();
             if (card !== this.loadingCard) {
                 this.updateSize();
             }
-            this.initView();
             if (!opt.is_modal) {
                 this.updateHeader();
             }
         },
 
-        updateSize: function(){
+        updateSize: SUPPORT_OVERFLOWSCROLL ? function(){
             this.viewport[0].style.height = (this.inited ? 
                 window.innerHeight : (screen.availHeight + 60)) + 'px';
             // enable scrollable when height is not enough 
@@ -318,7 +355,7 @@ define([
                     ft.style.paddingTop = (parseFloat(ft.style.paddingTop) || 0) + d + 100 + 'px';
                 }
             }
-        },
+        } : function(){},
 
         watchScroll: function(card){
             this.scrollGesture.watchScroll(card[0]);
@@ -326,9 +363,9 @@ define([
 
         updateHeader: function(){
             var top_submit = this.header.find('.ck-top-create').empty();
-            var create_btn = this.viewport.find('.ckd-create');
-            if (create_btn[0]) {
-                top_submit.append(create_btn.clone());
+            var create_btn = this.viewport.find('.ckd-top-create').html();
+            if (create_btn) {
+                top_submit.append(create_btn);
             }
         },
 

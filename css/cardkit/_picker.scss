@@ -1,0 +1,10 @@
+@import "moui/picker/segment";
+@import "moui/picker/tags";
+
+.ck-segment {
+  @extend .moui-segment;
+}
+
+.ck-tagselector {
+  @extend .moui-tagselector;
+}

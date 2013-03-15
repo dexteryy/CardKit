@@ -16,8 +16,7 @@ require([
 ], function($, app){
 
     app.init({
-        header: $('.ck-header'),
-        wrapper: $('.ck-wrapper')
+        root: $('.ck-root')
     });
 
 });

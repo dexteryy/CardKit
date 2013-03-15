@@ -9,7 +9,7 @@ define('moui/modalview', [
 
         NS = 'mouiModalView',
         TPL_VIEW =
-           '<div id="{{id}}" class="moui-modalview">\
+           '<div id="{{id}}" class="{{cname}}">\
                 <div class="shd"></div>\
                 <div class="wrapper">\
                     <header>\
@@ -42,6 +42,7 @@ define('moui/modalview', [
         },
 
         default_config = mix(overlay.Overlay.prototype, {
+            className: 'moui-modalview',
             buttons: ['confirm', 'cancel']
         });
 
@@ -72,6 +73,12 @@ define('moui/modalview', [
             var self = this;
             self.superClass.set.call(self, opt);
 
+            if (opt.content !== undefined) {
+                self._config.iframe = null;
+            } else if (opt.iframe) {
+                self.setIframeContent(opt);
+            } 
+            
             if (opt.buttons && opt.buttons.length > 0) {
                 var handlers = self._btnHandlers, 
                     btn_lib = _.index(opt.buttons.map(function(btn){
@@ -87,13 +94,6 @@ define('moui/modalview', [
                 }, self);
             }
 
-            if (opt.content !== undefined) {
-                self._config.iframe = null;
-                self.setContent(opt.content);
-            } else if (opt.iframe) {
-                self.setIframeContent(opt);
-            } 
-            
             return self;
 
         },

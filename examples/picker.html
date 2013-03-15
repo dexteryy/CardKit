@@ -7,22 +7,8 @@
 <meta name="format-detection" content="telephone=no">
 
 <link href="dist/css/main.css" rel="stylesheet">
+<link href="css/common.css" rel="stylesheet">
 <style>
-.demobox fieldset {
-    padding:15px 0;
-}
-.demobox fieldset legend {
-    font-size:14px;
-    margin:0px 0;
-    padding:5px 0;
-    display:block;
-    width:100%;
-    border-bottom:1px dashed #ccc;
-}
-.demobox p {
-    margin:5px 0;
-    color:#787878;
-}
 </style>
 </head>
 <body>
@@ -31,10 +17,10 @@
     
 <header class="ck-header">
     
-<a class="ck-top-title" href="/">DEMO</a>
+<a class="ck-top-title" href="/">DEMO & DOCS</a>
 <span class="opt ck-top-nav"><a class="btn" href="/"></a></span>
-<span class="opt ck-top-action"><button class="btn">...</button></span>
-<span class="opt ck-top-create"><button class="btn">发表</button></span>
+<span class="opt ck-top-action"><button class="btn"></button></span>
+<span class="opt ck-top-create"></span>
 
 </header>
 
@@ -42,29 +28,81 @@
     
     <div class="ck-card" id="ckDefault">
 
-        <div class="ck-box-unit">
-            <h2 class="ckd-hd">Picker</h2>
-            <div class="demobox">
-                <fieldset>
-                    <legend>Segmented selector</legend>
-                    <p>
-                    </p>
-                </fieldset>
-                <fieldset>
-                    <legend>Tag selector</legend>
-                    <p>
-                    </p>
-                </fieldset>
-                <fieldset>
-                    <legend>Actions</legend>
-                    <p>
-                    </p>
-                </fieldset>
-                <fieldset>
-                    <legend>Slider</legend>
-                    <p>
-                    </p>
-                </fieldset>
+        <div class="ck-banner-unit topbox">
+            <h2>Picker</h2>
+            <ul class="mods">
+                <li><a href="#">moui/picker</a></li>
+                <li><a href="#">cardkit/picker</a></li>
+            </ul>
+        </div>
+
+        <div class="ck-form-unit">
+            <header class="ckd-hd">Segmented selector</header>
+            <div class="ckd-item">
+                <!--component-->
+                <div class="ck-segment picker1"
+                        data-ignore-repeat="true">
+                    <button class="option" value="1"
+                        data-enable-url="data/enable.txt">Option 1</button>
+                    <button class="option" value="2"
+                        data-enable-url="data/enable.txt">Option 2</button>
+                    <button class="option" value="3"
+                        data-enable-url="data/enable.txt">Option 3</button>
+                </div>
+                <!--component end-->
+            </div>
+        </div>
+
+        <div class="ck-form-unit">
+            <header class="ckd-hd">Tag selector</header>
+            <div class="ckd-item">
+                <label class="ck-title">Single Select</label>
+                <!--component-->
+                <div class="ck-tagselector picker2">
+                    <input type="hidden" value="">
+                    <input class="option" type="button" value="linux">
+                    <input class="option" type="button" value="CSS">
+                    <input class="option" type="button" value="奇幻">
+                    <input class="option" type="button" value="史诗">
+                    <input class="option" type="button" value="ajax">
+                    <input class="option" type="button" value="RubyOnRails">
+                    <input class="option" type="button" value="javascript">
+                    <input class="option" type="button" value="OPENGL">
+                </div>
+                <!--component end-->
+            </div>
+            <div class="ckd-item">
+                <label class="ck-title">Multiple Select</label>
+                <!--component-->
+                <div class="ck-tagselector picker3"
+                        data-multiselect="true">
+                    <input type="hidden" value="">
+                    <input class="option" type="button" value="linux">
+                    <input class="option" type="button" value="CSS">
+                    <input class="option" type="button" value="奇幻">
+                    <input class="option" type="button" value="史诗">
+                    <input class="option" type="button" value="ajax">
+                    <input class="option" type="button" value="RubyOnRails">
+                    <input class="option" type="button" value="javascript">
+                    <input class="option" type="button" value="OPENGL">
+                </div>
+                <!--component end-->
+            </div>
+        </div>
+
+        <div class="ck-form-unit">
+            <header class="ckd-hd">Actions</header>
+            <div class="ckd-item">
+                <!--component-->
+                <!--component end-->
+            </div>
+        </div>
+
+        <div class="ck-form-unit">
+            <header class="ckd-hd">Slider</header>
+            <div class="ckd-item">
+                <!--component-->
+                <!--component end-->
             </div>
         </div>
 
@@ -93,7 +131,17 @@ require([
     'cardkit/app'
 ], function($, ck){
 
+    $('.picker1').bind('picker:change', show_result);
 
+    $('.picker2').bind('picker:change', show_result);
+
+    $('.picker3').bind('picker:change', show_result);
+
+    function show_result(e){
+        var result = e.component.val();
+        console.info('value: ', result);
+//        alert('value: ' + result);
+    }
 });
 </script>
 <script>

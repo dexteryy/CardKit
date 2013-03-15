@@ -17,11 +17,9 @@ define([
 
     var TPL_TIPS = '<div class="ck-top-tips">长按顶部导航条，可拖出浏览器地址栏</div>';
 
-    function exports(wrapper) {
+    function exports(card, raw, footer) {
 
-        var raw = wrapper.find('.ck-raw');
-
-        wrapper.find('.ck-box-unit').forEach(function(unit){
+        card.find('.ck-box-unit').forEach(function(unit){
             var data = boxParser(unit, raw);
             if (data.content) {
                 unit.innerHTML = tpl.convertTpl(tpl_box.template, data, 'data');
@@ -30,7 +28,7 @@ define([
             }
         });
 
-        wrapper.find('.ck-list-unit').forEach(function(unit){
+        card.find('.ck-list-unit').forEach(function(unit){
             var data = listParser(unit, raw);
             data.items = data.items.filter(function(item){
                 var style = this.style;
@@ -57,7 +55,7 @@ define([
             }
         });
 
-        wrapper.find('.ck-mini-unit').forEach(function(unit){
+        card.find('.ck-mini-unit').forEach(function(unit){
             var data = miniParser(unit, raw);
             data.items = data.items.filter(function(item){
                 if (!item.content || !item.content.length) {
@@ -78,7 +76,7 @@ define([
             }
         });
 
-        wrapper.find('.ck-form-unit').forEach(function(unit){
+        card.find('.ck-form-unit').forEach(function(unit){
             var data = formParser(unit, raw);
             if (data.items.length) {
                 unit.innerHTML = tpl.convertTpl(tpl_form.template, data, 'data');
@@ -87,13 +85,9 @@ define([
             }
         });
 
-        var footer = wrapper.find('.ck-footer');
-        wrapper.find('.ck-card').forEach(function(card){
-            $(card).append(this.clone())
-                .prepend($('.ck-banner-unit', card))
-                .prepend(TPL_TIPS);
-        }, footer);
-        footer.remove();
+        card.append(footer.clone())
+            .prepend($('.ck-banner-unit', card))
+            .prepend(TPL_TIPS);
 
     }
 

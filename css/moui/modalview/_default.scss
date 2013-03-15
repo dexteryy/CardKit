@@ -41,7 +41,7 @@
       }
 
       button {
-        @extend .btn;
+        @extend %button;
         width:55px;
       }
 

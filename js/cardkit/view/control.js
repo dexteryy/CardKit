@@ -24,6 +24,7 @@ define([
         toEnable: function(){
             var cfg = this.data();
             return this.request({
+                method: cfg.requestMethod,
                 url: cfg.enableUrl,
                 jsonUrl: cfg.enableJsonUrl
             }, function(){
@@ -34,6 +35,7 @@ define([
         toDisable: function(){
             var cfg = this.data();
             return this.request({
+                method: cfg.requestMethod,
                 url: cfg.disableUrl,
                 jsonUrl: cfg.disableJsonUrl
             }, function(){
@@ -48,6 +50,7 @@ define([
                 self.showLoading();
                 net.ajax({
                     url: url,
+                    type: cfg.method || 'post',
                     dataType: cfg.jsonUrl ? 'json' : 'text',
                     success: function(data){
                         self.hideLoading();
@@ -64,13 +67,23 @@ define([
     };
 
     function exports(elm, opt){
-        elm = $(elm)[0];
-        var id = elm[UID];
+        elm = $(elm);
+        var id = elm[0][UID];
         if (id && lib[id]) {
             return lib[id].set(opt);
         }
-        id = elm[UID] = ++uid;
-        return _.mix(lib[id] = control(elm, opt), ext);
+        id = elm[0][UID] = ++uid;
+        var controller = lib[id] = control(elm, opt);
+        controller.event.bind('enable', function(controller){
+            elm.trigger('control:enable', {
+                component: controller
+            });
+        }).bind('disable', function(controller){
+            elm.trigger('control:disable', {
+                component: controller
+            });
+        });
+        return _.mix(controller, ext);
     }
 
     exports.gc = function(check){

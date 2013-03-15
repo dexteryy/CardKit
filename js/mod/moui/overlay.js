@@ -1,15 +1,15 @@
 define('moui/overlay', [
-    'dollar',
     'mo/lang',
-    'mo/template',
-    'eventmaster'
-], function($, _, tpl, event) {
+    'dollar',
+    'eventmaster',
+    'mo/template/string'
+], function(_, $, event, tpl) {
 
     var body = $('body'),
 
         NS = 'mouiOverlay',
         TPL_VIEW =
-           '<div id="{{id}}" class="moui-overlay">\
+           '<div id="{{id}}" class="{{cname}}">\
                 <header><h2></h2></header>\
                 <article></article>\
             </div>',
@@ -21,6 +21,7 @@ define('moui/overlay', [
         default_config = {
             title: '',
             content: '',
+            className: 'moui-overlay',
             event: {}
         };
 
@@ -40,7 +41,8 @@ define('moui/overlay', [
             this.event = event();
             this._config = _.mix({}, this._defaults, opt);
             body.append(tpl.format(this._template, { 
-                id: this.id 
+                id: this.id,
+                cname: this._config.className
             }));
             this._node = $('#' + this.id);
             this._header = this._node.find('header').eq(0);
@@ -49,8 +51,8 @@ define('moui/overlay', [
         },
 
         set: function(opt) {
-
-            this._config = _.mix(this._config, opt);
+            opt = opt || {};
+            _.mix(this._config, opt);
 
             if (typeof opt.title === 'string') {
                 this.setTitle(opt.title);
@@ -58,6 +60,10 @@ define('moui/overlay', [
 
             if (opt.content !== undefined) {
                 this.setContent(opt.content);
+            }
+
+            if (opt.className !== undefined) {
+                this._node[0].className = opt.className;
             }
 
             return this;
