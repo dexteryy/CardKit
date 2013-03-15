@@ -146,7 +146,7 @@ define([
 
         init: function(opt){
             var root = this.root = opt.root;
-            var wrapper = this.wrapper = $('.ck-wrapper', root);
+            this.wrapper = $('.ck-wrapper', root);
             this.header = $('.ck-header', root);
             this.footer = $('.ck-footer', root);
             this.raw = $('.ck-raw', root);
@@ -162,7 +162,7 @@ define([
             momoTap(document);
 
             if (!SUPPORT_OVERFLOWSCROLL) {
-                root.addClass('no-overflow-scrolling');
+                $(body).addClass('no-overflow-scrolling');
             }
             this.initState();
 
@@ -343,7 +343,7 @@ define([
             }
         },
 
-        updateSize: SUPPORT_OVERFLOWSCROLL ? function(){
+        updateSize: function(){
             this.viewport[0].style.height = (this.inited ? 
                 window.innerHeight : (screen.availHeight + 60)) + 'px';
             // enable scrollable when height is not enough 
@@ -355,7 +355,7 @@ define([
                     ft.style.paddingTop = (parseFloat(ft.style.paddingTop) || 0) + d + 100 + 'px';
                 }
             }
-        } : function(){},
+        },
 
         watchScroll: function(card){
             this.scrollGesture.watchScroll(card[0]);

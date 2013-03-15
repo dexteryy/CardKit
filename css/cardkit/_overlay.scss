@@ -4,4 +4,9 @@
 
 .ck-modalview {
   @extend .moui-modalview;
+
+  .no-overflow-scrolling & .wrapper > article {
+    overflow:visible;
+  }
+
 }
