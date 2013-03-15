@@ -127,14 +127,22 @@ define([
             choreo.transform(modalCard._wrapper[0], 'translateY', '0');
             var prev = ck.viewport,
                 current = modalCard._contentWrapper;
-            ck.changeView(current, { is_modal: true });
+            ck.changeView(current, { 
+                isModal: true 
+            });
             modalCard._content.css('minHeight', current[0].offsetHeight + 'px');
             if (modalCard._iframeContent) {
                 modalCard._iframeContent.css({
                     width: current[0].offsetWidth + 'px',
                     height: current[0].offsetHeight - ck.headerHeight + 'px'
                 });
-                modalCard._iframeWindow.bind('touchstart', prevent_window_scroll);
+                modalCard.event.done('frameOnload', function(){
+                    var iframe_body = $(modalCard._iframeWindow[0].document.body);
+                    iframe_body.bind('touchstart', prevent_window_scroll);
+                    ck.initView(iframe_body, {
+                        isModal: true
+                    });
+                });
             }
             modalCard.event.once('close', function(){
                 ck.changeView(prev);
@@ -310,10 +318,10 @@ define([
 
         },
 
-        initView: function(card){
+        initView: function(card, opt){
             if (!card.data('rendered')) {
-                render(card, this.raw, this.footer);
-                if (card !== modalCard._contentWrapper) {
+                render(card, this.raw, this.footer, opt);
+                if (!opt.isModal) {
                     card.data('rendered', '1');
                 }
             }
@@ -333,12 +341,12 @@ define([
             if (typeof card === 'string') {
                 card = $('#' + card);
             }
-            this.initView(card);
+            this.initView(card, opt);
             this.viewport = card.show();
             if (card !== this.loadingCard) {
                 this.updateSize();
             }
-            if (!opt.is_modal) {
+            if (!opt.isModal) {
                 this.updateHeader();
             }
         },

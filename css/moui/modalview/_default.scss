@@ -69,6 +69,10 @@
     height:100%;
   }
 
+  .moui-modalview-iframebd {
+    min-height:1000px;
+  }
+
   &.active {
     visibility:visible;
   }

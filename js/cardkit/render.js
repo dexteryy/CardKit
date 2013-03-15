@@ -17,7 +17,7 @@ define([
 
     var TPL_TIPS = '<div class="ck-top-tips">长按顶部导航条，可拖出浏览器地址栏</div>';
 
-    function exports(card, raw, footer) {
+    function exports(card, raw, footer, opt) {
 
         card.find('.ck-box-unit').forEach(function(unit){
             var data = boxParser(unit, raw);
@@ -85,9 +85,11 @@ define([
             }
         });
 
-        card.append(footer.clone())
-            .prepend($('.ck-banner-unit', card))
-            .prepend(TPL_TIPS);
+        if (!opt.isModal) {
+            card.append(footer.clone())
+                .prepend($('.ck-banner-unit', card))
+                .prepend(TPL_TIPS);
+        }
 
     }
 

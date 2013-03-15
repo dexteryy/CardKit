@@ -104,7 +104,8 @@ define('moui/modalview', [
             self.setContent('');
             self.showLoading();
             self._iframeContent = $('<iframe class="moui-modalview-iframebd" '
-                    + 'frameborder="0" scrolling="no" style="visibility:hidden;width:100%;"></iframe>')
+                    + 'frameborder="0" scrolling="no" style="visibility:hidden;width:100%;">'
+                    + '</iframe>')
                 .bind('load', function(){
                     try {
                         self._iframeWindow = $(this.contentWindow);
@@ -113,7 +114,7 @@ define('moui/modalview', [
                             return;
                         }
                         self._iframeContent[0].style.visibility = '';
-                        self.event.fire("frameOnload", [self]);
+                        self.event.resolve("frameOnload", [self]);
                         self.hideLoading();
                     } catch(ex) {}
                 }).appendTo(self._content);
@@ -124,6 +125,7 @@ define('moui/modalview', [
                 this._iframeContent.remove();
                 this._iframeContent = null;
             }
+            this.event.reset("frameOnload");
         },
 
         done: function(){
