@@ -29,6 +29,11 @@ a {
   -webkit-touch-callout: none;
 }
 
+.ck-link {
+  -webkit-touch-callout: inherit;
+  @include user-select(none);
+}
+
 .ck-header {
   height: $nav_height;
   @include box-shadow(0 2px 3px rgba(0,0,0,.35));
@@ -94,6 +99,7 @@ a {
     }
 
     .btn {
+      @extend %block;
       width:$top_btn_size;
       height:$top_btn_size;
       background:#fff;
@@ -110,7 +116,7 @@ a {
     .ck-top-create .btn {
       background-image:inline-image('compose.png');
     }
-    .ck-top-create .ck-btn-reply {
+    .ck-top-create .btn.reply {
       background-image:inline-image('reply.png');
     }
 

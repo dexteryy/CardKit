@@ -1,13 +1,15 @@
 
-<form action="#" id="ajaxForm1">
+<form action="post_result.html" id="ajaxForm1">
 
 <div class="ck-form-unit">
-    <header class="ckd-hd">Modal View</header>
     <div class="ckd-item">
-        <input type="text" value="1" name="a">
+        <label class="ck-title">章节名</label>
+        <input type="text" value="" name="a" placeholder="章节名">
     </div>
     <div class="ckd-item">
-        <textarea name="b">testesarfe few fwef </textarea>
+        <label class="ck-title">笔记内容</label>
+        <textarea name="b" placeholder="笔记内容"></textarea>
+        <label><em>注释</em></label>
     </div>
 </div>
 
@@ -18,9 +20,9 @@ console.info('ajax loaded');
 require([
     'dollar', 
     'mo/network', 
-    'cardkit/view/modalview'
-], function($, net, modal){
-    modal.event.once('confirm', function(modal, done){
+    'cardkit/app'
+], function($, net, ck){
+    ck.modalCard.event.once('confirm', function(modal, done){
         modal.showLoading();
         net.ajax({
             url: 'post_result.html',

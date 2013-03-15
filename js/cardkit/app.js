@@ -81,15 +81,23 @@ define([
             p.select(this);
         },
 
-        '.ck-modal-button': function(){
-            ck.openModal($(this).data());
-        },
+        '.ck-modal-button': open_modal_card,
 
         '.ck-folder header': function(){
             control(this.parentNode).toggle();
+        },
+
+        '.ck-top-create .btn': open_modal_card,
+
+        '.ck-top-action .btn': function(){
+        
         }
     
     };
+
+    function open_modal_card(){
+        ck.openModal($(this).data());
+    }
 
     function enable_control(){
         var controller = control(this);
@@ -140,6 +148,8 @@ define([
             var root = this.root = opt.root;
             var wrapper = this.wrapper = $('.ck-wrapper', root);
             this.header = $('.ck-header', root);
+            this.footer = $('.ck-footer', root);
+            this.raw = $('.ck-raw', root);
             this.loadingCard = $('#ckLoading');
             this.defaultCard = $('#ckDefault');
             this.globalMask = $(TPL_MASK).appendTo(body);
@@ -154,7 +164,6 @@ define([
             if (!SUPPORT_OVERFLOWSCROLL) {
                 root.addClass('no-overflow-scrolling');
             }
-            render(wrapper);
             this.initState();
 
             setTimeout(function(){
@@ -301,11 +310,14 @@ define([
 
         },
 
-        initView: function(){
-            //this.viewport.find('.ck-switch').forEach(function(elm){
-                //control(elm);
-            //});
-            this.watchScroll(this.viewport);
+        initView: function(card){
+            if (!card.data('rendered')) {
+                render(card, this.raw, this.footer);
+                if (card !== modalCard._contentWrapper) {
+                    card.data('rendered', '1');
+                }
+            }
+            this.watchScroll(card);
         },
 
         releaseView: function(){
@@ -321,11 +333,11 @@ define([
             if (typeof card === 'string') {
                 card = $('#' + card);
             }
+            this.initView(card);
             this.viewport = card.show();
             if (card !== this.loadingCard) {
                 this.updateSize();
             }
-            this.initView();
             if (!opt.is_modal) {
                 this.updateHeader();
             }
@@ -351,9 +363,9 @@ define([
 
         updateHeader: function(){
             var top_submit = this.header.find('.ck-top-create').empty();
-            var create_btn = this.viewport.find('.ckd-create');
-            if (create_btn[0]) {
-                top_submit.append(create_btn.clone());
+            var create_btn = this.viewport.find('.ckd-top-create').html();
+            if (create_btn) {
+                top_submit.append(create_btn);
             }
         },
 

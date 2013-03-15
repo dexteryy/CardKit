@@ -4,13 +4,13 @@ define([
     'moui/modalview'
 ], function($, net, modal) {
 
-    var mainModal = modal({
+    var modalCard = modal({
             className: 'ck-modalview',
             buttons: ['cancel', 'confirm']
         }),
-        origin_set = mainModal.set;
+        origin_set = modalCard.set;
 
-    mainModal.set = function(opt){
+    modalCard.set = function(opt){
         var self = this,
             url = opt.jsonUrl || opt.url;
         if (url) {
@@ -42,7 +42,7 @@ define([
         return origin_set.call(this, opt);
     };
     
-    mainModal.done = function(){
+    modalCard.done = function(){
         if (!history.state) {
             history.go(-2);
         } else {
@@ -50,6 +50,6 @@ define([
         }
     };
 
-    return mainModal;
+    return modalCard;
 
 });
