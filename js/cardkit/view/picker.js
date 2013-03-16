@@ -34,7 +34,7 @@ define([
         var p = lib[id] = picker(elm, opt);
 
         p.event.bind('change', function(p, controller){
-            var cfg = controller._config, 
+            var cfg = p.data(), 
                 eprops = {
                     component: p 
                 },
