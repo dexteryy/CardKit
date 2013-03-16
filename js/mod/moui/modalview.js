@@ -41,10 +41,10 @@ define('moui/modalview', [
             }
         },
 
-        default_config = mix(overlay.Overlay.prototype, {
+        default_config = {
             className: 'moui-modalview',
             buttons: ['confirm', 'cancel']
-        });
+        };
 
 
     var ModalView = _.construct(overlay.Overlay, function(opt){
@@ -66,7 +66,7 @@ define('moui/modalview', [
 
         _ns: NS,
         _template: TPL_VIEW,
-        _defaults: default_config,
+        _defaults: mix(overlay.Overlay.prototype._defaults, default_config),
 
         set: function(opt) {
 

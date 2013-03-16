@@ -72,12 +72,19 @@ define([
         },
 
         '.ck-segment .option': function(){
-            var p = picker(this.parentNode);
+            var p = picker(this.parentNode, {
+                ignoreRepeat: true
+            });
             p.select(this);
         },
 
         '.ck-tagselector .option': function(){
             var p = picker(this.parentNode);
+            p.select(this);
+        },
+
+        '.ck-actions .option': function(){
+            var p = picker($(this).closest('.ck-actions'));
             p.select(this);
         },
 
@@ -212,6 +219,11 @@ define([
             }).bind('scrollend', function(){
                 ck.globalMask.hide();
                 prevent_window_scroll();
+            //}).bind('scroll', function(e){
+                //ck.hideAddressbar();
+                //console.info('scroll', e)
+            //}).bind('click', function(e){
+                //console.info('click', e)
             });
 
             $(document).bind('touchstart', prevent_window_scroll);
@@ -470,7 +482,7 @@ define([
             if ($(me).hasClass('ck-link')) {
                 next_id = (me.href.replace(location.href, '')
                     .match(/^#(.+)/) || [])[1];
-            } else if ($(me).hasClass('ck-unlink')) {
+            } else if ($(me).attr('target')) {
                 return;
             }
         }

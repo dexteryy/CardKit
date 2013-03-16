@@ -2,7 +2,6 @@
 .ck-card {
   display:none;
   width:100%;
-  padding-top:$nav_height;
   background:$view_color;
   //@include box-shadow(-3px 0px 10px 0px rgba(0,0,0,.35));
   @include user-select(none);
@@ -15,6 +14,15 @@
 
   .ck-footer {
     display:block;
+  }
+
+  .ck-top-tips {
+    text-align:center;
+    font-size:$title_size;
+    color:#999;
+    height:$nav_height;
+    line-height:$nav_height;
+    width:100%;
   }
 
   .ckd-create {

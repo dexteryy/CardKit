@@ -37,7 +37,7 @@ define('moui/control', [
             }
             opt.disableVal = this.val();
             opt.disableLabel = this.label();
-            this._config = _.mix({}, this._defaults, opt);
+            this._config = _.config({}, opt, this._defaults);
         },
 
         set: function(opt){
@@ -69,7 +69,11 @@ define('moui/control', [
 
         val: function(v){
             if (this._field[0]) {
-                return this._field.val(v);
+                if (this._field[0].nodeName === 'A') {
+                    return this._field.attr('href', v);
+                } else {
+                    return this._field.val(v);
+                }
             }
         },
 

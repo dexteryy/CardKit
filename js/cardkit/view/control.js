@@ -10,36 +10,29 @@ define([
         uid = 0,
         lib = {};
 
-    var ext = {
+    var CkControl = _.construct(control.Control);
 
-        toggle: function(){
-            if (this.isEnabled) {
-                this.toDisable();
-            } else {
-                this.toEnable();
-            }
-            return this;
-        },
+    _.mix(CkControl.prototype, {
 
-        toEnable: function(){
+        enable: function(){
             var cfg = this.data();
             return this.request({
                 method: cfg.requestMethod,
                 url: cfg.enableUrl,
                 jsonUrl: cfg.enableJsonUrl
             }, function(){
-                this.enable();
+                this.superClass.enable.call(this);
             });
         },
 
-        toDisable: function(){
+        disable: function(){
             var cfg = this.data();
             return this.request({
                 method: cfg.requestMethod,
                 url: cfg.disableUrl,
                 jsonUrl: cfg.disableJsonUrl
             }, function(){
-                this.disable();
+                this.superClass.disable.call(this);
             });
         },
 
@@ -64,7 +57,7 @@ define([
             return this;
         }
     
-    };
+    });
 
     function exports(elm, opt){
         elm = $(elm);
@@ -73,7 +66,7 @@ define([
             return lib[id].set(opt);
         }
         id = elm[0][UID] = ++uid;
-        var controller = lib[id] = control(elm, opt);
+        var controller = lib[id] = new exports.Control(elm, opt);
         controller.event.bind('enable', function(controller){
             elm.trigger('control:enable', {
                 component: controller
@@ -83,8 +76,10 @@ define([
                 component: controller
             });
         });
-        return _.mix(controller, ext);
+        return controller;
     }
+
+    exports.Control = CkControl;
 
     exports.gc = function(check){
         for (var i in lib) {
