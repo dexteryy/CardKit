@@ -11,6 +11,7 @@ define([
     'momotion/scroll',
     './view/control',
     './view/picker',
+    './view/slider',
     './view/modalview',
     './view/growl',
     './bus',
@@ -19,7 +20,7 @@ define([
     'mo/domready'
 ], function($, _, tpl, soviet, choreo, 
     momoBase, momoTap, momoSwipe, momoDrag, momoScroll, 
-    control, picker, modalCard, growl,
+    control, picker, slider, modalCard, growl,
     bus, pageSession, render){
 
     var window = this,
@@ -86,6 +87,10 @@ define([
         '.ck-actions .option': function(){
             var p = picker($(this).closest('.ck-actions'));
             p.select(this);
+        },
+
+        '.ck-slider': function() {
+            slider($(this));
         },
 
         '.ck-modal-button': open_modal_card,
