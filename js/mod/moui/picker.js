@@ -12,6 +12,7 @@ define('moui/picker', [
             field: 'input[type="hidden"]',
             options: '.option',
             ignoreRepeat: false,
+            ignoreStatus: false,
             multiselect: false
         };
 
@@ -30,7 +31,7 @@ define('moui/picker', [
             this._node = $(elm);
             this._options = [];
             opt = _.mix({}, this.data(), opt);
-            this._config = _.mix({}, this._defaults, opt);
+            this._config = _.config({}, opt, this._defaults);
             return this;
         },
 
@@ -145,19 +146,60 @@ define('moui/picker', [
             return this;
         },
 
+        undo: function(){
+            if (this._lastActionTarget) {
+                this._lastActionTarget.toggle();
+            }
+            return this;
+        },
+
+        selectAll: function(){
+            if (this._config.multiselect) {
+                this._options.forEach(function(controller){
+                    controller.enable();
+                });
+            }
+            this._lastActionTarget = null;
+            return this;
+        },
+
+        unselectAll: function(){
+            if (this._config.multiselect) {
+                this._options.forEach(function(controller){
+                    controller.disable();
+                });
+                this._lastActionTarget = null;
+            } else {
+                this.undo();
+            }
+            return this;
+        },
+
+        selectInvert: function(){
+            if (this._config.multiselect) {
+                this._options.forEach(function(controller){
+                    controller.toggle();
+                });
+            }
+            this._lastActionTarget = null;
+            return this;
+        },
+
         select: function(i){
             var controller = this.getOption(i);
             if (controller) {
-                if (this._config.multiselect 
-                        && this._allSelected.indexOf(controller) !== -1
-                        || !this._config.multiselect
-                        && this._lastSelected === controller) {
-                    if (!this._config.ignoreRepeat) {
-                        return this.unselect(i);
-                    }
+                if (!this._config.multiselect && this._config.ignoreStatus) {
+                    change.call(this, 'enable', controller);
                 } else {
-                    controller.enable();
-                    this.hasSelected = true;
+                    if (this._config.multiselect 
+                            && this._allSelected.indexOf(controller) !== -1
+                            || !this._config.multiselect
+                            && this._lastSelected === controller) {
+                        if (!this._config.ignoreRepeat) {
+                            return this.unselect(i);
+                        }
+                    }
+                    this._lastActionTarget = controller.enable();
                 }
             }
             return this;
@@ -165,15 +207,11 @@ define('moui/picker', [
 
         unselect: function(i){
             if (!i) {
-                change.call(this, 'disable');
+                this.unselectAll();
             } else {
                 var controller = this.getOption(i);
                 if (controller) {
-                    controller.disable();
-                    if (!this._config.multiselect
-                            || !this._allSelected.length) {
-                        this.hasSelected = false;
-                    }
+                    this._lastActionTarget = controller.disable();
                 }
             }
             return this;
@@ -183,12 +221,10 @@ define('moui/picker', [
 
     function when_enable(controller){
         change.call(this, 'enable', controller);
-        this.event.fire('select', [this, controller]);
     }
 
     function when_disable(controller){
         change.call(this, 'disable', controller);
-        this.event.fire('unselect', [this, controller]);
     }
 
     function change(subject, controller){

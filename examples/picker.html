@@ -40,8 +40,7 @@
             <header class="ckd-hd">Segmented selector</header>
             <div class="ckd-item">
                 <!--component-->
-                <div class="ck-segment picker1"
-                        data-ignore-repeat="true">
+                <div class="ck-segment picker1">
                     <button class="option" value="1"
                         data-enable-url="data/enable.txt">Option 1</button>
                     <button class="option" value="2"
@@ -94,7 +93,28 @@
             <header class="ckd-hd">Actions</header>
             <div class="ckd-item">
                 <!--component-->
+                <ul class="ck-actions actions1"
+                    data-ignore-status="true">
+                    <li><a href="#on" class="option" target="_blank">Select All</a></li>
+                    <li><a href="#off" class="option" target="_blank">Unselect All</a></li>
+                    <li><a href="#invert" class="option" target="_blank">Select Invert</a></li>
+                    <li><a href="#undo" class="option" target="_blank">Undo</a></li>
+                </ul>
                 <!--component end-->
+                <p>
+                <div class="ck-tagselector actions1-1"
+                        data-multiselect="true">
+                    <input type="hidden" value="">
+                    <input class="option" type="button" value="linux">
+                    <input class="option" type="button" value="CSS">
+                    <input class="option" type="button" value="奇幻">
+                    <input class="option" type="button" value="史诗">
+                    <input class="option" type="button" value="ajax">
+                    <input class="option" type="button" value="RubyOnRails">
+                    <input class="option" type="button" value="javascript">
+                    <input class="option" type="button" value="OPENGL">
+                </div>
+                </p>
             </div>
         </div>
 
@@ -142,6 +162,30 @@ require([
         console.info('value: ', result);
 //        alert('value: ' + result);
     }
+
+    var action_picker = ck.picker($('.actions1-1'));
+
+    $('.actions1').bind('picker:change', function(e){
+        var result = e.component.val()
+        if (result) {
+            switch (result.replace(/.*#/, '')) {
+                case 'on':
+                    action_picker.selectAll();
+                    break;
+                case 'off':
+                    action_picker.unselectAll();
+                    break;
+                case 'invert':
+                    action_picker.selectInvert();
+                    break;
+                case 'undo':
+                    action_picker.undo();
+                    break;
+                default:
+            }
+        }
+    });
+
 });
 </script>
 <script>

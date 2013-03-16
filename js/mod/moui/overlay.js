@@ -39,7 +39,7 @@ define('moui/overlay', [
         init: function(opt){
             this.id = this._ns + (++_mid);
             this.event = event();
-            this._config = _.mix({}, this._defaults, opt);
+            this._config = _.config({}, opt, this._defaults);
             body.append(tpl.format(this._template, { 
                 id: this.id,
                 cname: this._config.className

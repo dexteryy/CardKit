@@ -20,7 +20,7 @@ define([
                 success: fn
             });
         } else {
-            fn();
+            fn(false);
         }
     }
 
@@ -33,38 +33,34 @@ define([
         id = elm[0][UID] = ++uid;
         var p = lib[id] = picker(elm, opt);
 
-        p.event.bind('change', function(p){
-            elm.trigger('picker:change', {
-                component: p 
-            });
-        }).bind('select', function(p, controller){
-            var cfg = controller._config;
-            p.showLoading();
-            request({
-                method: cfg.requestMethod,
-                url: cfg.enableUrl,
-                jsonUrl: cfg.enableJsonUrl
-            }, function(data){
-                p.hideLoading();
-                p.responseData = data;
-                elm.trigger('picker:response', {
+        p.event.bind('change', function(p, controller){
+            var cfg = controller._config, 
+                eprops = {
                     component: p 
-                });
-            });
-        }).bind('unselect', function(p, controller){
-            var cfg = controller._config;
+                },
+                req_opt;
             p.showLoading();
-            request({
-                method: cfg.requestMethod,
-                url: cfg.disableUrl,
-                jsonUrl: cfg.disableJsonUrl
-            }, function(data){
+            if (controller.isEnabled) {
+                req_opt = {
+                    method: cfg.requestMethod,
+                    url: cfg.enableUrl,
+                    jsonUrl: cfg.enableJsonUrl
+                };
+            } else {
+                req_opt = {
+                    method: cfg.requestMethod,
+                    url: cfg.disableUrl,
+                    jsonUrl: cfg.disableJsonUrl
+                };
+            }
+            request(req_opt, function(data){
                 p.hideLoading();
-                p.responseData = data;
-                elm.trigger('picker:response', {
-                    component: p 
-                });
+                if (data !== false) {
+                    p.responseData = data;
+                    elm.trigger('picker:response', eprops);
+                }
             });
+            elm.trigger('picker:change', eprops);
         });
 
         return p;
