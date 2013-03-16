@@ -48,6 +48,7 @@ define([
         } else {
             history.back();
         }
+        return this;
     };
 
     return modalCard;
