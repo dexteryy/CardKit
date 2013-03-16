@@ -140,9 +140,10 @@ define([
             ck.changeView(current, { 
                 isModal: true 
             });
-            modalCard._content.css('minHeight', current[0].offsetHeight + 'px');
+            var h = current[0].offsetHeight*2;
             if (modalCard._iframeContent) {
                 modalCard._iframeContent.css({
+                    minHeight: h + 'px',
                     width: current[0].offsetWidth + 'px',
                     height: current[0].offsetHeight - ck.headerHeight + 'px'
                 });
@@ -154,6 +155,7 @@ define([
                     });
                 });
             }
+            modalCard._content.css('minHeight', h + 'px');
             modalCard.event.once('close', function(){
                 ck.changeView(prev);
             });
@@ -221,11 +223,14 @@ define([
             }).bind('scrollend', function(){
                 ck.globalMask.hide();
                 prevent_window_scroll();
-            //}).bind('scroll', function(e){
-                //ck.hideAddressbar();
-                //console.info('scroll', e)
-            //}).bind('touchstart', function(e){
-                //return false;
+            }).bind('scroll', function(){
+                if (modalCard.isOpened) {
+                    var y = window.scrollY;
+                    ck.hideAddressbar();
+                    if (y > 40) {
+                        ck.viewport[0].scrollTop = ck.viewport[0].scrollTop + y - 40;
+                    }
+                }
             });
 
             $(document).bind('touchstart', prevent_window_scroll);
