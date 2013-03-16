@@ -152,6 +152,12 @@ require([
 
     $('.picker1').bind('picker:change', show_result);
 
+    $('.picker1').bind('picker:response', function(e){
+        var result = e.component.responseData;
+        console.info('response: ', result);
+        alert('response: ' + result);
+    });
+
     $('.picker2').bind('picker:change', show_result);
 
     $('.picker3').bind('picker:change', show_result);
@@ -159,7 +165,6 @@ require([
     function show_result(e){
         var result = e.component.val();
         console.info('value: ', result);
-//        alert('value: ' + result);
     }
 
     var action_picker = ck.picker($('.actions1-1'));
