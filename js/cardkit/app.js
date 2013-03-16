@@ -84,7 +84,10 @@ define([
         },
 
         '.ck-actions .option': function(){
-            var p = picker($(this).closest('.ck-actions'));
+            var actions = $(this).closest('.ck-actions');
+            var p = picker(actions, {
+                ignoreStatus: actions.data("ignoreStatus") !== 'false' && true
+            });
             p.select(this);
         },
 
@@ -222,8 +225,8 @@ define([
             //}).bind('scroll', function(e){
                 //ck.hideAddressbar();
                 //console.info('scroll', e)
-            //}).bind('click', function(e){
-                //console.info('click', e)
+            //}).bind('touchstart', function(e){
+                //return false;
             });
 
             $(document).bind('touchstart', prevent_window_scroll);
