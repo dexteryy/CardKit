@@ -48,11 +48,12 @@ define('moui/overlay', [
             this._header = this._node.find('header').eq(0);
             this._title = this._header.find('h1');
             this._content = this._node.find('article').eq(0);
+            return this;
         },
 
         set: function(opt) {
             opt = opt || {};
-            _.mix(this._config, opt);
+            _.config(this._config, opt, this._defaults);
 
             if (typeof opt.title === 'string') {
                 this.setTitle(opt.title);

@@ -24,8 +24,8 @@ define("dollar", [
             .map(function(name){
                 return this[name] && name;
             }, doc.body).filter(pick)[0],
-        _MOE = 'MouseEvents',
-        SPECIAL_EVENTS = { click: _MOE, mousedown: _MOE, mouseup: _MOE, mousemove: _MOE },
+        MOUSE_EVENTS = { click: 1, mousedown: 1, mouseup: 1, mousemove: 1 },
+        TOUCH_EVENTS = { touchstart: 1, touchmove: 1, touchend: 1, touchcancel: 1 },
         CSS_NUMBER = { 
             'column-count': 1, 'columns': 1, 'font-weight': 1, 
             'line-height': 1, 'opacity': 1, 'z-index': 1, 'zoom': 1 
@@ -451,11 +451,11 @@ define("dollar", [
 
         unbind: event_access('remove'),
 
-        trigger: function(event, argv){
+        trigger: function(event, data){
             if (typeof event === 'string') {
                 event = Event(event);
             }
-            _.mix(event, argv);
+            _.mix(event, data);
             this.forEach(event.type == 'submit' 
                 && !event.defaultPrevented ? function(node){
                 node.submit();
@@ -602,7 +602,10 @@ define("dollar", [
 
     function Event(type, props) {
         var bubbles = true,
-            event = document.createEvent(SPECIAL_EVENTS[type] || 'Events');
+            is_touch = TOUCH_EVENTS[type],
+            event = document.createEvent(is_touch && 'TouchEvent' 
+                || MOUSE_EVENTS[type] && 'MouseEvents' 
+                || 'Events');
         if (props) {
             if ('bubbles' in props) {
                 bubbles = !!props.bubbles;
@@ -610,7 +613,8 @@ define("dollar", [
             }
             _.mix(event, props);
         }
-        event.initEvent(type, bubbles, true);
+        event[is_touch && 'initTouchEvent' 
+            || 'initEvent'](type, bubbles, true);
         return event;
     }
 
