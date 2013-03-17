@@ -14,11 +14,7 @@
       padding:($space/2) 0;
       text-align:center;
 
-      &:active {
-        background:#666;
-      }
-
-      &.enabled {
+      &:active, &.enabled {
         background:#666;
       }
 

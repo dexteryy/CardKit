@@ -26,6 +26,7 @@ define([
 
     function exports(elm, opt){
         elm = $(elm);
+        opt = opt || {};
         var id = elm[0][UID];
         if (id && lib[id]) {
             return lib[id].set(opt);

@@ -5,8 +5,7 @@ define([
 ], function($, net, modal) {
 
     var modalCard = modal({
-            className: 'ck-modalview',
-            buttons: ['cancel', 'confirm']
+            className: 'ck-modalview'
         }),
         origin_set = modalCard.set;
 

@@ -1,6 +1,7 @@
 
 .moui-modalview {
-  visibility:hidden;
+  //visibility:hidden;
+  display:none;
   position:absolute;
   top:0;
   left:0;
@@ -14,7 +15,10 @@
     @include transition(transform 0.4s ease-in-out);
 
     & > header {
-      @extend .ck-header;
+      height: $nav_height;
+      @include box-shadow(0 2px 3px rgba(0,0,0,.35));
+      z-index:$zindex_step;
+      @include user-select(none);
       position:fixed;
       top:0;
       left:0;
@@ -24,25 +28,25 @@
       @include background-image(linear-gradient(bottom, #dfdfdf, #fcfcfc));
 
       h1 {
-        @extend .ck-top-title;
+        font-size:$article_size;
+        line-height: $nav_height;
+        text-align:center;
+        display:block;
+        margin:0 $space*4 + 20px;
       }
 
       $padding: 15px/2;
 
-      div.confirm, div.cancel {
-        display:inline-block;
+      button.confirm, button.cancel {
+        @extend %button;
+        width:55px;
         margin:$padding 0 0 $padding;
         float:left;
       }
 
-      div.confirm {
+      button.confirm {
         margin:$padding $padding 0 0;
         float:right;
-      }
-
-      button {
-        @extend %button;
-        width:55px;
       }
 
     }
@@ -71,7 +75,8 @@
   }
 
   &.active {
-    visibility:visible;
+    //visibility:visible;
+    display:block;
   }
 
 }

@@ -1,0 +1,107 @@
+
+.moui-actionview {
+  display:none;
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  z-index: $zindex_overlay + $zindex_step * 2;
+  @include user-select(none);
+
+  .wrapper {
+    height:100%;
+    overflow-y:scroll;
+    -webkit-overflow-scrolling: touch;
+
+    .content {
+      padding:0 $space $space $space;
+      overflow:hidden;
+
+      & > header {
+        height: $nav_height;
+
+        h1 {
+          font-size:$article_size;
+          line-height: $nav_height;
+          display:block;
+          color:#fff;
+          border-bottom:1px solid #eee;
+        }
+
+      }
+
+      & > .desc {
+        color:#fff;
+        padding:$space 0;
+      }
+
+      & > article {
+        position:absolute;
+        bottom:$space * 3 + $button_height;
+        left:$space*2;
+        right:$space*2;
+      }
+
+    }
+
+  }
+
+  & > footer {
+    position:absolute;
+    bottom:0;
+    left:0;
+    background:#000;
+    opacity:0.8;
+    width:100%;
+    height:$space * 2 + $button_height;
+
+    button {
+      @extend %button;
+      width:auto;
+      position:absolute;
+      top:$space;
+      left:$space;
+      right:$space;
+
+      &.confirm {
+        display:none;
+      }
+
+    }
+
+    &.multi {
+    
+      button {
+        right:50%;
+        margin:0 ($space/2) 0 0px;
+      
+        &.confirm {
+          display:inline-block;
+          left:50%;
+          right:$space;
+          margin:0 0 0 ($space/2);
+        }
+
+      }
+
+    }
+
+  }
+
+  .shd {
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:#121212;
+    opacity:0.8;
+  }
+
+  &.active {
+    display:block;
+  }
+
+}
+

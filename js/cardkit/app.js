@@ -12,7 +12,8 @@ define([
     './view/control',
     './view/picker',
     './view/slider',
-    './view/modalview',
+    './view/modalcard',
+    './view/actionview',
     './view/growl',
     './bus',
     './pagesession',
@@ -20,7 +21,7 @@ define([
     'mo/domready'
 ], function($, _, tpl, soviet, choreo, 
     momoBase, momoTap, momoSwipe, momoDrag, momoScroll, 
-    control, picker, slider, modalCard, growl,
+    control, picker, slider, modalCard, actionView, growl,
     bus, pageSession, render){
 
     var window = this,
@@ -96,10 +97,44 @@ define([
             slider($(this));
         },
 
-        '.ck-modal-button': open_modal_card,
-
         '.ck-folder header': function(){
             control(this.parentNode).toggle();
+        },
+
+        '.ck-actions-button, .ck-actions-button span': function(){
+            var me = $(this);
+            if (!me.hasClass('ck-actions-button')) {
+                me = me.parent();
+            }
+            var opt = _.mix({
+                confirmText: '确认',
+                cancelText: '取消',
+                multiselect: false
+            }, me.data());
+            opt.options = $(opt.options || '.option', me);
+            actionView(me, opt).open();
+        },
+
+        '.ck-modal-button': open_modal_card,
+
+        '.ck-actionview .content > article .option': function(){
+            actionView.current.select(this);
+        },
+
+        '.ck-actionview > footer .confirm': function(){
+            actionView.current.confirm();
+        },
+
+        '.ck-actionview > footer .cancel': function(){
+            actionView.current.cancel();
+        },
+
+        '.ck-modalview .wrapper > header .confirm': function(){
+            modalCard.confirm();
+        },
+
+        '.ck-modalview .wrapper > header .cancel': function(){
+            modalCard.cancel();
         },
 
         '.ck-top-create .btn': open_modal_card,
@@ -165,6 +200,25 @@ define([
                 ck.changeView(prev);
             });
         }, 200);
+    });
+
+    bus.bind('actionView:open', function(actionCard){
+        ck.disableView = true;
+        var prev = ck.viewport,
+            current = actionCard._wrapper;
+        ck.changeView(current, { 
+            isModal: true 
+        });
+        var h = current[0].offsetHeight;
+        actionCard._wrapperContent.css({
+            height: h + 'px'
+        });
+        actionCard._node.css({
+            height: h + 'px'
+        });
+        actionCard.event.once('close', function(){
+            ck.changeView(prev);
+        });
     });
 
     var ck = {
@@ -477,7 +531,8 @@ define([
 
         control: control,
         picker: picker,
-        modalCard: modalCard 
+        modalCard: modalCard,
+        actionView: actionView 
 
     };
 
@@ -539,6 +594,9 @@ define([
         var current = ck.viewport;
         ck.globalMask.show();
         ck.showTopbar();
+        if (actionView.current) {
+            actionView.current.close();
+        }
         choreo.transform(ck.wrapper[0], 'translateX', 0 - window.innerWidth + 'px');
         current.addClass('moving');
         prev.show();

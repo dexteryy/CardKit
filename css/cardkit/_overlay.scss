@@ -5,8 +5,56 @@
 .ck-modalview {
   @extend .moui-modalview;
 
+  & > header {
+    @extend .ck-header;
+
+    h1 {
+      @extend .ck-top-title;
+    }
+
+  }
+
   .no-overflow-scrolling & .wrapper > article {
     overflow:visible;
+  }
+
+}
+
+.ck-actionview {
+  @extend .moui-actionview;
+
+  .wrapper {
+
+    .content {
+
+      & > article {
+
+        .option {
+          display:inline-block;
+          background:#000;
+          color:#fff;
+          font-size:$title_size;
+          width:100%;
+          padding:($space/2) 0;
+          margin-top:5px;
+          text-align:center;
+          opacity:0.8;
+          border: solid 1px #4c4c4c;
+          @include border-radius($radius);
+          -webkit-tap-highlight-color: rgba(0,0,0,0);
+          @include appearance(none);
+
+          &:active, &.enabled {
+            background:#eee;
+            color:#000;
+          }
+
+        }
+      
+      }
+
+    }
+
   }
 
 }
