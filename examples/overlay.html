@@ -69,6 +69,32 @@
             <header class="ckd-hd">Action View</header>
             <div class="ckd-item">
                 <!--component-->
+                <button class="ck-actions-button"
+                        data-fluid="true"
+                        data-title="选择排序方式">
+                    <span>Order by default</span>
+                    <a href="#price" class="option" target="_blank">Order by price</a>
+                    <a href="#date" class="option" target="_blank">Order by date</a>
+                    <a href="#alpha" class="option" target="_blank">Order by alphabet</a>
+                    <a href="#editor" class="option" target="_blank">Order by editor</a>
+                </button>
+                <!--component end-->
+            </div>
+            <div class="ckd-item">
+                <!--component-->
+                <button class="ck-actions-button"
+                        data-fluid="true"
+                        data-multiselect="true"
+                        data-confirm-text="继续"
+                        data-cancel-text="放弃"
+                        data-title="Choose members"
+                        data-content="1. member A<br>2. member B<br>3. member C<br>4. member D">
+                    <span>Choose members</span>
+                    <input class="option" type="button" value="A">
+                    <input class="option" type="button" value="B">
+                    <input class="option" type="button" value="C">
+                    <input class="option" type="button" value="D">
+                </button>
                 <!--component end-->
             </div>
         </div>
@@ -114,6 +140,10 @@
 </form>
 </script>
 
+<script type="text/jscode" class="formBox">
+console.info('execute js for formBox');
+</script>
+
 </div>
 
 </div>
@@ -125,6 +155,11 @@ require([
     'dollar',
     'cardkit/app'
 ], function($, ck){
+
+    ck.actionCard.event.bind('confirm', function(card){
+        var result = card.val();
+        console.info('value: ', result);
+    });
 
 });
 </script>

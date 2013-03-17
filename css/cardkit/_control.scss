@@ -22,3 +22,11 @@
   @extend %button;
 }
 
+.ck-actions-button {
+  @extend %button;
+
+  .option {
+    display:none;
+  }
+
+}

@@ -13,54 +13,24 @@ define('moui/modalview', [
                 <div class="shd"></div>\
                 <div class="wrapper">\
                     <header>\
-                        <div class="confirm"></div>\
-                        <div class="cancel"></div>\
+                        <button class="confirm" data-is-default="true"></button>\
+                        <button class="cancel"></button>\
                         <h1></h1>\
                     </header>\
                     <article><div class="content"></div></article>\
                 </div>\
             </div>',
-        TPL_BTN = '<button class="{{type}}" data-is-default="{{isDefault}}">{{text}}</button>',
-
-        button_config = {
-            'confirm': {
-                type: 'confirm',
-                text: '确定',
-                isDefault: true,
-                method: function(modal) {
-                    modal.event.fire('confirm', [modal]);
-                }
-            }, 
-            'cancel': {
-                type: 'cancel',
-                text: '取消',
-                method: function(modal) {
-                    modal.event.fire('cancel', [modal]);
-                    modal.done();
-                }
-            }
-        },
 
         default_config = {
             className: 'moui-modalview',
-            buttons: ['confirm', 'cancel']
+            iframe: false,
+            hideConfirm: false,
+            confirmText: '确认',
+            cancelText: '取消'
         };
 
 
-    var ModalView = _.construct(overlay.Overlay, function(opt){
-        this.init(opt);
-        var self = this,
-            handlers = this._btnHandlers = {};
-        this._wrapper = this._node.find('.wrapper').eq(0);
-        this._contentWrapper = this._wrapper.find('article').eq(0);
-        this._content = this._contentWrapper.find('.content').eq(0);
-        this._confirmBtn = this._header.find('.confirm');
-        this._cancelBtn = this._header.find('.cancel');
-        this._confirmBtn.concat(this._cancelBtn).bind('click', function(e){
-            (handlers[this.className] || nothing).call(this, self, e);
-        });
-        this.set(this._config);
-    });
+    var ModalView = _.construct(overlay.Overlay);
 
     mix(ModalView.prototype, {
 
@@ -68,39 +38,48 @@ define('moui/modalview', [
         _template: TPL_VIEW,
         _defaults: mix(overlay.Overlay.prototype._defaults, default_config),
 
-        set: function(opt) {
+        init: function(opt) {
+            this.superClass.init.call(this, opt);
+            this._wrapper = this._node.find('.wrapper').eq(0);
+            this._contentWrapper = this._wrapper.find('article').eq(0);
+            this._content = this._contentWrapper.find('.content').eq(0);
+            this._confirmBtn = this._header.find('.confirm');
+            this._cancelBtn = this._header.find('.cancel');
+            return this;
+        },
 
+        set: function(opt) {
             var self = this;
             self.superClass.set.call(self, opt);
 
             if (opt.content !== undefined) {
                 self._config.iframe = null;
             } else if (opt.iframe) {
-                self.setIframeContent(opt);
+                self._setIframeContent(opt);
             } 
             
-            if (opt.buttons && opt.buttons.length > 0) {
-                var handlers = self._btnHandlers, 
-                    btn_lib = _.index(opt.buttons.map(function(btn){
-                        return typeof btn === 'object' ? btn : { type: btn };
-                    }), 'type');
-                default_config.buttons.forEach(function(type) {
-                    var btn = btn_lib[type];
-                    btn = btn && mix({}, button_config[type], btn) || {};
-                    handlers[type] = btn.method;
-                    this['_' + type + 'Btn'].html(function(){
-                        return btn && tpl.format(TPL_BTN, btn) || '';
-                    });
-                }, self);
+            if (opt.hideConfirm !== undefined) {
+                if (opt.hideConfirm) {
+                    this._confirmBtn.hide();
+                } else {
+                    this._confirmBtn.show();
+                }
+            }
+
+            if (opt.confirmText) {
+                this._confirmBtn.html(opt.confirmText);
+            }
+
+            if (opt.cancelText) {
+                this._cancelBtn.html(opt.cancelText);
             }
 
             return self;
-
         },
 
-        setIframeContent: function(){
+        _setIframeContent: function(){
             var self = this;
-            this.clearIframeContent();
+            this._clearIframeContent();
             self.setContent('');
             self.showLoading();
             self._iframeContent = $('<iframe class="moui-modalview-iframebd" '
@@ -123,7 +102,7 @@ define('moui/modalview', [
                 }).appendTo(self._content);
         },
 
-        clearIframeContent: function(){
+        _clearIframeContent: function(){
             if (this._iframeContent) {
                 this._iframeContent.remove();
                 this._iframeContent = null;
@@ -131,11 +110,25 @@ define('moui/modalview', [
             this.event.reset("frameOnload");
         },
 
+        confirm: function(){
+            this.event.fire('confirm', [this]);
+            return this;
+        },
+
+        cancel: function(){
+            this.event.fire('cancel', [this]);
+            this.done();
+            return this;
+        },
+
         done: function(){
-            this.close();
+            return this.close();
         },
 
         open: function(){
+            if (this.isOpened) {
+                return;
+            }
             this.superClass.open.call(this);
             if (this._config.iframe) {
                 this._iframeContent.attr('src', this._config.iframe);
@@ -144,19 +137,15 @@ define('moui/modalview', [
         },
 
         close: function(){
-            this.clearIframeContent();
+            if (!this.isOpened) {
+                return;
+            }
+            this._clearIframeContent();
             this._contentWrapper[0].scrollTop = 0;
             return this.superClass.close.call(this);
-        },
-
-        destroy: function() {
-            this._btnHandlers = {};
-            return this.superClass.destroy.call(this);
         }
 
     });
-
-    function nothing(){}
 
     function exports(opt) {
         return new exports.ModalView(opt);
