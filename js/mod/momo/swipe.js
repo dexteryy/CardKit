@@ -1,7 +1,7 @@
 
-define('momotion/swipe', [
+define('momo/swipe', [
     'mo/lang',
-    'momotion/base'
+    'momo/base'
 ], function(_, momoBase){
 
     var MomoSwipe = _.construct(momoBase.Class);

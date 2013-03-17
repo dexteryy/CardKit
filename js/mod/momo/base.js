@@ -1,5 +1,5 @@
 
-define('momotion/base', [
+define('momo/base', [
     'mo/lang/es5',
     'mo/lang/type',
     'mo/lang/mix'

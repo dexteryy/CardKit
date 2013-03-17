@@ -1,7 +1,7 @@
 
-define('momotion/tap', [
+define('momo/tap', [
     'mo/lang',
-    'momotion/base'
+    'momo/base'
 ], function(_, momoBase){
 
     var MomoTap = _.construct(momoBase.Class);

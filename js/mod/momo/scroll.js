@@ -1,7 +1,7 @@
 
-define('momotion/scroll', [
+define('momo/scroll', [
     'mo/lang',
-    'momotion/base'
+    'momo/base'
 ], function(_, momoBase){
 
     var MomoScroll = _.construct(momoBase.Class);

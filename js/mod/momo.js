@@ -1,12 +1,12 @@
 
-define('momotion', [
+define('momo', [
     'mo/lang',
     'dollar',
-    'momotion/base',
-    'momotion/tap',
-    'momotion/swipe',
-    'momotion/drag',
-    'momotion/scroll'
+    'momo/base',
+    'momo/tap',
+    'momo/swipe',
+    'momo/drag',
+    'momo/scroll'
 ], function(_, $, momoBase,
     momoTap, momoSwipe, momoDrag, momoScroll){
 
