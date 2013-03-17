@@ -77,6 +77,14 @@ define('moui/modalview', [
             return self;
         },
 
+        setContent: function(html){
+            this.superClass.setContent.call(this, html);
+            if (html) {
+                this.event.fire('contentchange', [this]);
+            }
+            return this;
+        },
+
         _setIframeContent: function(){
             var self = this;
             this._clearIframeContent();
