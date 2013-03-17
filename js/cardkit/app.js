@@ -552,6 +552,8 @@ define([
             }, 400);
         },
 
+        openURL: open_url,
+
         control: control,
         picker: picker,
         modalCard: modalCard,
@@ -666,6 +668,16 @@ define([
             $(document).unbind('touchmove', delay_hide_topbar)
                 .unbind('touchend', delay_hide_topbar);
         }
+    }
+
+    function open_url(true_link){
+        pageSession.reset();
+        //var next_id = 'ckLoading';
+        //var next = ck.loadingCard;
+        //var current = ck.viewport;
+        //push_history(current[0].id, next_id, true_link);
+        //ck.changeView(next);
+        location.replace(true_link);
     }
 
     function check_gc(controller){

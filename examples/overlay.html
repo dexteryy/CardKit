@@ -17,7 +17,7 @@
     
 <header class="ck-header">
     
-<a class="ck-top-title" href="/">DEMO & DOCS</a>
+<a class="ck-top-title" href="index.html">DEMO & DOCS</a>
 <span class="opt ck-top-nav"><a class="btn" href="/"></a></span>
 <span class="opt ck-top-action"><button class="btn"></button></span>
 <span class="opt ck-top-create"></span>
@@ -41,7 +41,7 @@
             <header class="ckd-hd">Modal View</header>
             <div class="ckd-item">
                 <!--component-->
-                <button class="ck-modal-button" data-url="form.html" data-title="ajax">Open</button>
+                <button class="ck-modal-button" data-url="formcontent.html" data-title="ajax">Open</button>
                 <label>通过ajax接口加载内容</label>
                 <!--component end-->
             </div>
@@ -94,6 +94,17 @@
                     <input class="option" type="button" value="B">
                     <input class="option" type="button" value="C">
                     <input class="option" type="button" value="D">
+                </button>
+                <!--component end-->
+            </div>
+            <div class="ckd-item">
+                <!--component-->
+                <button class="ck-actions-button actions3"
+                        data-fluid="true">
+                    <span>Jump list</span>
+                    <a href="picker.html" class="option" target="_blank">picker.html</a>
+                    <a href="control.html" class="option" target="_blank">control.html</a>
+                    <a href="index.html" class="option" target="_blank">index.html</a>
                 </button>
                 <!--component end-->
             </div>
@@ -179,6 +190,11 @@ require([
             content: 'value: ' + result
         }).open();
     }
+
+    $('.actions3').bind('actionView:confirm', function(e){
+        var url = e.component.val();
+        ck.openURL(url);
+    });
 
 });
 </script>
