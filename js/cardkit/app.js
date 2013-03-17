@@ -112,6 +112,10 @@ define([
 
         '.ck-modal-button': open_modal_card,
 
+        '.ck-growl-button': function(){
+            growl(this).open();
+        },
+
         '.ck-actionview .content > article .option': function(){
             actionView.current.select(this);
         },
@@ -292,11 +296,16 @@ define([
             var startY,
                 hold_timer,
                 topbar_holded,
+                topbar_tips = growl({
+                    expires: -1,
+                    keepalive: true,
+                    content: '向下拖动显示地址栏'
+                }),
                 cancel_hold = function(){
                     clearTimeout(hold_timer);
                     if (topbar_holded) {
                         topbar_holded = false;
-                        growl.tip.close();
+                        topbar_tips.close();
                     }
                 };
             this.header.bind('touchstart', function(e){
@@ -304,9 +313,7 @@ define([
                 hold_timer = setTimeout(function(){
                     topbar_holded = true;
                     ck.viewport[0].scrollTop = 0;
-                    growl.tip.set({
-                        content: '向下拖动显示地址栏'
-                    }).open();
+                    topbar_tips.open();
                 }, 200);
             }).bind('touchmove', function(e){
                 clearTimeout(hold_timer);
@@ -527,7 +534,8 @@ define([
         control: control,
         picker: picker,
         modalCard: modalCard,
-        actionView: actionView 
+        actionView: actionView, 
+        growl: growl
 
     };
 

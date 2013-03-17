@@ -103,6 +103,14 @@
             <header class="ckd-hd">Growl</header>
             <div class="ckd-item">
                 <!--component-->
+                <button class="ck-growl-button"
+                    data-content="测试！">Tips A</button>
+                <!--component end-->
+                <!--component-->
+                <button class="ck-growl-button"
+                    data-expires="1000"
+                    data-corner="bottom"
+                    data-content="测试！">Tips B</button>
                 <!--component end-->
             </div>
         </div>
@@ -156,6 +164,10 @@ require([
     'cardkit/app'
 ], function($, ck){
 
+    var notify = ck.growl({
+        corner: 'bottom'
+    });
+
     $('.actions1').bind('actionView:confirm', when_confirm);
 
     $('.actions2').bind('actionView:confirm', when_confirm);
@@ -163,6 +175,9 @@ require([
     function when_confirm(e){
         var result = e.component.val();
         console.info('value: ', result);
+        notify.set({
+            content: 'value: ' + result
+        }).open();
     }
 
 });

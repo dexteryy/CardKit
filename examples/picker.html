@@ -150,12 +150,18 @@ require([
     'cardkit/app'
 ], function($, ck){
 
+    var notify = ck.growl({
+        corner: 'bottom'
+    });
+
     $('.picker1').bind('picker:change', show_result);
 
     $('.picker1').bind('picker:response', function(e){
         var result = e.component.responseData;
         console.info('response: ', result);
-        alert('response: ' + result);
+        notify.set({
+            content: 'response: ' + result
+        }).open();
     });
 
     $('.picker2').bind('picker:change', show_result);
@@ -165,6 +171,9 @@ require([
     function show_result(e){
         var result = e.component.val();
         console.info('value: ', result);
+        notify.set({
+            content: 'value: ' + result
+        }).open();
     }
 
     var action_picker = ck.picker($('.actions1-1'));
