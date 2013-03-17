@@ -39,7 +39,7 @@ define('moui/actionview', [
 
         _ns: NS,
         _template: TPL_VIEW,
-        _defaults: _.merge(default_config, ActionView.prototype._defaults),
+        _defaults: _.merge({}, default_config, ActionView.prototype._defaults),
 
         init: function(opt) {
             this.superClass.init.call(this, opt);
@@ -54,8 +54,7 @@ define('moui/actionview', [
         },
 
         set: function(opt) {
-            var self = this;
-            self.superClass.set.call(self, opt);
+            this.superClass.set.call(this, opt);
 
             if (opt.options) {
                 var options = $(opt.options).clone();
@@ -117,7 +116,7 @@ define('moui/actionview', [
                     self.confirm();
                 });
             }
-            this.superClass.open.call(this);
+            return this.superClass.open.call(this);
         },
 
         close: function(){

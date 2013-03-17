@@ -68,7 +68,6 @@ define('moui/overlay', [
             }
 
             return this;
-
         },
 
         setTitle: function(text){

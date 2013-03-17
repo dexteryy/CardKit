@@ -158,6 +158,10 @@ require([
     'cardkit/app' // need domready
 ], function($, ck){
 
+    var notify = ck.growl({
+        corner: 'bottom'
+    });
+
     $('.switch1').bind('control:enable', show_result);
 
     $('.post1').bind('control:enable', show_result);
@@ -170,7 +174,9 @@ require([
     function show_result(e){
         var result = e.component.responseData;
         console.info('response: ', result);
-        alert('response: ' + result);
+        notify.set({
+            content: 'response: ' + result
+        }).open();
     }
 
 });

@@ -1,11 +1,36 @@
 define([
+    'mo/lang',
+    'dollar',
     'moui/growl'
-], function(growl) {
+], function(_, $, growl) {
 
-    return {
+    var UID = '_ckGrowlUid',
     
-        tip: growl()
+        uid = 0,
+        lib = {};
 
-    };
+    function exports(elm, opt){
+        var id;
+        if (elm.nodeName) {
+            elm = $(elm);
+            opt = opt || {};
+            id = elm[0][UID];
+            if (id && lib[id]) {
+                lib[id].close();
+            }
+            id = elm[0][UID] = ++uid;
+            opt = _.mix({}, elm.data(), opt);
+        } else {
+            opt = elm || {};
+        }
+        opt.className = 'ck-growl';
+        var g = growl(opt);
+        if (id) {
+            lib[id] = g;
+        }
+        return g;
+    }
+
+    return exports;
 
 });
