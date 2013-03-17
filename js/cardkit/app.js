@@ -589,7 +589,9 @@ define([
         var current = ck.viewport;
         ck.globalMask.show();
         ck.showTopbar();
-        actionView.current.close();
+        if (actionView.current) {
+            actionView.current.close();
+        }
         choreo.transform(ck.wrapper[0], 'translateX', 0 - window.innerWidth + 'px');
         current.addClass('moving');
         prev.show();
