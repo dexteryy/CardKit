@@ -1,11 +1,6 @@
 .moui-slider {
     position:relative;
     display:inline-block;
-    height:25px;
-    width:125px;
-    background-image:inline-image('star_gray_50.png');
-    background-size:25px;
-    background-repeat:repeat-x;
     .slider-field {
         display:none;
     }
@@ -14,14 +9,5 @@
         display:none;
         position:absolute;
         left:0;
-        height:25px;
-        background-repeat:repeat-x;
-        background-size:25px;
-    }
-    .slider-selected {
-        background-image:inline-image('star_50.png');
-    }
-    .slider-hover {
-        background-image:inline-image('star_50.png');
     }
 }

@@ -8,12 +8,11 @@ define('moui/slider', [
     }
 
     Slider.prototype = {
-        init: function(elm, opt) {
+        init: function(elm) {
             var node = this._node = $(elm),
-                field,
-                hoverArea,
-                selectedArea,
-                self = this;
+                field;
+
+            this.event = event();
 
             if (node.data('init')) {
                 return;
@@ -21,70 +20,68 @@ define('moui/slider', [
                 node.data('init', true);
             }
 
-            opt = _.mix(this.data(), opt);
-
             this._field = field = node.find('.slider-field');
-            this._hoverArea = hoverArea = node.find('.slider-hover');
-            this._selectedArea = selectedArea = node.find('.slider-selected');
+            this._hoverArea = node.find('.slider-hover');
+            this._selectedArea = node.find('.slider-selected');
 
-            var step = field.attr('step'),
-                max = field.attr('max'),
-                min = field.attr('min');
+            this._step = field.attr('step'),
+            this._max = field.attr('max'),
+            this._min = field.attr('min');
 
-            var stepWidth = step * node.width() / (max - min);
+            this._stepWidth = this._step * node.width() / (this._max - this._min);
+        },
 
-            node.bind('touchmove', function(e) {
-                var score = calcRawScore(e),
-                    width = score * stepWidth;
+        calc: function(event) {
+            var pageX = (event.changedTouches) ? event.changedTouches[0].pageX : event.pageX,
+                node = this._node,
+                stepWidth = this._stepWidth,
+                step = this._step,
+                offsetX = pageX - node.offset().left;
 
-                if (hoverArea.data('width') != width) {
-                    selectedArea.hide();
-                    hoverArea.css({width: width})
-                        .show()
-                        .data('width', width);
-                }
-            });
-
-            node.bind('touchend', function(e) {
-                var score = calcRawScore(e);
-                self.val(score);
-            });
-
-            this._field.bind('change', function(e) {
-                var score = this.value;
-                hoverArea.hide();
-                selectedArea.css({width:score * stepWidth})
-                    .show();
-            });
-
-            function calcRawScore(event) {
-                var pageX = (event.changedTouches) ? event.changedTouches[0].pageX : event.pageX,
-                    offsetX = pageX - node.offset().left;
-
-                if (offsetX > node.width()) {
-                    offsetX = node.width();
-                } else if (offsetX < 0) {
-                    offsetX = 0;
-                }
-
-                return Math.ceil(offsetX / stepWidth);
+            if (offsetX > node.width()) {
+                offsetX = node.width();
+            } else if (offsetX < 0) {
+                offsetX = 0;
             }
+
+            return Math.ceil(offsetX / stepWidth) * step;
         },
 
         val: function(v) {
             if (this._field[0]) {
+                var returnValue = this._field.val(v);
                 if (v !== undefined) {
-                    this._field.trigger('change');
+                    this.event.fire('change');
                 }
-                return this._field.val(v);
+                return returnValue;
             }
         },
 
-        data: function() {
-            return this._node.data();
+        show: function(v) {
+            var stepWidth = this._stepWidth,
+                selectedArea = this._selectedArea,
+                hoverArea = this._hoverArea;
+
+            hoverArea.hide();
+            selectedArea.css({width:v * stepWidth})
+                .show();
+        },
+
+        pretend: function(v) {
+            var stepWidth = this._stepWidth,
+                selectedArea = this._selectedArea,
+                hoverArea = this._hoverArea;
+
+            var width = v * stepWidth;
+
+            if (hoverArea.data('width') != width) {
+                selectedArea.hide();
+                hoverArea.css({width: width})
+                    .show()
+                    .data('width', width);
+            }
         }
     };
-
 
     function exports(elm, opt){
         return new exports.Slider(elm, opt);
