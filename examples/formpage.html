@@ -32,9 +32,9 @@
 console.info('iframe loaded');
 parent.require([
     'dollar', 
-    'cardkit/view/modalview'
-], function($, modal){
-    modal.event.once('confirm', function(modal, done){
+    'cardkit/app'
+], function($, ck){
+    ck.modalCard.event.once('confirm', function(modal, done){
         modal.showLoading();
         $('#iframeForm1', document).bind('submit', function(e){
             console.info(e, this)

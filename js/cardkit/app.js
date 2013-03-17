@@ -193,6 +193,12 @@ define([
                         isModal: true
                     });
                 });
+            } else if (!modalCard._content.html()) { // @TODO 换更靠谱的方法
+                modalCard.event.done('contentchange', function(){
+                    ck.initView(current, {
+                        isModal: true
+                    });
+                });
             }
             modalCard._content.css('minHeight', h + 'px');
             modalCard.event.once('close', function(){
