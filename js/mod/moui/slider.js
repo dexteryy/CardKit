@@ -3,10 +3,6 @@ define('moui/slider', [
     'dollar',
     'eventmaster'
 ], function(_, $, event) {
-    var default_config = {
-        starwidth: 25
-    };
-
     function Slider(elm, opt) {
         this.init(elm, opt);
     }
@@ -14,6 +10,7 @@ define('moui/slider', [
     Slider.prototype = {
         init: function(elm, opt) {
             var node = this._node = $(elm),
+                field,
                 hoverArea,
                 selectedArea,
                 self = this;
@@ -26,13 +23,19 @@ define('moui/slider', [
 
             opt = _.mix(this.data(), opt);
 
-            this._field = node.find('.slider-field');
+            this._field = field = node.find('.slider-field');
             this._hoverArea = hoverArea = node.find('.slider-hover');
             this._selectedArea = selectedArea = node.find('.slider-selected');
 
+            var step = field.attr('step'),
+                max = field.attr('max'),
+                min = field.attr('min');
+
+            var stepWidth = step * node.width() / (max - min);
+
             node.bind('touchmove', function(e) {
                 var score = calcRawScore(e),
-                    width = score * opt.starwidth;
+                    width = score * stepWidth;
 
                 if (hoverArea.data('width') != width) {
                     selectedArea.hide();
@@ -50,7 +53,7 @@ define('moui/slider', [
             this._field.bind('change', function(e) {
                 var score = this.value;
                 hoverArea.hide();
-                selectedArea.css({width:score * opt.starwidth})
+                selectedArea.css({width:score * stepWidth})
                     .show();
             });
 
@@ -64,13 +67,16 @@ define('moui/slider', [
                     offsetX = 0;
                 }
 
-                return Math.ceil(offsetX / opt.starwidth);
+                return Math.ceil(offsetX / stepWidth);
             }
         },
 
         val: function(v) {
             if (this._field[0]) {
-                return this._field.val(v).trigger('change');
+                if (v !== undefined) {
+                    this._field.trigger('change');
+                }
+                return this._field.val(v);
             }
         },
 
@@ -84,7 +90,7 @@ define('moui/slider', [
         return new exports.Slider(elm, opt);
     }
 
-    exports.Slider= Slider;
+    exports.Slider = Slider;
 
     return exports;
 
