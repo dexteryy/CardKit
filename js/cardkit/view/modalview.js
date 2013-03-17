@@ -35,7 +35,11 @@ define([
 
         if (opt.source) {
             opt.content = $('.' + opt.source).map(function(elm){
-                return elm.innerHTML;
+                if ($(elm).attr('type') === 'text/jscode') {
+                    return '<script>' + elm.innerHTML + '</script>';
+                } else {
+                    return elm.innerHTML;
+                }
             }).join('');
         }
 

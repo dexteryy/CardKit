@@ -108,6 +108,9 @@ define('moui/modalview', [
                     + '</iframe>')
                 .bind('load', function(){
                     try {
+                        if (!this.contentWindow.document.body.innerHTML) {
+                            return;
+                        }
                         self._iframeWindow = $(this.contentWindow);
                         if (!self._iframeContent
                             && self._iframeWindow[0].location.href !== self._config.iframe) {
@@ -142,6 +145,7 @@ define('moui/modalview', [
 
         close: function(){
             this.clearIframeContent();
+            this._contentWrapper[0].scrollTop = 0;
             return this.superClass.close.call(this);
         },
 
