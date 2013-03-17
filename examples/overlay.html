@@ -69,7 +69,7 @@
             <header class="ckd-hd">Action View</header>
             <div class="ckd-item">
                 <!--component-->
-                <button class="ck-actions-button"
+                <button class="ck-actions-button actions1"
                         data-fluid="true"
                         data-title="选择排序方式">
                     <span>Order by default</span>
@@ -82,7 +82,7 @@
             </div>
             <div class="ckd-item">
                 <!--component-->
-                <button class="ck-actions-button"
+                <button class="ck-actions-button actions2"
                         data-fluid="true"
                         data-multiselect="true"
                         data-confirm-text="继续"
@@ -156,10 +156,14 @@ require([
     'cardkit/app'
 ], function($, ck){
 
-    ck.actionCard.event.bind('confirm', function(card){
-        var result = card.val();
+    $('.actions1').bind('actionView:confirm', when_confirm);
+
+    $('.actions2').bind('actionView:confirm', when_confirm);
+
+    function when_confirm(e){
+        var result = e.component.val();
         console.info('value: ', result);
-    });
+    }
 
 });
 </script>

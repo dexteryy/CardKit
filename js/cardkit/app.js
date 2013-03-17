@@ -12,7 +12,7 @@ define([
     './view/control',
     './view/picker',
     './view/modalcard',
-    './view/actioncard',
+    './view/actionview',
     './view/growl',
     './bus',
     './pagesession',
@@ -20,7 +20,7 @@ define([
     'mo/domready'
 ], function($, _, tpl, soviet, choreo, 
     momoBase, momoTap, momoSwipe, momoDrag, momoScroll, 
-    control, picker, modalCard, actionCard, growl,
+    control, picker, modalCard, actionView, growl,
     bus, pageSession, render){
 
     var window = this,
@@ -107,22 +107,22 @@ define([
                 multiselect: false
             }, me.data());
             opt.options = $(opt.options || '.option', me);
-            actionCard.set(opt).open();
+            actionView(me, opt).open();
         },
 
         '.ck-modal-button': open_modal_card,
         '.ck-modal-link': open_modal_card,
 
         '.ck-actionview .content > article .option': function(){
-            actionCard.select(this);
+            actionView.current.select(this);
         },
 
         '.ck-actionview > footer .confirm': function(){
-            actionCard.confirm();
+            actionView.current.confirm();
         },
 
         '.ck-actionview > footer .cancel': function(){
-            actionCard.cancel();
+            actionView.current.cancel();
         },
 
         '.ck-modalview .wrapper > header .confirm': function(){
@@ -198,7 +198,7 @@ define([
         }, 200);
     });
 
-    actionCard.event.bind('open', function(actionCard){
+    bus.bind('actionView:open', function(actionCard){
         ck.disableView = true;
         var prev = ck.viewport,
             current = actionCard._wrapper;
@@ -528,7 +528,7 @@ define([
         control: control,
         picker: picker,
         modalCard: modalCard,
-        actionCard: actionCard 
+        actionView: actionView 
 
     };
 
@@ -590,7 +590,7 @@ define([
         var current = ck.viewport;
         ck.globalMask.show();
         ck.showTopbar();
-        actionCard.close();
+        actionView.current.close();
         choreo.transform(ck.wrapper[0], 'translateX', 0 - window.innerWidth + 'px');
         current.addClass('moving');
         prev.show();
