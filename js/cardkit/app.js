@@ -11,6 +11,7 @@ define([
     'momotion/scroll',
     './view/control',
     './view/picker',
+    './view/stars',
     './view/modalcard',
     './view/actionview',
     './view/growl',
@@ -20,7 +21,7 @@ define([
     'mo/domready'
 ], function($, _, tpl, soviet, choreo, 
     momoBase, momoTap, momoSwipe, momoDrag, momoScroll, 
-    control, picker, modalCard, actionView, growl,
+    control, picker, stars, modalCard, actionView, growl,
     bus, pageSession, render){
 
     var window = this,
@@ -162,6 +163,12 @@ define([
         mark_gc(controller);
     } 
 
+    function respond_stars(e, method) {
+        var rater = stars(this),
+            score = rater.calc(e);
+        rater[method](score);
+    }
+
     function mark_gc(com){
         if (!com.parentId) {
             com.parentId = ++gc_id;
@@ -217,7 +224,7 @@ define([
         });
         var h = current[0].offsetHeight;
         actionCard._wrapperContent.css({
-            height: h + 'px',
+            height: h + 'px'
         });
         actionCard._node.css({
             height: h + 'px'
@@ -266,7 +273,21 @@ define([
             }).on('click', {
                 'a': nothing,
                 'a *': nothing
-            }).on('tap', tap_events);
+            }).on('tap', tap_events).on('touchend', {
+                '.ck-stars': function(e) {
+                    respond_stars.call(this, e, 'val');
+                },
+                '.ck-stars .slider-selected': function(e) {
+                    respond_stars.call(this.parentNode, e, 'val');
+                }
+            }).on('touchmove', {
+                '.ck-stars': function(e) {
+                    respond_stars.call(this, e, 'pretend');
+                },
+                '.ck-stars .slider-selected': function(e) {
+                    respond_stars.call(this.parentNode, e, 'pretend');
+                }
+            });
 
             $(document).bind('scrolldown', function(){
                 if (topbar_holded) {
