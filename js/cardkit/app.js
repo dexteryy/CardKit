@@ -111,6 +111,7 @@ define([
         },
 
         '.ck-modal-button': open_modal_card,
+        '.ck-modal-link': open_modal_card,
 
         '.ck-growl-button': function(){
             growl(this).open();

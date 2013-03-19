@@ -468,7 +468,7 @@
       margin:0 0 $space 0;
     }
 
-    input[type="text"], textarea {
+    input[type="text"], input[type="number"], textarea {
       font-size:$title_size;
       color:$desc_color;
       text-indent:10px;
@@ -479,6 +479,10 @@
       border:1px solid rgb(185,185,185);
       @include box-shadow(inset 0px 2px 3px 0px rgba(0,0,0,0.15));
       @include border-radius($radius);
+    }
+    
+    input[type="number"] {
+        width: 80px;
     }
 
     textarea {
