@@ -1,0 +1,13 @@
+.moui-slider {
+    position:relative;
+    display:inline-block;
+    .slider-field {
+        display:none;
+    }
+    .slider-selected,
+    .slider-hover {
+        display:none;
+        position:absolute;
+        left:0;
+    }
+}

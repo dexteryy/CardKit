@@ -24,11 +24,14 @@
 
 .ck-actions-button {
   @extend %button;
-
+  span {
+    background:$folder_icon no-repeat right center;
+    background-size:10px;
+    padding-right: 20px;
+  }
   .option {
     display:none;
   }
-
 }
 
 .ck-growl-button {
