@@ -16,7 +16,6 @@ A mobile UI framework provides building blocks which are classified as "Card", "
 
 1. `npm install`
 2. `bundle install`
-<!--3. `istatic pull`-->
 
 ### Build and use in your mobile project
 
