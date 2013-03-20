@@ -178,7 +178,7 @@ define([
 
     modalCard.event.bind('open', function(modalCard){
         ck.disableView = true;
-        ck.showTopbar();
+        //ck.showTopbar();
         $(body).addClass('bg').addClass('modal-view');
         setTimeout(function(){
             choreo.transform(modalCard._wrapper[0], 'translateY', '0');
@@ -296,14 +296,14 @@ define([
                 setTimeout(function(){
                     ck.hideAddressbar();
                 }, 0);
-                if (ck.viewport[0].scrollTop >= ck.headerHeight) {
-                    ck.hideTopbar();
-                } else {
-                    $(document).bind('touchmove', delay_hide_topbar)
-                        .bind('touchend', delay_hide_topbar);
-                }
-            }).bind('scrollup', function(){
-                ck.showTopbar();
+                //if (ck.viewport[0].scrollTop >= ck.headerHeight) {
+                    //ck.hideTopbar();
+                //} else {
+                    //$(document).bind('touchmove', delay_hide_topbar)
+                        //.bind('touchend', delay_hide_topbar);
+                //}
+            //}).bind('scrollup', function(){
+                //ck.showTopbar();
             }).bind('scrollstart', function(){
                 ck.globalMask.show();
             }).bind('scrollend', function(){
@@ -602,7 +602,7 @@ define([
             push_history(current[0].id, next_id, true_link);
         }
         ck.globalMask.show();
-        ck.showTopbar();
+        //ck.showTopbar();
         next.addClass('moving');
         ck.changeView(next);
         choreo().play().actor(ck.wrapper[0], {
@@ -626,7 +626,7 @@ define([
         var prev = $('#' + prev_id);
         var current = ck.viewport;
         ck.globalMask.show();
-        ck.showTopbar();
+        //ck.showTopbar();
         if (actionView.current) {
             actionView.current.close();
         }
@@ -669,13 +669,13 @@ define([
         }
     }
 
-    function delay_hide_topbar(){
-        if (ck.viewport[0].scrollTop >= ck.headerHeight) {
-            ck.hideTopbar();
-            $(document).unbind('touchmove', delay_hide_topbar)
-                .unbind('touchend', delay_hide_topbar);
-        }
-    }
+    //function delay_hide_topbar(){
+        //if (ck.viewport[0].scrollTop >= ck.headerHeight) {
+            //ck.hideTopbar();
+            //$(document).unbind('touchmove', delay_hide_topbar)
+                //.unbind('touchend', delay_hide_topbar);
+        //}
+    //}
 
     function open_url(true_link){
         pageSession.reset();
