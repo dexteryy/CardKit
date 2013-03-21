@@ -27,8 +27,12 @@ define([
             content: unit[0].innerHTML + (contents || ''),
             hd: custom_hd.html === undefined ? hd.html : custom_hd.html,
             hd_url: custom_hd.href || custom_hd.href !== null && hd.href,
-            ft: custom_ft.html === undefined ? ft.html : custom_ft.html
+            ft: custom_ft.html === undefined ? ft.html 
+                : (custom_ft.html || (config.plain || config.paper) && ' ')
         };
+        if (data.content && /\S/.test(data.content)){
+            data.hasContent = true;
+        }
         return data;
     }
 

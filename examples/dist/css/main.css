@@ -521,13 +521,15 @@ a {
 }
 
 .ck-box-unit:not([data-cfg-paper]) > article > header {
-  margin-bottom: 14px;
+  border-bottom: 0;
 }
 .ck-box-unit:not([data-cfg-paper]) > article > footer {
   margin-top: 14px;
 }
 .ck-box-unit > article > section {
-  padding: 0 20px;
+  border-top: 1px solid #dadada;
+  margin: 0 20px;
+  padding: 14px 0 0 0;
   font-size: 13px;
 }
 .ck-box-unit > article > section:first-child {
@@ -550,13 +552,18 @@ a {
 }
 .ck-box-unit[data-cfg-plain] > article > header {
   padding: 0;
+  margin-left: 0;
+  margin-right: 0;
 }
 .ck-box-unit[data-cfg-plain] > article > footer {
   padding: 0;
+  margin-left: 0;
+  margin-right: 0;
 }
 .ck-box-unit[data-cfg-plain] > article > section {
-  padding-top: 0;
-  padding-bottom: 0;
+  margin: 0;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 .ck-box-unit[data-cfg-paper] {
   margin: 15px;

@@ -85,7 +85,7 @@
     @extend %ck-unit;
 
     & > article > header {
-      margin-bottom:(28px/2);
+      border-bottom:0;
     }
 
     & > article > footer {
@@ -95,7 +95,9 @@
   }
 
   & > article > section {
-    padding:0 $text_space;
+    border-top:1px solid $border_color;
+    margin:0 $text_space;
+    padding:(28px/2) 0 0 0;
     font-size:$title_size;
 
     &:first-child {
@@ -117,15 +119,20 @@
 
     & > article > header {
       padding:0;
+      margin-left:0;
+      margin-right:0;
     }
 
     & > article > footer {
       padding:0;
+      margin-left:0;
+      margin-right:0;
     }
 
     & > article > section {
-      padding-top:0;
-      padding-bottom:0;
+      margin:0;
+      padding-left:$text_space;
+      padding-right:$text_space;
     }
 
   }

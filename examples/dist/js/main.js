@@ -2165,8 +2165,12 @@ define("../cardkit/parser/box", [
             content: unit[0].innerHTML + (contents || ''),
             hd: custom_hd.html === undefined ? hd.html : custom_hd.html,
             hd_url: custom_hd.href || custom_hd.href !== null && hd.href,
-            ft: custom_ft.html === undefined ? ft.html : custom_ft.html
+            ft: custom_ft.html === undefined ? ft.html 
+                : (custom_ft.html || (config.plain || config.paper) && ' ')
         };
+        if (data.content && /\S/.test(data.content)){
+            data.hasContent = true;
+        }
         return data;
     }
 
@@ -2223,7 +2227,7 @@ define("../cardkit/tpl/unit/list", [], function(){
 
 define("../cardkit/tpl/unit/box", [], function(){
 
-    return {"template":"\n<article>\n\n    {% if (data.hd) { %}\n    <header>\n        {% if (data.hd_url) { %}\n        <a href=\"{%= data.hd_url %}\" class=\"ck-link\">{%= data.hd %}</a>\n        {% } else { %}\n        <span>{%= data.hd %}</span>\n        {% } %}\n    </header>\n    {% } %}\n\n    <section>{%= data.content %}</section>\n\n    {% if (data.ft) { %}\n    <footer>{%= data.ft %}</footer>\n    {% } %}\n\n</article>\n"}; 
+    return {"template":"\n<article>\n\n    {% if (data.hd) { %}\n    <header>\n        {% if (data.hd_url) { %}\n        <a href=\"{%= data.hd_url %}\" class=\"ck-link\">{%= data.hd %}</a>\n        {% } else { %}\n        <span>{%= data.hd %}</span>\n        {% } %}\n    </header>\n    {% } %}\n\n    {% if (data.hasContent) { %}\n    <section>{%= data.content %}</section>\n    {% } %}\n\n    {% if (data.ft) { %}\n    <footer>{%= data.ft %}</footer>\n    {% } %}\n\n</article>\n"}; 
 
 });
 /* @source mo/template/string.js */;
@@ -6331,7 +6335,7 @@ define("../cardkit/app", [
 
     modalCard.event.bind('open', function(modalCard){
         ck.disableView = true;
-        ck.showTopbar();
+        //ck.showTopbar();
         $(body).addClass('bg').addClass('modal-view');
         setTimeout(function(){
             choreo.transform(modalCard._wrapper[0], 'translateY', '0');
@@ -6449,14 +6453,14 @@ define("../cardkit/app", [
                 setTimeout(function(){
                     ck.hideAddressbar();
                 }, 0);
-                if (ck.viewport[0].scrollTop >= ck.headerHeight) {
-                    ck.hideTopbar();
-                } else {
-                    $(document).bind('touchmove', delay_hide_topbar)
-                        .bind('touchend', delay_hide_topbar);
-                }
-            }).bind('scrollup', function(){
-                ck.showTopbar();
+                //if (ck.viewport[0].scrollTop >= ck.headerHeight) {
+                    //ck.hideTopbar();
+                //} else {
+                    //$(document).bind('touchmove', delay_hide_topbar)
+                        //.bind('touchend', delay_hide_topbar);
+                //}
+            //}).bind('scrollup', function(){
+                //ck.showTopbar();
             }).bind('scrollstart', function(){
                 ck.globalMask.show();
             }).bind('scrollend', function(){
@@ -6755,7 +6759,7 @@ define("../cardkit/app", [
             push_history(current[0].id, next_id, true_link);
         }
         ck.globalMask.show();
-        ck.showTopbar();
+        //ck.showTopbar();
         next.addClass('moving');
         ck.changeView(next);
         choreo().play().actor(ck.wrapper[0], {
@@ -6779,7 +6783,7 @@ define("../cardkit/app", [
         var prev = $('#' + prev_id);
         var current = ck.viewport;
         ck.globalMask.show();
-        ck.showTopbar();
+        //ck.showTopbar();
         if (actionView.current) {
             actionView.current.close();
         }
@@ -6822,13 +6826,13 @@ define("../cardkit/app", [
         }
     }
 
-    function delay_hide_topbar(){
-        if (ck.viewport[0].scrollTop >= ck.headerHeight) {
-            ck.hideTopbar();
-            $(document).unbind('touchmove', delay_hide_topbar)
-                .unbind('touchend', delay_hide_topbar);
-        }
-    }
+    //function delay_hide_topbar(){
+        //if (ck.viewport[0].scrollTop >= ck.headerHeight) {
+            //ck.hideTopbar();
+            //$(document).unbind('touchmove', delay_hide_topbar)
+                //.unbind('touchend', delay_hide_topbar);
+        //}
+    //}
 
     function open_url(true_link){
         pageSession.reset();

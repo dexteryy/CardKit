@@ -11,7 +11,9 @@
     </header>
     {% } %}
 
+    {% if (data.hasContent) { %}
     <section>{%= data.content %}</section>
+    {% } %}
 
     {% if (data.ft) { %}
     <footer>{%= data.ft %}</footer>
