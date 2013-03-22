@@ -6,7 +6,14 @@ define('momo/base', [
 ], function(es5, type, _){
 
     var isFunction = type.isFunction,
-        gid = 0;
+        gid = 0,
+
+        SUPPORT_TOUCH = false;
+
+    try {
+        document.createEvent("TouchEvent");  
+        SUPPORT_TOUCH = true;
+    } catch (e) {}
 
     function MomoBase(elm, opt, cb){
         if (!opt || isFunction(opt)) {
@@ -29,9 +36,9 @@ define('momo/base', [
 
     MomoBase.prototype = {
 
-        PRESS: 'touchstart',
-        MOVE: 'touchmove',
-        RELEASE: 'touchend',
+        PRESS: SUPPORT_TOUCH ? 'touchstart' : 'mousedown',
+        MOVE: SUPPORT_TOUCH ? 'touchmove' : 'mousemove',
+        RELEASE: SUPPORT_TOUCH ? 'touchend' : 'mouseup',
         //CANCEL: 'touchcancel',
 
         EVENTS: [],
