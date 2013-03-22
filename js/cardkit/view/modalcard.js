@@ -10,6 +10,9 @@ define([
         origin_set = modalCard.set;
 
     modalCard.set = function(opt){
+        if (!opt) {
+            return this;
+        }
         var self = this,
             url = opt.jsonUrl || opt.url;
         if (url) {

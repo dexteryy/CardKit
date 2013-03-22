@@ -41,7 +41,9 @@ define('moui/control', [
         },
 
         set: function(opt){
-            opt = opt || {};
+            if (!opt) {
+                return this;
+            }
             _.mix(this._config, opt);
             this.setNodes(opt);
             return this;

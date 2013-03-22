@@ -26,12 +26,14 @@ define([
 
     function exports(elm, opt){
         elm = $(elm);
-        opt = opt || {};
         var id = elm[0][UID];
         if (id && lib[id]) {
             return lib[id].set(opt);
         }
         id = elm[0][UID] = ++uid;
+        opt = _.mix({
+            options: '.ck-option'
+        }, opt || {});
         var p = lib[id] = picker(elm, opt);
 
         p.event.bind('change', function(p, controller){

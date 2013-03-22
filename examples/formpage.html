@@ -37,7 +37,6 @@ parent.require([
     ck.modalCard.event.once('confirm', function(modal, done){
         modal.showLoading();
         $('#iframeForm1', document).bind('submit', function(e){
-            console.info(e, this)
             modal.hideLoading();
         }).trigger('submit');
     });

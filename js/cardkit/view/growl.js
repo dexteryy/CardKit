@@ -13,7 +13,6 @@ define([
         var id;
         if (elm.nodeName) {
             elm = $(elm);
-            opt = opt || {};
             id = elm[0][UID];
             if (id && lib[id]) {
                 lib[id].close();

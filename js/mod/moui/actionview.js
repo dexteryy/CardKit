@@ -54,6 +54,9 @@ define('moui/actionview', [
         },
 
         set: function(opt) {
+            if (!opt) {
+                return this;
+            }
             this.superClass.set.call(this, opt);
 
             if (opt.options) {

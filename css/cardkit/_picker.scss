@@ -5,10 +5,16 @@
 
 .ck-segment {
   @extend .moui-segment;
+  .ck-option {
+    @extend .option;
+  }
 }
 
 .ck-tagselector {
   @extend .moui-tagselector;
+  .ck-option {
+    @extend .option;
+  }
 }
 
 .ck-actions {

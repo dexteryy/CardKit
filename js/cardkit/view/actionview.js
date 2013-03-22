@@ -12,13 +12,13 @@ define([
 
     function exports(elm, opt){
         elm = $(elm);
-        opt = opt || {};
-        opt.className = 'ck-actionview';
         var id = elm[0][UID];
         if (id && lib[id]) {
             return lib[id].set(opt);
         }
         id = elm[0][UID] = ++uid;
+        opt = opt || {};
+        opt.className = 'ck-actionview';
         var view = lib[id] = actionView(opt);
         var eprops = {
             component: view

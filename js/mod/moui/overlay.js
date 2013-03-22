@@ -52,7 +52,9 @@ define('moui/overlay', [
         },
 
         set: function(opt) {
-            opt = opt || {};
+            if (!opt) {
+                return this;
+            }
             _.config(this._config, opt, this._defaults);
 
             if (typeof opt.title === 'string') {

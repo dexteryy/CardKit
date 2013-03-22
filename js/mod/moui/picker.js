@@ -36,7 +36,9 @@ define('moui/picker', [
         },
 
         set: function(opt){
-            opt = opt || {};
+            if (!opt) {
+                return this;
+            }
             _.mix(this._config, opt);
 
             if (opt.multiselect !== undefined) {

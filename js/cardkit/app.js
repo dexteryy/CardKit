@@ -73,19 +73,19 @@ define([
             toggle_control.call(this);
         },
 
-        '.ck-segment .option': function(){
+        '.ck-segment .ck-option': function(){
             var p = picker(this.parentNode, {
                 ignoreRepeat: true
             });
             p.select(this);
         },
 
-        '.ck-tagselector .option': function(){
+        '.ck-tagselector .ck-option': function(){
             var p = picker(this.parentNode);
             p.select(this);
         },
 
-        '.ck-actions .option': function(){
+        '.ck-actions .ck-option': function(){
             var actions = $(this).closest('.ck-actions');
             var p = picker(actions, {
                 ignoreStatus: actions.data("ignoreStatus") !== 'false' && true
@@ -107,7 +107,7 @@ define([
                 cancelText: '取消',
                 multiselect: false
             }, me.data());
-            opt.options = $(opt.options || '.option', me);
+            opt.options = $(opt.options || '.ck-option', me);
             actionView(me, opt).open();
         },
 
@@ -118,7 +118,7 @@ define([
             growl(this).open();
         },
 
-        '.ck-actionview .content > article .option': function(){
+        '.ck-actionview article > .ck-option': function(){
             actionView.current.select(this);
         },
 
@@ -582,7 +582,10 @@ define([
             if ($(me).hasClass('ck-link')) {
                 next_id = (me.href.replace(location.href, '')
                     .match(/^#(.+)/) || [])[1];
-            } else if ($(me).attr('target')) {
+            } else if (/^ck-\w+/.test(me.className)) {
+                return;
+            } else if (me.target) {
+                open_url(me.href, me);
                 return;
             }
         }
@@ -677,14 +680,14 @@ define([
         //}
     //}
 
-    function open_url(true_link){
-        pageSession.reset();
-        //var next_id = 'ckLoading';
-        //var next = ck.loadingCard;
-        //var current = ck.viewport;
-        //push_history(current[0].id, next_id, true_link);
-        //ck.changeView(next);
-        location.replace(true_link);
+    function open_url(true_link, opt){
+        opt = opt || {};
+        if (opt.target) {
+            window.open(true_link, opt.target);
+        } else {
+            pageSession.reset();
+            location.replace(true_link);
+        }
     }
 
     function check_gc(controller){

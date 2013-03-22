@@ -49,6 +49,9 @@ define('moui/modalview', [
         },
 
         set: function(opt) {
+            if (!opt) {
+                return this;
+            }
             var self = this;
             self.superClass.set.call(self, opt);
 

@@ -2958,7 +2958,9 @@ define('moui/overlay', [
         },
 
         set: function(opt) {
-            opt = opt || {};
+            if (!opt) {
+                return this;
+            }
             _.config(this._config, opt, this._defaults);
 
             if (typeof opt.title === 'string') {
@@ -3136,7 +3138,6 @@ define("../cardkit/view/growl", [
         var id;
         if (elm.nodeName) {
             elm = $(elm);
-            opt = opt || {};
             id = elm[0][UID];
             if (id && lib[id]) {
                 lib[id].close();
@@ -3203,7 +3204,9 @@ define('moui/control', [
         },
 
         set: function(opt){
-            opt = opt || {};
+            if (!opt) {
+                return this;
+            }
             _.mix(this._config, opt);
             this.setNodes(opt);
             return this;
@@ -3357,7 +3360,9 @@ define('moui/picker', [
         },
 
         set: function(opt){
-            opt = opt || {};
+            if (!opt) {
+                return this;
+            }
             _.mix(this._config, opt);
 
             if (opt.multiselect !== undefined) {
@@ -3648,6 +3653,9 @@ define('moui/actionview', [
         },
 
         set: function(opt) {
+            if (!opt) {
+                return this;
+            }
             this.superClass.set.call(this, opt);
 
             if (opt.options) {
@@ -3758,13 +3766,13 @@ define("../cardkit/view/actionview", [
 
     function exports(elm, opt){
         elm = $(elm);
-        opt = opt || {};
-        opt.className = 'ck-actionview';
         var id = elm[0][UID];
         if (id && lib[id]) {
             return lib[id].set(opt);
         }
         id = elm[0][UID] = ++uid;
+        opt = opt || {};
+        opt.className = 'ck-actionview';
         var view = lib[id] = actionView(opt);
         var eprops = {
             component: view
@@ -3840,6 +3848,9 @@ define('moui/modalview', [
         },
 
         set: function(opt) {
+            if (!opt) {
+                return this;
+            }
             var self = this;
             self.superClass.set.call(self, opt);
 
@@ -4287,6 +4298,9 @@ define("../cardkit/view/modalcard", [
         origin_set = modalCard.set;
 
     modalCard.set = function(opt){
+        if (!opt) {
+            return this;
+        }
         var self = this,
             url = opt.jsonUrl || opt.url;
         if (url) {
@@ -4502,12 +4516,14 @@ define("../cardkit/view/picker", [
 
     function exports(elm, opt){
         elm = $(elm);
-        opt = opt || {};
         var id = elm[0][UID];
         if (id && lib[id]) {
             return lib[id].set(opt);
         }
         id = elm[0][UID] = ++uid;
+        opt = _.mix({
+            options: '.ck-option'
+        }, opt || {});
         var p = lib[id] = picker(elm, opt);
 
         p.event.bind('change', function(p, controller){
@@ -4620,7 +4636,6 @@ define("../cardkit/view/control", [
 
     function exports(elm, opt){
         elm = $(elm);
-        opt = opt || {};
         var id = elm[0][UID];
         if (id && lib[id]) {
             return lib[id].set(opt);
@@ -6239,19 +6254,19 @@ define("../cardkit/app", [
             toggle_control.call(this);
         },
 
-        '.ck-segment .option': function(){
+        '.ck-segment .ck-option': function(){
             var p = picker(this.parentNode, {
                 ignoreRepeat: true
             });
             p.select(this);
         },
 
-        '.ck-tagselector .option': function(){
+        '.ck-tagselector .ck-option': function(){
             var p = picker(this.parentNode);
             p.select(this);
         },
 
-        '.ck-actions .option': function(){
+        '.ck-actions .ck-option': function(){
             var actions = $(this).closest('.ck-actions');
             var p = picker(actions, {
                 ignoreStatus: actions.data("ignoreStatus") !== 'false' && true
@@ -6273,7 +6288,7 @@ define("../cardkit/app", [
                 cancelText: '取消',
                 multiselect: false
             }, me.data());
-            opt.options = $(opt.options || '.option', me);
+            opt.options = $(opt.options || '.ck-option', me);
             actionView(me, opt).open();
         },
 
@@ -6284,7 +6299,7 @@ define("../cardkit/app", [
             growl(this).open();
         },
 
-        '.ck-actionview .content > article .option': function(){
+        '.ck-actionview article > .ck-option': function(){
             actionView.current.select(this);
         },
 
@@ -6748,7 +6763,10 @@ define("../cardkit/app", [
             if ($(me).hasClass('ck-link')) {
                 next_id = (me.href.replace(location.href, '')
                     .match(/^#(.+)/) || [])[1];
-            } else if ($(me).attr('target')) {
+            } else if (/^ck-\w+/.test(me.className)) {
+                return;
+            } else if (me.target) {
+                open_url(me.href, me);
                 return;
             }
         }
@@ -6843,14 +6861,14 @@ define("../cardkit/app", [
         //}
     //}
 
-    function open_url(true_link){
-        pageSession.reset();
-        //var next_id = 'ckLoading';
-        //var next = ck.loadingCard;
-        //var current = ck.viewport;
-        //push_history(current[0].id, next_id, true_link);
-        //ck.changeView(next);
-        location.replace(true_link);
+    function open_url(true_link, opt){
+        opt = opt || {};
+        if (opt.target) {
+            window.open(true_link, opt.target);
+        } else {
+            pageSession.reset();
+            location.replace(true_link);
+        }
     }
 
     function check_gc(controller){
