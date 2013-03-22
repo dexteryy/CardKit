@@ -1941,7 +1941,7 @@ define("../cardkit/parser/form", [
     function get_hd(source, custom){
         source = $(source);
         var data = source && {
-            html: util.getText(source),
+            html: util.getInnerHTML(source),
             href: util.getHref(source)
         } || {};
         if (custom && typeof custom === 'object') {
@@ -1968,7 +1968,7 @@ define("../cardkit/parser/mini", [
   "../cardkit/parser/util"
 ], function($, _, util){
     
-    var getText = util.getText;
+    var getInnerHTML = util.getInnerHTML;
 
     function exports(unit, raw){
         unit = $(unit);
@@ -2000,12 +2000,12 @@ define("../cardkit/parser/mini", [
         var title = item.find('.ckd-title'),
             author = item.find('.ckd-author');
         var data = {
-            title: getText(title),
+            title: getInnerHTML(title),
             href: util.getHref(title),
-            author: getText(author),
+            author: getInnerHTML(author),
             author_url: util.getHref(author),
-            info: getText(item.find('.ckd-info')),
-            subtitle: getText(item.find('.ckd-subtitle')),
+            info: getInnerHTML(item.find('.ckd-info')),
+            subtitle: getInnerHTML(item.find('.ckd-subtitle')),
             meta: item.find('.ckd-meta').map(function(node){
                 return node.innerHTML;
             }),
@@ -2026,7 +2026,7 @@ define("../cardkit/parser/mini", [
     function get_hd(source, custom){
         source = $(source);
         var data = source && {
-            html: getText(source),
+            html: getInnerHTML(source),
             href: util.getHref(source)
         } || {};
         if (custom && typeof custom === 'object') {
@@ -2053,7 +2053,7 @@ define("../cardkit/parser/list", [
   "../cardkit/parser/util"
 ], function($, _, util){
     
-    var getText = util.getText;
+    var getInnerHTML = util.getInnerHTML;
 
     function exports(unit, raw){
         unit = $(unit);
@@ -2089,11 +2089,11 @@ define("../cardkit/parser/list", [
             title = item;
         }
         var data = {
-            title: getText(title),
+            title: getInnerHTML(title),
             href: util.getHref(title),
-            author: getText(author),
+            author: getInnerHTML(author),
             author_url: util.getHref(author),
-            info: getText(item.find('.ckd-info')),
+            info: getInnerHTML(item.find('.ckd-info')),
             subtitle: util.getInnerHTML(item.find('.ckd-subtitle')),
             meta: item.find('.ckd-meta').map(function(node){
                 return node.innerHTML;
@@ -2115,7 +2115,7 @@ define("../cardkit/parser/list", [
     function get_hd(source, custom){
         source = $(source);
         var data = source && {
-            html: getText(source),
+            html: getInnerHTML(source),
             href: util.getHref(source)
         } || {};
         if (custom && typeof custom === 'object') {
@@ -2183,7 +2183,7 @@ define("../cardkit/parser/box", [
     function get_hd(source, custom_source){
         source = $(source);
         var data = source && {
-            html: util.getText(source),
+            html: util.getInnerHTML(source),
             href: util.getHref(source)
         } || {};
         if (custom_source && typeof custom_source === 'object') {
@@ -2206,7 +2206,7 @@ define("../cardkit/parser/box", [
 
 define("../cardkit/tpl/unit/form", [], function(){
 
-    return {"template":"\n<article>\n\n    {% if (data.hd) { %}\n    <header>\n        {% if (data.hd_url) { %}\n        <a href=\"{%= data.hd_url %}\" class=\"ck-link\">{%= data.hd %}</a>\n        {% } else { %}\n        <span>{%= data.hd %}</span>\n        {% } %}\n    </header>\n    {% } %}\n\n    <fieldset>\n    {% data.items.forEach(function(item){ %}\n        <div class=\"ck-item\">\n            {%= item.content %}\n        </div>\n    {% }); %}\n    </fieldset>\n\n    {% if (data.ft) { %}\n    <footer>{%= data.ft %}</footer>\n    {% } %}\n\n</article>\n\n"}; 
+    return {"template":"\n<article>\n\n    {% if (data.hd) { %}\n    <header>\n        {% if (data.hd_url) { %}\n        <a href=\"{%= data.hd_url %}\" class=\"ck-link\">{%= data.hd %}</a>\n        {% } else { %}\n        <span>{%= data.hd %}</span>\n        {% } %}\n    </header>\n    {% } %}\n\n    <section>\n    {% data.items.forEach(function(item){ %}\n        <div class=\"ck-item\">\n            {%= item.content %}\n        </div>\n    {% }); %}\n    </section>\n\n    {% if (data.ft) { %}\n    <footer>{%= data.ft %}</footer>\n    {% } %}\n\n</article>\n\n"}; 
 
 });
 /* @source ../cardkit/tpl/unit/mini.js */;

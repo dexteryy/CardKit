@@ -46,7 +46,7 @@ define([
     function get_hd(source, custom){
         source = $(source);
         var data = source && {
-            html: util.getText(source),
+            html: util.getInnerHTML(source),
             href: util.getHref(source)
         } || {};
         if (custom && typeof custom === 'object') {

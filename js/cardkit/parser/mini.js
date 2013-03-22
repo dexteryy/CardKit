@@ -5,7 +5,7 @@ define([
     './util'
 ], function($, _, util){
     
-    var getText = util.getText;
+    var getInnerHTML = util.getInnerHTML;
 
     function exports(unit, raw){
         unit = $(unit);
@@ -37,12 +37,12 @@ define([
         var title = item.find('.ckd-title'),
             author = item.find('.ckd-author');
         var data = {
-            title: getText(title),
+            title: getInnerHTML(title),
             href: util.getHref(title),
-            author: getText(author),
+            author: getInnerHTML(author),
             author_url: util.getHref(author),
-            info: getText(item.find('.ckd-info')),
-            subtitle: getText(item.find('.ckd-subtitle')),
+            info: getInnerHTML(item.find('.ckd-info')),
+            subtitle: getInnerHTML(item.find('.ckd-subtitle')),
             meta: item.find('.ckd-meta').map(function(node){
                 return node.innerHTML;
             }),
@@ -63,7 +63,7 @@ define([
     function get_hd(source, custom){
         source = $(source);
         var data = source && {
-            html: getText(source),
+            html: getInnerHTML(source),
             href: util.getHref(source)
         } || {};
         if (custom && typeof custom === 'object') {

@@ -11,13 +11,13 @@
     </header>
     {% } %}
 
-    <fieldset>
+    <section>
     {% data.items.forEach(function(item){ %}
         <div class="ck-item">
             {%= item.content %}
         </div>
     {% }); %}
-    </fieldset>
+    </section>
 
     {% if (data.ft) { %}
     <footer>{%= data.ft %}</footer>

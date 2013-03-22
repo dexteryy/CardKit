@@ -7,6 +7,7 @@
 <meta name="format-detection" content="telephone=no">
 
 <link href="dist/css/main.css" rel="stylesheet">
+<link href="css/shCoreDefault.css" rel="stylesheet">
 <link href="css/common.css" rel="stylesheet">
 <style>
 .post1 {
@@ -39,10 +40,14 @@
             </ul>
         </div>
 
+        <div class="ck-box-unit" data-cfg-plain="true">
+            <header class="ckd-hd">Examples</header>
+        </div>
+
         <div class="ck-form-unit">
             <header class="ckd-hd">Switch</header>
             <div class="ckd-item">
-                <!--component-->
+                <!--demo-->
                 <button class="ck-switch switch1" value="0" 
                         data-enable-url="data/enable.txt"
                         data-enable-val="1"
@@ -51,25 +56,45 @@
                     <span class="disable-text">关闭</span>
                     <span class="block"></span>
                 </button>
-                <!--component end-->
+                <!--demo end-->
+                <div class="democode">
+                    <script type="syntaxhighlighter" class="brush: html"><![CDATA[
+                    <button class="ck-switch switch1" value="0" 
+                            data-enable-url="data/enable.txt"
+                            data-enable-val="1"
+                            data-label="false">
+                        <span class="enable-text">开启</span>
+                        <span class="disable-text">关闭</span>
+                        <span class="block"></span>
+                    </button>
+                    ]]></script>
+                </div>
             </div>
         </div>
 
         <div class="ck-form-unit">
             <header class="ckd-hd">Post button</header>
             <div class="ckd-item">
-                <!--component-->
+                <!--demo-->
                 <input class="ck-post-button post1" type="button" value="Get JSON data" 
                     data-request-method="get"
                     data-enable-json-url="data/form.json"
                     data-enable-label="Get JSON (success!)">
-                <!--component end-->
+                <!--demo end-->
                 <p>
                     <label><em>fixed width, json response</em></label>
                 </p>
+                <div class="democode">
+                    <script type="syntaxhighlighter" class="brush: html"><![CDATA[
+                    <input class="ck-post-button post1" type="button" value="Get JSON data" 
+                        data-request-method="get"
+                        data-enable-json-url="data/form.json"
+                        data-enable-label="Get JSON (success!)">
+                    ]]></script>
+                </div>
             </div>
             <div class="ckd-item">
-                <!--component-->
+                <!--demo-->
                 <button class="ck-post-button post2"
                         data-fluid="true"
                         data-enable-url="data/enable.txt"
@@ -78,30 +103,56 @@
                         data-label="span">
                     <span>Post Button</span>
                 </button>
-                <!--component end-->
+                <!--demo end-->
                 <p>
                     <label><em>fluid width</em></label>
                 </p>
+                <div class="democode">
+                    <script type="syntaxhighlighter" class="brush: html"><![CDATA[
+                    <button class="ck-post-button post2"
+                            data-fluid="true"
+                            data-enable-url="data/enable.txt"
+                            data-disable-url="data/disable.txt"
+                            data-enable-label="Post Button (success!)" 
+                            data-label="span">
+                        <span>Post Button</span>
+                    </button>
+                    ]]></script>
+                </div>
             </div>
             <div class="ckd-item">
-                <!--component-->
+                <!--demo-->
                 <input class="ck-post-button post3" type="button" value="Button(0)"
                         data-enable-val="Button(1)" 
                         data-is-default="true">
-                <!--component end-->
+                <!--demo end-->
                 <p>
                     <label><em>default width</em></label>
                 </p>
+                <div class="democode">
+                    <script type="syntaxhighlighter" class="brush: html"><![CDATA[
+                    <input class="ck-post-button post3" type="button" value="Button(0)"
+                            data-enable-val="Button(1)" 
+                            data-is-default="true">
+                    ]]></script>
+                </div>
             </div>
             <div class="ckd-item">
-                <!--component-->
+                <!--demo-->
                 <a href="#" class="ck-post-button post4" target="_blank"
                     data-enable-label="Button Link (clicked)" 
                     data-fluid="true">Button Link</a>
-                <!--component end-->
+                <!--demo end-->
                 <p>
                     <label><em>fluid width, link element</em></label>
                 </p>
+                <div class="democode">
+                    <script type="syntaxhighlighter" class="brush: html"><![CDATA[
+                    <a href="#" class="ck-post-button post4" target="_blank"
+                        data-enable-label="Button Link (clicked)" 
+                        data-fluid="true">Button Link</a>
+                    ]]></script>
+                </div>
             </div>
         </div>
 
@@ -109,27 +160,44 @@
             <header class="ckd-hd">Post Link</header>
             <div class="ckd-item">
                 text text text text text text text 
-                <!--component-->
+                <!--demo-->
                 <a href="#" class="ck-post-link link1" target="_blank"
                     data-enable-label="Post Link (clicked)" 
                     data-enable-url="data/enable.txt"
                 >Post Link</a>
-                <!--component end-->
+                <!--demo end-->
                 text text text text text text text text text text text text text text text 
+                <div class="democode">
+                    <script type="syntaxhighlighter" class="brush: html"><![CDATA[
+                    <a href="#" class="ck-post-link link1" target="_blank"
+                        data-enable-label="Post Link (clicked)" 
+                        data-enable-url="data/enable.txt"
+                    ]]></script>
+                </div>
             </div>
         </div>
 
         <div class="ck-form-unit">
             <header class="ckd-hd">Folder</header>
             <div class="ckd-item">
-                <!--component-->
+                <!--demo-->
                 <div class="ck-folder"
                         data-enable-label="Hide the content" 
                         data-label="header">
                     <header>Show the content</header>
                     <div class="content">Hidden content. Hidden content. Hidden content. Hidden content.</div>
                 </div>
-                <!--component end-->
+                <!--demo end-->
+                <div class="democode">
+                    <script type="syntaxhighlighter" class="brush: html"><![CDATA[
+                    <div class="ck-folder"
+                            data-enable-label="Hide the content" 
+                            data-label="header">
+                        <header>Show the content</header>
+                        <div class="content">Hidden content. Hidden content. Hidden content. Hidden content.</div>
+                    </div>
+                    ]]></script>
+                </div>
             </div>
         </div>
 
@@ -151,6 +219,9 @@
 </div>
 
 <script src="dist/js/main.js"></script>
+<script src="js/shCore.js"></script>
+<script src="js/shBrushXml.js"></script>
+<script src="js/shBrushJScript.js"></script>
 <!-- COLLECTED JS -->
 <script>
 require([
@@ -180,6 +251,9 @@ require([
     }
 
 });
+
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all();
 </script>
 <script>
 </script>

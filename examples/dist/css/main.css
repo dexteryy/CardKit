@@ -534,6 +534,7 @@ a {
 }
 .ck-box-unit > article > section:first-child {
   padding-top: 14px;
+  border-top: 0;
 }
 .ck-box-unit > article > section:last-child {
   padding-bottom: 14px;
@@ -754,6 +755,7 @@ a {
 
 .ck-form-unit .ck-item {
   padding: 15px 0;
+  display: block;
 }
 .ck-form-unit .ck-item:last-child {
   border: none;

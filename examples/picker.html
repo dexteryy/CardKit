@@ -7,6 +7,7 @@
 <meta name="format-detection" content="telephone=no">
 
 <link href="dist/css/main.css" rel="stylesheet">
+<link href="css/shCoreDefault.css" rel="stylesheet">
 <link href="css/common.css" rel="stylesheet">
 <style>
 </style>
@@ -39,7 +40,7 @@
         <div class="ck-form-unit">
             <header class="ckd-hd">Segmented selector</header>
             <div class="ckd-item">
-                <!--component-->
+                <!--demo-->
                 <div class="ck-segment picker1">
                     <button class="option" value="1"
                         data-enable-url="data/enable.txt">Option 1</button>
@@ -48,7 +49,19 @@
                     <button class="option" value="3"
                         data-enable-url="data/enable.txt">Option 3</button>
                 </div>
-                <!--component end-->
+                <!--demo end-->
+                <div class="democode">
+                    <script type="syntaxhighlighter" class="brush: html"><![CDATA[
+                    <div class="ck-segment picker1">
+                        <button class="option" value="1"
+                            data-enable-url="data/enable.txt">Option 1</button>
+                        <button class="option" value="2"
+                            data-enable-url="data/enable.txt">Option 2</button>
+                        <button class="option" value="3"
+                            data-enable-url="data/enable.txt">Option 3</button>
+                    </div>
+                    ]]></script>
+                </div>
             </div>
         </div>
 
@@ -56,7 +69,7 @@
             <header class="ckd-hd">Tag selector</header>
             <div class="ckd-item">
                 <label class="ck-title">Single Select</label>
-                <!--component-->
+                <!--demo-->
                 <div class="ck-tagselector picker2">
                     <input type="hidden" value="">
                     <input class="option" type="button" value="linux">
@@ -68,11 +81,22 @@
                     <input class="option" type="button" value="javascript">
                     <input class="option" type="button" value="OPENGL">
                 </div>
-                <!--component end-->
+                <!--demo end-->
+                <div class="democode">
+                    <script type="syntaxhighlighter" class="brush: html"><![CDATA[
+                    <div class="ck-tagselector picker2">
+                        <input type="hidden" value="">
+                        <input class="option" type="button" value="linux">
+                        <input class="option" type="button" value="CSS">
+                        <!-- ... -->
+                        <input class="option" type="button" value="OPENGL">
+                    </div>
+                    ]]></script>
+                </div>
             </div>
             <div class="ckd-item">
                 <label class="ck-title">Multiple Select</label>
-                <!--component-->
+                <!--demo-->
                 <div class="ck-tagselector picker3"
                         data-multiselect="true">
                     <input type="hidden" value="">
@@ -85,21 +109,33 @@
                     <input class="option" type="button" value="javascript">
                     <input class="option" type="button" value="OPENGL">
                 </div>
-                <!--component end-->
+                <!--demo end-->
+                <div class="democode">
+                    <script type="syntaxhighlighter" class="brush: html"><![CDATA[
+                    <div class="ck-tagselector picker3"
+                            data-multiselect="true">
+                        <input type="hidden" value="">
+                        <input class="option" type="button" value="linux">
+                        <input class="option" type="button" value="CSS">
+                        <!-- ... -->
+                        <input class="option" type="button" value="OPENGL">
+                    </div>
+                    ]]></script>
+                </div>
             </div>
         </div>
 
         <div class="ck-form-unit">
             <header class="ckd-hd">Actions</header>
             <div class="ckd-item">
-                <!--component-->
+                <!--demo-->
                 <ul class="ck-actions actions1">
                     <li><a href="#on" class="option" target="_blank">Select All</a></li>
                     <li><a href="#off" class="option" target="_blank">Unselect All</a></li>
                     <li><a href="#invert" class="option" target="_blank">Select Invert</a></li>
                     <li><a href="#undo" class="option" target="_blank">Undo</a></li>
                 </ul>
-                <!--component end-->
+                <!--demo end-->
                 <p>
                 <div class="ck-tagselector actions1-1"
                         data-multiselect="true">
@@ -114,19 +150,38 @@
                     <input class="option" type="button" value="OPENGL">
                 </div>
                 </p>
+                <div class="democode">
+                    <script type="syntaxhighlighter" class="brush: html"><![CDATA[
+                    <ul class="ck-actions actions1">
+                        <li><a href="#on" class="option" target="_blank">Select All</a></li>
+                        <li><a href="#off" class="option" target="_blank">Unselect All</a></li>
+                        <li><a href="#invert" class="option" target="_blank">Select Invert</a></li>
+                        <li><a href="#undo" class="option" target="_blank">Undo</a></li>
+                    </ul>
+                    ]]></script>
+                </div>
             </div>
         </div>
 
         <div class="ck-form-unit">
             <header class="ckd-hd">Slider</header>
             <div class="ckd-item">
-                <!--component-->
+                <!--demo-->
                 <div class="ck-stars demo-rating">
                     <input class="slider-field" id="rating" type="range" min="0" max="5" step="1" value="2"/>
                     <div class="slider-selected" style="width:50px;display:block;"></div>
                     <div class="slider-hover"></div>
                 </div>
-                <!--component end-->
+                <!--demo end-->
+                <div class="democode">
+                    <script type="syntaxhighlighter" class="brush: html"><![CDATA[
+                    <div class="ck-stars demo-rating">
+                        <input class="slider-field" id="rating" type="range" min="0" max="5" step="1" value="2"/>
+                        <div class="slider-selected" style="width:50px;display:block;"></div>
+                        <div class="slider-hover"></div>
+                    </div>
+                    ]]></script>
+                </div>
             </div>
         </div>
 
@@ -148,6 +203,9 @@
 </div>
 
 <script src="dist/js/main.js"></script>
+<script src="js/shCore.js"></script>
+<script src="js/shBrushXml.js"></script>
+<script src="js/shBrushJScript.js"></script>
 <!-- COLLECTED JS -->
 <script>
 require([
@@ -205,6 +263,9 @@ require([
     });
 
 });
+
+SyntaxHighlighter.defaults['toolbar'] = false;
+SyntaxHighlighter.all();
 </script>
 <script>
 </script>
