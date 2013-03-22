@@ -16,7 +16,7 @@ define('momo/tap', [
         },
 
         press: function(e){
-            var t = e.touches[0];
+            var t = this.SUPPORT_TOUCH ? e.touches[0] : e;
             this._startTime = e.timeStamp;
             this._startTarget = t.target;
             this._startPosX = t.clientX;
@@ -25,7 +25,7 @@ define('momo/tap', [
         },
 
         move: function(e){
-            var t = e.touches[0];
+            var t = this.SUPPORT_TOUCH ? e.touches[0] : e;
             this._moveTarget = t.target;
             this._movePosX = t.clientX;
             this._movePosY = t.clientY;

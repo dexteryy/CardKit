@@ -19,7 +19,7 @@ define("choreo", [
 ], function(es5, _, mainloop, Event){
 
     var window = this,
-        VENDORS = ['', 'Moz', 'webkit', 'ms', 'O'],
+        VENDORS = ['Moz', 'webkit', 'ms', 'O', ''],
         EVENT_NAMES = {
             '': 'transitionend',
             'Moz': 'transitionend',

@@ -4693,6 +4693,8 @@ define('momo/base', [
 
     MomoBase.prototype = {
 
+        SUPPORT_TOUCH: SUPPORT_TOUCH,
+
         PRESS: SUPPORT_TOUCH ? 'touchstart' : 'mousedown',
         MOVE: SUPPORT_TOUCH ? 'touchmove' : 'mousemove',
         RELEASE: SUPPORT_TOUCH ? 'touchend' : 'mouseup',
@@ -4821,8 +4823,8 @@ define('momo/scroll', [
         },
 
         press: function(e){
-            var self = this;
-            var t = e.touches[0];
+            var self = this,
+                t = this.SUPPORT_TOUCH ? e.touches[0] : e;
             self._scrollDown = null;
             self._lastY = t.clientY;
             self._scrollY = null;
@@ -4845,7 +4847,7 @@ define('momo/scroll', [
         },
 
         move: function(e){
-            var t = e.touches[0];
+            var t = this.SUPPORT_TOUCH ? e.touches[0] : e;
             this.checkScollDirection(t.clientY);
             //this._lastY = t.clientY;
             if (this.scrollingNode) {
@@ -4855,7 +4857,7 @@ define('momo/scroll', [
 
         release: function(e){
             var self = this, 
-                t = e.changedTouches[0],
+                t = this.SUPPORT_TOUCH ? e.changedTouches[0] : e,
                 node = { target: self.node };
             // up/down
             this.checkScollDirection(t.clientY);
@@ -5028,7 +5030,7 @@ define('momo/tap', [
         },
 
         press: function(e){
-            var t = e.touches[0];
+            var t = this.SUPPORT_TOUCH ? e.touches[0] : e;
             this._startTime = e.timeStamp;
             this._startTarget = t.target;
             this._startPosX = t.clientX;
@@ -5037,7 +5039,7 @@ define('momo/tap', [
         },
 
         move: function(e){
-            var t = e.touches[0];
+            var t = this.SUPPORT_TOUCH ? e.touches[0] : e;
             this._moveTarget = t.target;
             this._movePosX = t.clientX;
             this._movePosY = t.clientY;
@@ -5101,7 +5103,7 @@ define("choreo", [
 ], function(es5, _, mainloop, Event){
 
     var window = this,
-        VENDORS = ['', 'Moz', 'webkit', 'ms', 'O'],
+        VENDORS = ['Moz', 'webkit', 'ms', 'O', ''],
         EVENT_NAMES = {
             '': 'transitionend',
             'Moz': 'transitionend',

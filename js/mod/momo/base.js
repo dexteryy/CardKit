@@ -36,6 +36,8 @@ define('momo/base', [
 
     MomoBase.prototype = {
 
+        SUPPORT_TOUCH: SUPPORT_TOUCH,
+
         PRESS: SUPPORT_TOUCH ? 'touchstart' : 'mousedown',
         MOVE: SUPPORT_TOUCH ? 'touchmove' : 'mousemove',
         RELEASE: SUPPORT_TOUCH ? 'touchend' : 'mouseup',
