@@ -517,3 +517,16 @@
   //($nav_height - $title_size - 20 + $space)
 }
 
+.ck-blank-unit {
+  @extend %ck-unit;
+
+  article {
+    @extend %item;
+    padding:$space 0;
+    display:block;
+    border:none;
+    text-align:center;
+    font-size:$maintitle_size;
+  }
+
+}
