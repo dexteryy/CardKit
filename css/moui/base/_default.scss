@@ -25,7 +25,7 @@ $active_color: #006ae2;
 $notice_color: #df5001;
 
 $headtitle_size: 40px/2; // 文章正文
-$article_size: 34px/2; // 文章正文
+$article_size: 40px/2; // 文章正文
 $maintitle_size: 30px/2; // 标题
 $title_size: 26px/2;  // 按钮
 $text_size: 22px/2; // 内容
@@ -73,7 +73,7 @@ $zindex_step: 10;
 
 %block-enabled {
   background-color: #81858b;
-  border: solid 1px #9f9f9f;
+  border: solid 1px #1366a4;
   @include background-image(linear-gradient(bottom, #1366a4, #278cd7));
   color:#fff;
   @include text-shadow(0 1px #000);

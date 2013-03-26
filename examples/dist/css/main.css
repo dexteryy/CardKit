@@ -94,7 +94,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 
 [data-is-default="true"].ck-post-button, [data-is-default="true"].ck-modal-button, [data-is-default="true"].ck-actions-button, [data-is-default="true"].ck-growl-button, .moui-segment [data-is-default="true"].option, .ck-segment [data-is-default="true"].option, .moui-segment .ck-segment [data-is-default="true"].ck-option, .ck-segment .moui-segment [data-is-default="true"].ck-option, .ck-segment [data-is-default="true"].ck-option, .moui-segment .ck-tagselector [data-is-default="true"].ck-option, .ck-tagselector .moui-segment [data-is-default="true"].ck-option, .ck-segment .ck-tagselector [data-is-default="true"].ck-option, .ck-tagselector .ck-segment [data-is-default="true"].ck-option, .moui-modalview .wrapper > header button[data-is-default="true"].confirm, .ck-modalview .wrapper > header button[data-is-default="true"].confirm, .moui-modalview .wrapper > header button[data-is-default="true"].cancel, .ck-modalview .wrapper > header button[data-is-default="true"].cancel, .moui-actionview > footer button[data-is-default="true"], .ck-actionview > footer button[data-is-default="true"] {
   background-color: #81858b;
-  border: solid 1px #9f9f9f;
+  border: solid 1px #1366a4;
   background-image: -webkit-linear-gradient(bottom, #1366a4, #278cd7);
   background-image: -moz-linear-gradient(bottom, #1366a4, #278cd7);
   background-image: linear-gradient(bottom, #1366a4, #278cd7);
@@ -311,7 +311,7 @@ a {
   display: none;
 }
 .ck-card.moving {
-  position: absolute !important;
+  position: absolute!important;
   top: 0;
   left: 0;
   z-index: 10;
@@ -918,7 +918,7 @@ a {
 }
 
 .moui-actions li, .ck-actions li {
-  border-bottom: 1px solid #000;
+  border-bottom: 1px solid black;
   opacity: 0.8;
 }
 .moui-actions li a, .ck-actions li a {
@@ -1083,7 +1083,7 @@ a {
   line-height: 42.5px;
   display: block;
   color: #fff;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #eeeeee;
 }
 .moui-actionview .wrapper .content > .desc, .ck-actionview .wrapper .content > .desc {
   color: #fff;
