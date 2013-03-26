@@ -189,7 +189,7 @@ a {
 }
 
 .ck-top-title, .ck-modalview > header h1 {
-  font-size: 17px;
+  font-size: 20px;
   line-height: 42.5px;
   text-align: center;
   display: block;
@@ -311,7 +311,7 @@ a {
   display: none;
 }
 .ck-card.moving {
-  position: absolute!important;
+  position: absolute !important;
   top: 0;
   left: 0;
   z-index: 10;
@@ -583,7 +583,7 @@ a {
 }
 .ck-box-unit[data-cfg-paper] > article > section {
   padding: 50px 0 15px 0;
-  font-size: 17px;
+  font-size: 20px;
   line-height: 60px/2;
 }
 .ck-box-unit[data-cfg-paper] > article > section p {
@@ -918,7 +918,7 @@ a {
 }
 
 .moui-actions li, .ck-actions li {
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid #000;
   opacity: 0.8;
 }
 .moui-actions li a, .ck-actions li a {
@@ -1018,7 +1018,7 @@ a {
   background-image: linear-gradient(bottom, #dfdfdf, #fcfcfc);
 }
 .moui-modalview .wrapper > header h1, .ck-modalview .wrapper > header h1 {
-  font-size: 17px;
+  font-size: 20px;
   line-height: 42.5px;
   text-align: center;
   display: block;
@@ -1079,11 +1079,11 @@ a {
   height: 42.5px;
 }
 .moui-actionview .wrapper .content > header h1, .ck-actionview .wrapper .content > header h1 {
-  font-size: 17px;
+  font-size: 20px;
   line-height: 42.5px;
   display: block;
   color: #fff;
-  border-bottom: 1px solid #eeeeee;
+  border-bottom: 1px solid #eee;
 }
 .moui-actionview .wrapper .content > .desc, .ck-actionview .wrapper .content > .desc {
   color: #fff;
