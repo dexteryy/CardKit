@@ -20,17 +20,16 @@ define('momo/swipe', [
         },
 
         press: function(e) {
-            var t = e.touches[0];
+            var t = this.SUPPORT_TOUCH ? e.touches[0] : e;
             this._startX = t.clientX;
             this._startY = t.clientY;
             this._moveX = NaN;
             this._moveY = NaN;
-
             this._startTime = e.timeStamp;
         },
 
         move: function(e) {
-            var t = e.touches[0];
+            var t = this.SUPPORT_TOUCH ? e.touches[0] : e;
             this._moveX = t.clientX;
             this._moveY = t.clientY;
         },
@@ -45,13 +44,12 @@ define('momo/swipe', [
                     x: self._moveX,
                     y: self._moveY
                 },
-
                 distance = get_distance(startPos, movePos),
                 direction = get_direction(startPos, movePos),
-                touchTime = new Date().getTime() - self._startTime;
-            if (touchTime < self._config.timeThreshold &&
-                distance > self._config.distanceThreshold) {
+                touchTime = e.timeStamp - self._startTime;
 
+            if (touchTime < self._config.timeThreshold &&
+                    distance > self._config.distanceThreshold) {
                 self.trigger(e, self.event['swipe' + direction]);
             }
         }
