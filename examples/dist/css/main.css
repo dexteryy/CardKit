@@ -725,10 +725,17 @@ a {
   padding-left: 10px;
   padding-right: 10px;
   margin: 0;
-  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: #f2f2f2;
 }
-.ck-mini-unit[data-style="slide"] .ck-item:first-child {
-  display: block;
+.ck-mini-unit[data-style="slide"] .ck-item.enable {
+  position: relative;
+  z-index: 10;
+}
+.ck-mini-unit[data-style="slide"] .ck-item.moving {
+  z-index: 20;
 }
 .ck-mini-unit[data-style="slide"] .ck-page {
   text-align: center;
@@ -745,7 +752,7 @@ a {
   background: #D6D6D6;
   border: solid 1px #b3b3b3;
 }
-.ck-mini-unit[data-style="slide"] .ck-page span:first-child {
+.ck-mini-unit[data-style="slide"] .ck-page span.enable {
   background-color: #252525;
   border: solid 1px #0058ba;
   background-image: -webkit-linear-gradient(bottom, #0084ff, #00a2ff);

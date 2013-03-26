@@ -15,13 +15,14 @@ define([
     './view/modalcard',
     './view/actionview',
     './view/growl',
+    './view/slidelist',
     './bus',
     './pagesession',
     './render',
     'mo/domready'
 ], function($, _, tpl, soviet, choreo, 
     momoBase, momoTap, momoSwipe, momoDrag, momoScroll, 
-    control, picker, stars, modalCard, actionView, growl,
+    control, picker, stars, modalCard, actionView, growl, slidelist,
     bus, pageSession, render){
 
     var window = this,
@@ -441,6 +442,16 @@ define([
                 if (!opt.isModal) {
                     card.data('rendered', '1');
                 }
+                card.find('.ck-mini-unit').forEach(function(unit){
+                    var slide = $('.ck-inslide', unit);
+                    if (slide[0]) {
+                        var pagers = $('.ck-page span', unit);
+                        slidelist(slide).event.bind('change', function(n){
+                            pagers.removeClass('current');
+                            pagers.eq(n).addClass('current');
+                        });
+                    }
+                });
             }
             this.watchScroll(card);
         },

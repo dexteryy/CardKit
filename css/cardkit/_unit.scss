@@ -390,17 +390,22 @@
       position:relative;
     }
 
-    .ck-inslide {
-    }
- 
     .ck-item {
       padding-left:10px;
       padding-right:10px;
       margin:0;
-      display:none;
+      position:absolute;
+      top:0;
+      left:0;
+      background:$view_color;
 
-      &:first-child {
-        display:block;
+      &.enable {
+        position:relative;
+        z-index:$zindex_step;
+      }
+
+      &.moving {
+        z-index:$zindex_step*2;
       }
 
     }
@@ -417,7 +422,7 @@
         background:#D6D6D6;
         border: solid 1px #b3b3b3;
 
-        &:first-child {
+        &.enable {
           background-color: #252525;
           border: solid 1px #0058ba;
           @include background-image(linear-gradient(bottom, #0084ff, #00a2ff));

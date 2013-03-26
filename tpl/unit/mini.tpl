@@ -15,8 +15,8 @@
     <div class="ck-slide"><div class="ck-inslide">
     {% } %}
 
-        {% data.items.forEach(function(item){ %}
-        <div class="ck-item">
+        {% data.items.forEach(function(item, i){ %}
+        <div class="ck-item{%=(i === 0 && ' enable' || '')%}">
             {% if (item.title) { %}
             <p class="ck-title">{%= item.title %}</p>
             {% } %}
@@ -54,8 +54,8 @@
     <footer>
         {% if (data.items.length > 1) { %}
         <div class="ck-page">
-        {% data.items.forEach(function(){ %}
-            <span></span>
+        {% data.items.forEach(function(item, i){ %}
+            <span class="{%=(i === 0 && 'enable' || '')%}"></span>
         {% }); %}
         </div>
         {% } %}
