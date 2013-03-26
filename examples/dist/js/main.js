@@ -6774,8 +6774,8 @@ define("../cardkit/app", [
                     if (slide[0]) {
                         var pagers = $('.ck-page span', unit);
                         slidelist(slide).event.bind('change', function(n){
-                            pagers.removeClass('current');
-                            pagers.eq(n).addClass('current');
+                            pagers.removeClass('enable');
+                            pagers.eq(n).addClass('enable');
                         });
                     }
                 });
