@@ -7021,11 +7021,21 @@ define("../cardkit/app", [
 
     function open_url(true_link, opt){
         opt = opt || {};
-        if (opt.target) {
+        if (opt.target !== '_self') {
             window.open(true_link, opt.target);
         } else {
-            pageSession.reset();
-            location.replace(true_link);
+            var next_id = 'ckLoading';
+            var next = ck.loadingCard;
+            pageSession.clear(pageSession.indexOf(location.href));
+            var current = ck.viewport;
+            ck.globalMask.show();
+            push_history(current[0].id, next_id, true_link);
+            ck.changeView(next);
+            setTimeout(function(){
+                current.hide();
+                ck.globalMask.hide();
+                location.href = true_link;
+            }, 10);
         }
     }
 
