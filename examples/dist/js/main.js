@@ -4948,17 +4948,16 @@ define('momo/swipe', [
         },
 
         press: function(e) {
-            var t = e.touches[0];
+            var t = this.SUPPORT_TOUCH ? e.touches[0] : e;
             this._startX = t.clientX;
             this._startY = t.clientY;
             this._moveX = NaN;
             this._moveY = NaN;
-
             this._startTime = e.timeStamp;
         },
 
         move: function(e) {
-            var t = e.touches[0];
+            var t = this.SUPPORT_TOUCH ? e.touches[0] : e;
             this._moveX = t.clientX;
             this._moveY = t.clientY;
         },
@@ -4973,13 +4972,12 @@ define('momo/swipe', [
                     x: self._moveX,
                     y: self._moveY
                 },
-
                 distance = get_distance(startPos, movePos),
                 direction = get_direction(startPos, movePos),
-                touchTime = new Date().getTime() - self._startTime;
-            if (touchTime < self._config.timeThreshold &&
-                distance > self._config.distanceThreshold) {
+                touchTime = e.timeStamp - self._startTime;
 
+            if (touchTime < self._config.timeThreshold &&
+                    distance > self._config.distanceThreshold) {
                 self.trigger(e, self.event['swipe' + direction]);
             }
         }
@@ -6212,7 +6210,6 @@ define("../cardkit/app", [
         back_timeout,
         gc_id = 0,
 
-        //SUPPORT_ORIENT = "orientation" in window && "onorientationchange" in window,
         SUPPORT_OVERFLOWSCROLL = "webkitOverflowScrolling" in body.style,
 
         TPL_MASK = '<div class="ck-globalmask"></div>';
@@ -6427,9 +6424,9 @@ define("../cardkit/app", [
             this.defaultCard = $('#ckDefault');
             this.globalMask = $(TPL_MASK).appendTo(body);
             this.headerHeight = this.header.height();
-            this.windowFullHeight = Infinity;
             this.inited = false;
             this.viewportGarbage = {};
+            this.initWindow();
 
             this.scrollGesture = momoScroll(document);
             momoTap(document);
@@ -6444,9 +6441,13 @@ define("../cardkit/app", [
                 ck.hideLoading();
             }, 0);
 
-            //$(window).bind('resize', function(e){
-                //ck.updateSize();
-            //});
+            $(window).bind('resize', function(){
+                var current = ck.isLandscape();
+                if (current !== ck.landscapeMode) {
+                    ck.initWindow();
+                    ck.hideAddressbar(); // @TODO 无效
+                }
+            });
 
             soviet(document, {
                 matchesSelector: true,
@@ -6534,6 +6535,11 @@ define("../cardkit/app", [
                 }
             }).bind('touchend', cancel_hold).bind('touchcancel', cancel_hold);
 
+        },
+
+        initWindow: function(){
+            this.landscapeMode = this.isLandscape();
+            this.windowFullHeight = Infinity;
         },
 
         initState: function(){
@@ -6711,16 +6717,9 @@ define("../cardkit/app", [
             }
         },
 
-        //getOrientation : function() {
-            //var is_portrait = true;
-            //if (SUPPORT_ORIENT) {
-                //is_portrait = ({ "0": true, "180": true })[window.orientation];
-            //} else {
-                //is_portrait = body.clientWidth / body.clientHeight < 1.1;
-            //}
-
-            //return is_portrait ? "portrait" : "landscape";
-        //},
+        isLandscape: function() {
+            return body.clientWidth / body.clientHeight > 1.1;
+        },
 
         openModal: function(opt){
             this.hideAddressbar();

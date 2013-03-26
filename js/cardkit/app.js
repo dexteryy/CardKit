@@ -31,7 +31,6 @@ define([
         back_timeout,
         gc_id = 0,
 
-        //SUPPORT_ORIENT = "orientation" in window && "onorientationchange" in window,
         SUPPORT_OVERFLOWSCROLL = "webkitOverflowScrolling" in body.style,
 
         TPL_MASK = '<div class="ck-globalmask"></div>';
@@ -246,9 +245,9 @@ define([
             this.defaultCard = $('#ckDefault');
             this.globalMask = $(TPL_MASK).appendTo(body);
             this.headerHeight = this.header.height();
-            this.windowFullHeight = Infinity;
             this.inited = false;
             this.viewportGarbage = {};
+            this.initWindow();
 
             this.scrollGesture = momoScroll(document);
             momoTap(document);
@@ -263,9 +262,13 @@ define([
                 ck.hideLoading();
             }, 0);
 
-            //$(window).bind('resize', function(e){
-                //ck.updateSize();
-            //});
+            $(window).bind('resize', function(){
+                var current = ck.isLandscape();
+                if (current !== ck.landscapeMode) {
+                    ck.initWindow();
+                    ck.hideAddressbar(); // @TODO 无效
+                }
+            });
 
             soviet(document, {
                 matchesSelector: true,
@@ -353,6 +356,11 @@ define([
                 }
             }).bind('touchend', cancel_hold).bind('touchcancel', cancel_hold);
 
+        },
+
+        initWindow: function(){
+            this.landscapeMode = this.isLandscape();
+            this.windowFullHeight = Infinity;
         },
 
         initState: function(){
@@ -530,16 +538,9 @@ define([
             }
         },
 
-        //getOrientation : function() {
-            //var is_portrait = true;
-            //if (SUPPORT_ORIENT) {
-                //is_portrait = ({ "0": true, "180": true })[window.orientation];
-            //} else {
-                //is_portrait = body.clientWidth / body.clientHeight < 1.1;
-            //}
-
-            //return is_portrait ? "portrait" : "landscape";
-        //},
+        isLandscape: function() {
+            return body.clientWidth / body.clientHeight > 1.1;
+        },
 
         openModal: function(opt){
             this.hideAddressbar();
