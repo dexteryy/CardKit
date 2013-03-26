@@ -6587,7 +6587,7 @@ define("../cardkit/app", [
             this.header = $('.ck-header', root);
             this.footer = $('.ck-footer', root);
             this.raw = $('.ck-raw', root);
-            this.loadingCard = $('#ckLoading');
+            this.loadingCard = $('#ckLoading').data('rendered', '1');
             this.defaultCard = $('#ckDefault');
             this.globalMask = $(TPL_MASK).appendTo(body);
             this.headerHeight = this.header.height();
