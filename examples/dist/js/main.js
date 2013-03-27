@@ -6593,6 +6593,7 @@ define("../cardkit/app", [
             this.headerHeight = this.header.height();
             this.inited = false;
             this.viewportGarbage = {};
+            this.sessionLocked = true;
             this.initWindow();
 
             this.scrollGesture = momoScroll(document);
@@ -6712,6 +6713,11 @@ define("../cardkit/app", [
         initState: function(){
 
             $(window).bind("popstate", function(e){
+                if (ck.sessionLocked) {
+                    pageSession.reset();
+                    location.reload();
+                    return;
+                }
                 clearTimeout(back_timeout);
                 var loading = ck.viewport[0].id === 'ckLoading'; // alert(['pop', e.state && [e.state.prev, e.state.next], ck.viewport && ck.viewport[0].id].join(', '))
                 if (e.state) {
@@ -6749,6 +6755,8 @@ define("../cardkit/app", [
                     back_handler('ckLoading');
                 }
             });
+
+            ck.sessionLocked = false;
 
             pageSession.init();
 
@@ -6957,6 +6965,7 @@ define("../cardkit/app", [
                 return;
             }
         }
+        ck.sessionLocked = true;
         var current = ck.viewport;
         if (!is_forward) {
             push_history(current[0].id, next_id, true_link);
@@ -6972,6 +6981,7 @@ define("../cardkit/app", [
             choreo.transform(ck.wrapper[0], 'translateX', '0');
             next.removeClass('moving');
             ck.globalMask.hide();
+            ck.sessionLocked = false;
             if (true_link) {
                 if (is_forward) {
                     history.forward();
@@ -6983,6 +6993,7 @@ define("../cardkit/app", [
     }
 
     function back_handler(prev_id){
+        ck.sessionLocked = true;
         var prev = $('#' + prev_id);
         var current = ck.viewport;
         ck.globalMask.show();
@@ -6999,6 +7010,7 @@ define("../cardkit/app", [
         }, 400, 'easeInOut').follow().done(function(){
             current.hide().removeClass('moving');
             ck.globalMask.hide();
+            ck.sessionLocked = false;
             if (prev_id === 'ckLoading') {
                 history.back();
                 back_timeout = setTimeout(function(){
@@ -7042,6 +7054,7 @@ define("../cardkit/app", [
         if (opt.target !== '_self') {
             window.open(true_link, opt.target);
         } else {
+            ck.sessionLocked = true;
             var next_id = 'ckLoading';
             var next = ck.loadingCard;
             pageSession.clear(pageSession.indexOf(location.href));
@@ -7052,6 +7065,7 @@ define("../cardkit/app", [
             setTimeout(function(){
                 current.hide();
                 ck.globalMask.hide();
+                ck.sessionLocked = false;
                 location.href = true_link;
             }, 10);
         }
