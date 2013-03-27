@@ -12,6 +12,9 @@
     {% } %}
 
     <section>
+    {% if (!data.items.length) { %}
+    <div class="ck-item blank">目前还没有内容</div>
+    {% } %}
     {% data.items.forEach(function(item){ %}
         <div class="ck-item">
             {%= item.content %}

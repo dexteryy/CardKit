@@ -593,6 +593,12 @@ a {
 .ck-list-unit .ck-item:last-child {
   border: none;
 }
+.ck-list-unit .ck-item.blank {
+  text-align: center;
+}
+.ck-list-unit .ck-item.blank .ck-initem {
+  background: none;
+}
 .ck-list-unit .ck-initem.ck-link:active .ck-info, .ck-list-unit .ck-initem.ck-link:active .ck-subtitle {
   color: #ccc;
 }
@@ -676,6 +682,9 @@ a {
 
 .ck-mini-unit .ck-item {
   border: none;
+}
+.ck-mini-unit .ck-item.blank {
+  text-align: center;
 }
 .ck-mini-unit .ck-title {
   font-size: 15px;
@@ -766,6 +775,9 @@ a {
 }
 .ck-form-unit .ck-item:last-child {
   border: none;
+}
+.ck-form-unit .ck-item.blank {
+  text-align: center;
 }
 .ck-form-unit .ck-item p {
   margin: 0 0 15px 0;

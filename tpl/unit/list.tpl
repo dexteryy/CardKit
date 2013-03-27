@@ -49,34 +49,46 @@
     </header>
     {% } %}
 
-    {% if (data.style === 'more') { %}
+    {% if (data.items.length) { %}
 
-    <nav>
-    {% data.items.forEach(function(item){ %}
-        <div class="ck-item">
-            {% get_item(item); %}
-        </div>
-    {% }); %}
-    </nav>
+        {% if (data.style === 'more') { %}
+
+        <nav>
+        {% data.items.forEach(function(item){ %}
+            <div class="ck-item">
+                {% get_item(item); %}
+            </div>
+        {% }); %}
+        </nav>
+
+        {% } else { %}
+
+        <ul>
+        {% data.items.forEach(function(item, i){ %}
+            {% if (i && (i % data.config.col === 0)) { %}
+                </ul><ul>
+            {% } %}
+            <li class="ck-item" style="width:{%= (data.config.col ? Math.floor(1000/data.config.col)/10 + '%' : '') %};">
+                {% get_item(item); %}
+                {% if (item.content) { %}
+                <span class="ck-content">{%= item.content %}</span>
+                {% } %}
+                {% if (item.meta && item.meta.length) { %}
+                <span class="ck-meta">{%= item.meta.join('</span><span class="ck-meta">') %}</span>
+                {% } %}
+            </li>
+        {% }); %}
+        </ul>
+
+        {% } %}
 
     {% } else { %}
 
-    <ul>
-    {% data.items.forEach(function(item, i){ %}
-        {% if (i && (i % data.config.col === 0)) { %}
-            </ul><ul>
-        {% } %}
-        <li class="ck-item" style="width:{%= (data.config.col ? Math.floor(1000/data.config.col)/10 + '%' : '') %};">
-            {% get_item(item); %}
-            {% if (item.content) { %}
-            <span class="ck-content">{%= item.content %}</span>
-            {% } %}
-            {% if (item.meta && item.meta.length) { %}
-            <span class="ck-meta">{%= item.meta.join('</span><span class="ck-meta">') %}</span>
-            {% } %}
-        </li>
-    {% }); %}
-    </ul>
+        <ul>
+            <li class="ck-item blank">
+                <p class="ck-initem">目前还没有内容</p>
+            </li>
+        </ul>
 
     {% } %}
 

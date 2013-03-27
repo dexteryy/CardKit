@@ -2206,28 +2206,28 @@ define("../cardkit/parser/box", [
 
 define("../cardkit/tpl/unit/blank", [], function(){
 
-    return {"template":"\n<div class=\"ck-blank-unit\">\n    <article>该页面没有内容</article>\n</div>\n"}; 
+    return {"template":"\n<div class=\"ck-blank-unit\">\n    <article>目前还没有内容</article>\n</div>\n"}; 
 
 });
 /* @source ../cardkit/tpl/unit/form.js */;
 
 define("../cardkit/tpl/unit/form", [], function(){
 
-    return {"template":"\n<article>\n\n    {% if (data.hd) { %}\n    <header>\n        {% if (data.hd_url) { %}\n        <a href=\"{%= data.hd_url %}\" class=\"ck-link\">{%= data.hd %}</a>\n        {% } else { %}\n        <span>{%= data.hd %}</span>\n        {% } %}\n    </header>\n    {% } %}\n\n    <section>\n    {% data.items.forEach(function(item){ %}\n        <div class=\"ck-item\">\n            {%= item.content %}\n        </div>\n    {% }); %}\n    </section>\n\n    {% if (data.ft) { %}\n    <footer>{%= data.ft %}</footer>\n    {% } %}\n\n</article>\n\n"}; 
+    return {"template":"\n<article>\n\n    {% if (data.hd) { %}\n    <header>\n        {% if (data.hd_url) { %}\n        <a href=\"{%= data.hd_url %}\" class=\"ck-link\">{%= data.hd %}</a>\n        {% } else { %}\n        <span>{%= data.hd %}</span>\n        {% } %}\n    </header>\n    {% } %}\n\n    <section>\n    {% if (!data.items.length) { %}\n    <div class=\"ck-item blank\">目前还没有内容</div>\n    {% } %}\n    {% data.items.forEach(function(item){ %}\n        <div class=\"ck-item\">\n            {%= item.content %}\n        </div>\n    {% }); %}\n    </section>\n\n    {% if (data.ft) { %}\n    <footer>{%= data.ft %}</footer>\n    {% } %}\n\n</article>\n\n"}; 
 
 });
 /* @source ../cardkit/tpl/unit/mini.js */;
 
 define("../cardkit/tpl/unit/mini", [], function(){
 
-    return {"template":"\n<article>\n\n    {% if (data.hd) { %}\n    <header>\n        {% if (data.hd_url) { %}\n        <a href=\"{%= data.hd_url %}\" class=\"ck-link\">{%= data.hd %}</a>\n        {% } else { %}\n        <span>{%= data.hd %}</span>\n        {% } %}\n    </header>\n    {% } %}\n\n    {% if (data.style === 'slide') { %}\n    <div class=\"ck-slide\"><div class=\"ck-inslide\">\n    {% } %}\n\n        {% data.items.forEach(function(item, i){ %}\n        <div class=\"ck-item{%=(i === 0 && ' enable' || '')%}\">\n            {% if (item.title) { %}\n            <p class=\"ck-title\">{%= item.title %}</p>\n            {% } %}\n            <div class=\"ck-content\">\n                {%= item.content %}\n                {% if (item.info) { %}\n                <span class=\"ck-info\">{%= item.info %}</span>\n                {% } %}\n            </div>\n            {% if (item.author) { %}\n\n            <p class=\"ck-initem\">\n                {% if (item.icon) { %}\n                <img src=\"{%= item.icon %}\" class=\"ck-icon\"/>\n                {% } %}\n                {% if (item.author_url) { %}\n                <a href=\"{%= item.author_url %}\" class=\"ck-author ck-link\">{%= item.author %}</a>\n                {% } else if (item.author) { %}\n                <span class=\"ck-author\">{%= item.author %}</span>\n                {% } %}\n                {% if (item.subtitle) { %}\n                <span class=\"ck-subtitle\">{%= item.subtitle %}</span>\n                {% } %}\n            </p>\n            {% if (item.meta && item.meta.length) { %}\n            <span class=\"ck-meta\">{%= item.meta.join('</span><span class=\"ck-meta\">') %}</span>\n            {% } %}\n\n            {% } %}\n        </div>\n        {% }); %}\n\n    {% if (data.style === 'slide') { %}\n    </div></div>\n    <footer>\n        {% if (data.items.length > 1) { %}\n        <div class=\"ck-page\">\n        {% data.items.forEach(function(item, i){ %}\n            <span class=\"{%=(i === 0 && 'enable' || '')%}\"></span>\n        {% }); %}\n        </div>\n        {% } %}\n    </footer>\n    {% } %}\n\n</article>\n\n"}; 
+    return {"template":"\n<article>\n\n    {% if (data.hd) { %}\n    <header>\n        {% if (data.hd_url) { %}\n        <a href=\"{%= data.hd_url %}\" class=\"ck-link\">{%= data.hd %}</a>\n        {% } else { %}\n        <span>{%= data.hd %}</span>\n        {% } %}\n    </header>\n    {% } %}\n\n    {% if (data.style === 'slide') { %}\n    <div class=\"ck-slide\"><div class=\"ck-inslide\">\n    {% } %}\n\n        {% if (!data.items.length) { %}\n        <div class=\"ck-item enable blank\">\n            <div class=\"ck-content\">目前还没有内容</div>\n        </div>\n        {% } %}\n\n        {% data.items.forEach(function(item, i){ %}\n        <div class=\"ck-item{%=(i === 0 && ' enable' || '')%}\">\n            {% if (item.title) { %}\n            <p class=\"ck-title\">{%= item.title %}</p>\n            {% } %}\n            <div class=\"ck-content\">\n                {%= item.content %}\n                {% if (item.info) { %}\n                <span class=\"ck-info\">{%= item.info %}</span>\n                {% } %}\n            </div>\n            {% if (item.author) { %}\n\n            <p class=\"ck-initem\">\n                {% if (item.icon) { %}\n                <img src=\"{%= item.icon %}\" class=\"ck-icon\"/>\n                {% } %}\n                {% if (item.author_url) { %}\n                <a href=\"{%= item.author_url %}\" class=\"ck-author ck-link\">{%= item.author %}</a>\n                {% } else if (item.author) { %}\n                <span class=\"ck-author\">{%= item.author %}</span>\n                {% } %}\n                {% if (item.subtitle) { %}\n                <span class=\"ck-subtitle\">{%= item.subtitle %}</span>\n                {% } %}\n            </p>\n            {% if (item.meta && item.meta.length) { %}\n            <span class=\"ck-meta\">{%= item.meta.join('</span><span class=\"ck-meta\">') %}</span>\n            {% } %}\n\n            {% } %}\n        </div>\n        {% }); %}\n\n    {% if (data.style === 'slide') { %}\n    </div></div>\n    <footer>\n        {% if (data.items.length > 1) { %}\n        <div class=\"ck-page\">\n        {% data.items.forEach(function(item, i){ %}\n            <span class=\"{%=(i === 0 && 'enable' || '')%}\"></span>\n        {% }); %}\n        </div>\n        {% } %}\n    </footer>\n    {% } %}\n\n</article>\n\n"}; 
 
 });
 /* @source ../cardkit/tpl/unit/list.js */;
 
 define("../cardkit/tpl/unit/list", [], function(){
 
-    return {"template":"\n{% function get_item(item){ %}\n    {% if (item.href) { %}\n        <a href=\"{%= item.href %}\" class=\"ck-link ck-initem\">{% get_content(item); %}</a>\n    {% } else { %}\n        <p class=\"ck-initem\">{% get_content(item); %}</p>\n    {% } %}\n{% } %}\n\n{% function get_content(item){ %}\n\n    {% if (item.info) { %}\n    <span class=\"ck-info\">{%= item.info %}</span>\n    {% } %}\n\n    {% if (item.icon) { %}\n    <img src=\"{%= item.icon %}\" class=\"ck-icon\"/>\n    {% } %}\n\n    {% if (item.title) { %}\n    <span class=\"ck-title\">{%= item.title %}</span>\n    {% } %}\n\n    {% if (data.style === 'post' || data.style === 'grid') { %}\n        {% if (!item.href) { %}\n            {% if (item.author_url) { %}\n            <a href=\"{%= item.author_url %}\" class=\"ck-link\">{%= item.author %}</a>\n            {% } else if (item.author) { %}\n            <span class=\"ck-title\">{%= item.author %}</span>\n            {% } %}\n        {% } %}\n        {% if (item.subtitle) { %}\n        <span class=\"ck-subtitle\">{%= item.subtitle %}</span>\n        {% } %}\n    {% } %}\n\n{% } %}\n\n\n<article>\n\n    {% if (data.hd) { %}\n    <header>\n        {% if (data.hd_url) { %}\n        <a href=\"{%= data.hd_url %}\" class=\"ck-link\">{%= data.hd %}</a>\n        {% } else { %}\n        <span>{%= data.hd %}</span>\n        {% } %}\n    </header>\n    {% } %}\n\n    {% if (data.style === 'more') { %}\n\n    <nav>\n    {% data.items.forEach(function(item){ %}\n        <div class=\"ck-item\">\n            {% get_item(item); %}\n        </div>\n    {% }); %}\n    </nav>\n\n    {% } else { %}\n\n    <ul>\n    {% data.items.forEach(function(item, i){ %}\n        {% if (i && (i % data.config.col === 0)) { %}\n            </ul><ul>\n        {% } %}\n        <li class=\"ck-item\" style=\"width:{%= (data.config.col ? Math.floor(1000/data.config.col)/10 + '%' : '') %};\">\n            {% get_item(item); %}\n            {% if (item.content) { %}\n            <span class=\"ck-content\">{%= item.content %}</span>\n            {% } %}\n            {% if (item.meta && item.meta.length) { %}\n            <span class=\"ck-meta\">{%= item.meta.join('</span><span class=\"ck-meta\">') %}</span>\n            {% } %}\n        </li>\n    {% }); %}\n    </ul>\n\n    {% } %}\n\n    {% if (data.ft) { %}\n    <footer>{%= data.ft %}</footer>\n    {% } %}\n\n</article>\n"}; 
+    return {"template":"\n{% function get_item(item){ %}\n    {% if (item.href) { %}\n        <a href=\"{%= item.href %}\" class=\"ck-link ck-initem\">{% get_content(item); %}</a>\n    {% } else { %}\n        <p class=\"ck-initem\">{% get_content(item); %}</p>\n    {% } %}\n{% } %}\n\n{% function get_content(item){ %}\n\n    {% if (item.info) { %}\n    <span class=\"ck-info\">{%= item.info %}</span>\n    {% } %}\n\n    {% if (item.icon) { %}\n    <img src=\"{%= item.icon %}\" class=\"ck-icon\"/>\n    {% } %}\n\n    {% if (item.title) { %}\n    <span class=\"ck-title\">{%= item.title %}</span>\n    {% } %}\n\n    {% if (data.style === 'post' || data.style === 'grid') { %}\n        {% if (!item.href) { %}\n            {% if (item.author_url) { %}\n            <a href=\"{%= item.author_url %}\" class=\"ck-link\">{%= item.author %}</a>\n            {% } else if (item.author) { %}\n            <span class=\"ck-title\">{%= item.author %}</span>\n            {% } %}\n        {% } %}\n        {% if (item.subtitle) { %}\n        <span class=\"ck-subtitle\">{%= item.subtitle %}</span>\n        {% } %}\n    {% } %}\n\n{% } %}\n\n\n<article>\n\n    {% if (data.hd) { %}\n    <header>\n        {% if (data.hd_url) { %}\n        <a href=\"{%= data.hd_url %}\" class=\"ck-link\">{%= data.hd %}</a>\n        {% } else { %}\n        <span>{%= data.hd %}</span>\n        {% } %}\n    </header>\n    {% } %}\n\n    {% if (data.items.length) { %}\n\n        {% if (data.style === 'more') { %}\n\n        <nav>\n        {% data.items.forEach(function(item){ %}\n            <div class=\"ck-item\">\n                {% get_item(item); %}\n            </div>\n        {% }); %}\n        </nav>\n\n        {% } else { %}\n\n        <ul>\n        {% data.items.forEach(function(item, i){ %}\n            {% if (i && (i % data.config.col === 0)) { %}\n                </ul><ul>\n            {% } %}\n            <li class=\"ck-item\" style=\"width:{%= (data.config.col ? Math.floor(1000/data.config.col)/10 + '%' : '') %};\">\n                {% get_item(item); %}\n                {% if (item.content) { %}\n                <span class=\"ck-content\">{%= item.content %}</span>\n                {% } %}\n                {% if (item.meta && item.meta.length) { %}\n                <span class=\"ck-meta\">{%= item.meta.join('</span><span class=\"ck-meta\">') %}</span>\n                {% } %}\n            </li>\n        {% }); %}\n        </ul>\n\n        {% } %}\n\n    {% } else { %}\n\n        <ul>\n            <li class=\"ck-item blank\">\n                <p class=\"ck-initem\">目前还没有内容</p>\n            </li>\n        </ul>\n\n    {% } %}\n\n    {% if (data.ft) { %}\n    <footer>{%= data.ft %}</footer>\n    {% } %}\n\n</article>\n"}; 
 
 });
 /* @source ../cardkit/tpl/unit/box.js */;
@@ -2423,7 +2423,7 @@ define("../cardkit/render", [
 
         card.find('.ck-box-unit').forEach(function(unit){
             var data = boxParser(unit, raw);
-            if (data.content) {
+            if (data.hasContent || data.hd) {
                 unit.innerHTML = tpl.convertTpl(tpl_box.template, data, 'data');
                 has_content = true;
             } else {
@@ -2451,7 +2451,7 @@ define("../cardkit/render", [
             if (data.config.limit) {
                 data.items.length = data.config.limit;
             }
-            if (data.items.length) {
+            if (data.hd || data.items.length) {
                 unit.innerHTML = tpl.convertTpl(tpl_list.template, data, 'data');
                 has_content = true;
             } else {
@@ -2473,7 +2473,7 @@ define("../cardkit/render", [
             if (data.config.limit) {
                 data.items.length = data.config.limit;
             }
-            if (data.items.length) {
+            if (data.hd || data.items.length) {
                 unit.innerHTML = tpl.convertTpl(tpl_mini.template, data, 'data');
                 has_content = true;
             } else {
@@ -2483,7 +2483,7 @@ define("../cardkit/render", [
 
         card.find('.ck-form-unit').forEach(function(unit){
             var data = formParser(unit, raw);
-            if (data.items.length) {
+            if (data.hd || data.items.length) {
                 unit.innerHTML = tpl.convertTpl(tpl_form.template, data, 'data');
                 has_content = true;
             } else {

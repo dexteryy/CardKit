@@ -180,6 +180,15 @@
       border:none;
     }
 
+    &.blank {
+      text-align:center;
+
+      .ck-initem {
+        background:none;
+      }
+
+    }
+
   }
 
   .ck-initem {
@@ -325,6 +334,11 @@
   .ck-item {
     @extend %item;
     border:none;
+
+    &.blank {
+      text-align:center;
+    }
+
   }
 
   .ck-title {
@@ -448,6 +462,10 @@
 
     &:last-child {
       border:none;
+    }
+
+    &.blank {
+      text-align:center;
     }
 
     p {

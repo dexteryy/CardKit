@@ -15,6 +15,12 @@
     <div class="ck-slide"><div class="ck-inslide">
     {% } %}
 
+        {% if (!data.items.length) { %}
+        <div class="ck-item enable blank">
+            <div class="ck-content">目前还没有内容</div>
+        </div>
+        {% } %}
+
         {% data.items.forEach(function(item, i){ %}
         <div class="ck-item{%=(i === 0 && ' enable' || '')%}">
             {% if (item.title) { %}

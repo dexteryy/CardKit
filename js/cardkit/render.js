@@ -24,7 +24,7 @@ define([
 
         card.find('.ck-box-unit').forEach(function(unit){
             var data = boxParser(unit, raw);
-            if (data.content) {
+            if (data.hasContent || data.hd) {
                 unit.innerHTML = tpl.convertTpl(tpl_box.template, data, 'data');
                 has_content = true;
             } else {
@@ -52,7 +52,7 @@ define([
             if (data.config.limit) {
                 data.items.length = data.config.limit;
             }
-            if (data.items.length) {
+            if (data.hd || data.items.length) {
                 unit.innerHTML = tpl.convertTpl(tpl_list.template, data, 'data');
                 has_content = true;
             } else {
@@ -74,7 +74,7 @@ define([
             if (data.config.limit) {
                 data.items.length = data.config.limit;
             }
-            if (data.items.length) {
+            if (data.hd || data.items.length) {
                 unit.innerHTML = tpl.convertTpl(tpl_mini.template, data, 'data');
                 has_content = true;
             } else {
@@ -84,7 +84,7 @@ define([
 
         card.find('.ck-form-unit').forEach(function(unit){
             var data = formParser(unit, raw);
-            if (data.items.length) {
+            if (data.hd || data.items.length) {
                 unit.innerHTML = tpl.convertTpl(tpl_form.template, data, 'data');
                 has_content = true;
             } else {
