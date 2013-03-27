@@ -232,6 +232,10 @@ define([
         actionCard.event.once('close', function(){
             ck.changeView(prev);
         });
+    }).bind('actionView:jump', function(actionCard, href, target){
+        actionCard.event.once('close', function(){
+            ck.openURL(href, { target: target });
+        });
     });
 
     var ck = {
@@ -705,7 +709,7 @@ define([
     //}
 
     function open_url(true_link, opt){
-        opt = opt || {};
+        opt = opt || { target: '_self' };
         if (opt.target !== '_self') {
             window.open(true_link, opt.target);
         } else {

@@ -29,8 +29,15 @@ define([
             elm.trigger('actionView:open', eprops);
         }).bind('close', function(){
             elm.trigger('actionView:close', eprops);
-        }).bind('confirm', function(){
-            elm.trigger('actionView:confirm', eprops);
+        }).bind('confirm', function(view, picker){
+            if (picker._lastSelected) {
+                var target = picker._lastSelected._node.attr('target');
+                if (target) {
+                    bus.fire('actionView:jump', [view, picker.val(), target]);
+                }
+            } else {
+                elm.trigger('actionView:confirm', eprops);
+            }
         }).bind('cancel', function(){
             elm.trigger('actionView:cancel', eprops);
         });

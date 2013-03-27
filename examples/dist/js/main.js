@@ -4917,12 +4917,12 @@ define('moui/actionview', [
         },
 
         confirm: function(){
-            this.event.fire('confirm', [this]);
+            this.event.fire('confirm', [this, this._picker]);
             return this.done();
         },
 
         cancel: function(){
-            this.event.fire('cancel', [this]);
+            this.event.fire('cancel', [this, this.picker]);
             return this.done();
         },
 
@@ -5005,8 +5005,15 @@ define("../cardkit/view/actionview", [
             elm.trigger('actionView:open', eprops);
         }).bind('close', function(){
             elm.trigger('actionView:close', eprops);
-        }).bind('confirm', function(){
-            elm.trigger('actionView:confirm', eprops);
+        }).bind('confirm', function(view, picker){
+            if (picker._lastSelected) {
+                var target = picker._lastSelected._node.attr('target');
+                if (target) {
+                    bus.fire('actionView:jump', [view, picker.val(), target]);
+                }
+            } else {
+                elm.trigger('actionView:confirm', eprops);
+            }
         }).bind('cancel', function(){
             elm.trigger('actionView:cancel', eprops);
         });
@@ -6577,6 +6584,10 @@ define("../cardkit/app", [
         actionCard.event.once('close', function(){
             ck.changeView(prev);
         });
+    }).bind('actionView:jump', function(actionCard, href, target){
+        actionCard.event.once('close', function(){
+            ck.openURL(href, { target: target });
+        });
     });
 
     var ck = {
@@ -7050,7 +7061,7 @@ define("../cardkit/app", [
     //}
 
     function open_url(true_link, opt){
-        opt = opt || {};
+        opt = opt || { target: '_self' };
         if (opt.target !== '_self') {
             window.open(true_link, opt.target);
         } else {

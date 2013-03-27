@@ -96,12 +96,12 @@ define('moui/actionview', [
         },
 
         confirm: function(){
-            this.event.fire('confirm', [this]);
+            this.event.fire('confirm', [this, this._picker]);
             return this.done();
         },
 
         cancel: function(){
-            this.event.fire('cancel', [this]);
+            this.event.fire('cancel', [this, this.picker]);
             return this.done();
         },
 

@@ -176,9 +176,9 @@
                 <button class="ck-actions-button actions3"
                         data-fluid="true">
                     <span>Jump list</span>
-                    <a href="picker.html" class="ck-option">picker.html</a>
-                    <a href="control.html" class="ck-option">control.html</a>
-                    <a href="index.html" class="ck-option">index.html</a>
+                    <a href="picker.html" class="ck-option" target="_self">picker.html</a>
+                    <a href="control.html" class="ck-option" target="_self">control.html</a>
+                    <a href="index.html" class="ck-option" target="_self">index.html</a>
                 </button>
                 <!--demo end-->
                 <div class="democode">
@@ -186,9 +186,9 @@
                     <button class="ck-actions-button actions3"
                             data-fluid="true">
                         <span>Jump list</span>
-                        <a href="picker.html" class="ck-option">picker.html</a>
-                        <a href="control.html" class="ck-option">control.html</a>
-                        <a href="index.html" class="ck-option">index.html</a>
+                        <a href="picker.html" class="ck-option" target="_self">picker.html</a>
+                        <a href="control.html" class="ck-option" target="_self">control.html</a>
+                        <a href="index.html" class="ck-option" target="_self">index.html</a>
                     </button>
                     ]]></script>
                 </div>
@@ -331,11 +331,6 @@ require([
             content: 'value: ' + result
         }).open();
     }
-
-    $('.actions3').bind('actionView:confirm', function(e){
-        var url = e.component.val();
-        ck.openURL(url);
-    });
 
 });
 
