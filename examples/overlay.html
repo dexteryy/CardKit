@@ -245,7 +245,7 @@
 <div class="ck-raw">
 
 <script type="text/template" class="formBox">
-<form action="post_result.html" id="ajaxForm1">
+<form action="data/post_result.json" id="inlineForm1">
 <div class="ck-form-unit">
     <div class="ckd-item">
         <label class="ck-title">章节名</label>
@@ -262,6 +262,43 @@
 
 <script type="text/jscode" class="formBox">
 console.info('execute js for formBox');
+require([
+    'dollar', 
+    'mo/network', 
+    'cardkit/app'
+], function($, net, ck){
+    ck.modalCard.event.once('confirm', function(modal, done){
+        var form = $('#inlineForm1');
+        modal.showLoading();
+        net.ajax({
+            url: form.attr('action'),
+            type: 'post',
+            data: new FormData(form[0]),
+            processData: false,
+            contentType: false,
+            success: function(maybe_json){
+                modal.hideLoading();
+                var json;
+                try {
+                    json = eval(maybe_json);
+                } catch(ex) {
+                    json = { e: 0 };
+                }
+                if (!json.e) {
+                    modal.done();
+                    modal.event.once('close', function(){
+                        location.reload();
+                    });
+                } else {
+                    ck.growl({
+                        content: '提交出错！',
+                        corner: 'bottom'
+                    }).open();
+                }
+            }
+        });
+    });
+});
 </script>
 
 </div>
