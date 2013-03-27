@@ -2491,7 +2491,7 @@ define("../cardkit/render", [
             }
         });
 
-        if (!has_content) {
+        if (!has_content && !opt.isModal) {
             card.append(tpl_blank.template);
         }
 
