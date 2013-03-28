@@ -122,6 +122,10 @@
       padding:0;
       margin-left:0;
       margin-right:0;
+
+      span {
+        padding:0;
+      }
     }
 
     & > article > footer {
@@ -134,6 +138,12 @@
       margin:0;
       padding-left:$text_space;
       padding-right:$text_space;
+
+      &:first-child {
+        padding-top:0;
+        padding-bottom:0;
+      }
+
     }
 
   }
@@ -145,8 +155,9 @@
     @include user-select(text);
 
     & > article > header {
-      border-bottom:1px solid $border_color;
+      //border-bottom:1px solid $border_color;
       padding:0 0 $space 0;
+      line-height:160%;
 
       .ck-link, span {
         font-size: $headtitle_size;
@@ -156,8 +167,10 @@
 
     & > article > section {
       padding:50px 0 $space 0;
+      margin:0;
       font-size:$article_size;
-      line-height:60px/2;
+      line-height:(54px/2);
+      font-size:(34px/2);
 
       p {
         padding:0 0 (50px/2) 0;
