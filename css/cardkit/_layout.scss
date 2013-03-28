@@ -23,6 +23,10 @@ body {
 
 }
 
+pre {
+  white-space:normal;
+}
+
 a {
   text-decoration:none;
   color:$active_color;

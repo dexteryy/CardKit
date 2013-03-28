@@ -147,6 +147,10 @@ body.modal-view .ck-root {
   transform: scale(0.8);
 }
 
+pre {
+  white-space: normal;
+}
+
 a {
   text-decoration: none;
   color: #006ae2;
