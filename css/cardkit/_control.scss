@@ -2,7 +2,7 @@
 @import "moui/control/folder";
 
 .ck-post-button {
-  @extend %button;
+  @extend .ck-button;
 
   &.enabled {
     @extend %block-pressed;
@@ -19,11 +19,11 @@
 }
 
 .ck-modal-button {
-  @extend %button;
+  @extend .ck-button;
 }
 
 .ck-actions-button {
-  @extend %button;
+  @extend .ck-button;
   span {
     background:$folder_icon no-repeat right center;
     background-size:10px;
@@ -35,5 +35,5 @@
 }
 
 .ck-growl-button {
-  @extend %button;
+  @extend .ck-button;
 }
