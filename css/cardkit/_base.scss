@@ -5,6 +5,10 @@ $top_btn_size: 48px/2;
 
 $text_space: 40px/2;
 
-.ck-base-btn {
+.ckbase-btn {
   @extend %button;
+}
+
+.ckbase-mainbtn {
+  @extend %main-button;
 }

@@ -100,7 +100,7 @@ $zindex_step: 10;
   }
 
   &[data-is-default="true"] {
-    @extend %button-default;
+    @extend %main-button;
   }
 
   &:active {
@@ -115,7 +115,7 @@ $zindex_step: 10;
 
 }
 
-%button-default {
+%main-button {
   @extend %block-enabled;
 
   &:active {
