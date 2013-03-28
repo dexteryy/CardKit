@@ -16,8 +16,10 @@ define([
                 plainhd: unit.data('cfgPlainhd')
             },
             hd = get_hd(source && source.find('.ckd-hd')),
+            hd_opt = get_all_outer(source && source.find('.ckd-hdopt')),
             items = source && source.find('.ckd-item'),
             custom_hd = (util.getCustom('.ckd-hd', unit, raw, get_hd) || [{}])[0],
+            custom_hd_opt = (util.getCustom('.ckd-hdopt', unit, raw, get_all_outer) || []).join(''),
             custom_items = util.getCustom('.ckd-item', unit, raw, get_item) || $();
         if (source && !items[0]) {
             items = source;
@@ -27,6 +29,7 @@ define([
             config: config,
             style: unit.data('style'),
             items: custom_items.concat(items || $()),
+            hd_opt: custom_hd_opt + hd_opt,
             hd: custom_hd.html === undefined ? hd.html : custom_hd.html,
             hd_url: custom_hd.href || custom_hd.href !== null && hd.href
         };
@@ -75,6 +78,13 @@ define([
                 }
             }
         }
+        return data;
+    }
+
+    function get_all_outer(source){
+        source = $(source);
+        var data = util.getOuterHTML(source) || '';
+        source.remove();
         return data;
     }
 

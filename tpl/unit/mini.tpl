@@ -8,6 +8,9 @@
         {% } else { %}
         <span>{%= data.hd %}</span>
         {% } %}
+        {% if (data.hd_opt) { %}
+        <div class="ck-hdopt">{%=data.hd_opt%}</div>
+        {% } %}
     </header>
     {% } %}
 

@@ -545,6 +545,36 @@
 .ck-list-unit,
 .ck-form-unit {
 
+  & > article > header {
+    position:relative;
+  }
+
+  .ck-hdopt {
+    display:inline-block;
+    position:absolute;
+    top:$space;
+    right:0;
+    font-size:$title_size;
+    line-height:$button_height+2px;
+    height:$button_height+2px;
+    background:#fff;
+
+    & > * {
+      margin:0 5px;
+    }
+
+  }
+
+  &[data-cfg-plain="true"],
+  &[data-cfg-plainhd="true"] {
+
+    .ck-hdopt {
+      top:0;
+      background:none;
+    }
+
+  }
+
   &[data-cfg-plainhd="true"] {
     position:relative;
     margin-top:($maintitle_size + $space*3);
@@ -553,6 +583,7 @@
       position:absolute;
       top:-($maintitle_size + $space*2);
       left:0;
+      width:100%;
       padding:0;
       margin-left:0;
       margin-right:0;

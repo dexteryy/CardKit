@@ -606,7 +606,7 @@ define([
             if ($(me).hasClass('ck-link')) {
                 next_id = (me.href.replace(location.href, '')
                     .match(/^#(.+)/) || [])[1];
-            } else if (/^ck-\w+/.test(me.className)) {
+            } else if (/(^|\s)ck-\w+/.test(me.className)) {
                 return;
             } else if (me.target) {
                 open_url(me.href, me);

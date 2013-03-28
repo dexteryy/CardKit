@@ -148,7 +148,7 @@ body.modal-view .ck-root {
 }
 
 pre {
-  white-space: normal;
+  word-wrap: break-word;
 }
 
 a {
@@ -837,6 +837,41 @@ a {
   height: 176px;
 }
 
+.ck-box-unit > article > header,
+.ck-mini-unit > article > header,
+.ck-list-unit > article > header,
+.ck-form-unit > article > header {
+  position: relative;
+}
+.ck-box-unit .ck-hdopt,
+.ck-mini-unit .ck-hdopt,
+.ck-list-unit .ck-hdopt,
+.ck-form-unit .ck-hdopt {
+  display: inline-block;
+  position: absolute;
+  top: 15px;
+  right: 0;
+  font-size: 13px;
+  line-height: 31px;
+  height: 31px;
+  background: #fff;
+}
+.ck-box-unit .ck-hdopt > *,
+.ck-mini-unit .ck-hdopt > *,
+.ck-list-unit .ck-hdopt > *,
+.ck-form-unit .ck-hdopt > * {
+  margin: 0 5px;
+}
+.ck-box-unit[data-cfg-plain="true"] .ck-hdopt, .ck-box-unit[data-cfg-plainhd="true"] .ck-hdopt,
+.ck-mini-unit[data-cfg-plain="true"] .ck-hdopt,
+.ck-mini-unit[data-cfg-plainhd="true"] .ck-hdopt,
+.ck-list-unit[data-cfg-plain="true"] .ck-hdopt,
+.ck-list-unit[data-cfg-plainhd="true"] .ck-hdopt,
+.ck-form-unit[data-cfg-plain="true"] .ck-hdopt,
+.ck-form-unit[data-cfg-plainhd="true"] .ck-hdopt {
+  top: 0;
+  background: none;
+}
 .ck-box-unit[data-cfg-plainhd="true"],
 .ck-mini-unit[data-cfg-plainhd="true"],
 .ck-list-unit[data-cfg-plainhd="true"],
@@ -851,6 +886,7 @@ a {
   position: absolute;
   top: -45px;
   left: 0;
+  width: 100%;
   padding: 0;
   margin-left: 0;
   margin-right: 0;
