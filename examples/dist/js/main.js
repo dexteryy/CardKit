@@ -7015,7 +7015,8 @@ define("../cardkit/app", [
                 next_id = 'ckLoading';
                 next = ck.loadingCard;
                 true_link = me.href;
-                pageSession.clear(pageSession.indexOf(location.href));
+                //pageSession.clear(pageSession.indexOf(location.href));
+                pageSession.reset();
             } else {
                 return;
             }
@@ -7112,7 +7113,8 @@ define("../cardkit/app", [
             ck.sessionLocked = true;
             var next_id = 'ckLoading';
             var next = ck.loadingCard;
-            pageSession.clear(pageSession.indexOf(location.href));
+            //pageSession.clear(pageSession.indexOf(location.href));
+            pageSession.reset();
             var current = ck.viewport;
             ck.globalMask.show();
             push_history(current[0].id, next_id, true_link);
