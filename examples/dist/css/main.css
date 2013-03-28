@@ -459,7 +459,6 @@ a {
 }
 
 .ck-box-unit:not([data-cfg-paper]), .ck-list-unit, .ck-mini-unit, .ck-form-unit, .ck-blank-unit {
-  overflow: hidden;
   margin: 15px;
   background-color: #fff;
   border: 1px solid white;
@@ -524,32 +523,11 @@ a {
   color: #787878;
 }
 
-.ck-box-unit:not([data-cfg-paper]) {
-  overflow: visible;
-}
 .ck-box-unit:not([data-cfg-paper]) > article > header {
   border-bottom: 0;
 }
 .ck-box-unit:not([data-cfg-paper]) > article > footer {
   margin-top: 14px;
-}
-.ck-box-unit[data-cfg-plainhd="true"] {
-  position: relative;
-  margin-top: 75px;
-}
-.ck-box-unit[data-cfg-plainhd="true"] > article > header {
-  position: absolute;
-  top: -45px;
-  left: 0;
-  padding: 0;
-  margin-left: 0;
-  margin-right: 0;
-}
-.ck-box-unit[data-cfg-plainhd="true"] > article > header span {
-  padding: 0;
-}
-.ck-box-unit[data-cfg-plainhd="true"] > article > section {
-  border-top: none;
 }
 .ck-box-unit > article > section {
   border-top: 1px solid #dadada;
@@ -614,7 +592,7 @@ a {
   font-size: 20px;
 }
 .ck-box-unit[data-cfg-paper] > article > section {
-  padding: 50px 0 15px 0;
+  padding: 40px 0 15px 0;
   margin: 0;
   font-size: 20px;
   line-height: 27px;
@@ -857,6 +835,38 @@ a {
 }
 .ck-form-unit .ck-item textarea {
   height: 176px;
+}
+
+.ck-box-unit[data-cfg-plainhd="true"],
+.ck-mini-unit[data-cfg-plainhd="true"],
+.ck-list-unit[data-cfg-plainhd="true"],
+.ck-form-unit[data-cfg-plainhd="true"] {
+  position: relative;
+  margin-top: 60px;
+}
+.ck-box-unit[data-cfg-plainhd="true"] > article > header,
+.ck-mini-unit[data-cfg-plainhd="true"] > article > header,
+.ck-list-unit[data-cfg-plainhd="true"] > article > header,
+.ck-form-unit[data-cfg-plainhd="true"] > article > header {
+  position: absolute;
+  top: -45px;
+  left: 0;
+  padding: 0;
+  margin-left: 0;
+  margin-right: 0;
+  border: none;
+}
+.ck-box-unit[data-cfg-plainhd="true"] > article > header span,
+.ck-mini-unit[data-cfg-plainhd="true"] > article > header span,
+.ck-list-unit[data-cfg-plainhd="true"] > article > header span,
+.ck-form-unit[data-cfg-plainhd="true"] > article > header span {
+  padding: 0;
+}
+.ck-box-unit[data-cfg-plainhd="true"] > article > section,
+.ck-mini-unit[data-cfg-plainhd="true"] > article > section,
+.ck-list-unit[data-cfg-plainhd="true"] > article > section,
+.ck-form-unit[data-cfg-plainhd="true"] > article > section {
+  border-top: none;
 }
 
 .ck-banner-unit {
