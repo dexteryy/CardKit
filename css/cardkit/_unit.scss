@@ -83,6 +83,7 @@
 
   &:not([data-cfg-paper]) {
     @extend %ck-unit;
+    overflow:visible;
 
     & > article > header {
       border-bottom:0;
@@ -90,6 +91,30 @@
 
     & > article > footer {
       margin-top:(28px/2);
+    }
+
+  }
+
+  &[data-cfg-plainhd="true"] {
+    position:relative;
+    margin-top:($maintitle_size + $space*4);
+  
+    & > article > header {
+      position:absolute;
+      top:-($maintitle_size + $space*2);
+      left:0;
+      padding:0;
+      margin-left:0;
+      margin-right:0;
+
+      span {
+        padding:0;
+      }
+
+    }
+
+    & > article > section {
+      border-top:none;
     }
 
   }

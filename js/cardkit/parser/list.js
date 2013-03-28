@@ -14,7 +14,8 @@ define([
                 limit: unit.data('cfgLimit'),
                 col: unit.data('cfgCol'),
                 paper: unit.data('cfgPaper'),
-                plain: unit.data('cfgPlain')
+                plain: unit.data('cfgPlain'),
+                plainhd: unit.data('cfgPlainhd')
             },
             hd = get_hd(source && source.find('.ckd-hd')),
             ft = get_hd(source && source.find('.ckd-ft')),

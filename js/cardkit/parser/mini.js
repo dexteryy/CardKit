@@ -12,7 +12,8 @@ define([
         var source = util.getSource(unit, raw),
             config = {
                 limit: unit.data('cfgLimit'),
-                plain: unit.data('cfgPlain')
+                plain: unit.data('cfgPlain'),
+                plainhd: unit.data('cfgPlainhd')
             },
             hd = get_hd(source && source.find('.ckd-hd')),
             items = source && source.find('.ckd-item'),

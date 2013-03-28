@@ -1904,6 +1904,7 @@ define("../cardkit/parser/form", [
         unit = $(unit);
         var source = util.getSource(unit, raw),
             config = {
+                plainhd: unit.data('cfgPlainhd')
             },
             hd = get_hd(source && source.find('.ckd-hd')),
             ft = get_hd(source && source.find('.ckd-ft')),
@@ -1975,7 +1976,8 @@ define("../cardkit/parser/mini", [
         var source = util.getSource(unit, raw),
             config = {
                 limit: unit.data('cfgLimit'),
-                plain: unit.data('cfgPlain')
+                plain: unit.data('cfgPlain'),
+                plainhd: unit.data('cfgPlainhd')
             },
             hd = get_hd(source && source.find('.ckd-hd')),
             items = source && source.find('.ckd-item'),
@@ -2062,7 +2064,8 @@ define("../cardkit/parser/list", [
                 limit: unit.data('cfgLimit'),
                 col: unit.data('cfgCol'),
                 paper: unit.data('cfgPaper'),
-                plain: unit.data('cfgPlain')
+                plain: unit.data('cfgPlain'),
+                plainhd: unit.data('cfgPlainhd')
             },
             hd = get_hd(source && source.find('.ckd-hd')),
             ft = get_hd(source && source.find('.ckd-ft')),
@@ -2148,7 +2151,8 @@ define("../cardkit/parser/box", [
         var source = util.getSource(unit, raw),
             config = {
                 paper: unit.data('cfgPaper'),
-                plain: unit.data('cfgPlain')
+                plain: unit.data('cfgPlain'),
+                plainhd: unit.data('cfgPlainhd')
             },
             hd = get_hd(source && source.find('.ckd-hd')),
             ft = get_hd(source && source.find('.ckd-ft')),

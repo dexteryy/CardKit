@@ -524,11 +524,32 @@ a {
   color: #787878;
 }
 
+.ck-box-unit:not([data-cfg-paper]) {
+  overflow: visible;
+}
 .ck-box-unit:not([data-cfg-paper]) > article > header {
   border-bottom: 0;
 }
 .ck-box-unit:not([data-cfg-paper]) > article > footer {
   margin-top: 14px;
+}
+.ck-box-unit[data-cfg-plainhd="true"] {
+  position: relative;
+  margin-top: 75px;
+}
+.ck-box-unit[data-cfg-plainhd="true"] > article > header {
+  position: absolute;
+  top: -45px;
+  left: 0;
+  padding: 0;
+  margin-left: 0;
+  margin-right: 0;
+}
+.ck-box-unit[data-cfg-plainhd="true"] > article > header span {
+  padding: 0;
+}
+.ck-box-unit[data-cfg-plainhd="true"] > article > section {
+  border-top: none;
 }
 .ck-box-unit > article > section {
   border-top: 1px solid #dadada;

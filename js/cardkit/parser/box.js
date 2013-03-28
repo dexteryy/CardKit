@@ -10,7 +10,8 @@ define([
         var source = util.getSource(unit, raw),
             config = {
                 paper: unit.data('cfgPaper'),
-                plain: unit.data('cfgPlain')
+                plain: unit.data('cfgPlain'),
+                plainhd: unit.data('cfgPlainhd')
             },
             hd = get_hd(source && source.find('.ckd-hd')),
             ft = get_hd(source && source.find('.ckd-ft')),
