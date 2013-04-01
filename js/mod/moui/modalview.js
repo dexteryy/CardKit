@@ -128,12 +128,16 @@ define('moui/modalview', [
 
         cancel: function(){
             this.event.fire('cancel', [this]);
-            this.done();
+            this.ok();
             return this;
         },
 
-        done: function(){
-            return this.close();
+        ok: function(){
+            var self = this;
+            setTimeout(function(){
+                self.close();
+            }, 0);
+            return this.event.promise('close');
         },
 
         open: function(){
@@ -157,6 +161,8 @@ define('moui/modalview', [
         }
 
     });
+
+    ModalView.prototype.done = ModalView.prototype.ok;
 
     function exports(opt) {
         return new exports.ModalView(opt);

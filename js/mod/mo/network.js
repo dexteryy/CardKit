@@ -98,4 +98,16 @@ define("mo/network", [
         img.src = !params ? url : [url, /\?/.test(url) ? "&" : "?", typeof params == "string" ? params : exports.httpParam(params)].join('');
     };
 
+    exports.parseJSON = function(json){
+        json = json
+            .replace(/^[\w\(<\!\->\s]*?\{/, '{')
+            .replace(/[^\}]*$/, '');
+        try {
+            json = window.JSON ? window.JSON.parse(json) : eval(json);
+        } catch(ex) {
+            json = false;
+        }
+        return json;
+    };
+
 });

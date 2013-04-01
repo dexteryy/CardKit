@@ -267,7 +267,7 @@ require([
     'mo/network', 
     'cardkit/app'
 ], function($, net, ck){
-    ck.modalCard.event.once('confirm', function(modal, done){
+    ck.modalCard.event.bind('confirmOnThis', function(modal){
         var form = $('#inlineForm1');
         modal.showLoading();
         net.ajax({
@@ -278,19 +278,14 @@ require([
             contentType: false,
             success: function(maybe_json){
                 modal.hideLoading();
-                var json;
-                try {
-                    json = eval(maybe_json);
-                } catch(ex) {
-                    json = { e: 0 };
-                }
+                var json = net.parseJSON(maybe_json) || { e: 0 };
                 if (!json.e) {
-                    modal.done();
-                    modal.event.once('close', function(){
+                    modal.ok().then(function(){
                         location.reload();
                     });
                 } else {
                     ck.growl({
+                        expires: 3000,
                         content: '提交出错！',
                         corner: 'bottom'
                     }).open();

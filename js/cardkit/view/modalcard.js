@@ -48,14 +48,20 @@ define([
         return origin_set.call(this, opt);
     };
     
-    modalCard.done = function(){
+    modalCard.ok = modalCard.done = function(){
         if (!history.state) {
             history.go(-2);
         } else {
             history.back();
         }
-        return this;
+        return this.event.promise('close');
     };
+
+    modalCard.event.bind('confirm', function(modal){
+        modal.event.fire('confirmOnThis', arguments);
+    }).bind('close', function(modal){
+        modal.event.unbind('confirmOnThis');
+    });
 
     return modalCard;
 
