@@ -5050,13 +5050,12 @@ define("../cardkit/view/actionview", [
         }).bind('close', function(){
             elm.trigger('actionView:close', eprops);
         }).bind('confirm', function(view, picker){
+            elm.trigger('actionView:confirm', eprops);
             if (picker._lastSelected) {
                 var target = picker._lastSelected._node.attr('target');
                 if (target) {
                     bus.fire('actionView:jump', [view, picker.val(), target]);
                 }
-            } else {
-                elm.trigger('actionView:confirm', eprops);
             }
         }).bind('cancel', function(){
             elm.trigger('actionView:cancel', eprops);
