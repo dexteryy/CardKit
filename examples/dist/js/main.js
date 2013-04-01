@@ -5562,7 +5562,7 @@ define("mo/network", [
 
     exports.parseJSON = function(json){
         json = json
-            .replace(/^[\w\(<\!\->\s]*?\{/, '{')
+            .replace(/^[\w(<\/*!\s]*?\{/, '{')
             .replace(/[^\}]*$/, '');
         try {
             json = window.JSON ? window.JSON.parse(json) : eval(json);
