@@ -22,7 +22,7 @@ require([
     'mo/network', 
     'cardkit/app'
 ], function($, net, ck){
-    ck.modalCard.event.once('confirm', function(modal, done){
+    ck.modalCard.event.once('confirm', function(modal){
         modal.showLoading();
         net.ajax({
             url: 'post_result.html',
@@ -32,7 +32,7 @@ require([
             contentType: false,
             success: function(){
                 modal.hideLoading();
-                modal.done();
+                modal.ok();
             }
         });
     });

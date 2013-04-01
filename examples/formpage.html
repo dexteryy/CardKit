@@ -34,7 +34,7 @@ parent.require([
     'dollar', 
     'cardkit/app'
 ], function($, ck){
-    ck.modalCard.event.once('confirm', function(modal, done){
+    ck.modalCard.event.once('confirm', function(modal){
         modal.showLoading();
         $('#iframeForm1', document).bind('submit', function(e){
             modal.hideLoading();

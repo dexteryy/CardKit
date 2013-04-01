@@ -4962,16 +4962,20 @@ define('moui/actionview', [
 
         confirm: function(){
             this.event.fire('confirm', [this, this._picker]);
-            return this.done();
+            return this.ok();
         },
 
         cancel: function(){
             this.event.fire('cancel', [this, this.picker]);
-            return this.done();
+            return this.ok();
         },
 
-        done: function(){
-            return this.close();
+        ok: function(){
+            var self = this;
+            setTimeout(function(){
+                self.close();
+            }, 0);
+            return this.event.promise('close');
         },
 
         open: function(){
@@ -4998,6 +5002,8 @@ define('moui/actionview', [
         }
 
     });
+
+    ActionView.prototype.done = ActionView.prototype.ok;
 
     ['select', 'unselect', 'undo',
         'selectAll', 'unselectAll', 'selectInvert'].forEach(function(method){
