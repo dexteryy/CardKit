@@ -193,6 +193,36 @@
                     ]]></script>
                 </div>
             </div>
+            <div class="ckd-item">
+                <!--demo-->
+                <button class="my-actions-button"
+                        data-fluid="true">
+                    <span>Generated Action menu</span>
+                </button>
+                <!--demo end-->
+                <div class="democode">
+                    <script type="syntaxhighlighter" class="brush: html"><![CDATA[
+                    <button class="my-actions-button"
+                            data-fluid="true">
+                        <span>Generated Action menu</span>
+                    </button>
+                    ]]></script>
+                    <script type="syntaxhighlighter" class="brush: js"><![CDATA[
+                    $('.my-actions-button').bind('tap', function(){
+                        ck.actionView(this, {
+                            title: 'This is title',
+                            content: 'This is content',
+                            options: [
+                                '<a href="picker.html" class="ck-option" target="_self">picker.html</a>',
+                                '<a href="index.html" class="ck-option" target="_self">index.html</a>',
+                                '<input class="ck-option" type="button" value="A">',
+                                '<input class="ck-option" type="button" value="B">'
+                            ].join('')
+                        }).open();
+                    });
+                    ]]></script>
+                </div>
+            </div>
         </div>
 
         <div class="ck-form-unit">
@@ -326,6 +356,21 @@ require([
             content: 'value: ' + result
         }).open();
     }
+
+    $('.my-actions-button').bind('tap', function(){
+        ck.actionView(this, {
+            title: 'This is title',
+            content: 'This is content',
+            options: [
+                '<a href="picker.html" class="ck-option" target="_self">picker.html</a>',
+                '<a href="index.html" class="ck-option" target="_self">index.html</a>',
+                '<input class="ck-option" type="button" value="A">',
+                '<input class="ck-option" type="button" value="B">'
+            ].join('')
+        }).open();
+    });
+
+    $('.my-actions-button').bind('actionView:confirm', when_confirm);
 
 });
 
