@@ -321,9 +321,12 @@ require([
                 modal.hideLoading();
                 var json = net.parseJSON(maybe_json) || { e: 0 };
                 if (!json.e) {
-//                    modal.ok().then(function(){
-                        ck.openURL('picker.html');
-//                    });
+                    //ck.openURL('picker.html');
+                    location.href = 'picker.html';
+                    //location.reload();
+                    //modal.ok().then(function(){
+                        //location.reload();
+                    //});
                 } else {
                     ck.growl({
                         expires: 3000,

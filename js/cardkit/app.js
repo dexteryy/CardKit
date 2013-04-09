@@ -383,7 +383,7 @@ define([
                 if (e.state) {
                     if (e.state.next === '_modal_') {
                         // 11. forward from normal card, show modal card.  alert(11)
-                        if (loading) {
+                        if (modalCard.isOpened || loading || !ck.viewport) {
                             history.back();
                         } else {
                             modalCard.set(e.state.opt).open();
