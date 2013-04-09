@@ -15,7 +15,7 @@
     -webkit-overflow-scrolling: touch;
 
     .content {
-      padding:0 $space $space $space;
+      padding:$space/2 $space $space $space;
       overflow:hidden;
 
       & > header {
@@ -39,8 +39,8 @@
       & > article {
         position:absolute;
         bottom:$space * 3 + $button_height;
-        left:$space*2;
-        right:$space*2;
+        left:$space;
+        right:$space;
       }
 
     }
@@ -97,6 +97,7 @@
     height:100%;
     background:#121212;
     opacity:0.8;
+    z-index:-1;
   }
 
   &.active {
