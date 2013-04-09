@@ -321,12 +321,23 @@ require([
                 modal.hideLoading();
                 var json = net.parseJSON(maybe_json) || { e: 0 };
                 if (!json.e) {
-                    //ck.openURL('picker.html');
+
+                    location.href = 'redirect.html';
+
+                    /**
+                     * other usecase:
+                     */
+
                     //location.href = 'http://www.douban.com/photos/album/46548339/';
-                    location.reload();
+
+                    //ck.openURL('picker.html');
+
+                    //location.reload();
+
                     //modal.ok().then(function(){
                         //location.reload();
                     //});
+
                 } else {
                     ck.growl({
                         expires: 3000,

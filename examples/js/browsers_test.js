@@ -69,5 +69,26 @@ require([
         console.info('data("enableUrl"): ', test.data('enableUrl'));
     });
 
+    var n = 0;
+
+    $('.btn5').bind('click', function(){
+        push_history();
+    });
+
+    $(window).bind("popstate", function(e){
+        console.warn('pop', e, e.state, history, history.state);
+    });
+
+    console.warn('load', history, history.state);
+
+    function push_history(){
+        history.pushState({
+            prev: n,
+            next: ++n,
+            i: history.length
+        }, document.title, location.href);
+        console.warn('push', history, history.state);
+    }
+
 });
 

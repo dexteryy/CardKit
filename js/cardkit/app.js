@@ -1,6 +1,7 @@
 define([
     'dollar',
     'mo/lang',
+    'mo/browsers',
     'mo/template',
     'soviet',
     'choreo',
@@ -17,21 +18,22 @@ define([
     './view/growl',
     './view/slidelist',
     './bus',
-    './pagesession',
     './render',
     'mo/domready'
-], function($, _, tpl, soviet, choreo, 
+], function($, _, tpl, browsers, soviet, choreo, 
     momoBase, momoTap, momoSwipe, momoDrag, momoScroll, 
     control, picker, stars, modalCard, actionView, growl, slidelist,
-    bus, pageSession, render){
+    bus, render){
 
     var window = this,
+        history = window.history,
         location = window.location,
         document = window.document,
         body = document.body,
         back_timeout,
         gc_id = 0,
 
+        SUPPORT_HISTORY = !browsers.crios && 'pushState' in history,
         SUPPORT_OVERFLOWSCROLL = "webkitOverflowScrolling" in body.style,
 
         TPL_MASK = '<div class="ck-globalmask"></div>';
@@ -371,90 +373,97 @@ define([
 
         initState: function(){
 
-            $(window).bind("popstate", function(e){
-                // alert(['pop', e.state && [e.state.prev, e.state.next], ck.viewport && ck.viewport[0].id].join(', '))
-                if (ck.sessionLocked) {
-                    pageSession.reset();
-                    location.reload();
-                    return;
-                }
-                clearTimeout(back_timeout);
-                var loading = ck.viewport[0].id === 'ckLoading'; 
-                if (e.state) {
-                    if (e.state.next === '_modal_') {
-                        // 11. forward from normal card, show modal card.  alert(11)
-                        if (modalCard.isOpened || loading || !ck.viewport) {
-                            modalCard.event.once('close', function(){
-                                pageSession.reset();
-                            });
-                            history.back();
-                        } else {
-                            modalCard.set(e.state.opt).open();
-                        }
-                    } else if (modalCard.isOpened) {
-                        // 12. back from modal card.  alert(12)
-                        ck.closeModal();
-                    } else if (loading) {
-                        if (e.state.next === 'ckLoading') {
-                            // 6. back from other page, no GC. 
-                            //    go to 2.  alert(6)
-                            history.back();
-                        } else {
-                            // 7. from 6, hide loading immediately.  alert(7)
-                            ck.changeView(e.state.next);
-                            ck.hideLoading();
-                        }
-                    } else if (e.state.prev === ck.viewport[0].id) {
-                        // 3. forward from normal card.  alert(3)
-                        link_handler(e.state.next, e.state.link);
-                    } else if (e.state.next === ck.viewport[0].id){ // @TODO hotfix for chrome
-                        history.back();
-                    } else {
-                        // 2. back from normal card.  alert(2)
-                        back_handler(e.state.next);
-                    }
-                } else if (loading) {
-                    // 5. forward from other page, no GC.  alert(5)
-                    history.forward();
-                } else { 
-                    // 4. back to other page, shift left and show loading.
-                    //    if no GC: go to 6.
-                    //    if no prev page: reload, go to 8
-                    //    else: go to 8.  alert(4)
-                    back_handler('ckLoading');
-                }
-            });
-
             ck.sessionLocked = false;
 
-            pageSession.init();
+            var is_forward, restore_state;
 
-            var current_state = history.state,
-                restore_state = current_state && current_state.next; // alert(['init', current_state && [current_state.prev, current_state.next], ck.viewport && ck.viewport[0].id].join(', '))
-            if (restore_state === '_modal_') { // @TODO
-                restore_state = current_state.prev;
-                if (!modalCard.isOpened && ck.viewport) {
-                    modalCard.set(history.state.opt).open();
+            if (SUPPORT_HISTORY) {
+                $(window).bind("popstate", function(e){
+                    // alert(['pop', e.state && [e.state.prev, e.state.next].join('-'), ck.viewport && ck.viewport[0].id].join(', '))
+                    if (ck.sessionLocked) {
+                        location.reload();
+                        return;
+                    }
+                    clearTimeout(back_timeout);
+                    var loading = ck.viewport[0].id === 'ckLoading'; 
+                    if (e.state) {
+                        if (e.state.next === '_modal_') {
+                            // 11. forward from normal card, show modal card.  alert(11)
+                            if (modalCard.isOpened || loading || !ck.viewport) {
+                                history.back();
+                            } else {
+                                modalCard.set(e.state.opt).open();
+                            }
+                        } else if (modalCard.isOpened) {
+                            // 12. back from modal card.  alert(12)
+                            ck.closeModal();
+                        } else if (loading) {
+                            if (e.state.next === 'ckLoading') {
+                                // 6. back from other page, no GC. 
+                                //    go to 2.  alert(6)
+                                history.back();
+                            } else if (e.state.next) {
+                                // 7. from 6, hide loading immediately.  alert(7)
+                                ck.changeView(e.state.next);
+                                ck.hideLoading();
+                            }
+                        } else if (e.state.prev === ck.viewport[0].id) {
+                            // 3. forward from normal card.  alert(3)
+                            link_handler(e.state.next, e.state.link);
+                        } else if (e.state.next === ck.viewport[0].id){ // @TODO hotfix for chrome
+                            history.back();
+                        } else {
+                            // 2. back from normal card.  alert(2)
+                            back_handler(e.state.next);
+                        }
+                    } else if (loading) {
+                        // 5. forward from other page, no GC.  alert(5)
+                        history.forward();
+                    } else { 
+                        // 4. back to other page, shift left and show loading.
+                        //    if no GC: go to 6.
+                        //    if no prev page: reload, go to 8
+                        //    else: go to 8.  alert(4)
+                        back_handler('ckLoading');
+                    }
+                });
+
+                //alert('length: ' + history.length + ', ' + document.referrer)
+                var last_length = sessionStorage['ck_ss_n'],
+                    last_loc = sessionStorage['ck_ss_loc'];
+                is_forward = last_length && last_length == history.length 
+                    && document.referrer && last_loc === document.referrer;
+                sessionStorage['ck_ss_n'] = history.length;
+                sessionStorage['ck_ss_loc'] = location.href;
+
+                var current_state = history.state,
+                    restore_state = current_state && current_state.next; // alert(['init', current_state && [current_state.prev, current_state.next].join('-'), ck.viewport && ck.viewport[0].id].join(', '))
+                if (restore_state === '_modal_') { // @TODO
+                    restore_state = current_state.prev;
+                    if (!modalCard.isOpened && ck.viewport) {
+                        modalCard.set(history.state.opt).open();
+                    }
                 }
+
             }
+
             if (restore_state) {
-                // 1. reload from normal card.  alert(0)
+                // 1. reload from normal card.  alert(1)
                 ck.changeView(restore_state);
                 if (restore_state === 'ckLoading') {
                     // 9.  alert(9)
                     history.back();
                 }
             } else {
-                if (pageSession.indexOf(location.href) !== -1) {
-                    // 8. reload from loading card.
-                    //    or forward from other page.  alert(8)
+                //console.info(is_refresh, history.state, ck.viewport[0].id, last_url, location.href)
+                if (is_forward) {
+                    // 8.  alert(8)
                     ck.changeView(ck.loadingCard);
                     history.forward();
                 } else {
-                    // 0. new page.  alert(1)
+                    // 0.  alert(0)
                     ck.changeView(ck.defaultCard);
                     push_history(ck.loadingCard[0].id, ck.defaultCard[0].id);
-                    pageSession.push(location.href);
                 }
             }
 
@@ -631,8 +640,6 @@ define([
                 next_id = 'ckLoading';
                 next = ck.loadingCard;
                 true_link = me.href;
-                //pageSession.clear(pageSession.indexOf(location.href));
-                pageSession.reset();
             } else {
                 return;
             }
@@ -655,7 +662,7 @@ define([
             ck.globalMask.hide();
             ck.sessionLocked = false;
             if (true_link) {
-                if (is_forward) {
+                if (is_forward && SUPPORT_HISTORY) {
                     history.forward();
                 } else {
                     location.href = true_link;
@@ -683,7 +690,7 @@ define([
             current.hide().removeClass('moving');
             ck.globalMask.hide();
             ck.sessionLocked = false;
-            if (prev_id === 'ckLoading') {
+            if (prev_id === 'ckLoading' && SUPPORT_HISTORY) {
                 history.back();
                 back_timeout = setTimeout(function(){
                     location.reload();
@@ -693,13 +700,15 @@ define([
     }
 
     function push_history(prev_id, next_id, link, opt){
-        history.pushState({
-            prev: prev_id,
-            next: next_id,
-            link: link,
-            opt: opt,
-            i: history.length
-        }, document.title, location.href);
+        if (SUPPORT_HISTORY) {
+            history.pushState({
+                prev: prev_id,
+                next: next_id,
+                link: link,
+                opt: opt,
+                i: history.length
+            }, document.title, location.href);
+        }
     }
 
     function prevent_window_scroll(){
@@ -736,8 +745,6 @@ define([
             ck.sessionLocked = true;
             var next_id = 'ckLoading';
             var next = ck.loadingCard;
-            //pageSession.clear(pageSession.indexOf(location.href));
-            pageSession.reset();
             var current = ck.viewport;
             ck.globalMask.show();
             push_history(current[0].id, next_id, true_link);
