@@ -315,7 +315,7 @@ a {
   display: none;
 }
 .ck-card.moving {
-  position: absolute !important;
+  position: absolute!important;
   top: 0;
   left: 0;
   z-index: 10;
@@ -1018,7 +1018,7 @@ a {
 }
 
 .moui-actions li, .ck-actions li {
-  border-bottom: 1px solid #000;
+  border-bottom: 1px solid black;
   opacity: 0.8;
 }
 .moui-actions li a, .ck-actions li a {
@@ -1172,7 +1172,7 @@ a {
   -webkit-overflow-scrolling: touch;
 }
 .moui-actionview .wrapper .content, .ck-actionview .wrapper .content {
-  padding: 0 15px 15px 15px;
+  padding: 7.5px 15px 15px 15px;
   overflow: hidden;
 }
 .moui-actionview .wrapper .content > header, .ck-actionview .wrapper .content > header {
@@ -1183,7 +1183,7 @@ a {
   line-height: 42.5px;
   display: block;
   color: #fff;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #eeeeee;
 }
 .moui-actionview .wrapper .content > .desc, .ck-actionview .wrapper .content > .desc {
   color: #fff;
@@ -1192,8 +1192,8 @@ a {
 .moui-actionview .wrapper .content > article, .ck-actionview .wrapper .content > article {
   position: absolute;
   bottom: 74px;
-  left: 30px;
-  right: 30px;
+  left: 15px;
+  right: 15px;
 }
 .moui-actionview > footer, .ck-actionview > footer {
   position: absolute;
@@ -1232,6 +1232,7 @@ a {
   height: 100%;
   background: #121212;
   opacity: 0.8;
+  z-index: -1;
 }
 .moui-actionview.active, .active.ck-actionview {
   display: block;
@@ -1269,21 +1270,24 @@ a {
   overflow: visible;
 }
 
-.ck-actionview .wrapper .content > article .ck-option {
-  display: inline-block;
+.ck-actionview .wrapper .content > article {
   background: #000;
-  color: #fff;
-  font-size: 13px;
-  width: 100%;
-  padding: 7.5px 0;
-  margin-top: 5px;
-  text-align: center;
-  opacity: 0.8;
   border: solid 1px #4c4c4c;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   -ms-border-radius: 3px;
   border-radius: 3px;
+}
+.ck-actionview .wrapper .content > article .ck-option {
+  display: inline-block;
+  color: #fff;
+  font-size: 13px;
+  width: 100%;
+  padding: 7.5px 0;
+  border-bottom: solid 1px #4c4c4c;
+  margin: 0 15px;
+  text-align: center;
+  opacity: 0.8;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   -webkit-appearance: none;
   -moz-appearance: none;
