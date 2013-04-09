@@ -11,6 +11,7 @@
   "devDependencies": {
     "grunt-furnace": "~0.1.2",
     "grunt-ozjs": "~0.2.0",
+    "grunt-complexity": "~0.1",
     "grunt-contrib-connect": "~0.2.0",
     "grunt-contrib-livereload": "~0.1.2",
     "grunt-contrib-compass": "~0.1.3",

@@ -1081,7 +1081,7 @@ define("mo/lang", [
 
 });
 
-/* @source dollar.js */;
+/* @source dollar/origin.js */;
 
 /**
  * DollarJS
@@ -1094,7 +1094,7 @@ define("mo/lang", [
  * Copyright (C) 2010-2012, Dexter.Yy, MIT License
  * vim: et:ts=4:sw=4:sts=4
  */
-define("dollar", [
+define("dollar/origin", [
   "mo/lang/es5",
   "mo/lang/mix",
   "mo/lang/type"
@@ -1119,6 +1119,7 @@ define("dollar", [
         isFunction = detect.isFunction,
         _array_map = Array.prototype.map,
         _array_push = Array.prototype.push,
+        _array_slice = Array.prototype.slice,
         _getComputedStyle = document.defaultView.getComputedStyle,
         _elm_display = {},
         _html_containers = {};
@@ -1172,6 +1173,10 @@ define("dollar", [
 
         constructor: $,
 
+        toString: function(){
+            return this.join(',');
+        },
+
         // Traversing
 
         find: function(selector){
@@ -1191,10 +1196,10 @@ define("dollar", [
                                                 : 'getElementsByTagName';
                 if (contexts[1]) {
                     contexts.forEach(function(context){
-                        this.push.apply(this, context[query](selector));
+                        this.push.apply(this, _array_slice.call(context[query](selector)));
                     }, nodes);
                 } else if (contexts[0]) {
-                    nodes.push.apply(nodes, contexts[0][query](selector));
+                    nodes.push.apply(nodes, _array_slice.call(contexts[0][query](selector)));
                 }
             }
             return nodes;
@@ -1297,22 +1302,22 @@ define("dollar", [
         // Properties
 
         addClass: function(cname){
-            return foreach_farg(this, cname, 'className', function(node, cname){
+            return each_node(this, cname, 'className', function(node, cname){
                 node.classList.add(cname);
             });
         },
 
         removeClass: function(cname){
-            return foreach_farg(this, cname, 'className', function(node, cname){
+            return each_node(this, cname, 'className', function(node, cname){
                 node.classList.remove(cname);
             });
         },
 
         toggleClass: function(cname, force){
-            return foreach_farg(this, cname, 'className', function(node, cname){
-                node.classList[typeof this === 'undefined' && 'toggle'
+            return each_node(this, cname, 'className', function(node, cname){
+                node.classList[force === undefined && 'toggle'
                                     || this && 'add' || 'remove'](cname);
-            }, force);
+            });
         },
 
         attr: kv_access(function(node, name, value){
@@ -1370,7 +1375,7 @@ define("dollar", [
                     return node.value;
                 }
             } else {
-                return foreach_farg(this, value, 'value', function(node, value){
+                return each_node(this, value, 'value', function(node, value){
                     node.value = value;
                 });
             }
@@ -1385,7 +1390,7 @@ define("dollar", [
 
         html: function(str){
             return str === undefined ? (this[0] || {}).innerHTML
-                : foreach_farg(this, str, 'innerHTML', function(node, str){
+                : each_node(this, str, 'innerHTML', function(node, str){
                     if (RE_HTMLTAG.test(str)) {
                         this(node).empty().append(str);
                     } else {
@@ -1396,7 +1401,7 @@ define("dollar", [
 
         text: function(str){
             return str === undefined ? (this[0] || {}).textContent
-                : foreach_farg(this, str, 'textContent', function(node, str){
+                : each_node(this, str, 'textContent', function(node, str){
                     node.textContent = str;
                 });
         },
@@ -1497,7 +1502,7 @@ define("dollar", [
         },
 
         wrap: function(boxes){
-            return foreach_farg(this, boxes, false, function(node, boxes){
+            return each_node(this, boxes, false, function(node, boxes){
                 this(boxes).insertBefore(node).append(node);
             }, $);
         },
@@ -1508,7 +1513,7 @@ define("dollar", [
         },
 
         wrapInner: function(boxes){
-            return foreach_farg(this, boxes, false, function(node, boxes){
+            return each_node(this, boxes, false, function(node, boxes){
                 this(node).contents().wrapAll(boxes);
             }, $);
         },
@@ -1633,7 +1638,7 @@ define("dollar", [
         };
     }
 
-    function foreach_farg(nodes, arg, prop, cb, context){
+    function each_node(nodes, arg, prop, cb, context){
         var is_fn_arg = isFunction(arg);
         nodes.forEach(function(node, i){
             cb.call(context, node, !is_fn_arg ? arg
@@ -1815,11 +1820,33 @@ define("dollar", [
     $.camelize = css_method;
     $.dasherize = css_prop;
     $.Event = Event;
+    $._kvAccess = kv_access;
+    $._eachNode = each_node;
 
-    $.VERSION = '1.1.1';
+    $.VERSION = '1.1.2';
 
     return $;
 
+});
+
+
+/* @source dollar.js */;
+
+/**
+ * DollarJS
+ * A jQuery-compatible and non-All-in-One library which is more "Zepto" than Zepto.js
+ * Focus on DOM operations and mobile platform, wrap native API wherever possible.
+ *
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
+define("dollar", [
+  "dollar/origin"
+], function($){
+    return $;
 });
 
 /* @source ../cardkit/parser/util.js */;
@@ -5264,7 +5291,7 @@ define('moui/modalview', [
  */
 define("mo/browsers", [], function(){
 
-    var match, skin, 
+    var match, skin, os,
         rank = { 
             "360ee": 2,
             "maxthon/3": 2,
@@ -5278,7 +5305,13 @@ define("mo/browsers", [], function(){
 
     try {
         var ua = this.navigator.userAgent.toLowerCase(),
-            rmobilesafari = /apple.*mobile.*safari/,
+            rwindows = /(windows) nt ([\w.]+)/,
+            rmac = /(mac) os \w+ ([\w.]+)/,
+            riphone = /(iphone) os ([\w._]+)/,
+            ripad = /(ipad) os ([\w.]+)/,
+            randroid = /(android)[ ;]([\w.]*)/,
+            rmobilesafari = /(\w+)[ \/]([\w.]+)[ \/]mobile.*safari/,
+            rsafari = /(\w+)[ \/]([\w.]+) safari/,
             rwebkit = /(webkit)[ \/]([\w.]+)/,
             ropera = /(opera)(?:.*version)?[ \/]([\w.]+)/,
             rmsie = /(msie) ([\w.]+)/,
@@ -5286,24 +5319,58 @@ define("mo/browsers", [], function(){
 
         var r360se = /(360se)/,
             r360ee = /(360ee)/,
+            r360phone = /(360) \w+phone/,
             rtheworld = /(theworld)/,
             rmaxthon3 = /(maxthon\/3)/,
-            rmaxthon = /(maxthon)\s/,
+            rmaxthon = /(maxthon)/,
             rtt = /(tencenttraveler)/,
             rqq = /(qqbrowser)/,
+            rbaidu = /(baidubrowser)/,
+            ruc = /(ucbrowser)/,
             rmetasr = /(metasr)/;
 
-        match = rmobilesafari.test(ua) && [0, "mobilesafari"] ||
-            rwebkit.exec(ua) ||
-            ropera.exec(ua) ||
-            rmsie.exec(ua) ||
-            ua.indexOf("compatible") < 0 && rmozilla.exec(ua) ||
-            [];
+        os = rwindows.exec(ua) 
+            || rmac.exec(ua) 
+            || riphone.exec(ua) 
+            || ripad.exec(ua) 
+            || randroid.exec(ua) 
+            || [];
 
-        skin = r360se.exec(ua) || r360ee.exec(ua) || rtheworld.exec(ua) || 
-            rmaxthon3.exec(ua) || rmaxthon.exec(ua) ||
-            rtt.exec(ua) || rqq.exec(ua) ||
-            rmetasr.exec(ua) || [];
+        match =  rwebkit.exec(ua) 
+            || ropera.exec(ua) 
+            || rmsie.exec(ua) 
+            || ua.indexOf("compatible") < 0 && rmozilla.exec(ua) 
+            || [];
+
+        if (match[1] === 'webkit') {
+            var vendor = rmobilesafari.exec(ua) || rsafari.exec(ua);
+            if (vendor) {
+                match[3] = match[1];
+                match[4] = match[2];
+                match[1] = vendor[1] === 'version' 
+                    && ((os[1] === 'iphone' 
+                            || os[1] === 'ipad')
+                            && 'mobilesafari'
+                        || os[1] === 'android' 
+                            && 'aosp' 
+                        || 'safari')
+                    || vendor[1];
+                match[2] = vendor[2];
+            }
+        }
+
+        skin = r360se.exec(ua) 
+            || r360ee.exec(ua) 
+            || r360phone.exec(ua) 
+            || ruc.exec(ua) 
+            || rtheworld.exec(ua) 
+            || rmaxthon3.exec(ua) 
+            || rmaxthon.exec(ua) 
+            || rtt.exec(ua) 
+            || rqq.exec(ua) 
+            || rbaidu.exec(ua) 
+            || rmetasr.exec(ua) 
+            || [];
 
     } catch (ex) {
         match = [];
@@ -5313,8 +5380,20 @@ define("mo/browsers", [], function(){
     var result = { 
         browser: match[1] || "", 
         version: match[2] || "0",
+        engine: match[3],
+        engineversion: match[4] || "0",
+        os: os[1],
+        osversion: os[2] || "0",
         skin: skin[1] || ""
     };
+
+    if (result.os === 'android' && !result.browser) {
+        result.skin = 'ucbrowser';
+        result.browser = 'aosp';
+        result.engine = 'webkit';
+        result.osversion = "0";
+    }
+
     if (match[1]) {
         result[match[1]] = parseInt(result.version, 10) || true;
     }
@@ -6099,7 +6178,17 @@ define('momo/scroll', [
 define('momo/drag', [
   "mo/lang",
   "momo/base"
-], function(){
+], function(_, momoBase){
+
+    var MomoDrag = _.construct(momoBase.Class);
+
+    function exports(elm, opt, cb){
+        return new exports.Class(elm, opt, cb);
+    }
+
+    exports.Class = MomoDrag;
+
+    return exports;
 
 });
 

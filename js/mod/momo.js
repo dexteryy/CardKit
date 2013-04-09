@@ -42,7 +42,7 @@ define('momo', [
 
     exports.init = function(elm, opt, cb){
         for (var name in lib) {
-            exports[name](elm, opt, cb);
+            this[name](elm, opt, cb);
         }
     };
 
