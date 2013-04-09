@@ -6898,6 +6898,9 @@ define("../cardkit/app", [
                     if (e.state.next === '_modal_') {
                         // 11. forward from normal card, show modal card.  alert(11)
                         if (modalCard.isOpened || loading || !ck.viewport) {
+                            modalCard.event.once('close', function(){
+                                pageSession.reset();
+                            });
                             history.back();
                         } else {
                             modalCard.set(e.state.opt).open();
@@ -6944,7 +6947,9 @@ define("../cardkit/app", [
                 restore_state = current_state && current_state.next; // alert(['init', current_state && [current_state.prev, current_state.next], ck.viewport && ck.viewport[0].id].join(', '))
             if (restore_state === '_modal_') { // @TODO
                 restore_state = current_state.prev;
-                modalCard.set(history.state.opt).open();
+                if (!modalCard.isOpened && ck.viewport) {
+                    modalCard.set(history.state.opt).open();
+                }
             }
             if (restore_state) {
                 // 1. reload from normal card.  alert(0)
