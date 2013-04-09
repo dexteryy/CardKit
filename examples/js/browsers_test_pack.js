@@ -772,11 +772,11 @@ define("mo/browsers", [], function(){
             ruc = /(ucbrowser)/,
             rmetasr = /(metasr)/;
 
-        os = rwindows.exec(ua) 
-            || rmac.exec(ua) 
-            || riphone.exec(ua) 
+        os = riphone.exec(ua) 
             || ripad.exec(ua) 
             || randroid.exec(ua) 
+            || rmac.exec(ua) 
+            || rwindows.exec(ua) 
             || [];
 
         match =  rwebkit.exec(ua) 

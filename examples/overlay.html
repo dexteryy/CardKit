@@ -8,6 +8,7 @@
 
 <link href="dist/css/main.css" rel="stylesheet">
 <link href="css/shCoreDefault.css" rel="stylesheet">
+<link href="css/console.css" rel="stylesheet">
 <link href="css/common.css" rel="stylesheet">
 <style>
 </style>
@@ -261,6 +262,12 @@
             </div>
         </div>
 
+        <div class="ck-box-unit">
+            <header class="ckd-hd">Console</header>
+            <div class="ckd-content" id="console">
+            </div>
+        </div>
+
     </div>
 
     <div class="ck-card ck-loading" id="ckLoading">
@@ -314,9 +321,9 @@ require([
                 modal.hideLoading();
                 var json = net.parseJSON(maybe_json) || { e: 0 };
                 if (!json.e) {
-                    modal.ok().then(function(){
-                        location.reload();
-                    });
+//                    modal.ok().then(function(){
+                        ck.openURL('picker.html');
+//                    });
                 } else {
                     ck.growl({
                         expires: 3000,
@@ -382,6 +389,11 @@ require([
 
 SyntaxHighlighter.defaults['toolbar'] = false;
 SyntaxHighlighter.all();
+define('env', [], function(){
+    return {
+        enableConsole: true
+    };
+});
 </script>
 <script>
 </script>

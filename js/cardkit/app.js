@@ -372,17 +372,22 @@ define([
         initState: function(){
 
             $(window).bind("popstate", function(e){
+                // alert(['pop', e.state && [e.state.prev, e.state.next], ck.viewport && ck.viewport[0].id].join(', '))
                 if (ck.sessionLocked) {
                     pageSession.reset();
                     location.reload();
                     return;
                 }
                 clearTimeout(back_timeout);
-                var loading = ck.viewport[0].id === 'ckLoading'; // alert(['pop', e.state && [e.state.prev, e.state.next], ck.viewport && ck.viewport[0].id].join(', '))
+                var loading = ck.viewport[0].id === 'ckLoading'; 
                 if (e.state) {
                     if (e.state.next === '_modal_') {
                         // 11. forward from normal card, show modal card.  alert(11)
-                        modalCard.set(e.state.opt).open();
+                        if (loading) {
+                            history.back();
+                        } else {
+                            modalCard.set(e.state.opt).open();
+                        }
                     } else if (modalCard.isOpened) {
                         // 12. back from modal card.  alert(12)
                         ck.closeModal();
@@ -399,6 +404,8 @@ define([
                     } else if (e.state.prev === ck.viewport[0].id) {
                         // 3. forward from normal card.  alert(3)
                         link_handler(e.state.next, e.state.link);
+                    } else if (e.state.next === ck.viewport[0].id){ // @TODO hotfix for chrome
+                        history.back();
                     } else {
                         // 2. back from normal card.  alert(2)
                         back_handler(e.state.next);
@@ -562,7 +569,7 @@ define([
         },
 
         isLandscape: function() {
-            return body.clientWidth / body.clientHeight > 1.1;
+            return window.innerWidth / window.innerHeight > 1.1;
         },
 
         openModal: function(opt){
@@ -711,6 +718,13 @@ define([
 
     function open_url(true_link, opt){
         opt = opt || { target: '_self' };
+        if (modalCard.isOpened) {
+            modalCard.event.once('close', function(){
+                open_url(true_link, opt);
+            });
+            ck.closeModal();
+            return;
+        }
         if (opt.target !== '_self') {
             window.open(true_link, opt.target);
         } else {

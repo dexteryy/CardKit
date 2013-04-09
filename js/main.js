@@ -10,13 +10,31 @@ require.config({
 define('mo/lang/es5', [], function(){});
 define('mo/mainloop', [], function(){});
 
+define('env', [], function(){
+    return {};
+});
+
 require([
     'dollar', 
-    'cardkit/app'
-], function($, app){
+    'cardkit/app',
+    'env'
+], function($, app, env){
 
-    app.init({
-        root: $('.ck-root')
-    });
+    if (env.enableConsole) {
+        require(['mo/console'], function(console){
+            init();
+            console.config({
+                output: $('#console')[0]
+            }).enable();
+        });
+    } else {
+        init();
+    }
+
+    function init(){
+        app.init({
+            root: $('.ck-root')
+        });
+    }
 
 });

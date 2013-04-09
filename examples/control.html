@@ -8,6 +8,7 @@
 
 <link href="dist/css/main.css" rel="stylesheet">
 <link href="css/shCoreDefault.css" rel="stylesheet">
+<link href="css/console.css" rel="stylesheet">
 <link href="css/common.css" rel="stylesheet">
 <style>
 .post1 {
@@ -201,6 +202,12 @@
             </div>
         </div>
 
+        <div class="ck-box-unit">
+            <header class="ckd-hd">Console</header>
+            <div class="ckd-content" id="console">
+            </div>
+        </div>
+
     </div>
 
     <div class="ck-card ck-loading" id="ckLoading">
@@ -254,8 +261,11 @@ require([
 
 SyntaxHighlighter.defaults['toolbar'] = false;
 SyntaxHighlighter.all();
-</script>
-<script>
+define('env', [], function(){
+    return {
+        enableConsole: true
+    };
+});
 </script>
 <!-- vagrant-->
 </body>
