@@ -23,8 +23,20 @@
 .ck-actionview {
   @extend .moui-actionview;
 
-  .ck-option {
-    @extend %action-option;
+  .wrapper {
+
+    .content {
+
+      & > article {
+
+        .ck-option {
+          @extend %action-option;
+        }
+
+      }
+
+    }
+
   }
 
 }

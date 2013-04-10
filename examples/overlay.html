@@ -247,7 +247,9 @@
                     $('.my-notification-button').bind('tap', function(){
                         ck.actionView(this, {
                             title: 'This is title',
-                            content: 'This is content'
+                            content: 'This is content',
+                            multiselect: true,
+                            confirmText: '确定'
                         }).open();
                     });
                     ]]></script>
@@ -427,7 +429,9 @@ require([
     $('.my-notification-button').bind('tap', function(){
         ck.actionView(this, {
             title: 'This is title',
-            content: 'This is content'
+            content: 'This is content',
+            multiselect: true,
+            confirmText: '确定'
         }).open();
     });
 

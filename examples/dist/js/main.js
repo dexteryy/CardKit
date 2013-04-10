@@ -5080,7 +5080,7 @@ define('moui/actionview', [
                     ignoreStatus: !this._config.multiselect
                 });
             } else {
-                this._node.addClass('notification-kind');
+                this._node.addClass('confirm-kind');
             }
 
             if (opt.multiselect !== undefined) {
