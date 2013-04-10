@@ -9,7 +9,7 @@ repos:
     file:
       ./: js/mod/mo/
 
-  dexteryy/DollarJS': 
+  dexteryy/DollarJS: 
     file: 
       dollar.js: js/mod/
 
@@ -21,6 +21,10 @@ repos:
     file:
       soviet.js: js/mod/
 
-  dexteryy/ChoreoJS': 
+  dexteryy/ChoreoJS: 
     file:
       choreo.js: js/mod/
+
+  browserstate/history.js:
+    file:
+      scripts/uncompressed/history.js: js/mod/

@@ -456,21 +456,7 @@ define("dollar/origin", [
 
         unbind: event_access('remove'),
 
-        trigger: function(event, data){
-            if (typeof event === 'string') {
-                event = Event(event);
-            }
-            _.mix(event, data);
-            this.forEach(event.type == 'submit' 
-                && !event.defaultPrevented ? function(node){
-                node.submit();
-            } : function(node){
-                if ('dispatchEvent' in node) {
-                    node.dispatchEvent(this);
-                }
-            }, event);
-            return this;
-        },
+        trigger: trigger,
 
         // Miscellaneous
 
@@ -623,6 +609,30 @@ define("dollar/origin", [
         return event;
     }
 
+    function trigger(me, event, data){
+        if (this === $) {
+            me = $(me);
+        } else {
+            data = event;
+            event = me;
+            me = this;
+        }
+        if (typeof event === 'string') {
+            event = Event(event);
+        }
+        _.mix(event, data);
+        me.forEach(event.type == 'submit' 
+            && !event.defaultPrevented 
+                ? function(node){
+                    node.submit();
+                } : function(node){
+                    if ('dispatchEvent' in node) {
+                        node.dispatchEvent(this);
+                    }
+                }, event);
+        return this;
+    }
+
     function css_method(name){
         return name.replace(/-+(.)?/g, function($0, $1){
             return $1 ? $1.toUpperCase() : '';
@@ -735,6 +745,7 @@ define("dollar/origin", [
     $.camelize = css_method;
     $.dasherize = css_prop;
     $.Event = Event;
+    $.trigger = trigger;
     $._kvAccess = kv_access;
     $._eachNode = each_node;
 

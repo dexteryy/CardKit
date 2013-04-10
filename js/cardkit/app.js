@@ -20,7 +20,7 @@ define([
     './bus',
     './render',
     'mo/domready'
-], function($, _, tpl, browsers, soviet, choreo, 
+], function($, _, browsers, tpl, soviet, choreo, 
     momoBase, momoTap, momoSwipe, momoDrag, momoScroll, 
     control, picker, stars, modalCard, actionView, growl, slidelist,
     bus, render){
@@ -33,7 +33,10 @@ define([
         back_timeout,
         gc_id = 0,
 
-        SUPPORT_HISTORY = !browsers.crios && 'pushState' in history,
+        SUPPORT_HISTORY = 'pushState' in history
+            && !browsers.crios 
+            && !browsers.aosp,
+        PREVENT_CACHE = !SUPPORT_HISTORY && browsers.aosp,
         SUPPORT_OVERFLOWSCROLL = "webkitOverflowScrolling" in body.style,
 
         TPL_MASK = '<div class="ck-globalmask"></div>';
@@ -381,7 +384,7 @@ define([
                 $(window).bind("popstate", function(e){
                     // alert(['pop', e.state && [e.state.prev, e.state.next].join('-'), ck.viewport && ck.viewport[0].id].join(', '))
                     if (ck.sessionLocked) {
-                        location.reload();
+                        location.reload(true);
                         return;
                     }
                     clearTimeout(back_timeout);
@@ -445,6 +448,12 @@ define([
                     }
                 }
 
+            } else if (PREVENT_CACHE) {
+
+                $(window).bind("popstate", function(){
+                    window.location.reload(true);
+                });
+
             }
 
             if (restore_state) {
@@ -455,7 +464,6 @@ define([
                     history.back();
                 }
             } else {
-                //console.info(is_refresh, history.state, ck.viewport[0].id, last_url, location.href)
                 if (is_forward) {
                     // 8.  alert(8)
                     ck.changeView(ck.loadingCard);
@@ -644,6 +652,12 @@ define([
                 return;
             }
         }
+        if (PREVENT_CACHE && next === ck.loadingCard) {
+            if (true_link) {
+                location.href = true_link;
+            }
+            return;
+        }
         ck.sessionLocked = true;
         var current = ck.viewport;
         if (!is_forward) {
@@ -675,11 +689,16 @@ define([
         ck.sessionLocked = true;
         var prev = $('#' + prev_id);
         var current = ck.viewport;
-        ck.globalMask.show();
-        //ck.showTopbar();
         if (actionView.current) {
             actionView.current.close();
         }
+        //if (PREVENT_CACHE && prev === ck.loadingCard) {
+            //ck.sessionLocked = false;
+            //history.back();
+            //return;
+        //}
+        ck.globalMask.show();
+        //ck.showTopbar();
         choreo.transform(ck.wrapper[0], 'translateX', 0 - window.innerWidth + 'px');
         current.addClass('moving');
         prev.show();
@@ -690,10 +709,10 @@ define([
             current.hide().removeClass('moving');
             ck.globalMask.hide();
             ck.sessionLocked = false;
-            if (prev_id === 'ckLoading' && SUPPORT_HISTORY) {
+            if (prev_id === 'ckLoading') {
                 history.back();
                 back_timeout = setTimeout(function(){
-                    location.reload();
+                    location.reload(true);
                 }, 800);
             }
         });
@@ -742,6 +761,10 @@ define([
         if (opt.target !== '_self') {
             window.open(true_link, opt.target);
         } else {
+            if (PREVENT_CACHE) {
+                location.href = true_link;
+                return;
+            }
             ck.sessionLocked = true;
             var next_id = 'ckLoading';
             var next = ck.loadingCard;
