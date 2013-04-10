@@ -359,7 +359,6 @@ define([
                         }
                     };
                 this.header.bind('touchstart', function(e){
-                    e.preventDefault();
                     startY = e.touches[0].clientY;
                     hold_timer = setTimeout(function(){
                         topbar_holded = true;
