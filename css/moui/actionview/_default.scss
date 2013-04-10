@@ -26,7 +26,10 @@
           line-height: $nav_height;
           display:block;
           color:#fff;
-          border-bottom:1px solid #eee;
+          border-bottom:1px solid #ccc;
+          &:empty {
+            border:none;
+          }
         }
 
       }
@@ -58,6 +61,8 @@
 
     button {
       @extend %button;
+      line-height:33px;
+      height:33px;
       width:auto;
       position:absolute;
       top:$space;

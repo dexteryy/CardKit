@@ -1183,7 +1183,10 @@ a {
   line-height: 42.5px;
   display: block;
   color: #fff;
-  border-bottom: 1px solid #eeeeee;
+  border-bottom: 1px solid #cccccc;
+}
+.moui-actionview .wrapper .content > header h1:empty, .ck-actionview .wrapper .content > header h1:empty {
+  border: none;
 }
 .moui-actionview .wrapper .content > .desc, .ck-actionview .wrapper .content > .desc {
   color: #fff;
@@ -1205,6 +1208,8 @@ a {
   height: 59px;
 }
 .moui-actionview > footer button, .ck-actionview > footer button {
+  line-height: 33px;
+  height: 33px;
   width: auto;
   position: absolute;
   top: 15px;
@@ -1271,29 +1276,45 @@ a {
 }
 
 .ck-actionview .wrapper .content > article {
-  background: #000;
-  border: solid 1px #4c4c4c;
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  -ms-border-radius: 3px;
-  border-radius: 3px;
+  background: #1a1a1a;
+  border: solid 1px #1a1a1a;
+  padding: 0 18px;
+  margin-bottom: -1px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  border-radius: 5px;
+  -webkit-box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.3);
 }
 .ck-actionview .wrapper .content > article .ck-option {
-  display: inline-block;
-  color: #fff;
-  font-size: 13px;
+  display: block;
+  box-sizing: content-box;
   width: 100%;
-  padding: 7.5px 0;
-  border-bottom: solid 1px #4c4c4c;
-  margin: 0 15px;
+  color: #fff;
+  background: #1a1a1a;
+  font-size: 13px;
+  padding: 10px 0;
+  border: none;
+  border-bottom: solid 1px black;
   text-align: center;
-  opacity: 0.8;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.2);
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
 }
 .ck-actionview .wrapper .content > article .ck-option:active, .ck-actionview .wrapper .content > article .ck-option.enabled {
   background: #eee;
+  padding-left: 5px;
+  padding-right: 5px;
+  -webkit-transform: translateX(-5px);
+  -moz-transform: translateX(-5px);
+  -ms-transform: translateX(-5px);
+  transform: translateX(-5px);
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  border-radius: 3px;
   color: #000;
 }
