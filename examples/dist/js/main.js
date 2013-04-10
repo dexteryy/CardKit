@@ -2640,7 +2640,6 @@ define("mo/template", [
 define("../cardkit/render", [
   "dollar",
   "mo/lang",
-  "mo/browsers",
   "mo/template",
   "../cardkit/tpl/unit/box",
   "../cardkit/tpl/unit/list",
@@ -2650,30 +2649,80 @@ define("../cardkit/render", [
   "../cardkit/parser/box",
   "../cardkit/parser/list",
   "../cardkit/parser/mini",
-  "../cardkit/parser/form"
-], function($, _, browsers, tpl, 
+  "../cardkit/parser/form",
+  "../cardkit/supports"
+], function($, _, tpl, 
     tpl_box, tpl_list, tpl_mini, tpl_form, tpl_blank,
-    boxParser, listParser, miniParser, formParser){
+    boxParser, listParser, miniParser, formParser,
+    supports){
 
     var TPL_TIPS = '<div class="ck-top-tips">'
-        + (browsers.mobilesafari ? '长按顶部导航条，可拖出浏览器地址栏' : '')
+        + (supports.SAFARI_TOPBAR ? '长按顶部导航条，可拖出浏览器地址栏' : '')
         + '</div>';
 
-    function exports(card, raw, footer, opt) {
+    var exports = {
 
-        var has_content = false;
+        initCard: function(card, raw, footer, opt) {
 
-        card.find('.ck-box-unit').forEach(function(unit){
+            var has_content = false,
+                units = card.find('.ck-box-unit, .ck-mini-unit, .ck-list-unit, .ck-form-unit');
+
+            exports.initUnit(units, raw);
+
+            if (!has_content && !opt.isModal) {
+                card.append(tpl_blank.template);
+            }
+
+            if (!opt.isModal) {
+                card.append(footer.clone())
+                    .prepend($('.ck-banner-unit', card))
+                    .prepend(TPL_TIPS);
+            }
+
+        },
+
+        initUnit: function(units, raw){
+            $(units).forEach(function(unit){
+                var type = (/ck-(\w+)-unit/.exec(unit.className) || [])[1];
+                if (type) {
+                    exports[type](unit, raw);
+                }
+            });
+        },
+
+        box: function(unit, raw){
             var data = boxParser(unit, raw);
             if (data.hasContent || data.hd) {
                 unit.innerHTML = tpl.convertTpl(tpl_box.template, data, 'data');
-                has_content = true;
+                return true;
             } else {
                 $(unit).remove();
             }
-        });
+        },
 
-        card.find('.ck-list-unit').forEach(function(unit){
+        mini: function(unit, raw){
+            var data = miniParser(unit, raw);
+            data.items = data.items.filter(function(item){
+                if (!item.content || !item.content.length) {
+                    return false;
+                }
+                return true;
+            }, data);
+            if (!data.style) {
+                data.config.limit = 1;
+            }
+            if (data.config.limit) {
+                data.items.length = data.config.limit;
+            }
+            if (data.hd || data.items.length) {
+                unit.innerHTML = tpl.convertTpl(tpl_mini.template, data, 'data');
+                return false;
+            } else {
+                $(unit).remove();
+            }
+        },
+
+        list: function(unit, raw){
             var data = listParser(unit, raw);
             data.items = data.items.filter(function(item){
                 var style = this.style;
@@ -2695,55 +2744,23 @@ define("../cardkit/render", [
             }
             if (data.hd || data.items.length) {
                 unit.innerHTML = tpl.convertTpl(tpl_list.template, data, 'data');
-                has_content = true;
-            } else {
-                $(unit).remove();
-            }
-        });
-
-        card.find('.ck-mini-unit').forEach(function(unit){
-            var data = miniParser(unit, raw);
-            data.items = data.items.filter(function(item){
-                if (!item.content || !item.content.length) {
-                    return false;
-                }
                 return true;
-            }, data);
-            if (!data.style) {
-                data.config.limit = 1;
-            }
-            if (data.config.limit) {
-                data.items.length = data.config.limit;
-            }
-            if (data.hd || data.items.length) {
-                unit.innerHTML = tpl.convertTpl(tpl_mini.template, data, 'data');
-                has_content = true;
             } else {
                 $(unit).remove();
             }
-        });
+        },
 
-        card.find('.ck-form-unit').forEach(function(unit){
+        form: function(unit, raw){
             var data = formParser(unit, raw);
             if (data.hd || data.items.length) {
                 unit.innerHTML = tpl.convertTpl(tpl_form.template, data, 'data');
-                has_content = true;
+                return true;
             } else {
                 $(unit).remove();
             }
-        });
-
-        if (!has_content && !opt.isModal) {
-            card.append(tpl_blank.template);
         }
-
-        if (!opt.isModal) {
-            card.append(footer.clone())
-                .prepend($('.ck-banner-unit', card))
-                .prepend(TPL_TIPS);
-        }
-
-    }
+    
+    };
 
     return exports;
 
@@ -6658,6 +6675,12 @@ define("../cardkit/app", [
             modalCard.cancel();
         },
 
+        '.ck-top-title': function(){
+            if (this.href) {
+                ck.openURL(this.href);
+            }
+        },
+
         '.ck-top-create .btn': open_modal_card,
 
         '.ck-top-action .btn': function(){
@@ -6873,6 +6896,7 @@ define("../cardkit/app", [
                         }
                     };
                 this.header.bind('touchstart', function(e){
+                    e.preventDefault();
                     startY = e.touches[0].clientY;
                     hold_timer = setTimeout(function(){
                         topbar_holded = true;
@@ -7003,7 +7027,7 @@ define("../cardkit/app", [
 
         initView: function(card, opt){
             if (!card.data('rendered')) {
-                render(card, this.raw, this.footer, opt);
+                render.initCard(card, this.raw, this.footer, opt);
                 if (!opt.isModal) {
                     card.data('rendered', '1');
                 }
@@ -7068,6 +7092,10 @@ define("../cardkit/app", [
             if (create_btn) {
                 top_submit.append(create_btn);
             }
+        },
+
+        renderUnit: function(node){
+            render.initUnit(node, this.raw);
         },
 
         hideLoading: function() {

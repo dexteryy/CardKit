@@ -138,6 +138,12 @@ define([
             modalCard.cancel();
         },
 
+        '.ck-top-title': function(){
+            if (this.href) {
+                ck.openURL(this.href);
+            }
+        },
+
         '.ck-top-create .btn': open_modal_card,
 
         '.ck-top-action .btn': function(){
@@ -353,6 +359,7 @@ define([
                         }
                     };
                 this.header.bind('touchstart', function(e){
+                    e.preventDefault();
                     startY = e.touches[0].clientY;
                     hold_timer = setTimeout(function(){
                         topbar_holded = true;
@@ -483,7 +490,7 @@ define([
 
         initView: function(card, opt){
             if (!card.data('rendered')) {
-                render(card, this.raw, this.footer, opt);
+                render.initCard(card, this.raw, this.footer, opt);
                 if (!opt.isModal) {
                     card.data('rendered', '1');
                 }
@@ -548,6 +555,10 @@ define([
             if (create_btn) {
                 top_submit.append(create_btn);
             }
+        },
+
+        renderUnit: function(node){
+            render.initUnit(node, this.raw);
         },
 
         hideLoading: function() {
