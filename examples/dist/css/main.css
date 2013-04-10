@@ -1171,6 +1171,7 @@ a {
   height: 100%;
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
+  position: relative;
 }
 .moui-actionview .wrapper .content, .ck-actionview .wrapper .content {
   padding: 0 25px 25px 25px;
