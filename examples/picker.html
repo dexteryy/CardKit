@@ -224,19 +224,45 @@ require([
         corner: 'bottom'
     });
 
-    $('.picker1').bind('picker:change', show_result);
+    ck.delegate.on('picker:change', {
 
-    $('.picker1').bind('picker:response', function(e){
-        var result = e.component.responseData;
-        console.info('response: ', result);
-        notify.set({
-            content: 'response: ' + result
-        }).open();
+        '.picker1': show_result,
+        '.picker2': show_result,
+        '.picker3': show_result,
+
+        '.actions1': function(e){
+            var result = e.component.val()
+            if (result) {
+                var action_picker = ck.picker($('.actions1-1'));
+                switch (result.replace(/.*#/, '')) {
+                    case 'on':
+                        action_picker.selectAll();
+                        break;
+                    case 'off':
+                        action_picker.unselectAll();
+                        break;
+                    case 'invert':
+                        action_picker.selectInvert();
+                        break;
+                    case 'undo':
+                        action_picker.undo();
+                        break;
+                    default:
+                }
+            }
+        }
+
+    }).on('picker:response', {
+
+        '.picker1': function(e){
+            var result = e.component.responseData;
+            console.info('response: ', result);
+            notify.set({
+                content: 'response: ' + result
+            }).open();
+        }
+
     });
-
-    $('.picker2').bind('picker:change', show_result);
-
-    $('.picker3').bind('picker:change', show_result);
 
     function show_result(e){
         var result = e.component.val();
@@ -245,29 +271,6 @@ require([
             content: 'value: ' + result
         }).open();
     }
-
-    var action_picker = ck.picker($('.actions1-1'));
-
-    $('.actions1').bind('picker:change', function(e){
-        var result = e.component.val()
-        if (result) {
-            switch (result.replace(/.*#/, '')) {
-                case 'on':
-                    action_picker.selectAll();
-                    break;
-                case 'off':
-                    action_picker.unselectAll();
-                    break;
-                case 'invert':
-                    action_picker.selectInvert();
-                    break;
-                case 'undo':
-                    action_picker.undo();
-                    break;
-                default:
-            }
-        }
-    });
 
 });
 

@@ -59,17 +59,22 @@ define('moui/actionview', [
             }
             this.superClass.set.call(this, opt);
 
-            if (opt.options) {
-                var options = $(opt.options).clone();
-                this._actionsWrapper.empty()
-                    .append(options);
-                this._picker = picker(this._actionsWrapper, {
-                    options: options,
-                    multiselect: this._config.multiselect,
-                    ignoreStatus: !this._config.multiselect
-                });
-            } else {
-                this._node.addClass('confirm-kind');
+            if (opt.options !== undefined) {
+                this._actionsWrapper.empty();
+                var options = opt.options 
+                    ? $(opt.options).clone()
+                    : [];
+                if (options.length) {
+                    this._actionsWrapper.append(options);
+                    this._picker = picker(this._actionsWrapper, {
+                        options: options,
+                        multiselect: this._config.multiselect,
+                        ignoreStatus: !this._config.multiselect
+                    });
+                    this._node.removeClass('confirm-kind');
+                } else {
+                    this._node.addClass('confirm-kind');
+                }
             }
 
             if (opt.multiselect !== undefined) {

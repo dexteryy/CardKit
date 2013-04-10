@@ -240,14 +240,14 @@ require([
         corner: 'bottom'
     });
 
-    $('.switch1').bind('control:enable', show_result);
-
-    $('.post1').bind('control:enable', show_result);
-
-    $('.post2').bind('control:enable', show_result)
-        .bind('control:disable', show_result);
-
-    $('.link1').bind('control:enable', show_result);
+    ck.delegate.on('control:enable', {
+        '.switch1': show_result,
+        '.post1': show_result,
+        '.post2': show_result,
+        '.link1': show_result
+    }).on('control:disable', {
+        '.post2': show_result
+    });
 
     function show_result(e){
         var result = e.component.responseData;

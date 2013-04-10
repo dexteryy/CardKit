@@ -620,6 +620,12 @@ define([
 
         openURL: open_url,
 
+        delegate: soviet(document, {
+            autoOverride: true,
+            matchesSelector: true,
+            preventDefault: true
+        }),
+
         control: control,
         picker: picker,
         modalCard: modalCard,

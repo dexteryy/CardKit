@@ -213,8 +213,12 @@
                     </button>
                     ]]></script>
                     <script type="syntaxhighlighter" class="brush: js"><![CDATA[
-                    $('.my-actions-button').bind('tap', function(){
-                        ck.actionView(this, {
+                    ck.delegate.on('tap', '.my-actions-button, .my-actions-button span', function(){
+                        var me = $(this);
+                        if (!me.hasClass('my-actions-button')) {
+                            me = me.parent();
+                        }
+                        ck.actionView(me, {
                             title: 'This is title',
                             content: 'This is content',
                             options: [
@@ -232,20 +236,24 @@
             </div>
             <div class="ckd-item">
                 <!--demo-->
-                <button class="my-notification-button ckbase-btn"
+                <button class="my-confirm-button ckbase-btn"
                         data-fluid="true">
-                    <span>Notification(No Options)</span>
+                    <span>Confirm/Alert (No Options)</span>
                 </button>
                 <!--demo end-->
                 <div class="democode">
                     <script type="syntaxhighlighter" class="brush: html"><![CDATA[
                     <button class="my-actions-button" data-fluid="true">
-                        <span>Notification(No Options)</span>
+                        <span>Confirm/Alert (No Options)</span>
                     </button>
                     ]]></script>
                     <script type="syntaxhighlighter" class="brush: js"><![CDATA[
-                    $('.my-notification-button').bind('tap', function(){
-                        ck.actionView(this, {
+                    ck.delegate.on('tap', '.my-confirm-button, .my-confirm-button span', function(){
+                        var me = $(this);
+                        if (!me.hasClass('my-confirm-button')) {
+                            me = me.parent();
+                        }
+                        ck.actionView(me, {
                             title: 'This is title',
                             content: 'This is content',
                             multiselect: true,
@@ -397,43 +405,62 @@ require([
         corner: 'bottom'
     });
 
-    $('.actions1').bind('actionView:confirm', when_confirm);
+    ck.delegate.on('actionView:confirm', {
 
-    $('.actions2').bind('actionView:confirm', when_confirm);
+        '.actions1': when_confirm,
+
+        '.actions2': when_confirm,
+
+        '.my-actions-button': when_confirm,
+
+        '.my-confirm-button': function(){
+            location.reload(true);
+        }
+    
+    }).on('tap', {
+
+        '.my-actions-button, .my-actions-button span': function(){
+            var me = $(this);
+            if (!me.hasClass('my-actions-button')) {
+                me = me.parent();
+            }
+            ck.actionView(me, {
+                title: 'This is title',
+                content: 'This is content',
+                options: [
+                    '<a href="picker.html" class="ck-option" target="_self">picker.html</a>',
+                    '<a href="index.html" class="ck-option" target="_self">index.html</a>',
+                    '<a href="tel:114" class="ck-option" target="_top">tel:114</a>',
+                    '<a href="#C" class="ck-option">C</a>',
+                    '<input class="ck-option" type="button" value="A">',
+                    '<input class="ck-option" type="button" value="B">'
+                ].join('')
+            }).open();
+        },
+
+        '.my-confirm-button, .my-confirm-button span': function(){
+            var me = $(this);
+            if (!me.hasClass('my-confirm-button')) {
+                me = me.parent();
+            }
+            ck.actionView(me, {
+                title: 'This is title',
+                content: 'This is content',
+                multiselect: true,
+                confirmText: '确定'
+            }).open();
+        }
+    
+    });
 
     function when_confirm(e){
+        console.info(e)
         var result = e.component.val();
         console.info('value: ', result);
         notify.set({
             content: 'value: ' + result
         }).open();
     }
-
-    $('.my-actions-button').bind('tap', function(){
-        ck.actionView(this, {
-            title: 'This is title',
-            content: 'This is content',
-            options: [
-                '<a href="picker.html" class="ck-option" target="_self">picker.html</a>',
-                '<a href="index.html" class="ck-option" target="_self">index.html</a>',
-                '<a href="tel:114" class="ck-option" target="_top">tel:114</a>',
-                '<a href="#C" class="ck-option">C</a>',
-                '<input class="ck-option" type="button" value="A">',
-                '<input class="ck-option" type="button" value="B">'
-            ].join('')
-        }).open();
-    });
-
-    $('.my-actions-button').bind('actionView:confirm', when_confirm);
-
-    $('.my-notification-button').bind('tap', function(){
-        ck.actionView(this, {
-            title: 'This is title',
-            content: 'This is content',
-            multiselect: true,
-            confirmText: '确定'
-        }).open();
-    });
 
 });
 

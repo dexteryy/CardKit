@@ -315,7 +315,7 @@ a {
   display: none;
 }
 .ck-card.moving {
-  position: absolute!important;
+  position: absolute !important;
   top: 0;
   left: 0;
   z-index: 10;
@@ -1019,7 +1019,7 @@ a {
 }
 
 .moui-actions li, .ck-actions li {
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid #000;
   opacity: 0.8;
 }
 .moui-actions li a, .ck-actions li a {
@@ -1184,7 +1184,7 @@ a {
   line-height: 42.5px;
   display: block;
   color: #fff;
-  border-bottom: 1px solid #666666;
+  border-bottom: 1px solid #666;
 }
 .moui-actionview .wrapper .content > header h1:empty, .ck-actionview .wrapper .content > header h1:empty {
   border: none;
@@ -1272,7 +1272,7 @@ a {
   font-size: 13px;
   padding: 10px 0;
   border: none;
-  border-bottom: solid 1px black;
+  border-bottom: solid 1px #000;
   text-align: center;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0.2);
   -webkit-appearance: none;
