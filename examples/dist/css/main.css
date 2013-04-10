@@ -213,7 +213,7 @@ a {
   transition: transform 0.4s ease-in-out;
 }
 .ck-root .ck-header, .ck-root .ck-modalview > header {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -1102,7 +1102,7 @@ a {
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;

@@ -1,8 +1,9 @@
 define([
     'dollar',
     'mo/network',
-    'moui/modalview'
-], function($, net, modal) {
+    'moui/modalview',
+    '../supports'
+], function($, net, modal, supports) {
 
     var modalCard = modal({
             className: 'ck-modalview'
@@ -48,14 +49,21 @@ define([
         return origin_set.call(this, opt);
     };
     
-    modalCard.ok = modalCard.done = function(){
-        if (!history.state) {
-            history.go(-2);
-        } else {
-            history.back();
-        }
-        return this.event.promise('close');
-    };
+    if (supports.HISTORY) {
+        modalCard.ok = modalCard.done = function(){
+            if (!history.state) {
+                history.go(-2);
+            } else {
+                history.back();
+            }
+            return this.event.promise('close');
+        };
+    } else {
+        modalCard.ok = modalCard.done = function(){
+            this.event.fire('needclose');
+            return this.event.promise('close');
+        };
+    }
 
     modalCard.event.bind('confirm', function(modal){
         modal.event.fire('confirmOnThis', arguments);

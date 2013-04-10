@@ -88,7 +88,7 @@ a {
   @include transition(transform 0.4s ease-in-out);
   
   .ck-header {
-    position:fixed;
+    position:absolute;
     top:0;
     left:0;
     width:100%;

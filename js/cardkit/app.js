@@ -19,11 +19,12 @@ define([
     './view/slidelist',
     './bus',
     './render',
+    './supports',
     'mo/domready'
 ], function($, _, browsers, tpl, soviet, choreo, 
     momoBase, momoTap, momoSwipe, momoDrag, momoScroll, 
     control, picker, stars, modalCard, actionView, growl, slidelist,
-    bus, render){
+    bus, render, supports){
 
     var window = this,
         history = window.history,
@@ -32,13 +33,6 @@ define([
         body = document.body,
         back_timeout,
         gc_id = 0,
-
-        SUPPORT_HISTORY = 'pushState' in history
-            && !browsers.crios 
-            && !browsers.aosp,
-        PREVENT_CACHE = !SUPPORT_HISTORY && browsers.aosp,
-        SUPPORT_OVERFLOWSCROLL = "webkitOverflowScrolling" in body.style,
-        MOBILESAFARI_STYLE_BAR = browsers.mobilesafari,
 
         TPL_MASK = '<div class="ck-globalmask"></div>';
 
@@ -219,6 +213,8 @@ define([
                 ck.changeView(prev);
             });
         }, 200);
+    }).bind('needclose', function(){
+        ck.closeModal();
     });
 
     bus.bind('actionView:open', function(actionCard){
@@ -264,10 +260,10 @@ define([
             this.scrollGesture = momoScroll(document);
             momoTap(document);
 
-            if (!SUPPORT_OVERFLOWSCROLL) {
+            if (!supports.OVERFLOWSCROLL) {
                 $(body).addClass('no-overflow-scrolling');
             }
-            if (MOBILESAFARI_STYLE_BAR) {
+            if (supports.SAFARI_TOPBAR) {
                 $(body).addClass('mobilesafari-bar');
             }
             this.initState();
@@ -339,7 +335,7 @@ define([
 
             $(document).bind('touchstart', prevent_window_scroll);
 
-            if (MOBILESAFARI_STYLE_BAR) {
+            if (supports.SAFARI_TOPBAR) {
 
                 var startY,
                     hold_timer,
@@ -388,7 +384,7 @@ define([
 
             var is_forward, restore_state;
 
-            if (SUPPORT_HISTORY) {
+            if (supports.HISTORY) {
                 $(window).bind("popstate", function(e){
                     // alert(['pop', e.state && [e.state.prev, e.state.next].join('-'), ck.viewport && ck.viewport[0].id].join(', '))
                     if (ck.sessionLocked) {
@@ -456,7 +452,7 @@ define([
                     }
                 }
 
-            } else if (PREVENT_CACHE) {
+            } else if (supports.PREVENT_CACHE) {
 
                 $(window).bind("popstate", function(){
                     window.location.reload(true);
@@ -591,7 +587,7 @@ define([
                     this.inited = true;
                 }
                 this.loadingCard.find('div')[0].style.visibility = 'hidden';
-                if (MOBILESAFARI_STYLE_BAR) {
+                if (supports.SAFARI_TOPBAR) {
                     window.scrollTo(0, 1);
                 }
                 this.windowFullHeight = window.innerHeight;
@@ -662,7 +658,7 @@ define([
                 return;
             }
         }
-        if (PREVENT_CACHE && next === ck.loadingCard) {
+        if (supports.PREVENT_CACHE && next === ck.loadingCard) {
             if (true_link) {
                 location.href = true_link;
             }
@@ -686,7 +682,7 @@ define([
             ck.globalMask.hide();
             ck.sessionLocked = false;
             if (true_link) {
-                if (is_forward && SUPPORT_HISTORY) {
+                if (is_forward && supports.HISTORY) {
                     history.forward();
                 } else {
                     location.href = true_link;
@@ -702,7 +698,7 @@ define([
         if (actionView.current) {
             actionView.current.close();
         }
-        //if (PREVENT_CACHE && prev === ck.loadingCard) {
+        //if (supports.PREVENT_CACHE && prev === ck.loadingCard) {
             //ck.sessionLocked = false;
             //history.back();
             //return;
@@ -729,7 +725,7 @@ define([
     }
 
     function push_history(prev_id, next_id, link, opt){
-        if (SUPPORT_HISTORY) {
+        if (supports.HISTORY) {
             history.pushState({
                 prev: prev_id,
                 next: next_id,
@@ -771,7 +767,7 @@ define([
         if (opt.target !== '_self') {
             window.open(true_link, opt.target);
         } else {
-            if (PREVENT_CACHE) {
+            if (supports.PREVENT_CACHE) {
                 location.href = true_link;
                 return;
             }
