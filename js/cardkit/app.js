@@ -38,6 +38,7 @@ define([
             && !browsers.aosp,
         PREVENT_CACHE = !SUPPORT_HISTORY && browsers.aosp,
         SUPPORT_OVERFLOWSCROLL = "webkitOverflowScrolling" in body.style,
+        MOBILESAFARI_STYLE_BAR = browsers.mobilesafari,
 
         TPL_MASK = '<div class="ck-globalmask"></div>';
 
@@ -266,6 +267,9 @@ define([
             if (!SUPPORT_OVERFLOWSCROLL) {
                 $(body).addClass('no-overflow-scrolling');
             }
+            if (MOBILESAFARI_STYLE_BAR) {
+                $(body).addClass('mobilesafari-bar');
+            }
             this.initState();
 
             setTimeout(function(){
@@ -335,37 +339,41 @@ define([
 
             $(document).bind('touchstart', prevent_window_scroll);
 
-            var startY,
-                hold_timer,
-                topbar_holded,
-                topbar_tips = growl({
-                    expires: -1,
-                    keepalive: true,
-                    content: '向下拖动显示地址栏'
-                }),
-                cancel_hold = function(){
+            if (MOBILESAFARI_STYLE_BAR) {
+
+                var startY,
+                    hold_timer,
+                    topbar_holded,
+                    topbar_tips = growl({
+                        expires: -1,
+                        keepalive: true,
+                        content: '向下拖动显示地址栏'
+                    }),
+                    cancel_hold = function(){
+                        clearTimeout(hold_timer);
+                        if (topbar_holded) {
+                            topbar_holded = false;
+                            topbar_tips.close();
+                        }
+                    };
+                this.header.bind('touchstart', function(e){
+                    startY = e.touches[0].clientY;
+                    hold_timer = setTimeout(function(){
+                        topbar_holded = true;
+                        ck.viewport[0].scrollTop = 0;
+                        topbar_tips.open();
+                    }, 200);
+                }).bind('touchmove', function(e){
                     clearTimeout(hold_timer);
-                    if (topbar_holded) {
-                        topbar_holded = false;
-                        topbar_tips.close();
+                    if (topbar_holded && e.touches[0].clientY < startY) {
+                        cancel_hold();
+                        topbar_holded = true;
+                        ck.windowFullHeight = Infinity;
+                        ck.hideAddressbar();
                     }
-                };
-            this.header.bind('touchstart', function(e){
-                startY = e.touches[0].clientY;
-                hold_timer = setTimeout(function(){
-                    topbar_holded = true;
-                    ck.viewport[0].scrollTop = 0;
-                    topbar_tips.open();
-                }, 200);
-            }).bind('touchmove', function(e){
-                clearTimeout(hold_timer);
-                if (topbar_holded && e.touches[0].clientY < startY) {
-                    cancel_hold();
-                    topbar_holded = true;
-                    ck.windowFullHeight = Infinity;
-                    ck.hideAddressbar();
-                }
-            }).bind('touchend', cancel_hold).bind('touchcancel', cancel_hold);
+                }).bind('touchend', cancel_hold).bind('touchcancel', cancel_hold);
+
+            }
 
         },
 
@@ -583,7 +591,9 @@ define([
                     this.inited = true;
                 }
                 this.loadingCard.find('div')[0].style.visibility = 'hidden';
-                window.scrollTo(0, 1);
+                if (MOBILESAFARI_STYLE_BAR) {
+                    window.scrollTo(0, 1);
+                }
                 this.windowFullHeight = window.innerHeight;
                 ck.updateSize();
                 this.loadingCard.find('div')[0].style.visibility = '';

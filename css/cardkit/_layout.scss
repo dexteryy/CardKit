@@ -94,6 +94,7 @@ a {
     width:100%;
     @include background(linear-gradient(bottom, #78624f, #846f5b));
     z-index: $zindex_overlay;
+
     @include transform(translateY(-$nav_height));
     @include transition(transform 400ms ease-in-out);
 

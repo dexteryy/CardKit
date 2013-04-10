@@ -383,7 +383,7 @@ a {
 }
 
 .no-overflow-scrolling .ck-card {
-  overflow: visible;
+  overflow-y: scroll;
 }
 
 @-moz-keyframes loading-dot {
@@ -1266,7 +1266,7 @@ a {
 }
 
 .no-overflow-scrolling .ck-modalview .wrapper > article {
-  overflow: visible;
+  overflow-y: scroll;
 }
 
 .ck-actionview .wrapper .content > article .ck-option {
