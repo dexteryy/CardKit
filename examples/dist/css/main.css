@@ -213,7 +213,7 @@ a {
   transition: transform 0.4s ease-in-out;
 }
 .ck-root .ck-header, .ck-root .ck-modalview > header {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -383,7 +383,7 @@ a {
 }
 
 .no-overflow-scrolling .ck-card {
-  overflow: visible;
+  overflow-y: scroll;
 }
 
 @-moz-keyframes loading-dot {
@@ -1102,7 +1102,7 @@ a {
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -1172,7 +1172,7 @@ a {
   -webkit-overflow-scrolling: touch;
 }
 .moui-actionview .wrapper .content, .ck-actionview .wrapper .content {
-  padding: 7.5px 15px 15px 15px;
+  padding: 0 15px 15px 15px;
   overflow: hidden;
 }
 .moui-actionview .wrapper .content > header, .ck-actionview .wrapper .content > header {
@@ -1195,8 +1195,8 @@ a {
 .moui-actionview .wrapper .content > article, .ck-actionview .wrapper .content > article {
   position: absolute;
   bottom: 74px;
-  left: 15px;
-  right: 15px;
+  left: 30px;
+  right: 30px;
 }
 .moui-actionview > footer, .ck-actionview > footer {
   position: absolute;
@@ -1237,7 +1237,6 @@ a {
   height: 100%;
   background: #121212;
   opacity: 0.8;
-  z-index: -1;
 }
 .moui-actionview.active, .active.ck-actionview {
   display: block;
@@ -1272,7 +1271,7 @@ a {
 }
 
 .no-overflow-scrolling .ck-modalview .wrapper > article {
-  overflow: visible;
+  overflow-y: scroll;
 }
 
 .ck-actionview .wrapper .content > article {

@@ -15,7 +15,7 @@
   }
 
   .no-overflow-scrolling & .wrapper > article {
-    overflow:visible;
+    overflow-y:scroll;
   }
 
 }

@@ -2,6 +2,7 @@
 define([
     'dollar',
     'mo/lang',
+    'mo/browsers',
     'mo/template',
     './tpl/unit/box',
     './tpl/unit/list',
@@ -12,11 +13,13 @@ define([
     './parser/list',
     './parser/mini',
     './parser/form'
-], function($, _, tpl, 
+], function($, _, browsers, tpl, 
     tpl_box, tpl_list, tpl_mini, tpl_form, tpl_blank,
     boxParser, listParser, miniParser, formParser){
 
-    var TPL_TIPS = '<div class="ck-top-tips">长按顶部导航条，可拖出浏览器地址栏</div>';
+    var TPL_TIPS = '<div class="ck-top-tips">'
+        + (browsers.mobilesafari ? '长按顶部导航条，可拖出浏览器地址栏' : '')
+        + '</div>';
 
     function exports(card, raw, footer, opt) {
 

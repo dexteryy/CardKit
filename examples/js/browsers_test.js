@@ -5,19 +5,35 @@ define('dollar', [
     return $;
 });
 
+define('history.src', 'history.js');
+define('history', [
+   'dollar', 
+   'history.src', 
+   'mo/domready'
+], function($){
+    var History = this.History;
+    History.Adapter = $;
+    History.Adapter.onDomLoad = function(fn){
+        fn();
+    };
+    History.init();
+    return History;
+});
+
 require([
     'mo/lang',
     'dollar', 
     'mo/browsers',
     'momo',
+    'history',
     'mo/console'
-], function(_, $, browsers, momo, console){
+], function(_, $, browsers, momo, History, console){
 
     console.config({
         output: $('#console')[0]
     }).enable();
 
-    console.info('init', 3, navigator.userAgent);
+    console.info('init', 3, navigator.userAgent, location, document);
 
     console.info('browsers', browsers);
 
@@ -68,6 +84,43 @@ require([
         console.info('data("enable-url"): ', test.data('enable-url'));
         console.info('data("enableUrl"): ', test.data('enableUrl'));
     });
+
+    var n = 0;
+
+    $('.btn5').bind('click', function(){
+        push_history();
+    });
+
+    $(window).bind("popstate", function(e){
+        console.warn('popstate', e, e.state, history, history.state);
+    });
+
+    console.warn('init history', history, history.state);
+
+    //if (History.enabled) {
+    
+        //$(window).bind("statechange", function(){
+            //var state = History.getState();
+            //console.warn('statechange', state, state.data);
+        //});
+
+        //console.warn('init History', History, History.getState().data);
+
+    //}
+
+    function push_history(){
+        var data = {
+            prev: n,
+            next: ++n,
+            i: history.length
+        };
+        history.pushState(_.mix({}, data), document.title, location.href);
+        console.warn('push history', history, history.state);
+        //if (History.enabled) {
+            //History.pushState(_.mix({}, data), document.title, location.href);
+            //console.warn('push History', History, History.getState().data);
+        //}
+    }
 
 });
 

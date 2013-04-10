@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <title>demo</title>
+<meta http-equiv="Cache-control" content="no-cache">
+<meta http-equiv="Expires" content="-1">
 <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
 <meta name="format-detection" content="telephone=no">
 
@@ -118,20 +120,10 @@
                         data-fluid="true"
                         data-title="选择排序方式">
                     <span>Order by default</span>
-                    <ul class="ck-options">
-                        <li class="ck-option-item">
-                            <a href="#price" class="ck-option">Order by price</a>
-                        </li>
-                        <li class="ck-option-item">
-                            <a href="#date" class="ck-option">Order by date</a>
-                        </li>
-                        <li class="ck-option-item">
-                            <a href="#alpha" class="ck-option">Order by alphabet</a>
-                        </li>
-                        <li class="ck-option-item">
-                            <a href="#editor" class="ck-option">Order by editor</a>
-                        </li>
-                    </ul>
+                    <a href="#price" class="ck-option">Order by price</a>
+                    <a href="#date" class="ck-option">Order by date</a>
+                    <a href="#alpha" class="ck-option">Order by alphabet</a>
+                    <a href="#editor" class="ck-option">Order by editor</a>
                 </button>
                 <!--demo end-->
                 <div class="democode">
@@ -331,9 +323,23 @@ require([
                 modal.hideLoading();
                 var json = net.parseJSON(maybe_json) || { e: 0 };
                 if (!json.e) {
-//                    modal.ok().then(function(){
-                        ck.openURL('picker.html');
-//                    });
+
+                    location.href = 'redirect.html';
+
+                    /**
+                     * other usecase:
+                     */
+
+                    //location.href = 'http://www.douban.com/photos/album/46548339/';
+
+                    //ck.openURL('picker.html');
+
+                    //location.reload();
+
+                    //modal.ok().then(function(){
+                        //location.reload();
+                    //});
+
                 } else {
                     ck.growl({
                         expires: 3000,

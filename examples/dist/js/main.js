@@ -673,6 +673,163 @@ define("mo/domready", [
     }
 });
 
+/* @source mo/browsers.js */;
+
+/**
+ * Standalone jQuery.browsers supports skin browsers popular in China 
+ *
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
+define("mo/browsers", [], function(){
+
+    var match, skin, os,
+        rank = { 
+            "360ee": 2,
+            "maxthon/3": 2,
+            "qqbrowser": 2,
+            "metasr": 2,
+            "360se": 1,
+            "theworld": 1,
+            "maxthon": 1,
+            "tencenttraveler": -1
+        };
+
+    try {
+        var ua = this.navigator.userAgent.toLowerCase(),
+            rwindows = /(windows) nt ([\w.]+)/,
+            rmac = /(mac) os \w+ ([\w.]+)/,
+            riphone = /(iphone) os ([\w._]+)/,
+            ripad = /(ipad) os ([\w.]+)/,
+            randroid = /(android)[ ;]([\w.]*)/,
+            rmobilesafari = /(\w+)[ \/]([\w.]+)[ \/]mobile.*safari/,
+            rsafari = /(\w+)[ \/]([\w.]+) safari/,
+            rwebkit = /(webkit)[ \/]([\w.]+)/,
+            ropera = /(opera)(?:.*version)?[ \/]([\w.]+)/,
+            rmsie = /(msie) ([\w.]+)/,
+            rmozilla = /(mozilla)(?:.*? rv:([\w.]+))?/;
+
+        var r360se = /(360se)/,
+            r360ee = /(360ee)/,
+            r360phone = /(360) \w+phone/,
+            rtheworld = /(theworld)/,
+            rmaxthon3 = /(maxthon\/3)/,
+            rmaxthon = /(maxthon)/,
+            rtt = /(tencenttraveler)/,
+            rqq = /(qqbrowser)/,
+            rbaidu = /(baidubrowser)/,
+            ruc = /(ucbrowser)/,
+            rmetasr = /(metasr)/;
+
+        os = riphone.exec(ua) 
+            || ripad.exec(ua) 
+            || randroid.exec(ua) 
+            || rmac.exec(ua) 
+            || rwindows.exec(ua) 
+            || [];
+
+        match =  rwebkit.exec(ua) 
+            || ropera.exec(ua) 
+            || rmsie.exec(ua) 
+            || ua.indexOf("compatible") < 0 && rmozilla.exec(ua) 
+            || [];
+
+        if (match[1] === 'webkit') {
+            var vendor = rmobilesafari.exec(ua) || rsafari.exec(ua);
+            if (vendor) {
+                match[3] = match[1];
+                match[4] = match[2];
+                match[1] = vendor[1] === 'version' 
+                    && ((os[1] === 'iphone' 
+                            || os[1] === 'ipad')
+                            && 'mobilesafari'
+                        || os[1] === 'android' 
+                            && 'aosp' 
+                        || 'safari')
+                    || vendor[1];
+                match[2] = vendor[2];
+            }
+        }
+
+        skin = r360se.exec(ua) 
+            || r360ee.exec(ua) 
+            || r360phone.exec(ua) 
+            || ruc.exec(ua) 
+            || rtheworld.exec(ua) 
+            || rmaxthon3.exec(ua) 
+            || rmaxthon.exec(ua) 
+            || rtt.exec(ua) 
+            || rqq.exec(ua) 
+            || rbaidu.exec(ua) 
+            || rmetasr.exec(ua) 
+            || [];
+
+    } catch (ex) {
+        match = [];
+        skin = [];
+    }
+
+    var result = { 
+        browser: match[1] || "", 
+        version: match[2] || "0",
+        engine: match[3],
+        engineversion: match[4] || "0",
+        os: os[1],
+        osversion: os[2] || "0",
+        skin: skin[1] || ""
+    };
+
+    if (result.os === 'android' && !result.browser) {
+        result.skin = 'ucbrowser';
+        result.browser = 'aosp';
+        result.engine = 'webkit';
+        result.osversion = "0";
+    }
+
+    if (match[1]) {
+        result[match[1]] = parseInt(result.version, 10) || true;
+    }
+    if (skin[1]) {
+        result.rank = rank[result.skin] || 0;
+    }
+    result.shell = result.skin;
+
+    return result;
+
+});
+
+/* @source ../cardkit/supports.js */;
+
+define("../cardkit/supports", [
+  "mo/browsers"
+], function(browsers){
+
+    var window = this,
+        history = window.history,
+        document = window.document,
+        body = document.body;
+
+    var exports = {
+    
+        HISTORY: 'pushState' in history
+            && !browsers.crios 
+            && !browsers.aosp,
+
+        OVERFLOWSCROLL: "webkitOverflowScrolling" in body.style,
+
+        SAFARI_TOPBAR: browsers.mobilesafari
+
+    };
+
+    exports.PREVENT_CACHE = !exports.HISTORY && browsers.aosp;
+
+    return exports;
+
+});
+
 /* @source mo/lang/type.js */;
 
 /**
@@ -1541,21 +1698,7 @@ define("dollar/origin", [
 
         unbind: event_access('remove'),
 
-        trigger: function(event, data){
-            if (typeof event === 'string') {
-                event = Event(event);
-            }
-            _.mix(event, data);
-            this.forEach(event.type == 'submit' 
-                && !event.defaultPrevented ? function(node){
-                node.submit();
-            } : function(node){
-                if ('dispatchEvent' in node) {
-                    node.dispatchEvent(this);
-                }
-            }, event);
-            return this;
-        },
+        trigger: trigger,
 
         // Miscellaneous
 
@@ -1708,6 +1851,30 @@ define("dollar/origin", [
         return event;
     }
 
+    function trigger(me, event, data){
+        if (this === $) {
+            me = $(me);
+        } else {
+            data = event;
+            event = me;
+            me = this;
+        }
+        if (typeof event === 'string') {
+            event = Event(event);
+        }
+        _.mix(event, data);
+        me.forEach(event.type == 'submit' 
+            && !event.defaultPrevented 
+                ? function(node){
+                    node.submit();
+                } : function(node){
+                    if ('dispatchEvent' in node) {
+                        node.dispatchEvent(this);
+                    }
+                }, event);
+        return this;
+    }
+
     function css_method(name){
         return name.replace(/-+(.)?/g, function($0, $1){
             return $1 ? $1.toUpperCase() : '';
@@ -1820,6 +1987,7 @@ define("dollar/origin", [
     $.camelize = css_method;
     $.dasherize = css_prop;
     $.Event = Event;
+    $.trigger = trigger;
     $._kvAccess = kv_access;
     $._eachNode = each_node;
 
@@ -2472,6 +2640,7 @@ define("mo/template", [
 define("../cardkit/render", [
   "dollar",
   "mo/lang",
+  "mo/browsers",
   "mo/template",
   "../cardkit/tpl/unit/box",
   "../cardkit/tpl/unit/list",
@@ -2482,11 +2651,13 @@ define("../cardkit/render", [
   "../cardkit/parser/list",
   "../cardkit/parser/mini",
   "../cardkit/parser/form"
-], function($, _, tpl, 
+], function($, _, browsers, tpl, 
     tpl_box, tpl_list, tpl_mini, tpl_form, tpl_blank,
     boxParser, listParser, miniParser, formParser){
 
-    var TPL_TIPS = '<div class="ck-top-tips">长按顶部导航条，可拖出浏览器地址栏</div>';
+    var TPL_TIPS = '<div class="ck-top-tips">'
+        + (browsers.mobilesafari ? '长按顶部导航条，可拖出浏览器地址栏' : '')
+        + '</div>';
 
     function exports(card, raw, footer, opt) {
 
@@ -2573,58 +2744,6 @@ define("../cardkit/render", [
         }
 
     }
-
-    return exports;
-
-});
-
-/* @source ../cardkit/pagesession.js */;
-
-
-define("../cardkit/pagesession", [
-  "mo/lang"
-], function(){
-
-    var exports = {
-
-        init: function(){
-            this.name = 'ck_ss';
-            if (sessionStorage[this.name]) {
-                this.list = JSON.parse(sessionStorage[this.name]);
-            } else {
-                this.reset();
-            }
-        },
-
-        reset: function(){
-            this.list = [];
-            this.save();
-        },
-
-        save: function(){
-            sessionStorage[this.name] = JSON.stringify(this.list);
-        },
-
-        indexOf: function(url){
-            var n = this.list.map(function(item){
-                return item[0];
-            }).indexOf(url);
-            return (n === -1 || this.list[n][1] < history.length) ? n : -1;
-        },
-
-        push: function(url){
-            this.list.push([url, history.length]);
-            this.save();
-        },
-
-        clear: function(n){
-            if (n !== -1) {
-                this.list = this.list.slice(0, n + 2);
-                this.save();
-            }
-        }
-
-    };
 
     return exports;
 
@@ -5278,134 +5397,6 @@ define('moui/modalview', [
 
 });
 
-/* @source mo/browsers.js */;
-
-/**
- * Standalone jQuery.browsers supports skin browsers popular in China 
- *
- * using AMD (Asynchronous Module Definition) API with OzJS
- * see http://ozjs.org for details
- *
- * Copyright (C) 2010-2012, Dexter.Yy, MIT License
- * vim: et:ts=4:sw=4:sts=4
- */
-define("mo/browsers", [], function(){
-
-    var match, skin, os,
-        rank = { 
-            "360ee": 2,
-            "maxthon/3": 2,
-            "qqbrowser": 2,
-            "metasr": 2,
-            "360se": 1,
-            "theworld": 1,
-            "maxthon": 1,
-            "tencenttraveler": -1
-        };
-
-    try {
-        var ua = this.navigator.userAgent.toLowerCase(),
-            rwindows = /(windows) nt ([\w.]+)/,
-            rmac = /(mac) os \w+ ([\w.]+)/,
-            riphone = /(iphone) os ([\w._]+)/,
-            ripad = /(ipad) os ([\w.]+)/,
-            randroid = /(android)[ ;]([\w.]*)/,
-            rmobilesafari = /(\w+)[ \/]([\w.]+)[ \/]mobile.*safari/,
-            rsafari = /(\w+)[ \/]([\w.]+) safari/,
-            rwebkit = /(webkit)[ \/]([\w.]+)/,
-            ropera = /(opera)(?:.*version)?[ \/]([\w.]+)/,
-            rmsie = /(msie) ([\w.]+)/,
-            rmozilla = /(mozilla)(?:.*? rv:([\w.]+))?/;
-
-        var r360se = /(360se)/,
-            r360ee = /(360ee)/,
-            r360phone = /(360) \w+phone/,
-            rtheworld = /(theworld)/,
-            rmaxthon3 = /(maxthon\/3)/,
-            rmaxthon = /(maxthon)/,
-            rtt = /(tencenttraveler)/,
-            rqq = /(qqbrowser)/,
-            rbaidu = /(baidubrowser)/,
-            ruc = /(ucbrowser)/,
-            rmetasr = /(metasr)/;
-
-        os = riphone.exec(ua) 
-            || ripad.exec(ua) 
-            || randroid.exec(ua) 
-            || rmac.exec(ua) 
-            || rwindows.exec(ua) 
-            || [];
-
-        match =  rwebkit.exec(ua) 
-            || ropera.exec(ua) 
-            || rmsie.exec(ua) 
-            || ua.indexOf("compatible") < 0 && rmozilla.exec(ua) 
-            || [];
-
-        if (match[1] === 'webkit') {
-            var vendor = rmobilesafari.exec(ua) || rsafari.exec(ua);
-            if (vendor) {
-                match[3] = match[1];
-                match[4] = match[2];
-                match[1] = vendor[1] === 'version' 
-                    && ((os[1] === 'iphone' 
-                            || os[1] === 'ipad')
-                            && 'mobilesafari'
-                        || os[1] === 'android' 
-                            && 'aosp' 
-                        || 'safari')
-                    || vendor[1];
-                match[2] = vendor[2];
-            }
-        }
-
-        skin = r360se.exec(ua) 
-            || r360ee.exec(ua) 
-            || r360phone.exec(ua) 
-            || ruc.exec(ua) 
-            || rtheworld.exec(ua) 
-            || rmaxthon3.exec(ua) 
-            || rmaxthon.exec(ua) 
-            || rtt.exec(ua) 
-            || rqq.exec(ua) 
-            || rbaidu.exec(ua) 
-            || rmetasr.exec(ua) 
-            || [];
-
-    } catch (ex) {
-        match = [];
-        skin = [];
-    }
-
-    var result = { 
-        browser: match[1] || "", 
-        version: match[2] || "0",
-        engine: match[3],
-        engineversion: match[4] || "0",
-        os: os[1],
-        osversion: os[2] || "0",
-        skin: skin[1] || ""
-    };
-
-    if (result.os === 'android' && !result.browser) {
-        result.skin = 'ucbrowser';
-        result.browser = 'aosp';
-        result.engine = 'webkit';
-        result.osversion = "0";
-    }
-
-    if (match[1]) {
-        result[match[1]] = parseInt(result.version, 10) || true;
-    }
-    if (skin[1]) {
-        result.rank = rank[result.skin] || 0;
-    }
-    result.shell = result.skin;
-
-    return result;
-
-});
-
 /* @source mo/network/ajax.js */;
 
 /**
@@ -5664,8 +5655,9 @@ define("mo/network", [
 define("../cardkit/view/modalcard", [
   "dollar",
   "mo/network",
-  "moui/modalview"
-], function($, net, modal) {
+  "moui/modalview",
+  "../cardkit/supports"
+], function($, net, modal, supports) {
 
     var modalCard = modal({
             className: 'ck-modalview'
@@ -5711,14 +5703,21 @@ define("../cardkit/view/modalcard", [
         return origin_set.call(this, opt);
     };
     
-    modalCard.ok = modalCard.done = function(){
-        if (!history.state) {
-            history.go(-2);
-        } else {
-            history.back();
-        }
-        return this.event.promise('close');
-    };
+    if (supports.HISTORY) {
+        modalCard.ok = modalCard.done = function(){
+            if (!history.state) {
+                history.go(-2);
+            } else {
+                history.back();
+            }
+            return this.event.promise('close');
+        };
+    } else {
+        modalCard.ok = modalCard.done = function(){
+            this.event.fire('needclose');
+            return this.event.promise('close');
+        };
+    }
 
     modalCard.event.bind('confirm', function(modal){
         modal.event.fire('confirmOnThis', arguments);
@@ -6515,6 +6514,7 @@ define('soviet', [
 define("../cardkit/app", [
   "dollar",
   "mo/lang",
+  "mo/browsers",
   "mo/template",
   "soviet",
   "choreo",
@@ -6531,22 +6531,21 @@ define("../cardkit/app", [
   "../cardkit/view/growl",
   "../cardkit/view/slidelist",
   "../cardkit/bus",
-  "../cardkit/pagesession",
   "../cardkit/render",
+  "../cardkit/supports",
   "mo/domready"
-], function($, _, tpl, soviet, choreo, 
+], function($, _, browsers, tpl, soviet, choreo, 
     momoBase, momoTap, momoSwipe, momoDrag, momoScroll, 
     control, picker, stars, modalCard, actionView, growl, slidelist,
-    bus, pageSession, render){
+    bus, render, supports){
 
     var window = this,
+        history = window.history,
         location = window.location,
         document = window.document,
         body = document.body,
         back_timeout,
         gc_id = 0,
-
-        SUPPORT_OVERFLOWSCROLL = "webkitOverflowScrolling" in body.style,
 
         TPL_MASK = '<div class="ck-globalmask"></div>';
 
@@ -6727,6 +6726,8 @@ define("../cardkit/app", [
                 ck.changeView(prev);
             });
         }, 200);
+    }).bind('needclose', function(){
+        ck.closeModal();
     });
 
     bus.bind('actionView:open', function(actionCard){
@@ -6772,8 +6773,11 @@ define("../cardkit/app", [
             this.scrollGesture = momoScroll(document);
             momoTap(document);
 
-            if (!SUPPORT_OVERFLOWSCROLL) {
+            if (!supports.OVERFLOWSCROLL) {
                 $(body).addClass('no-overflow-scrolling');
+            }
+            if (supports.SAFARI_TOPBAR) {
+                $(body).addClass('mobilesafari-bar');
             }
             this.initState();
 
@@ -6844,37 +6848,41 @@ define("../cardkit/app", [
 
             $(document).bind('touchstart', prevent_window_scroll);
 
-            var startY,
-                hold_timer,
-                topbar_holded,
-                topbar_tips = growl({
-                    expires: -1,
-                    keepalive: true,
-                    content: '向下拖动显示地址栏'
-                }),
-                cancel_hold = function(){
+            if (supports.SAFARI_TOPBAR) {
+
+                var startY,
+                    hold_timer,
+                    topbar_holded,
+                    topbar_tips = growl({
+                        expires: -1,
+                        keepalive: true,
+                        content: '向下拖动显示地址栏'
+                    }),
+                    cancel_hold = function(){
+                        clearTimeout(hold_timer);
+                        if (topbar_holded) {
+                            topbar_holded = false;
+                            topbar_tips.close();
+                        }
+                    };
+                this.header.bind('touchstart', function(e){
+                    startY = e.touches[0].clientY;
+                    hold_timer = setTimeout(function(){
+                        topbar_holded = true;
+                        ck.viewport[0].scrollTop = 0;
+                        topbar_tips.open();
+                    }, 200);
+                }).bind('touchmove', function(e){
                     clearTimeout(hold_timer);
-                    if (topbar_holded) {
-                        topbar_holded = false;
-                        topbar_tips.close();
+                    if (topbar_holded && e.touches[0].clientY < startY) {
+                        cancel_hold();
+                        topbar_holded = true;
+                        ck.windowFullHeight = Infinity;
+                        ck.hideAddressbar();
                     }
-                };
-            this.header.bind('touchstart', function(e){
-                startY = e.touches[0].clientY;
-                hold_timer = setTimeout(function(){
-                    topbar_holded = true;
-                    ck.viewport[0].scrollTop = 0;
-                    topbar_tips.open();
-                }, 200);
-            }).bind('touchmove', function(e){
-                clearTimeout(hold_timer);
-                if (topbar_holded && e.touches[0].clientY < startY) {
-                    cancel_hold();
-                    topbar_holded = true;
-                    ck.windowFullHeight = Infinity;
-                    ck.hideAddressbar();
-                }
-            }).bind('touchend', cancel_hold).bind('touchcancel', cancel_hold);
+                }).bind('touchend', cancel_hold).bind('touchcancel', cancel_hold);
+
+            }
 
         },
 
@@ -6885,85 +6893,102 @@ define("../cardkit/app", [
 
         initState: function(){
 
-            $(window).bind("popstate", function(e){
-                // alert(['pop', e.state && [e.state.prev, e.state.next], ck.viewport && ck.viewport[0].id].join(', '))
-                if (ck.sessionLocked) {
-                    pageSession.reset();
-                    location.reload();
-                    return;
-                }
-                clearTimeout(back_timeout);
-                var loading = ck.viewport[0].id === 'ckLoading'; 
-                if (e.state) {
-                    if (e.state.next === '_modal_') {
-                        // 11. forward from normal card, show modal card.  alert(11)
-                        if (loading) {
-                            history.back();
-                        } else {
-                            modalCard.set(e.state.opt).open();
-                        }
-                    } else if (modalCard.isOpened) {
-                        // 12. back from modal card.  alert(12)
-                        ck.closeModal();
-                    } else if (loading) {
-                        if (e.state.next === 'ckLoading') {
-                            // 6. back from other page, no GC. 
-                            //    go to 2.  alert(6)
-                            history.back();
-                        } else {
-                            // 7. from 6, hide loading immediately.  alert(7)
-                            ck.changeView(e.state.next);
-                            ck.hideLoading();
-                        }
-                    } else if (e.state.prev === ck.viewport[0].id) {
-                        // 3. forward from normal card.  alert(3)
-                        link_handler(e.state.next, e.state.link);
-                    } else if (e.state.next === ck.viewport[0].id){ // @TODO hotfix for chrome
-                        history.back();
-                    } else {
-                        // 2. back from normal card.  alert(2)
-                        back_handler(e.state.next);
-                    }
-                } else if (loading) {
-                    // 5. forward from other page, no GC.  alert(5)
-                    history.forward();
-                } else { 
-                    // 4. back to other page, shift left and show loading.
-                    //    if no GC: go to 6.
-                    //    if no prev page: reload, go to 8
-                    //    else: go to 8.  alert(4)
-                    back_handler('ckLoading');
-                }
-            });
-
             ck.sessionLocked = false;
 
-            pageSession.init();
+            var is_forward, restore_state;
 
-            var current_state = history.state,
-                restore_state = current_state && current_state.next; // alert(['init', current_state && [current_state.prev, current_state.next], ck.viewport && ck.viewport[0].id].join(', '))
-            if (restore_state === '_modal_') { // @TODO
-                restore_state = current_state.prev;
-                modalCard.set(history.state.opt).open();
+            if (supports.HISTORY) {
+                $(window).bind("popstate", function(e){
+                    // alert(['pop', e.state && [e.state.prev, e.state.next].join('-'), ck.viewport && ck.viewport[0].id].join(', '))
+                    if (ck.sessionLocked) {
+                        location.reload(true);
+                        return;
+                    }
+                    clearTimeout(back_timeout);
+                    var loading = ck.viewport[0].id === 'ckLoading'; 
+                    if (e.state) {
+                        if (e.state.next === '_modal_') {
+                            // 11. forward from normal card, show modal card.  alert(11)
+                            if (modalCard.isOpened || loading || !ck.viewport) {
+                                history.back();
+                            } else {
+                                modalCard.set(e.state.opt).open();
+                            }
+                        } else if (modalCard.isOpened) {
+                            // 12. back from modal card.  alert(12)
+                            ck.closeModal();
+                        } else if (loading) {
+                            if (e.state.next === 'ckLoading') {
+                                // 6. back from other page, no GC. 
+                                //    go to 2.  alert(6)
+                                history.back();
+                            } else if (e.state.next) {
+                                // 7. from 6, hide loading immediately.  alert(7)
+                                ck.changeView(e.state.next);
+                                ck.hideLoading();
+                            }
+                        } else if (e.state.prev === ck.viewport[0].id) {
+                            // 3. forward from normal card.  alert(3)
+                            link_handler(e.state.next, e.state.link);
+                        } else if (e.state.next === ck.viewport[0].id){ // @TODO hotfix for chrome
+                            history.back();
+                        } else {
+                            // 2. back from normal card.  alert(2)
+                            back_handler(e.state.next);
+                        }
+                    } else if (loading) {
+                        // 5. forward from other page, no GC.  alert(5)
+                        history.forward();
+                    } else { 
+                        // 4. back to other page, shift left and show loading.
+                        //    if no GC: go to 6.
+                        //    if no prev page: reload, go to 8
+                        //    else: go to 8.  alert(4)
+                        back_handler('ckLoading');
+                    }
+                });
+
+                //alert('length: ' + history.length + ', ' + document.referrer)
+                var last_length = sessionStorage['ck_ss_n'],
+                    last_loc = sessionStorage['ck_ss_loc'];
+                is_forward = last_length && last_length == history.length 
+                    && document.referrer && last_loc === document.referrer;
+                sessionStorage['ck_ss_n'] = history.length;
+                sessionStorage['ck_ss_loc'] = location.href;
+
+                var current_state = history.state,
+                    restore_state = current_state && current_state.next; // alert(['init', current_state && [current_state.prev, current_state.next].join('-'), ck.viewport && ck.viewport[0].id].join(', '))
+                if (restore_state === '_modal_') { // @TODO
+                    restore_state = current_state.prev;
+                    if (!modalCard.isOpened && ck.viewport) {
+                        modalCard.set(history.state.opt).open();
+                    }
+                }
+
+            } else if (supports.PREVENT_CACHE) {
+
+                $(window).bind("popstate", function(){
+                    window.location.reload(true);
+                });
+
             }
+
             if (restore_state) {
-                // 1. reload from normal card.  alert(0)
+                // 1. reload from normal card.  alert(1)
                 ck.changeView(restore_state);
                 if (restore_state === 'ckLoading') {
                     // 9.  alert(9)
                     history.back();
                 }
             } else {
-                if (pageSession.indexOf(location.href) !== -1) {
-                    // 8. reload from loading card.
-                    //    or forward from other page.  alert(8)
+                if (is_forward) {
+                    // 8.  alert(8)
                     ck.changeView(ck.loadingCard);
                     history.forward();
                 } else {
-                    // 0. new page.  alert(1)
+                    // 0.  alert(0)
                     ck.changeView(ck.defaultCard);
                     push_history(ck.loadingCard[0].id, ck.defaultCard[0].id);
-                    pageSession.push(location.href);
                 }
             }
 
@@ -7075,7 +7100,9 @@ define("../cardkit/app", [
                     this.inited = true;
                 }
                 this.loadingCard.find('div')[0].style.visibility = 'hidden';
-                window.scrollTo(0, 1);
+                if (supports.SAFARI_TOPBAR) {
+                    window.scrollTo(0, 1);
+                }
                 this.windowFullHeight = window.innerHeight;
                 ck.updateSize();
                 this.loadingCard.find('div')[0].style.visibility = '';
@@ -7140,11 +7167,15 @@ define("../cardkit/app", [
                 next_id = 'ckLoading';
                 next = ck.loadingCard;
                 true_link = me.href;
-                //pageSession.clear(pageSession.indexOf(location.href));
-                pageSession.reset();
             } else {
                 return;
             }
+        }
+        if (supports.PREVENT_CACHE && next === ck.loadingCard) {
+            if (true_link) {
+                location.href = true_link;
+            }
+            return;
         }
         ck.sessionLocked = true;
         var current = ck.viewport;
@@ -7164,7 +7195,7 @@ define("../cardkit/app", [
             ck.globalMask.hide();
             ck.sessionLocked = false;
             if (true_link) {
-                if (is_forward) {
+                if (is_forward && supports.HISTORY) {
                     history.forward();
                 } else {
                     location.href = true_link;
@@ -7177,11 +7208,16 @@ define("../cardkit/app", [
         ck.sessionLocked = true;
         var prev = $('#' + prev_id);
         var current = ck.viewport;
-        ck.globalMask.show();
-        //ck.showTopbar();
         if (actionView.current) {
             actionView.current.close();
         }
+        //if (supports.PREVENT_CACHE && prev === ck.loadingCard) {
+            //ck.sessionLocked = false;
+            //history.back();
+            //return;
+        //}
+        ck.globalMask.show();
+        //ck.showTopbar();
         choreo.transform(ck.wrapper[0], 'translateX', 0 - window.innerWidth + 'px');
         current.addClass('moving');
         prev.show();
@@ -7195,20 +7231,22 @@ define("../cardkit/app", [
             if (prev_id === 'ckLoading') {
                 history.back();
                 back_timeout = setTimeout(function(){
-                    location.reload();
+                    location.reload(true);
                 }, 800);
             }
         });
     }
 
     function push_history(prev_id, next_id, link, opt){
-        history.pushState({
-            prev: prev_id,
-            next: next_id,
-            link: link,
-            opt: opt,
-            i: history.length
-        }, document.title, location.href);
+        if (supports.HISTORY) {
+            history.pushState({
+                prev: prev_id,
+                next: next_id,
+                link: link,
+                opt: opt,
+                i: history.length
+            }, document.title, location.href);
+        }
     }
 
     function prevent_window_scroll(){
@@ -7242,11 +7280,13 @@ define("../cardkit/app", [
         if (opt.target !== '_self') {
             window.open(true_link, opt.target);
         } else {
+            if (supports.PREVENT_CACHE) {
+                location.href = true_link;
+                return;
+            }
             ck.sessionLocked = true;
             var next_id = 'ckLoading';
             var next = ck.loadingCard;
-            //pageSession.clear(pageSession.indexOf(location.href));
-            pageSession.reset();
             var current = ck.viewport;
             ck.globalMask.show();
             push_history(current[0].id, next_id, true_link);
