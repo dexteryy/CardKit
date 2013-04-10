@@ -1199,7 +1199,7 @@ a {
   left: 25px;
   right: 25px;
   background: #1a1a1a;
-  border: solid 1px #1a1a1a;
+  border: solid 1px #141414;
   padding: 0 18px;
   margin-bottom: -1px;
   -webkit-border-radius: 5px;
@@ -1253,7 +1253,7 @@ a {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(33, 33, 33, 0.9);
+  background: rgba(25, 25, 25, 0.95);
   z-index: -1;
 }
 .moui-actionview.active, .active.ck-actionview {
@@ -1272,14 +1272,20 @@ a {
   font-size: 13px;
   padding: 10px 0;
   border: none;
-  border-bottom: solid 1px #000;
+  border-bottom: solid 1px #141414;
   text-align: center;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0.2);
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
 }
-.moui-actionview .wrapper .content > article .option:active, .ck-actionview .wrapper .content > article .option:active, .ck-actionview .wrapper .content > article .ck-option:active, .moui-actionview .wrapper .content > article .enabled.option, .ck-actionview .wrapper .content > article .enabled.option, .ck-actionview .wrapper .content > article .enabled.ck-option {
+
+.moui-actionview .wrapper .content > article .option:active, .ck-actionview .wrapper .content > article .option:active, .ck-actionview .wrapper .content > article .ck-option:active,
+.moui-actionview .wrapper .content > article .enabled.option,
+.ck-actionview .wrapper .content > article .enabled.option,
+.ck-actionview .wrapper .content > article .enabled.ck-option {
+  background-color: #006ae2;
+  text-shadow: 0 0.1rem 0 rbga(255, 255, 255, 0.25);
   padding-left: 5px;
   padding-right: 5px;
   -webkit-transform: translateX(-5px);
@@ -1291,7 +1297,8 @@ a {
   -ms-border-radius: 3px;
   border-radius: 3px;
 }
-.moui-actionview .wrapper .content > article .option:last, .ck-actionview .wrapper .content > article .option:last, .ck-actionview .wrapper .content > article .ck-option:last {
+
+.moui-actionview .wrapper .content > article .option:last-child, .ck-actionview .wrapper .content > article .option:last-child, .ck-actionview .wrapper .content > article .ck-option:last-child {
   border-bottom: none;
 }
 

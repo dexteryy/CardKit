@@ -46,7 +46,7 @@
         left:$space;
         right:$space;
         background:#1a1a1a;
-        border: solid 1px #1a1a1a;
+        border: solid 1px #141414;
         padding:0 18px;
         margin-bottom:-1px;
         @include border-radius(5px);
@@ -117,7 +117,7 @@
     left:0;
     width:100%;
     height:100%;
-    background:rgba(33,33,33,0.9);
+    background:rgba(25,25,25,0.95);
     z-index:-1;
   }
 
@@ -144,20 +144,23 @@
   font-size:$title_size;
   padding:10px 0;
   border:none;
-  border-bottom:solid 1px #000;
+  border-bottom:solid 1px #141414;
   text-align:center;
   -webkit-tap-highlight-color: rgba(0,0,0,0.2);
   @include appearance(none);
 
-  &:active, &.enabled {
-    padding-left:5px;
-    padding-right:5px;
-    @include transform(translateX(-5px));
-    @include border-radius(3px);
-  }
-
-  &:last {
-    border-bottom:none;
-  }
-
 }
+%action-option:active,
+%action-option.enabled {
+  background-color:$active_color;
+  text-shadow:0 0.1rem 0 rbga(255,255,255,0.25);
+  padding-left:5px;
+  padding-right:5px;
+  @include transform(translateX(-5px));
+  @include border-radius(3px);
+}
+
+%action-option:last-child {
+  border-bottom:none;
+}
+
