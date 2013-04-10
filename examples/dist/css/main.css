@@ -1279,7 +1279,11 @@ a {
   -moz-appearance: none;
   appearance: none;
 }
-.moui-actionview .wrapper .content > article .option:active, .ck-actionview .wrapper .content > article .option:active, .ck-actionview .wrapper .content > article .ck-option:active, .moui-actionview .wrapper .content > article .enabled.option, .ck-actionview .wrapper .content > article .enabled.option, .ck-actionview .wrapper .content > article .enabled.ck-option {
+
+.moui-actionview .wrapper .content > article .option:active, .ck-actionview .wrapper .content > article .option:active, .ck-actionview .wrapper .content > article .ck-option:active,
+.moui-actionview .wrapper .content > article .enabled.option,
+.ck-actionview .wrapper .content > article .enabled.option,
+.ck-actionview .wrapper .content > article .enabled.ck-option {
   background-color: #006ae2;
   text-shadow: 0 0.1rem 0 rbga(255, 255, 255, 0.25);
   padding-left: 5px;
@@ -1293,6 +1297,7 @@ a {
   -ms-border-radius: 3px;
   border-radius: 3px;
 }
+
 .moui-actionview .wrapper .content > article .option:last-child, .ck-actionview .wrapper .content > article .option:last-child, .ck-actionview .wrapper .content > article .ck-option:last-child {
   border-bottom: none;
 }
