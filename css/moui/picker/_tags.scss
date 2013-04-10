@@ -1,27 +1,29 @@
 
 .moui-tagselector {
   overflow:hidden;
-
   .option {
-    border:1px solid #dadada;
-    @include border-radius($radius);
-    background:$view_color;
-    color:$text_color;
-    height:(56px/2);
-    line-height:(56px/2);
-    padding:0 (14px/2);
-    margin:(8px/2);
-    float:left;
-    -webkit-tap-highlight-color: rgba(0,0,0,0);
-    @include appearance(none);
+    @extend %tag-option;
+  }
+}
 
-    &.enabled {
-      background:#3276AF;
-      border-color:#3276AF;
-      @include box-shadow(0px 1px 0px 0px rgb(255,255,255));
-      color:#fff;
-    }
+%tag-option {
+  border:1px solid #dadada;
+  @include border-radius($radius);
+  background:$view_color;
+  color:$text_color;
+  height:(56px/2);
+  line-height:(56px/2);
+  padding:0 (14px/2);
+  margin:(8px/2);
+  float:left;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  @include appearance(none);
 
+  &.enabled {
+    background:#3276AF;
+    border-color:#3276AF;
+    @include box-shadow(0px 1px 0px 0px rgb(255,255,255));
+    color:#fff;
   }
 
 }

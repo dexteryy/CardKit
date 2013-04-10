@@ -6,14 +6,14 @@
 .ck-segment {
   @extend .moui-segment;
   .ck-option {
-    @extend .option;
+    @extend %segment-option;
   }
 }
 
 .ck-tagselector {
   @extend .moui-tagselector;
   .ck-option {
-    @extend .option;
+    @extend %tag-option;
   }
 }
 

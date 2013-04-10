@@ -22,48 +22,9 @@
 
 .ck-actionview {
   @extend .moui-actionview;
-  $space: 50px/2;
 
-  .wrapper {
-
-    .content {
-
-      & > article {
-        background:#1a1a1a;
-        border: solid 1px #1a1a1a;
-        padding:0 18px;
-        margin-bottom:-1px;
-        @include border-radius(5px);
-        @include box-shadow(0px 1px 4px 0px rgba(0,0,0,0.3));
-        .ck-option {
-          display:block;
-          box-sizing:content-box;
-          width:100%;
-          color:#fff;
-          background:#1a1a1a;
-          font-size:$title_size;
-          padding:10px 0;
-          border:none;
-          border-bottom:solid 1px #000;
-          text-align:center;
-          -webkit-tap-highlight-color: rgba(0,0,0,0.2);
-          @include appearance(none);
-
-          &:active, &.enabled {
-            background:#eee;
-            padding-left:5px;
-            padding-right:5px;
-            @include transform(translateX(-5px));
-            @include border-radius(3px);
-            color:#000;
-          }
-
-        }
-
-      }
-
-    }
-
+  .ck-option {
+    @extend %action-option;
   }
 
 }

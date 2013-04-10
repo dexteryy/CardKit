@@ -230,6 +230,29 @@
                     ]]></script>
                 </div>
             </div>
+            <div class="ckd-item">
+                <!--demo-->
+                <button class="my-notification-button ckbase-btn"
+                        data-fluid="true">
+                    <span>Notification(No Options)</span>
+                </button>
+                <!--demo end-->
+                <div class="democode">
+                    <script type="syntaxhighlighter" class="brush: html"><![CDATA[
+                    <button class="my-actions-button" data-fluid="true">
+                        <span>Notification(No Options)</span>
+                    </button>
+                    ]]></script>
+                    <script type="syntaxhighlighter" class="brush: js"><![CDATA[
+                    $('.my-notification-button').bind('tap', function(){
+                        ck.actionView(this, {
+                            title: 'This is title',
+                            content: 'This is content'
+                        }).open();
+                    });
+                    ]]></script>
+                </div>
+            </div>
         </div>
 
         <div class="ck-form-unit">
@@ -400,6 +423,13 @@ require([
     });
 
     $('.my-actions-button').bind('actionView:confirm', when_confirm);
+
+    $('.my-notification-button').bind('tap', function(){
+        ck.actionView(this, {
+            title: 'This is title',
+            content: 'This is content'
+        }).open();
+    });
 
 });
 
