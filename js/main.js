@@ -14,6 +14,13 @@ define('env', [], function(){
     return {};
 });
 
+define('cardready', [
+    'finish', 
+    'cardkit/bus'
+], function(finish, bus){
+    bus.bind('readycardchange', finish);
+});
+
 require([
     'dollar', 
     'cardkit/app',

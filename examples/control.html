@@ -233,16 +233,18 @@
 <script>
 require([
     'dollar',
-    'cardkit/app' // need domready
+    'cardkit/app',
+    'cardready'
 ], function($, ck){
 
     var notify = ck.growl({
         corner: 'bottom'
     });
 
+    $('.post1').bind('control:enable', show_result);
+
     ck.delegate.on('control:enable', {
         '.switch1': show_result,
-        '.post1': show_result,
         '.post2': show_result,
         '.link1': show_result
     }).on('control:disable', {

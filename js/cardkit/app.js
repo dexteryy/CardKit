@@ -258,7 +258,7 @@ define([
             this.defaultCard = $('#ckDefault');
             this.globalMask = $(TPL_MASK).appendTo(body);
             this.headerHeight = this.header.height();
-            this.inited = false;
+            this.sizeInited = false;
             this.viewportGarbage = {};
             this.sessionLocked = true;
             this.initWindow();
@@ -528,10 +528,11 @@ define([
             if (!opt.isModal) {
                 this.updateHeader();
             }
+            bus.fire('readycardchange', [card]);
         },
 
         updateSize: function(){
-            this.viewport[0].style.height = (this.inited ? 
+            this.viewport[0].style.height = (this.sizeInited ? 
                 window.innerHeight : (screen.availHeight + 60)) + 'px';
             // enable scrollable when height is not enough 
             var ft = this.viewport.find('.ck-footer')[0];
@@ -593,8 +594,8 @@ define([
 
         hideAddressbar: function(){
             if (this.windowFullHeight > window.innerHeight) {
-                if (!this.inited) {
-                    this.inited = true;
+                if (!this.sizeInited) {
+                    this.sizeInited = true;
                 }
                 this.loadingCard.find('div')[0].style.visibility = 'hidden';
                 if (supports.SAFARI_TOPBAR) {
@@ -635,6 +636,8 @@ define([
             matchesSelector: true,
             preventDefault: true
         }),
+
+        event: bus,
 
         control: control,
         picker: picker,

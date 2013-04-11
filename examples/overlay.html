@@ -213,12 +213,9 @@
                     </button>
                     ]]></script>
                     <script type="syntaxhighlighter" class="brush: js"><![CDATA[
-                    ck.delegate.on('tap', '.my-actions-button, .my-actions-button span', function(){
-                        var me = $(this);
-                        if (!me.hasClass('my-actions-button')) {
-                            me = me.parent();
-                        }
-                        ck.actionView(me, {
+                    $('.my-actions-button').bind('tap', function(){
+                        console.info(this)
+                        ck.actionView(this, {
                             title: 'This is title',
                             content: 'This is content',
                             options: [
@@ -231,6 +228,7 @@
                             ].join('')
                         }).open();
                     });
+                    $('.my-actions-button').bind('actionView:confirm', when_confirm);
                     ]]></script>
                 </div>
             </div>
@@ -259,6 +257,9 @@
                             multiselect: true,
                             confirmText: '确定'
                         }).open();
+                    });
+                    ck.delegate.on('actionView:confirm', '.my-confirm-button', function(){
+                        location.reload(true);
                     });
                     ]]></script>
                 </div>
@@ -398,11 +399,30 @@ require([
 <script>
 require([
     'dollar',
-    'cardkit/app'
+    'cardkit/app',
+    'cardready'
 ], function($, ck){
 
     var notify = ck.growl({
         corner: 'bottom'
+    });
+
+    $('.my-actions-button').bind('actionView:confirm', when_confirm);
+
+    $('.my-actions-button').bind('tap', function(){
+        console.info(this)
+        ck.actionView(this, {
+            title: 'This is title',
+            content: 'This is content',
+            options: [
+                '<a href="picker.html" class="ck-option" target="_self">picker.html</a>',
+                '<a href="index.html" class="ck-option" target="_self">index.html</a>',
+                '<a href="tel:114" class="ck-option" target="_top">tel:114</a>',
+                '<a href="#C" class="ck-option">C</a>',
+                '<input class="ck-option" type="button" value="A">',
+                '<input class="ck-option" type="button" value="B">'
+            ].join('')
+        }).open();
     });
 
     ck.delegate.on('actionView:confirm', {
@@ -411,32 +431,11 @@ require([
 
         '.actions2': when_confirm,
 
-        '.my-actions-button': when_confirm,
-
         '.my-confirm-button': function(){
             location.reload(true);
         }
     
     }).on('tap', {
-
-        '.my-actions-button, .my-actions-button span': function(){
-            var me = $(this);
-            if (!me.hasClass('my-actions-button')) {
-                me = me.parent();
-            }
-            ck.actionView(me, {
-                title: 'This is title',
-                content: 'This is content',
-                options: [
-                    '<a href="picker.html" class="ck-option" target="_self">picker.html</a>',
-                    '<a href="index.html" class="ck-option" target="_self">index.html</a>',
-                    '<a href="tel:114" class="ck-option" target="_top">tel:114</a>',
-                    '<a href="#C" class="ck-option">C</a>',
-                    '<input class="ck-option" type="button" value="A">',
-                    '<input class="ck-option" type="button" value="B">'
-                ].join('')
-            }).open();
-        },
 
         '.my-confirm-button, .my-confirm-button span': function(){
             var me = $(this);
