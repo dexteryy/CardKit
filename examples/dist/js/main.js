@@ -6585,7 +6585,7 @@ define("../cardkit/app", [
         back_timeout,
         gc_id = 0,
 
-        TPL_MASK = '<div class="ck-globalmask"></div>';
+        TPL_MASK = '<div class="ck-viewmask"></div>';
 
     _.mix(momoBase.Class.prototype, {
         bind: function(ev, handler, elm){
@@ -6807,6 +6807,7 @@ define("../cardkit/app", [
             this.raw = $('.ck-raw', root);
             this.loadingCard = $('#ckLoading').data('rendered', '1');
             this.defaultCard = $('#ckDefault');
+            this.scrollMask = $(TPL_MASK).appendTo(body);
             this.globalMask = $(TPL_MASK).appendTo(body);
             this.headerHeight = this.header.height();
             this.sizeInited = false;
@@ -6828,6 +6829,7 @@ define("../cardkit/app", [
             setTimeout(function(){
                 ck.hideAddressbar();
                 ck.hideLoading();
+                ck.enableControl();
             }, 0);
 
             $(window).bind('resize', function(){
@@ -6876,9 +6878,9 @@ define("../cardkit/app", [
             //}).bind('scrollup', function(){
                 //ck.showTopbar();
             }).bind('scrollstart', function(){
-                ck.globalMask.show();
+                ck.scrollMask.show();
             }).bind('scrollend', function(){
-                ck.globalMask.hide();
+                ck.scrollMask.hide();
                 prevent_window_scroll();
             }).bind('scroll', function(){
                 if (modalCard.isOpened) {
@@ -6970,6 +6972,7 @@ define("../cardkit/app", [
                                 // 7. from 6, hide loading immediately.  alert(7)
                                 ck.changeView(e.state.next);
                                 ck.hideLoading();
+                                ck.enableControl();
                             }
                         } else if (e.state.prev === ck.viewport[0].id) {
                             // 3. forward from normal card.  alert(3)
@@ -7085,16 +7088,19 @@ define("../cardkit/app", [
             if (typeof card === 'string') {
                 card = $('#' + card);
             }
+            var is_loading = card === this.loadingCard;
             this.initView(card, opt);
             this.viewport = card.show();
-            if (card !== this.loadingCard) {
+            if (!is_loading) {
                 this.updateSize();
             }
             if (!opt.isModal) {
                 this.updateHeader();
             }
             sessionStorage['ck_lasturl'] = location.href;
-            bus.fire('readycardchange', [card]);
+            if (!is_loading) {
+                bus.fire('readycardchange', [card]);
+            }
         },
 
         updateSize: function(){
@@ -7177,6 +7183,16 @@ define("../cardkit/app", [
             return window.innerWidth / window.innerHeight > 1.1;
         },
 
+        enableControl: function(){
+            this.globalMask.hide();
+            window.ckControl = enable_control;
+        },
+
+        disableControl: function(){
+            this.globalMask.show();
+            window.ckControl = disable_control;
+        },
+
         openModal: function(opt){
             this.hideAddressbar();
             if (!modalCard.isOpened) {
@@ -7254,7 +7270,7 @@ define("../cardkit/app", [
         if (!is_forward) {
             push_history(current[0].id, next_id, true_link);
         }
-        ck.globalMask.show();
+        ck.disableControl();
         //ck.showTopbar();
         next.addClass('moving');
         ck.changeView(next);
@@ -7264,7 +7280,7 @@ define("../cardkit/app", [
             current.hide();
             choreo.transform(ck.wrapper[0], 'translateX', '0');
             next.removeClass('moving');
-            ck.globalMask.hide();
+            //ck.enableControl();
             ck.sessionLocked = false;
             if (true_link) {
                 if (is_forward && supports.HISTORY) {
@@ -7272,6 +7288,8 @@ define("../cardkit/app", [
                 } else {
                     location.href = true_link;
                 }
+            } else {
+                ck.enableControl();
             }
         });
     }
@@ -7288,7 +7306,7 @@ define("../cardkit/app", [
             //history.back();
             //return;
         //}
-        ck.globalMask.show();
+        ck.disableControl();
         //ck.showTopbar();
         choreo.transform(ck.wrapper[0], 'translateX', 0 - window.innerWidth + 'px');
         current.addClass('moving');
@@ -7298,7 +7316,7 @@ define("../cardkit/app", [
             'transform': 'translateX(0)'
         }, 400, 'easeInOut').follow().done(function(){
             current.hide().removeClass('moving');
-            ck.globalMask.hide();
+            ck.enableControl();
             ck.sessionLocked = false;
             if (prev_id === 'ckLoading') {
                 history.back();
@@ -7411,12 +7429,12 @@ define("../cardkit/app", [
             var next_id = 'ckLoading';
             var next = ck.loadingCard;
             var current = ck.viewport;
-            ck.globalMask.show();
+            ck.disableControl();
             push_history(current[0].id, next_id, true_link);
             ck.changeView(next);
             setTimeout(function(){
                 current.hide();
-                ck.globalMask.hide();
+                //ck.enableControl();
                 ck.sessionLocked = false;
                 location.href = true_link;
             }, 10);
@@ -7426,6 +7444,10 @@ define("../cardkit/app", [
     function check_gc(controller){
         return ck.viewportGarbage[controller.parentId];
     }
+
+    function enable_control(){}
+
+    function disable_control(){ return false; }
 
     return ck;
 
