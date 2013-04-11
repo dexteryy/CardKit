@@ -89,7 +89,7 @@
 
         <ul>
             <li class="ck-item blank">
-                <p class="ck-initem">目前还没有内容</p>
+                <p class="ck-initem">{%=(data.config.blank || '目前还没有内容')%}</p>
             </li>
         </ul>
 

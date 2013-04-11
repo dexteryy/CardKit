@@ -11,6 +11,7 @@ define([
         unit = $(unit);
         var source = util.getSource(unit, raw),
             config = {
+                blank: unit.data('cfgBlank'),
                 limit: unit.data('cfgLimit'),
                 col: unit.data('cfgCol'),
                 paper: unit.data('cfgPaper'),

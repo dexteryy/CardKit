@@ -26,12 +26,17 @@ define([
 
         initCard: function(card, raw, footer, opt) {
 
-            var units = card.find('.ck-box-unit, .ck-mini-unit, .ck-list-unit, .ck-form-unit');
+            var units = card.find('.ck-box-unit, .ck-mini-unit, .ck-list-unit, .ck-form-unit'),
+                config = {
+                    blank: card.data('cfgBlank')
+                };
 
             var has_content = exports.initUnit(units, raw);
 
-            if (!has_content && !opt.isModal) {
-                card.append(tpl_blank.template);
+            if (!has_content && !opt.isModal && config.blank != 'false') {
+                card.append(tpl.convertTpl(tpl_blank.template, {
+                    config: config
+                }, 'data'));
             }
 
             if (!opt.isModal) {
@@ -73,18 +78,19 @@ define([
                 }
                 return true;
             }, data);
+            if (!data.items.length 
+                    && (!data.hd || data.config.blank == 'false')) {
+                $(unit).remove();
+                return;
+            }
             if (!data.style) {
                 data.config.limit = 1;
             }
             if (data.config.limit) {
                 data.items.length = data.config.limit;
             }
-            if (data.hd || data.items.length) {
-                unit.innerHTML = tpl.convertTpl(tpl_mini.template, data, 'data');
-                return false;
-            } else {
-                $(unit).remove();
-            }
+            unit.innerHTML = tpl.convertTpl(tpl_mini.template, data, 'data');
+            return true;
         },
 
         list: function(unit, raw){
@@ -107,21 +113,23 @@ define([
             if (data.config.limit) {
                 data.items.length = data.config.limit;
             }
-            if (data.hd || data.items.length) {
+            if (!data.items.length 
+                    && (!data.hd || data.config.blank == 'false')) {
+                $(unit).remove();
+            } else {
                 unit.innerHTML = tpl.convertTpl(tpl_list.template, data, 'data');
                 return true;
-            } else {
-                $(unit).remove();
             }
         },
 
         form: function(unit, raw){
             var data = formParser(unit, raw);
-            if (data.hd || data.items.length) {
+            if (!data.items.length 
+                    && (!data.hd || data.config.blank == 'false')) {
+                $(unit).remove();
+            } else {
                 unit.innerHTML = tpl.convertTpl(tpl_form.template, data, 'data');
                 return true;
-            } else {
-                $(unit).remove();
             }
         }
     

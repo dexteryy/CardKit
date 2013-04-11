@@ -20,7 +20,7 @@
 
         {% if (!data.items.length) { %}
         <div class="ck-item enable blank">
-            <div class="ck-content">目前还没有内容</div>
+            <div class="ck-content">{%=(data.config.blank || '目前还没有内容')%}</div>
         </div>
         {% } %}
 

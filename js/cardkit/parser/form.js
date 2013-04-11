@@ -9,6 +9,7 @@ define([
         unit = $(unit);
         var source = util.getSource(unit, raw),
             config = {
+                blank: unit.data('cfgBlank'),
                 plainhd: unit.data('cfgPlainhd')
             },
             hd = get_hd(source && source.find('.ckd-hd')),
