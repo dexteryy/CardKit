@@ -621,6 +621,11 @@ define([
                 this.loadingCard.find('div')[0].style.visibility = 'hidden';
                 if (supports.SAFARI_TOPBAR) {
                     window.scrollTo(0, 1);
+                    if (screen.availHeight - ck.viewport[0].offsetHeight 
+                            > ck.headerHeight + 10) {
+                        location.reload();
+                        return;
+                    }
                 }
                 this.windowFullHeight = window.innerHeight;
                 ck.updateSize();
