@@ -400,7 +400,7 @@ require([
 require([
     'dollar',
     'cardkit/app',
-    'firstcardready'
+    'cardkit/pageready'
 ], function($, ck){
 
     var notify = ck.growl({
@@ -465,7 +465,7 @@ require([
 
 SyntaxHighlighter.defaults['toolbar'] = false;
 SyntaxHighlighter.all();
-define('env', [], function(){
+define('cardkit/env', [], function(){
     return {
         enableConsole: true
     };
