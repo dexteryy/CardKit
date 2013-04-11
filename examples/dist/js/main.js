@@ -7383,11 +7383,11 @@ define('env', [], function(){
     return {};
 });
 
-define('cardready', [
+define('firstcardready', [
     'finish', 
     'cardkit/bus'
 ], function(finish, bus){
-    bus.bind('readycardchange', finish);
+    bus.once('readycardchange', finish);
 });
 
 require([
