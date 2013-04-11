@@ -388,7 +388,7 @@ define([
 
             ck.sessionLocked = false;
 
-            var is_forward, restore_state;
+            var travel_history, restore_state;
 
             if (supports.HISTORY) {
                 $(window).bind("popstate", function(e){
@@ -441,13 +441,16 @@ define([
                     }
                 });
 
-                //alert('length: ' + history.length + ', ' + document.referrer)
-                var last_length = sessionStorage['ck_ss_n'],
-                    last_loc = sessionStorage['ck_ss_loc'];
-                is_forward = last_length && last_length == history.length 
-                    && document.referrer && last_loc === document.referrer;
-                sessionStorage['ck_ss_n'] = history.length;
-                sessionStorage['ck_ss_loc'] = location.href;
+                //console.info('is_back: ', is_back)
+                //console.info('is_lastadd: ', is_lastadd)
+                //console.info('is_refresh: ', is_refresh)
+                //console.info('url: ', url)
+                //console.info('ref: ', ref)
+                //console.warn('lasturl: ', lasturl)
+                //console.info('index: ', current, footprint.indexOf(url))
+                //console.info('data: ', footprint)
+
+                travel_history = check_footprint();
 
                 var current_state = history.state,
                     restore_state = current_state && current_state.next; // alert(['init', current_state && [current_state.prev, current_state.next].join('-'), ck.viewport && ck.viewport[0].id].join(', '))
@@ -457,6 +460,8 @@ define([
                         modalCard.set(history.state.opt).open();
                     }
                 }
+
+                //console.info(travel_history, restore_state, current_state)
 
             } else if (supports.PREVENT_CACHE) {
 
@@ -474,17 +479,26 @@ define([
                     history.back();
                 }
             } else {
-                if (is_forward) {
+                if (travel_history) {
                     // 8.  alert(8)
                     ck.changeView(ck.loadingCard);
                     history.forward();
+                    setTimeout(function(){
+                        if (ck.viewport === ck.loadingCard) {
+                            ck.initNewPage();
+                        }
+                    }, 100);
                 } else {
                     // 0.  alert(0)
-                    ck.changeView(ck.defaultCard);
-                    push_history(ck.loadingCard[0].id, ck.defaultCard[0].id);
+                    ck.initNewPage();
                 }
             }
 
+        },
+
+        initNewPage: function(){
+            ck.changeView(ck.defaultCard);
+            push_history(ck.loadingCard[0].id, ck.defaultCard[0].id);
         },
 
         initView: function(card, opt){
@@ -528,6 +542,7 @@ define([
             if (!opt.isModal) {
                 this.updateHeader();
             }
+            sessionStorage['ck_lasturl'] = location.href;
             bus.fire('readycardchange', [card]);
         },
 
@@ -753,6 +768,57 @@ define([
                 i: history.length
             }, document.title, location.href);
         }
+    }
+
+    function check_footprint(){
+        var footprint = sessionStorage['ck_footprint'];
+        try {
+            footprint = footprint && JSON.parse(footprint) || [];
+        } catch(ex) {
+            footprint = [];
+        }
+        var url = location.href,
+            ref = document.referrer,
+            lasturl = sessionStorage['ck_lasturl'],
+            current = footprint.lastIndexOf(url),
+            is_refresh = lasturl === url && ref !== url,
+            is_first = url === footprint[0],
+            is_lastadd = url === footprint[footprint.length - 1],
+            is_back = lasturl && lasturl !== ref && !is_refresh;
+        if ((is_back || is_refresh) && is_first) {
+            return;
+        }
+        if (ref) {
+            if (ref === url) {
+                footprint.length = 0;
+                footprint.push(url);
+            } else if (!is_back && ref === footprint[footprint.length - 1]) {
+                if (current !== -1) { 
+                    footprint.splice(0, current + 1);
+                }
+                footprint.push(url);
+            } else if (is_back && lasturl === footprint[0]) {
+                if (current !== -1) { 
+                    footprint.length = current - 1;
+                }
+                footprint.unshift(url);
+            } else if (ref === footprint[current - 1]) {
+                return true; // travel_history
+            } else if (ref === footprint[footprint.length - 2]
+                    && is_lastadd && !is_back) {
+                return;
+            } else {
+                footprint.length = 0;
+                footprint.push(url);
+            }
+        } else if (is_lastadd) {
+            return;
+        } else {
+            footprint.length = 0;
+            footprint.push(url);
+        }
+        sessionStorage['ck_footprint'] = JSON.stringify(footprint);
+        //console.warn('changed: ', sessionStorage['ck_footprint'])
     }
 
     function prevent_window_scroll(){
