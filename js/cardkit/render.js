@@ -26,10 +26,9 @@ define([
 
         initCard: function(card, raw, footer, opt) {
 
-            var has_content = false,
-                units = card.find('.ck-box-unit, .ck-mini-unit, .ck-list-unit, .ck-form-unit');
+            var units = card.find('.ck-box-unit, .ck-mini-unit, .ck-list-unit, .ck-form-unit');
 
-            exports.initUnit(units, raw);
+            var has_content = exports.initUnit(units, raw);
 
             if (!has_content && !opt.isModal) {
                 card.append(tpl_blank.template);
@@ -44,12 +43,16 @@ define([
         },
 
         initUnit: function(units, raw){
+            var has_content;
             $(units).forEach(function(unit){
                 var type = (/ck-(\w+)-unit/.exec(unit.className) || [])[1];
                 if (type) {
-                    exports[type](unit, raw);
+                    if (exports[type](unit, raw)) {
+                        has_content = true;
+                    }
                 }
             });
+            return has_content;
         },
 
         box: function(unit, raw){
