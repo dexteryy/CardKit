@@ -31,7 +31,7 @@ define([
         location = window.location,
         document = window.document,
         body = document.body,
-        back_timeout,
+        //back_timeout,
         gc_id = 0,
 
         TPL_MASK = '<div class="ck-viewmask"></div>';
@@ -277,7 +277,7 @@ define([
 
             setTimeout(function(){
                 ck.hideAddressbar();
-                ck.hideLoading();
+                ck.hideLoadingCard();
                 ck.enableControl();
             }, 0);
 
@@ -399,7 +399,7 @@ define([
                         location.reload(true);
                         return;
                     }
-                    clearTimeout(back_timeout);
+                    //clearTimeout(back_timeout);
                     var loading = ck.viewport[0].id === 'ckLoading'; 
                     if (e.state) {
                         if (e.state.next === '_modal_') {
@@ -420,7 +420,7 @@ define([
                             } else if (e.state.next) {
                                 // 7. from 6, hide loading immediately.  alert(7)
                                 ck.changeView(e.state.next);
-                                ck.hideLoading();
+                                ck.hideLoadingCard();
                                 ck.enableControl();
                             }
                         } else if (e.state.prev === ck.viewport[0].id) {
@@ -486,11 +486,11 @@ define([
                     // 8.  alert(8)
                     ck.changeView(ck.loadingCard);
                     history.forward();
-                    setTimeout(function(){
-                        if (ck.viewport === ck.loadingCard) {
-                            ck.initNewPage();
-                        }
-                    }, 100);
+                    //setTimeout(function(){
+                        //if (ck.viewport === ck.loadingCard) {
+                            //ck.initNewPage();
+                        //}
+                    //}, 100);
                 } else {
                     // 0.  alert(0)
                     ck.initNewPage();
@@ -582,7 +582,7 @@ define([
             render.initUnit(node, this.raw);
         },
 
-        hideLoading: function() {
+        hideLoadingCard: function() {
             if (!this._loadingAnimate) {
                 this._loadingAnimate = choreo();
             }
@@ -645,6 +645,27 @@ define([
         disableControl: function(){
             this.globalMask.show();
             window.ckControl = disable_control;
+        },
+
+        showLoading: function(text){
+            this.disableControl();
+            if (!this.loadingTips) {
+                this.loadingTips = growl({
+                    expires: -1,
+                    keepalive: true,
+                    corner: 'center'
+                }),
+            }
+            this.loadingTips.set({
+                content: text || '正在加载...'
+            }).open();
+        },
+
+        hideLoading: function(){
+            if (this.loadingTips) {
+                this.loadingTips.close();
+            }
+            this.enableControl();
         },
 
         openModal: function(opt){
@@ -774,9 +795,9 @@ define([
             ck.sessionLocked = false;
             if (prev_id === 'ckLoading') {
                 history.back();
-                back_timeout = setTimeout(function(){
-                    location.reload(true);
-                }, 800);
+                //back_timeout = setTimeout(function(){
+                    //location.reload(true);
+                //}, 800);
             }
         });
     }
