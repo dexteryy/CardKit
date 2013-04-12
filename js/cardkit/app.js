@@ -556,12 +556,12 @@ define([
             this.viewport[0].style.height = (this.sizeInited ? 
                 window.innerHeight : (screen.availHeight + 60)) + 'px';
             // enable scrollable when height is not enough 
-            var ft = this.viewport.find('.ck-footer')[0];
-            if (ft) {
-                var d = screen.availHeight - (ft.offsetTop 
-                        + ft.offsetHeight + this.viewport[0].scrollTop); 
+            var ft = this.viewport.find('.ck-footer'),
+                last_unit = ft && ft.prev()[0];
+            if (last_unit) {
+                var d = screen.availHeight - (last_unit.offsetTop + last_unit.offsetHeight + this.viewport[0].scrollTop);
                 if (d > 0) {
-                    ft.style.paddingTop = (parseFloat(ft.style.paddingTop) || 0) + d + 100 + 'px';
+                    ft.css('paddingTop', 15 + d + 'px');
                 }
             }
         },

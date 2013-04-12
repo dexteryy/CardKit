@@ -3552,7 +3552,7 @@ define("dollar/origin", [
     var window = this,
         doc = window.document,
         NEXT_SIB = 'nextElementSibling',
-        PREV_SIB = 'prevElementSibling',
+        PREV_SIB = 'previousElementSibling',
         FIRST_CHILD = 'firstElementChild',
         MATCHES_SELECTOR = ['webkitMatchesSelector', 'mozMatchesSelector', 'matchesSelector']
             .map(function(name){
