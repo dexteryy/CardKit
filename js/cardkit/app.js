@@ -654,18 +654,27 @@ define([
                     expires: -1,
                     keepalive: true,
                     corner: 'center'
-                }),
+                });
             }
             this.loadingTips.set({
                 content: text || '正在加载...'
             }).open();
+            this._loadingStart = +new Date();
         },
 
-        hideLoading: function(){
-            if (this.loadingTips) {
-                this.loadingTips.close();
+        hideLoading: function(opt){
+            opt = _.mix({ duration: 800 }, opt);
+            var d = +new Date() - this._loadingStart;
+            if (d < opt.duration) {
+                setTimeout(function(){
+                    ck.hideLoading(opt);
+                }, opt.duration - d);
+            } else {
+                if (this.loadingTips) {
+                    this.loadingTips.close();
+                }
+                this.enableControl();
             }
-            this.enableControl();
         },
 
         openModal: function(opt){
