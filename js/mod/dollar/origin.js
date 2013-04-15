@@ -689,7 +689,7 @@ define("dollar/origin", [
         }
         temp.innerHTML = str;
         var nodes = new $();
-        _array_push.apply(nodes, temp.childNodes);
+        _array_push.apply(nodes, _array_slice.call(temp.childNodes));
         nodes.forEach(function(node){
             this.removeChild(node);
         }, temp);
