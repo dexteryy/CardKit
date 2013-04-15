@@ -27,6 +27,9 @@ define('moui/control', [
         init: function(elm, opt){
             this.event = event();
             var node = this._node = $(elm);
+            if (node.hasClass('enabled')) {
+                this.isEnabled = true;
+            }
             opt = _.mix({
                 field: node,
                 label: node
@@ -35,8 +38,13 @@ define('moui/control', [
             if (this._label[0]) {
                 this._isLabelClose = this._label.isEmpty();
             }
-            opt.disableVal = this.val();
-            opt.disableLabel = this.label();
+            if (this.isEnabled) {
+                opt.enableVal = this.val();
+                opt.enableLabel = this.label();
+            } else {
+                opt.disableVal = this.val();
+                opt.disableLabel = this.label();
+            }
             this._config = _.config({}, opt, this._defaults);
         },
 

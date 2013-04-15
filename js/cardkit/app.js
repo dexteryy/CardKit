@@ -561,7 +561,9 @@ define([
             if (last_unit) {
                 var d = screen.availHeight - (last_unit.offsetTop + last_unit.offsetHeight + this.viewport[0].scrollTop);
                 if (d > 0) {
-                    ft.css('paddingTop', 15 + d + 'px');
+                    ft.css('paddingTop', d + 'px');
+                } else {
+                    ft.css('paddingTop', '0px');
                 }
             }
         },
@@ -621,11 +623,11 @@ define([
                 this.loadingCard.find('div')[0].style.visibility = 'hidden';
                 if (supports.SAFARI_TOPBAR) {
                     window.scrollTo(0, 1);
-                    if (screen.availHeight - ck.viewport[0].offsetHeight 
-                            > ck.headerHeight + 10) {
-                        location.reload();
-                        return;
-                    }
+                    //if (screen.availHeight - ck.viewport[0].offsetHeight 
+                            //> ck.headerHeight + 10) {
+                        //location.reload();
+                        //return;
+                    //}
                 }
                 this.windowFullHeight = window.innerHeight;
                 ck.updateSize();

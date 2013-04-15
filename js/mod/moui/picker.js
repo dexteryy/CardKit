@@ -50,11 +50,6 @@ define('moui/picker', [
                 }
             }
 
-            if (opt.options) {
-                this._options.forEach(this.removeOption, this);
-                $(opt.options, this._node).forEach(this.addOption, this);
-            }
-
             if (opt.field !== undefined) {
                 if (opt.field) {
                     this._field = $(opt.field, 
@@ -62,6 +57,11 @@ define('moui/picker', [
                 } else {
                     this._field = [];
                 }
+            }
+
+            if (opt.options) {
+                this._options.forEach(this.removeOption, this);
+                $(opt.options, this._node).forEach(this.addOption, this);
             }
 
             return this;
@@ -80,6 +80,9 @@ define('moui/picker', [
             controller.event.bind('enable', when_enable.bind(this))
                 .bind('disable', when_disable.bind(this));
             this._options.push(controller);
+            if (controller.isEnabled) {
+                change.call(this, 'enable', controller);
+            }
             return this;
         },
 
@@ -192,6 +195,7 @@ define('moui/picker', [
             if (controller) {
                 if (!this._config.multiselect && this._config.ignoreStatus) {
                     change.call(this, 'enable', controller);
+                    this.event.fire('change', [this, controller]);
                 } else {
                     if (this._config.multiselect 
                             && this._allSelected.indexOf(controller) !== -1
@@ -223,10 +227,12 @@ define('moui/picker', [
 
     function when_enable(controller){
         change.call(this, 'enable', controller);
+        this.event.fire('change', [this, controller]);
     }
 
     function when_disable(controller){
         change.call(this, 'disable', controller);
+        this.event.fire('change', [this, controller]);
     }
 
     function change(subject, controller){
@@ -257,7 +263,6 @@ define('moui/picker', [
         if (this._field[0]) {
             this._field.val(this.val());
         }
-        this.event.fire('change', [this, controller]);
     }
 
     function exports(elm, opt){

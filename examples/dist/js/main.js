@@ -4633,6 +4633,9 @@ define('moui/control', [
         init: function(elm, opt){
             this.event = event();
             var node = this._node = $(elm);
+            if (node.hasClass('enabled')) {
+                this.isEnabled = true;
+            }
             opt = _.mix({
                 field: node,
                 label: node
@@ -4641,8 +4644,13 @@ define('moui/control', [
             if (this._label[0]) {
                 this._isLabelClose = this._label.isEmpty();
             }
-            opt.disableVal = this.val();
-            opt.disableLabel = this.label();
+            if (this.isEnabled) {
+                opt.enableVal = this.val();
+                opt.enableLabel = this.label();
+            } else {
+                opt.disableVal = this.val();
+                opt.disableLabel = this.label();
+            }
             this._config = _.config({}, opt, this._defaults);
         },
 
@@ -4817,11 +4825,6 @@ define('moui/picker', [
                 }
             }
 
-            if (opt.options) {
-                this._options.forEach(this.removeOption, this);
-                $(opt.options, this._node).forEach(this.addOption, this);
-            }
-
             if (opt.field !== undefined) {
                 if (opt.field) {
                     this._field = $(opt.field, 
@@ -4829,6 +4832,11 @@ define('moui/picker', [
                 } else {
                     this._field = [];
                 }
+            }
+
+            if (opt.options) {
+                this._options.forEach(this.removeOption, this);
+                $(opt.options, this._node).forEach(this.addOption, this);
             }
 
             return this;
@@ -4847,6 +4855,9 @@ define('moui/picker', [
             controller.event.bind('enable', when_enable.bind(this))
                 .bind('disable', when_disable.bind(this));
             this._options.push(controller);
+            if (controller.isEnabled) {
+                change.call(this, 'enable', controller);
+            }
             return this;
         },
 
@@ -4959,6 +4970,7 @@ define('moui/picker', [
             if (controller) {
                 if (!this._config.multiselect && this._config.ignoreStatus) {
                     change.call(this, 'enable', controller);
+                    this.event.fire('change', [this, controller]);
                 } else {
                     if (this._config.multiselect 
                             && this._allSelected.indexOf(controller) !== -1
@@ -4990,10 +5002,12 @@ define('moui/picker', [
 
     function when_enable(controller){
         change.call(this, 'enable', controller);
+        this.event.fire('change', [this, controller]);
     }
 
     function when_disable(controller){
         change.call(this, 'disable', controller);
+        this.event.fire('change', [this, controller]);
     }
 
     function change(subject, controller){
@@ -5024,7 +5038,6 @@ define('moui/picker', [
         if (this._field[0]) {
             this._field.val(this.val());
         }
-        this.event.fire('change', [this, controller]);
     }
 
     function exports(elm, opt){
@@ -7112,7 +7125,9 @@ define("../cardkit/app", [
             if (last_unit) {
                 var d = screen.availHeight - (last_unit.offsetTop + last_unit.offsetHeight + this.viewport[0].scrollTop);
                 if (d > 0) {
-                    ft.css('paddingTop', 15 + d + 'px');
+                    ft.css('paddingTop', d + 'px');
+                } else {
+                    ft.css('paddingTop', '0px');
                 }
             }
         },
@@ -7172,11 +7187,11 @@ define("../cardkit/app", [
                 this.loadingCard.find('div')[0].style.visibility = 'hidden';
                 if (supports.SAFARI_TOPBAR) {
                     window.scrollTo(0, 1);
-                    if (screen.availHeight - ck.viewport[0].offsetHeight 
-                            > ck.headerHeight + 10) {
-                        location.reload();
-                        return;
-                    }
+                    //if (screen.availHeight - ck.viewport[0].offsetHeight 
+                            //> ck.headerHeight + 10) {
+                        //location.reload();
+                        //return;
+                    //}
                 }
                 this.windowFullHeight = window.innerHeight;
                 ck.updateSize();
