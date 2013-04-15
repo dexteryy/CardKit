@@ -1322,6 +1322,9 @@ a {
   -moz-border-radius: 5px;
   -ms-border-radius: 5px;
   border-radius: 5px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
 }
 .moui-growl.corner-bottom, .corner-bottom.ck-growl {
   top: auto;

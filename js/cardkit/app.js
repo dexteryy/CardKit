@@ -772,6 +772,7 @@ define([
                 if (is_forward && supports.HISTORY) {
                     history.forward();
                 } else {
+                    clear_footprint();
                     location.href = true_link;
                 }
             } else {
@@ -876,6 +877,18 @@ define([
         //console.warn('changed: ', sessionStorage['ck_footprint'])
     }
 
+    function clear_footprint(){
+        var footprint = sessionStorage['ck_footprint'];
+        try {
+            footprint = footprint && JSON.parse(footprint) || [];
+        } catch(ex) {
+            footprint = [];
+        }
+        var url = location.href;
+        footprint.length = footprint.indexOf(url) + 1;
+        sessionStorage['ck_footprint'] = JSON.stringify(footprint);
+    }
+
     function prevent_window_scroll(){
         var vp = ck.viewport[0],
             bottom;
@@ -916,6 +929,7 @@ define([
             var next = ck.loadingCard;
             var current = ck.viewport;
             ck.disableControl();
+            clear_footprint();
             push_history(current[0].id, next_id, true_link);
             ck.changeView(next);
             setTimeout(function(){
