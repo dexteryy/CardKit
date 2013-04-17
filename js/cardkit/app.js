@@ -20,11 +20,12 @@ define([
     './bus',
     './render',
     './supports',
+    'cardkit/env',
     'mo/domready'
 ], function($, _, browsers, tpl, soviet, choreo, 
     momoBase, momoTap, momoSwipe, momoDrag, momoScroll, 
     control, picker, stars, modalCard, actionView, growl, slidelist,
-    bus, render, supports){
+    bus, render, supports, env){
 
     var window = this,
         history = window.history,
@@ -206,13 +207,17 @@ define([
                     ck.initView(iframe_body, {
                         isModal: true
                     });
+                    ck.enableControl();
                 });
             } else if (!modalCard._content.html()) { // @TODO 换更靠谱的方法
                 modalCard.event.done('contentchange', function(){
                     ck.initView(current, {
                         isModal: true
                     });
+                    ck.enableControl();
                 });
+            } else {
+                ck.enableControl();
             }
             modalCard._content.css('minHeight', h + 'px');
             modalCard.event.once('close', function(){
@@ -256,14 +261,20 @@ define([
             this.raw = $('.ck-raw', root);
             this.loadingCard = $('#ckLoading').data('rendered', '1');
             this.defaultCard = $('#ckDefault');
-            this.scrollMask = $(TPL_MASK).appendTo(body).css({
-                //'opacity': '0.5',
-                //'background': '#f00'
-            });
-            this.globalMask = $(TPL_MASK).appendTo(body).css({
-                //'opacity': '0.5',
-                //'background': '#0f0'
-            });
+            this.scrollMask = $(TPL_MASK).appendTo(body);
+            if (env.showScrollMask) {
+                this.scrollMask.css({
+                    'opacity': '0.5',
+                    'background': '#f00'
+                });
+            }
+            this.controlMask = $(TPL_MASK).appendTo(body);
+            if (env.showControlMask) {
+                this.controlMask.css({
+                    'opacity': '0.5',
+                    'background': '#0f0'
+                });
+            }
             this.headerHeight = this.header.height();
             this.sizeInited = false;
             this.viewportGarbage = {};
@@ -293,6 +304,10 @@ define([
                     ck.initWindow();
                     ck.hideAddressbar(); // @TODO 无效
                 }
+            });
+
+            this.loadingCard.bind('touchstart', function(e){
+                e.preventDefault();
             });
 
             soviet(document, {
@@ -646,12 +661,12 @@ define([
         },
 
         enableControl: function(){
-            this.globalMask.hide();
+            this.controlMask.hide();
             window.ckControl = enable_control;
         },
 
         disableControl: function(){
-            this.globalMask.show();
+            this.controlMask.show();
             window.ckControl = disable_control;
         },
 
@@ -687,6 +702,7 @@ define([
 
         openModal: function(opt){
             this.hideAddressbar();
+            this.disableControl();
             if (!modalCard.isOpened) {
                 push_history(ck.viewport[0].id, '_modal_', false, opt);
             }
