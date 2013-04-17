@@ -256,8 +256,14 @@ define([
             this.raw = $('.ck-raw', root);
             this.loadingCard = $('#ckLoading').data('rendered', '1');
             this.defaultCard = $('#ckDefault');
-            this.scrollMask = $(TPL_MASK).appendTo(body);
-            this.globalMask = $(TPL_MASK).appendTo(body);
+            this.scrollMask = $(TPL_MASK).appendTo(body).css({
+                //'opacity': '0.5',
+                //'background': '#f00'
+            });
+            this.globalMask = $(TPL_MASK).appendTo(body).css({
+                //'opacity': '0.5',
+                //'background': '#0f0'
+            });
             this.headerHeight = this.header.height();
             this.sizeInited = false;
             this.viewportGarbage = {};
@@ -718,6 +724,13 @@ define([
     function nothing(){}
 
     function link_handler(next_id, true_link){
+        if (modalCard.isOpened) {
+            modalCard.event.once('close', function(){
+                link_handler(next_id, true_link);
+            });
+            ck.closeModal();
+            return;
+        }
         var me, is_forward = typeof next_id === 'string';
         if (!is_forward) {
             me = next_id.target;
@@ -766,7 +779,7 @@ define([
             current.hide();
             choreo.transform(ck.wrapper[0], 'translateX', '0');
             next.removeClass('moving');
-            //ck.enableControl();
+            ck.enableControl();
             ck.sessionLocked = false;
             if (true_link) {
                 if (is_forward && supports.HISTORY) {
@@ -775,8 +788,8 @@ define([
                     clear_footprint();
                     location.href = true_link;
                 }
-            } else {
-                ck.enableControl();
+            //} else {
+                //ck.enableControl();
             }
         });
     }
@@ -807,9 +820,9 @@ define([
             ck.sessionLocked = false;
             if (prev_id === 'ckLoading') {
                 history.back();
-                //back_timeout = setTimeout(function(){
-                    //location.reload(true);
-                //}, 800);
+                if (!document.referrer || document.referrer === location.href) {
+                    location.reload(true);
+                }
             }
         });
     }
@@ -934,7 +947,7 @@ define([
             ck.changeView(next);
             setTimeout(function(){
                 current.hide();
-                //ck.enableControl();
+                ck.enableControl();
                 ck.sessionLocked = false;
                 location.href = true_link;
             }, 10);
