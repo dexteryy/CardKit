@@ -264,14 +264,14 @@ define([
             this.scrollMask = $(TPL_MASK).appendTo(body);
             if (env.showScrollMask) {
                 this.scrollMask.css({
-                    'opacity': '0.5',
+                    'opacity': '0.2',
                     'background': '#f00'
                 });
             }
             this.controlMask = $(TPL_MASK).appendTo(body);
             if (env.showControlMask) {
                 this.controlMask.css({
-                    'opacity': '0.5',
+                    'opacity': '0.2',
                     'background': '#0f0'
                 });
             }
