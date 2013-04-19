@@ -569,7 +569,9 @@ define([
             }
             sessionStorage['ck_lasturl'] = location.href;
             if (!is_loading) {
-                bus.fire('readycardchange', [card]);
+                setTimeout(function(){
+                    bus.fire('readycardchange', [card]);
+                }, 0);
             }
         },
 
@@ -717,6 +719,24 @@ define([
                 $(body).removeClass('bg');
                 modalCard.close();
             }, 400);
+        },
+
+        alert: function(text, opt) {
+            actionView('ckAlert', _.mix({
+                title: '提示',
+                content: text || '',
+                cancelText: '关闭'
+            }, opt)).open();
+        },
+
+        confirm: function(text, cb, opt) {
+            actionView('ckAlert', _.mix({
+                title: '提示',
+                content: text || '',
+                confirmText: '确认',
+                cancelText: '取消',
+                multiselect: true
+            }, opt)).open().event.once('confirm', cb);
         },
 
         openURL: open_url,

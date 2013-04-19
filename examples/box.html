@@ -78,8 +78,7 @@
         <!-- demo end -->
 
         <!-- demo -->
-        <div class="ck-box-unit">
-            <h2 class="ckd-hd">This is header</h2>
+        <div class="ck-box-unit" data-source="ckData1">
             <p class="classname-A">This is content text A.</p>
             <p>This is content text B.</p>
             <div class="ckd-ft">This is footer</div>
@@ -120,6 +119,12 @@
 
 </div>
 
+<div class="ck-raw">
+    <div class="ckd-source ckData1">
+        <div class="ckd-hd">This is header from ckData1</div>
+    </div>
+</div>
+
 </div>
 
 <script src="dist/js/main.js"></script>
@@ -128,8 +133,7 @@
 define('cardkit/env', [], function(){
     return {
         showScrollMask: true,
-        showControlMask: true,
-        enableConsole: true
+        showControlMask: true
     };
 });
 </script>

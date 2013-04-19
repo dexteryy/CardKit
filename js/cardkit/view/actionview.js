@@ -11,12 +11,20 @@ define([
         lib = {};
 
     function exports(elm, opt){
-        elm = $(elm);
-        var id = elm[0][UID];
+        var id = elm;
+        if (typeof elm === 'object') {
+            elm = $(elm);
+            id = elm[0][UID];
+        } else {
+            elm = false;
+        }
         if (id && lib[id]) {
             return lib[id].set(opt);
         }
-        id = elm[0][UID] = ++uid;
+        id = ++uid;
+        if (elm) {
+            elm[0][UID] = id;
+        }
         opt = opt || {};
         opt.className = 'ck-actionview';
         var view = lib[id] = actionView(opt);
@@ -26,20 +34,27 @@ define([
         view.event.bind('open', function(view){
             exports.current = view;
             bus.fire('actionView:open', [view]);
-            elm.trigger('actionView:open', eprops);
-        }).bind('close', function(){
-            elm.trigger('actionView:close', eprops);
+            if (elm) {
+                elm.trigger('actionView:open', eprops);
+            }
         }).bind('confirm', function(view, picker){
-            elm.trigger('actionView:confirm', eprops);
-            if (picker._lastSelected) {
+            if (elm) {
+                elm.trigger('actionView:confirm', eprops);
+            }
+            if (picker && picker._lastSelected) {
                 var target = picker._lastSelected._node.attr('target');
                 if (target) {
                     bus.fire('actionView:jump', [view, picker.val(), target]);
                 }
             }
-        }).bind('cancel', function(){
-            elm.trigger('actionView:cancel', eprops);
         });
+        if (elm) {
+            view.event.bind('close', function(){
+                elm.trigger('actionView:close', eprops);
+            }).bind('cancel', function(){
+                elm.trigger('actionView:cancel', eprops);
+            });
+        }
         return view;
     }
 

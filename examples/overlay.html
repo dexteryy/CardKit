@@ -345,6 +345,9 @@ require([
     'mo/network', 
     'cardkit/app'
 ], function($, net, ck){
+    ck.event.once('readycardchange', function(){
+        // access DOM elements in form unit
+    });
     ck.modalCard.event.bind('confirmOnThis', function(modal){
         var form = $('#inlineForm1');
         modal.showLoading();
@@ -403,6 +406,21 @@ require([
     'cardkit/app',
     'cardkit/pageready'
 ], function($, ck){
+
+    ck.confirm('This is a overlay', function(){
+        ck.showLoading();
+        setTimeout(function(){
+            ck.hideLoading();
+            ck.alert('This a overlay too', {
+                title: 'Tips',
+                cancelText: 'I see...'
+            });
+        }, 1000);
+    }, { 
+        title: 'Tips',
+        cancelText: 'Cancel',
+        confirmText: 'OK'
+    });
 
     var notify = ck.growl({
         corner: 'bottom'

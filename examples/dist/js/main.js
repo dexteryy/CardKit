@@ -5234,12 +5234,20 @@ define("../cardkit/view/actionview", [
         lib = {};
 
     function exports(elm, opt){
-        elm = $(elm);
-        var id = elm[0][UID];
+        var id = elm;
+        if (typeof elm === 'object') {
+            elm = $(elm);
+            id = elm[0][UID];
+        } else {
+            elm = false;
+        }
         if (id && lib[id]) {
             return lib[id].set(opt);
         }
-        id = elm[0][UID] = ++uid;
+        id = ++uid;
+        if (elm) {
+            elm[0][UID] = id;
+        }
         opt = opt || {};
         opt.className = 'ck-actionview';
         var view = lib[id] = actionView(opt);
@@ -5249,20 +5257,27 @@ define("../cardkit/view/actionview", [
         view.event.bind('open', function(view){
             exports.current = view;
             bus.fire('actionView:open', [view]);
-            elm.trigger('actionView:open', eprops);
-        }).bind('close', function(){
-            elm.trigger('actionView:close', eprops);
+            if (elm) {
+                elm.trigger('actionView:open', eprops);
+            }
         }).bind('confirm', function(view, picker){
-            elm.trigger('actionView:confirm', eprops);
-            if (picker._lastSelected) {
+            if (elm) {
+                elm.trigger('actionView:confirm', eprops);
+            }
+            if (picker && picker._lastSelected) {
                 var target = picker._lastSelected._node.attr('target');
                 if (target) {
                     bus.fire('actionView:jump', [view, picker.val(), target]);
                 }
             }
-        }).bind('cancel', function(){
-            elm.trigger('actionView:cancel', eprops);
         });
+        if (elm) {
+            view.event.bind('close', function(){
+                elm.trigger('actionView:close', eprops);
+            }).bind('cancel', function(){
+                elm.trigger('actionView:cancel', eprops);
+            });
+        }
         return view;
     }
 
@@ -7133,7 +7148,9 @@ define("../cardkit/app", [
             }
             sessionStorage['ck_lasturl'] = location.href;
             if (!is_loading) {
-                bus.fire('readycardchange', [card]);
+                setTimeout(function(){
+                    bus.fire('readycardchange', [card]);
+                }, 0);
             }
         },
 
@@ -7281,6 +7298,24 @@ define("../cardkit/app", [
                 $(body).removeClass('bg');
                 modalCard.close();
             }, 400);
+        },
+
+        alert: function(text, opt) {
+            actionView('ckAlert', _.mix({
+                title: '提示',
+                content: text || '',
+                cancelText: '关闭'
+            }, opt)).open();
+        },
+
+        confirm: function(text, cb, opt) {
+            actionView('ckAlert', _.mix({
+                title: '提示',
+                content: text || '',
+                confirmText: '确认',
+                cancelText: '取消',
+                multiselect: true
+            }, opt)).open().event.once('confirm', cb);
         },
 
         openURL: open_url,
