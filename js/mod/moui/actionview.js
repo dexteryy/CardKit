@@ -81,7 +81,7 @@ define('moui/actionview', [
                 if (opt.multiselect) {
                     this._footer.addClass('multi');
                 } else {
-                    this._confirmBtn.removeClass('multi');
+                    this._footer.removeClass('multi');
                 }
             }
 

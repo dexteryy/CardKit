@@ -725,7 +725,8 @@ define([
             actionView('ckAlert', _.mix({
                 title: '提示',
                 content: text || '',
-                cancelText: '关闭'
+                cancelText: '关闭',
+                multiselect: false
             }, opt)).open();
         },
 

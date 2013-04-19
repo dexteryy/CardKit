@@ -4458,9 +4458,9 @@ define('moui/overlay', [
                 return;
             }
             this.isOpened = false;
-            this.event.fire('close', [this]);
             this._node.removeClass('active');
             this._content.empty();
+            this.event.fire('close', [this]);
             return this;
         },
 
@@ -5136,7 +5136,7 @@ define('moui/actionview', [
                 if (opt.multiselect) {
                     this._footer.addClass('multi');
                 } else {
-                    this._confirmBtn.removeClass('multi');
+                    this._footer.removeClass('multi');
                 }
             }
 
@@ -5244,9 +5244,8 @@ define("../cardkit/view/actionview", [
         if (id && lib[id]) {
             return lib[id].set(opt);
         }
-        id = ++uid;
         if (elm) {
-            elm[0][UID] = id;
+            id = elm[0][UID] = ++uid;
         }
         opt = opt || {};
         opt.className = 'ck-actionview';
@@ -7304,7 +7303,8 @@ define("../cardkit/app", [
             actionView('ckAlert', _.mix({
                 title: '提示',
                 content: text || '',
-                cancelText: '关闭'
+                cancelText: '关闭',
+                multiselect: false
             }, opt)).open();
         },
 

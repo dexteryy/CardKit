@@ -21,9 +21,8 @@ define([
         if (id && lib[id]) {
             return lib[id].set(opt);
         }
-        id = ++uid;
         if (elm) {
-            elm[0][UID] = id;
+            id = elm[0][UID] = ++uid;
         }
         opt = opt || {};
         opt.className = 'ck-actionview';
