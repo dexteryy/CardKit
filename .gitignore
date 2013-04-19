@@ -7,5 +7,6 @@ node_modules/
 .sass-cache/
 Gruntfile.js
 dist/
+!examples/dist/
 static/
 report/
