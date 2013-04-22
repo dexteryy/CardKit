@@ -1,6 +1,5 @@
 
 .moui-modalview {
-  //visibility:hidden;
   display:none;
   position:absolute;
   top:0;
@@ -12,7 +11,7 @@
 
   .wrapper {
     @include transform(translateY(100%));
-    @include transition(transform 0.4s ease-in-out);
+    @include transition(transform 0.4s);
 
     & > header {
       height: $nav_height;
@@ -27,15 +26,15 @@
       @include box-shadow(0 2px 3px rgba(0,0,0,.2)); 
       @include background-image(linear-gradient(bottom, #dfdfdf, #fcfcfc));
 
+      $padding: 15px/2;
+
       h1 {
         font-size:$article_size;
         line-height: $nav_height;
         text-align:center;
         display:block;
-        margin:0 $space*4 + 20px;
+        margin:0 55px + $padding*2;
       }
-
-      $padding: 15px/2;
 
       button.confirm, button.cancel {
         @extend %button;
@@ -74,9 +73,16 @@
     height:100%;
   }
 
-  &.active {
-    //visibility:visible;
+  &.rendered {
     display:block;
+  }
+
+  &.active {
+
+    .wrapper {
+      @include transform(translateY(0));
+    }
+
   }
 
 }

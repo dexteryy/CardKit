@@ -27,6 +27,10 @@ pre {
   word-wrap: break-word;
 }
 
+//input,textarea,button{
+  //@include appearance(none);
+//}
+
 a {
   text-decoration:none;
   color:$active_color;
@@ -85,7 +89,7 @@ a {
   @include box-shadow(0px 0px 10px rgba(0,0,0,.35));
   @include transform-origin(50% 50%);
   //@include transform-style(preserve-3d);
-  @include transition(transform 0.4s ease-in-out);
+  @include transition(transform 0.4s);
   
   .ck-header {
     position:absolute;
@@ -96,7 +100,7 @@ a {
     z-index: $zindex_overlay;
 
     @include transform(translateY(-$nav_height));
-    @include transition(transform 400ms ease-in-out);
+    @include transition(transform 400ms);
 
     .ck-top-title {
       color:#fff;

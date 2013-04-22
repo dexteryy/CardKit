@@ -27,6 +27,7 @@ define('moui/actionview', [
 
         default_config = {
             className: 'moui-actionview',
+            closeDelay: 300,
             confirmText: '确认',
             cancelText: '取消',
             options: null,
@@ -120,27 +121,21 @@ define('moui/actionview', [
             return this.event.promise('close');
         },
 
-        open: function(){
-            if (this.isOpened) {
-                return;
-            }
+        applyOpen: function(){
             if (!this._config.multiselect && this._picker) {
                 var self = this;
                 this._picker.event.once('change', function(){
                     self.confirm();
                 });
             }
-            return this.superClass.open.call(this);
+            this.superClass.applyOpen.apply(this, arguments);
         },
 
-        close: function(){
-            if (!this.isOpened) {
-                return;
-            }
+        applyClose: function(){
             if (!this._config.multiselect && this._picker) {
                 this._picker.event.reset();
             }
-            return this.superClass.close.call(this);
+            this.superClass.applyClose.apply(this, arguments);
         }
 
     });

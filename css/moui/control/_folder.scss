@@ -14,7 +14,7 @@ $folder_icon: inline-image('fold_icon.png');
   .content {
     height:0;
     overflow:hidden;
-    @include transition(height 0.4s ease-in-out);
+    @include transition(height 0.3s);
   }
 
   &.enabled {

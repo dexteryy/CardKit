@@ -183,55 +183,62 @@ define([
         ck.viewportGarbage[com.parentId] = 1;
     }
 
-    modalCard.event.bind('open', function(modalCard){
+    modalCard.event.bind('prepareOpen', function(){
         ck.disableView = true;
-        //ck.showTopbar();
         $(body).addClass('bg').addClass('modal-view');
-        setTimeout(function(){
-            choreo.transform(modalCard._wrapper[0], 'translateY', '0');
-            var prev = ck.viewport,
-                current = modalCard._contentWrapper;
-            ck.changeView(current, { 
-                isModal: true 
+    }).bind('cancelOpen', function(){
+        ck.disableView = false;
+        $(body).removeClass('bg').removeClass('modal-view');
+    }).bind('open', function(){
+        var prev = ck.viewport,
+            current = modalCard._contentWrapper;
+        ck.changeView(current, { 
+            isModal: true 
+        });
+        var h = current[0].offsetHeight*2;
+        if (modalCard._iframeContent) {
+            modalCard._iframeContent.css({
+                minHeight: h + 'px',
+                width: current[0].offsetWidth + 'px',
+                height: current[0].offsetHeight - ck.headerHeight + 'px'
             });
-            var h = current[0].offsetHeight*2;
-            if (modalCard._iframeContent) {
-                modalCard._iframeContent.css({
-                    minHeight: h + 'px',
-                    width: current[0].offsetWidth + 'px',
-                    height: current[0].offsetHeight - ck.headerHeight + 'px'
+            modalCard.event.done('frameOnload', function(){
+                var iframe_body = $(modalCard._iframeWindow[0].document.body);
+                iframe_body.bind('touchstart', prevent_window_scroll);
+                ck.initView(iframe_body, {
+                    isModal: true
                 });
-                modalCard.event.done('frameOnload', function(){
-                    var iframe_body = $(modalCard._iframeWindow[0].document.body);
-                    iframe_body.bind('touchstart', prevent_window_scroll);
-                    ck.initView(iframe_body, {
-                        isModal: true
-                    });
-                    ck.enableControl();
-                });
-            } else if (!modalCard._content.html()) { // @TODO 换更靠谱的方法
-                modalCard.event.done('contentchange', function(){
-                    ck.initView(current, {
-                        isModal: true
-                    });
-                    ck.enableControl();
-                });
-            } else {
                 ck.enableControl();
-            }
-            modalCard._content.css('minHeight', h + 'px');
-            modalCard.event.once('close', function(){
-                ck.changeView(prev);
             });
-        }, 200);
+        } else if (!modalCard._content.html()) { // @TODO 换更靠谱的方法
+            modalCard.event.done('contentchange', function(){
+                ck.initView(current, {
+                    isModal: true
+                });
+                ck.enableControl();
+            });
+        } else {
+            ck.enableControl();
+        }
+        modalCard._content.css('minHeight', h + 'px');
+        modalCard.event.once('close', function(){
+            ck.changeView(prev);
+        });
+    }).bind('prepareClose', function(){
+        ck.disableView = false;
+        $(body).removeClass('modal-view');
+    }).bind('cancelClose', function(){
+        ck.disableView = true;
+        $(body).addClass('modal-view');
+    }).bind('close', function(){
+        $(body).removeClass('bg');
     }).bind('needclose', function(){
         ck.closeModal();
     });
 
-    bus.bind('actionView:open', function(actionCard){
+    bus.bind('actionView:prepareOpen', function(actionCard){
         ck.disableView = true;
-        var prev = ck.viewport,
-            current = actionCard._wrapper;
+        var current = actionCard._wrapper;
         ck.changeView(current, { 
             isModal: true 
         });
@@ -242,9 +249,12 @@ define([
         actionCard._node.css({
             height: h + 'px'
         });
-        actionCard.event.once('close', function(){
-            ck.changeView(prev);
-        });
+    }).bind('actionView:cancelOpen', function(){
+        ck.disableView = false;
+        ck.changeView(ck.lastView);
+    }).bind('actionView:close', function(){
+        ck.disableView = false;
+        ck.changeView(ck.lastView);
     }).bind('actionView:jump', function(actionCard, href, target){
         actionCard.event.once('close', function(){
             ck.openURL(href, { target: target });
@@ -560,6 +570,7 @@ define([
             }
             var is_loading = card === this.loadingCard;
             this.initView(card, opt);
+            this.lastView = this.viewport;
             this.viewport = card.show();
             if (!is_loading) {
                 this.updateSize();
@@ -712,13 +723,7 @@ define([
         },
 
         closeModal: function(){
-            ck.disableView = false;
-            $(body).removeClass('modal-view');
-            choreo.transform(modalCard._wrapper[0], 'translateY', '100%');
-            setTimeout(function(){
-                $(body).removeClass('bg');
-                modalCard.close();
-            }, 400);
+            modalCard.close();
         },
 
         alert: function(text, opt) {

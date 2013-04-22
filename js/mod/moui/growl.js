@@ -15,6 +15,7 @@ define('moui/growl', [
 
         default_config = {
             className: 'moui-growl',
+            closeDelay: 300,
             corner: 'center',
             expires: 1400,
             keepalive: false
@@ -42,7 +43,7 @@ define('moui/growl', [
             return this;
         },
 
-        open: function(){
+        applyOpen: function(){
             clearTimeout(this._exptimer);
             if (this._config.expires != -1) {
                 var self = this;
@@ -50,20 +51,16 @@ define('moui/growl', [
                     self.close();
                 }, this._config.expires);
             }
-            return this.superClass.open.call(this);
+            return this.superClass.applyOpen.apply(this, arguments);
         },
 
-        close: function(){
-            if (!this.isOpened) {
-                return;
-            }
+        applyClose: function(){
             this.isOpened = false;
+            this._node.removeClass('rendered');
             this.event.fire('close', [this]);
-            this._node.removeClass('active');
             if (!this._config.keepalive) {
                 this.destroy();
             }
-            return this;
         }
 
     });

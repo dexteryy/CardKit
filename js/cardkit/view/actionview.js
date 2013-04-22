@@ -36,6 +36,10 @@ define([
             if (elm) {
                 elm.trigger('actionView:open', eprops);
             }
+        }).bind('prepareOpen', function(view){
+            bus.fire('actionView:prepareOpen', [view]);
+        }).bind('cancelOpen', function(view){
+            bus.fire('actionView:cancelOpen', [view]);
         }).bind('confirm', function(view, picker){
             if (elm) {
                 elm.trigger('actionView:confirm', eprops);

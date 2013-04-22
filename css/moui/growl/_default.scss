@@ -5,25 +5,40 @@
   top:50%;
   left:$space*3;
   right:$space*3;
-  margin-top:0 - $space*2;
   z-index: $zindex_overlay + $zindex_step*5;
+  margin-top:0 - $space*2;
   padding:$space;
   background:#000;
-  opacity:0.8;
+  opacity:0;
   color:#fff;
   font-size:$headtitle_size;
   text-align:center;
   @include border-radius(5px);
   @include user-select(none);
+  @include transition(opacity 0.3s ease-out);
+
+  &.corner-center {
+  }
 
   &.corner-bottom {
     top:auto;
-    bottom:$space;
+    bottom:-$space;
+    padding:$space/2;
     font-size: $title_size;
+    @include transition(bottom 0.3s ease-out, opacity 0.3s ease-out);
+  }
+
+  &.rendered {
+    display:block;
   }
 
   &.active {
-    display:block;
+    opacity:0.8;
+
+    &.corner-bottom {
+      bottom:$space;
+    }
+
   }
 
 }

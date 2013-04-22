@@ -4371,6 +4371,8 @@ define('moui/overlay', [
             title: '',
             content: '',
             className: 'moui-overlay',
+            openDelay: 10,
+            closeDelay: 0,
             event: {}
         };
 
@@ -4443,25 +4445,67 @@ define('moui/overlay', [
             return this;
         },
 
-        open: function() {
+        open: function(){
+            clearTimeout(this._actimer);
             if (this.isOpened) {
-                return;
+                this.cancelClose();
+                return this;
             }
-            this.isOpened = true;
-            this._node.appendTo(body).addClass('active');
-            this.event.fire('open', [this]);
+            var self = this,
+                args = arguments;
+            this.prepareOpen.apply(self, args);
+            this._actimer = setTimeout(function(){
+                self.applyOpen.apply(self, args);
+            }, this._config.openDelay);
             return this;
         },
 
-        close: function() {
+        close: function(){
+            clearTimeout(this._actimer);
             if (!this.isOpened) {
-                return;
+                this.cancelOpen();
+                return this;
             }
-            this.isOpened = false;
-            this._node.removeClass('active');
-            this._content.empty();
-            this.event.fire('close', [this]);
+            var self = this,
+                args = arguments;
+            this.prepareClose.apply(self, args);
+            this._actimer = setTimeout(function(){
+                self.applyClose.apply(self, args);
+            }, this._config.closeDelay);
             return this;
+        },
+
+        prepareOpen: function(){
+            this._node.appendTo(body).addClass('rendered');
+            this.event.fire('prepareOpen', [this]);
+        },
+
+        prepareClose: function(){
+            this.event.fire('prepareClose', [this]);
+            this._node.removeClass('active');
+        },
+
+        cancelOpen: function(){
+            this._node.removeClass('rendered');
+            this.event.fire('cancelOpen', [this]);
+        },
+
+        cancelClose: function(){
+            this._node.addClass('active');
+            this.event.fire('cancelClose', [this]);
+        },
+
+        applyOpen: function() {
+            this.isOpened = true;
+            this._node.addClass('active');
+            this.event.fire('open', [this]);
+        },
+
+        applyClose: function() {
+            this.isOpened = false;
+            this._content.empty();
+            this._node.removeClass('rendered');
+            this.event.fire('close', [this]);
         },
 
         destroy: function() {
@@ -4501,6 +4545,7 @@ define('moui/growl', [
 
         default_config = {
             className: 'moui-growl',
+            closeDelay: 300,
             corner: 'center',
             expires: 1400,
             keepalive: false
@@ -4528,7 +4573,7 @@ define('moui/growl', [
             return this;
         },
 
-        open: function(){
+        applyOpen: function(){
             clearTimeout(this._exptimer);
             if (this._config.expires != -1) {
                 var self = this;
@@ -4536,20 +4581,16 @@ define('moui/growl', [
                     self.close();
                 }, this._config.expires);
             }
-            return this.superClass.open.call(this);
+            return this.superClass.applyOpen.apply(this, arguments);
         },
 
-        close: function(){
-            if (!this.isOpened) {
-                return;
-            }
+        applyClose: function(){
             this.isOpened = false;
+            this._node.removeClass('rendered');
             this.event.fire('close', [this]);
-            this._node.removeClass('active');
             if (!this._config.keepalive) {
                 this.destroy();
             }
-            return this;
         }
 
     });
@@ -5082,6 +5123,7 @@ define('moui/actionview', [
 
         default_config = {
             className: 'moui-actionview',
+            closeDelay: 300,
             confirmText: '确认',
             cancelText: '取消',
             options: null,
@@ -5175,27 +5217,21 @@ define('moui/actionview', [
             return this.event.promise('close');
         },
 
-        open: function(){
-            if (this.isOpened) {
-                return;
-            }
+        applyOpen: function(){
             if (!this._config.multiselect && this._picker) {
                 var self = this;
                 this._picker.event.once('change', function(){
                     self.confirm();
                 });
             }
-            return this.superClass.open.call(this);
+            this.superClass.applyOpen.apply(this, arguments);
         },
 
-        close: function(){
-            if (!this.isOpened) {
-                return;
-            }
+        applyClose: function(){
             if (!this._config.multiselect && this._picker) {
                 this._picker.event.reset();
             }
-            return this.superClass.close.call(this);
+            this.superClass.applyClose.apply(this, arguments);
         }
 
     });
@@ -5259,6 +5295,10 @@ define("../cardkit/view/actionview", [
             if (elm) {
                 elm.trigger('actionView:open', eprops);
             }
+        }).bind('prepareOpen', function(view){
+            bus.fire('actionView:prepareOpen', [view]);
+        }).bind('cancelOpen', function(view){
+            bus.fire('actionView:cancelOpen', [view]);
         }).bind('confirm', function(view, picker){
             if (elm) {
                 elm.trigger('actionView:confirm', eprops);
@@ -5428,24 +5468,17 @@ define('moui/modalview', [
             return this.event.promise('close');
         },
 
-        open: function(){
-            if (this.isOpened) {
-                return;
-            }
-            this.superClass.open.call(this);
+        applyOpen: function(){
+            this.superClass.applyOpen.apply(this, arguments);
             if (this._config.iframe) {
                 this._iframeContent.attr('src', this._config.iframe);
             }
-            return this;
         },
 
-        close: function(){
-            if (!this.isOpened) {
-                return;
-            }
+        applyClose: function(){
             this._clearIframeContent();
             this._contentWrapper[0].scrollTop = 0;
-            return this.superClass.close.call(this);
+            this.superClass.applyClose.apply(this, arguments);
         }
 
     });
@@ -5725,7 +5758,8 @@ define("../cardkit/view/modalcard", [
 ], function($, net, modal, supports) {
 
     var modalCard = modal({
-            className: 'ck-modalview'
+            className: 'ck-modalview',
+            closeDelay: 400
         }),
         origin_set = modalCard.set;
 
@@ -6761,55 +6795,62 @@ define("../cardkit/app", [
         ck.viewportGarbage[com.parentId] = 1;
     }
 
-    modalCard.event.bind('open', function(modalCard){
+    modalCard.event.bind('prepareOpen', function(){
         ck.disableView = true;
-        //ck.showTopbar();
         $(body).addClass('bg').addClass('modal-view');
-        setTimeout(function(){
-            choreo.transform(modalCard._wrapper[0], 'translateY', '0');
-            var prev = ck.viewport,
-                current = modalCard._contentWrapper;
-            ck.changeView(current, { 
-                isModal: true 
+    }).bind('cancelOpen', function(){
+        ck.disableView = false;
+        $(body).removeClass('bg').removeClass('modal-view');
+    }).bind('open', function(){
+        var prev = ck.viewport,
+            current = modalCard._contentWrapper;
+        ck.changeView(current, { 
+            isModal: true 
+        });
+        var h = current[0].offsetHeight*2;
+        if (modalCard._iframeContent) {
+            modalCard._iframeContent.css({
+                minHeight: h + 'px',
+                width: current[0].offsetWidth + 'px',
+                height: current[0].offsetHeight - ck.headerHeight + 'px'
             });
-            var h = current[0].offsetHeight*2;
-            if (modalCard._iframeContent) {
-                modalCard._iframeContent.css({
-                    minHeight: h + 'px',
-                    width: current[0].offsetWidth + 'px',
-                    height: current[0].offsetHeight - ck.headerHeight + 'px'
+            modalCard.event.done('frameOnload', function(){
+                var iframe_body = $(modalCard._iframeWindow[0].document.body);
+                iframe_body.bind('touchstart', prevent_window_scroll);
+                ck.initView(iframe_body, {
+                    isModal: true
                 });
-                modalCard.event.done('frameOnload', function(){
-                    var iframe_body = $(modalCard._iframeWindow[0].document.body);
-                    iframe_body.bind('touchstart', prevent_window_scroll);
-                    ck.initView(iframe_body, {
-                        isModal: true
-                    });
-                    ck.enableControl();
-                });
-            } else if (!modalCard._content.html()) { // @TODO 换更靠谱的方法
-                modalCard.event.done('contentchange', function(){
-                    ck.initView(current, {
-                        isModal: true
-                    });
-                    ck.enableControl();
-                });
-            } else {
                 ck.enableControl();
-            }
-            modalCard._content.css('minHeight', h + 'px');
-            modalCard.event.once('close', function(){
-                ck.changeView(prev);
             });
-        }, 200);
+        } else if (!modalCard._content.html()) { // @TODO 换更靠谱的方法
+            modalCard.event.done('contentchange', function(){
+                ck.initView(current, {
+                    isModal: true
+                });
+                ck.enableControl();
+            });
+        } else {
+            ck.enableControl();
+        }
+        modalCard._content.css('minHeight', h + 'px');
+        modalCard.event.once('close', function(){
+            ck.changeView(prev);
+        });
+    }).bind('prepareClose', function(){
+        ck.disableView = false;
+        $(body).removeClass('modal-view');
+    }).bind('cancelClose', function(){
+        ck.disableView = true;
+        $(body).addClass('modal-view');
+    }).bind('close', function(){
+        $(body).removeClass('bg');
     }).bind('needclose', function(){
         ck.closeModal();
     });
 
-    bus.bind('actionView:open', function(actionCard){
+    bus.bind('actionView:prepareOpen', function(actionCard){
         ck.disableView = true;
-        var prev = ck.viewport,
-            current = actionCard._wrapper;
+        var current = actionCard._wrapper;
         ck.changeView(current, { 
             isModal: true 
         });
@@ -6820,9 +6861,12 @@ define("../cardkit/app", [
         actionCard._node.css({
             height: h + 'px'
         });
-        actionCard.event.once('close', function(){
-            ck.changeView(prev);
-        });
+    }).bind('actionView:cancelOpen', function(){
+        ck.disableView = false;
+        ck.changeView(ck.lastView);
+    }).bind('actionView:close', function(){
+        ck.disableView = false;
+        ck.changeView(ck.lastView);
     }).bind('actionView:jump', function(actionCard, href, target){
         actionCard.event.once('close', function(){
             ck.openURL(href, { target: target });
@@ -7138,6 +7182,7 @@ define("../cardkit/app", [
             }
             var is_loading = card === this.loadingCard;
             this.initView(card, opt);
+            this.lastView = this.viewport;
             this.viewport = card.show();
             if (!is_loading) {
                 this.updateSize();
@@ -7290,13 +7335,7 @@ define("../cardkit/app", [
         },
 
         closeModal: function(){
-            ck.disableView = false;
-            $(body).removeClass('modal-view');
-            choreo.transform(modalCard._wrapper[0], 'translateY', '100%');
-            setTimeout(function(){
-                $(body).removeClass('bg');
-                modalCard.close();
-            }, 400);
+            modalCard.close();
         },
 
         alert: function(text, opt) {

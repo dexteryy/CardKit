@@ -22,6 +22,8 @@ define('moui/overlay', [
             title: '',
             content: '',
             className: 'moui-overlay',
+            openDelay: 10,
+            closeDelay: 0,
             event: {}
         };
 
@@ -94,25 +96,67 @@ define('moui/overlay', [
             return this;
         },
 
-        open: function() {
+        open: function(){
+            clearTimeout(this._actimer);
             if (this.isOpened) {
-                return;
+                this.cancelClose();
+                return this;
             }
-            this.isOpened = true;
-            this._node.appendTo(body).addClass('active');
-            this.event.fire('open', [this]);
+            var self = this,
+                args = arguments;
+            this.prepareOpen.apply(self, args);
+            this._actimer = setTimeout(function(){
+                self.applyOpen.apply(self, args);
+            }, this._config.openDelay);
             return this;
         },
 
-        close: function() {
+        close: function(){
+            clearTimeout(this._actimer);
             if (!this.isOpened) {
-                return;
+                this.cancelOpen();
+                return this;
             }
-            this.isOpened = false;
-            this._node.removeClass('active');
-            this._content.empty();
-            this.event.fire('close', [this]);
+            var self = this,
+                args = arguments;
+            this.prepareClose.apply(self, args);
+            this._actimer = setTimeout(function(){
+                self.applyClose.apply(self, args);
+            }, this._config.closeDelay);
             return this;
+        },
+
+        prepareOpen: function(){
+            this._node.appendTo(body).addClass('rendered');
+            this.event.fire('prepareOpen', [this]);
+        },
+
+        prepareClose: function(){
+            this.event.fire('prepareClose', [this]);
+            this._node.removeClass('active');
+        },
+
+        cancelOpen: function(){
+            this._node.removeClass('rendered');
+            this.event.fire('cancelOpen', [this]);
+        },
+
+        cancelClose: function(){
+            this._node.addClass('active');
+            this.event.fire('cancelClose', [this]);
+        },
+
+        applyOpen: function() {
+            this.isOpened = true;
+            this._node.addClass('active');
+            this.event.fire('open', [this]);
+        },
+
+        applyClose: function() {
+            this.isOpened = false;
+            this._content.empty();
+            this._node.removeClass('rendered');
+            this.event.fire('close', [this]);
         },
 
         destroy: function() {

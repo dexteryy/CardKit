@@ -6,7 +6,8 @@ define([
 ], function($, net, modal, supports) {
 
     var modalCard = modal({
-            className: 'ck-modalview'
+            className: 'ck-modalview',
+            closeDelay: 400
         }),
         origin_set = modalCard.set;
 

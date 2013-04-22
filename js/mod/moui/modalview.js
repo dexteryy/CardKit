@@ -140,24 +140,17 @@ define('moui/modalview', [
             return this.event.promise('close');
         },
 
-        open: function(){
-            if (this.isOpened) {
-                return;
-            }
-            this.superClass.open.call(this);
+        applyOpen: function(){
+            this.superClass.applyOpen.apply(this, arguments);
             if (this._config.iframe) {
                 this._iframeContent.attr('src', this._config.iframe);
             }
-            return this;
         },
 
-        close: function(){
-            if (!this.isOpened) {
-                return;
-            }
+        applyClose: function(){
             this._clearIframeContent();
             this._contentWrapper[0].scrollTop = 0;
-            return this.superClass.close.call(this);
+            this.superClass.applyClose.apply(this, arguments);
         }
 
     });

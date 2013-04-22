@@ -7,7 +7,7 @@
   @include transform(scale(0));
   @include transition(
     transform 0.4s ceaser('easeOutBack'),
-    opacity 0.4s ease-in-out
+    opacity 0.4s
   );
 
   .moui-content {
