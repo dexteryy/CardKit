@@ -141,7 +141,7 @@ module.exports = function(grunt) {
                 files: [{
                     expand: true,
                     cwd: '<%= meta.targetDir %>/',
-                    src: ['**'],
+                    src: ['**', '!pics/**'],
                     dest: '<%= meta.examplesDir %>/dist/'
                 }]
             },
@@ -157,12 +157,12 @@ module.exports = function(grunt) {
                 files: [{
                     expand: true,
                     cwd: '<%= meta.targetDir %>/js/',
-                    src: ['**'],
+                    src: ['**', '!pics/**'],
                     dest: '<%= meta.jsPublicDir %>/'
                 }, {
                     expand: true,
                     cwd: '<%= meta.targetDir %>/css/',
-                    src: ['**'],
+                    src: ['**', '!pics/**'],
                     dest: '<%= meta.cssPublicDir %>/'
                 }]
             },

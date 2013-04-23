@@ -59,14 +59,14 @@ define([
         'a': link_handler,
         'a *': link_handler,
 
-        '.ck-card .ck-post-link': enable_control,
+        '.ck-card .ck-post-link': handle_control,
 
-        '.ck-card .ck-post-button': enable_control,
+        '.ck-card .ck-post-button': handle_control,
         '.ck-card .ck-post-button span': function tap_ck_post(){
             if (!$(this).hasClass('ck-post-button')) {
                 return tap_ck_post.call(this.parentNode);
             }
-            enable_control.call(this);
+            handle_control.call(this);
         },
 
         '.ck-card .ck-switch span': function tap_ck_switch(){
@@ -159,7 +159,7 @@ define([
         ck.openModal($(this).data());
     }
 
-    function enable_control(){
+    function handle_control(){
         var controller = control(this);
         if (!controller.isEnabled) {
             controller.enable();

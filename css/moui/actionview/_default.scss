@@ -170,8 +170,8 @@
   border:none;
   border-bottom:solid 1px #141414;
   text-align:center;
-  -webkit-tap-highlight-color: rgba(0,0,0,0.2);
   @include appearance(none);
+  @include user-select(none);
 }
 %action-option:active,
 %action-option.enabled {
