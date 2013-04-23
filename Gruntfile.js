@@ -1,8 +1,7 @@
 
 module.exports = function(grunt) {
 
-    //TODO: change the following variable to your shire_for_mobile directory
-    var publicDir = '/Users/dexteryy/code/douban/vagrant/shire-git';
+    var config = require('./config');
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -10,18 +9,13 @@ module.exports = function(grunt) {
             targetDir: 'target',
             distDir: 'dist',
             examplesDir: 'examples',
-            jsPublicDir: publicDir + '/static/js/<%= pkg.name %>',
-            cssPublicDir: publicDir + '/static/css/<%= pkg.name %>',
-            picsPublicDir: publicDir + '/pics/<%= pkg.name %>'
+            jsPublicDir: config.jsPublicDir + '/<%= pkg.name %>',
+            cssPublicDir: config.cssPublicDir + '/<%= pkg.name %>',
+            picsPublicDir: config.picsPublicDir + '/<%= pkg.name %>'
         },
 
         clean: {
             test: ["<%= meta.examplesDir %>/dist"],
-            pub: [
-                "<%= meta.jsPublicDir %>", 
-                "<%= meta.cssPublicDir %>", 
-                "<%= meta.picsPublicDir %>"
-            ],
             target: ["<%= meta.targetDir %>"],
             dist: ["<%= meta.distDir %>"]
         },
@@ -100,13 +94,21 @@ module.exports = function(grunt) {
                 stripBanners: true,
                 banner: '/*! <%= pkg.name %> - v<%= pkg.version %> */\n'
             },
-            js_main: {
-                src: ['<%= meta.targetDir %>/js/main.js'],
-                dest: '<%= meta.distDir %>/js/main.js'
+            js: {
+                files: [{
+                    expand: true,
+                    cwd: '<%= meta.targetDir %>/js/',
+                    src: ['**/*.js'],
+                    dest: '<%= meta.distDir %>/js/'
+                }]
             },
-            css_main: {
-                src: ['<%= meta.targetDir %>/css/main.css'],
-                dest: '<%= meta.distDir %>/css/main.css'
+            css: {
+                files: [{
+                    expand: true,
+                    cwd: '<%= meta.targetDir %>/css/',
+                    src: ['**/*.css'],
+                    dest: '<%= meta.distDir %>/css/'
+                }]
             }
         },
 
@@ -114,9 +116,10 @@ module.exports = function(grunt) {
             main: {
                 files: [{
                     expand: true,
-                    cwd: '<%= meta.targetDir %>/js/',
+                    cwd: '<%= meta.distDir %>/js/',
                     src: ['**/*.js'],
-                    dest: '<%= meta.distDir %>/js/'
+                    dest: '<%= meta.distDir %>/js/',
+                    ext: '.min.js'
                 }]
             }
         },
@@ -125,9 +128,10 @@ module.exports = function(grunt) {
             main: {
                 files: [{
                     expand: true,
-                    cwd: '<%= meta.targetDir %>/css/',
+                    cwd: '<%= meta.distDir %>/css/',
                     src: ['**/*.css'],
-                    dest: '<%= meta.distDir %>/css/'
+                    dest: '<%= meta.distDir %>/css/',
+                    ext: '.min.css'
                 }]
             }
         },
@@ -275,7 +279,6 @@ module.exports = function(grunt) {
                 tasks: [
                     'dev', 
                     'devtest',
-                    'clean:pub',
                     'copy:target2pub'
                 ]
             }
@@ -327,7 +330,6 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask('deploy', [
-        'clean:pub',
         'copy:dist2pub'
     ]);
 

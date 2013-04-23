@@ -1,1 +1,131 @@
-define("mo/console",["mo/lang","mo/browsers","mo/template/string","mo/domready"],function(t,e,n){function i(t,e){e=e||{};var n=(""+t).trim().match(l)[1].trim().replace(/return\s+/,"").replace(/;$/,"");a.info("run `"+n+"`");try{a.info(t())}catch(i){a.error(e.showStack?i:i.message)}}function r(e){return function(){t.isFunction(c[e])&&c[e].apply(a,arguments);var n=this.output=this.output||o(),i=n.innerHTML,r=i&&/\S/.test(i)?[i]:[];r.push.call(r,'<p><span class="type type-'+e+'"></span>'+'<span class="log">'+Array.prototype.slice.call(arguments).map(s,e).join('</span><span class="log">')+"</span></p>"),n.innerHTML=r.join("")}}function o(){var t=document.createElement("DIV");return t.setAttribute("id","console"),document.body.insertBefore(t,document.body.firstChild),t}function s(t){var i=this;return t instanceof Error?(t=t.stack?t.stack.split(/at\s/):[t.message],t.map(function(t){return s("at "+t,i)}).join("<br>")):"log"==""+i||!t||"object"!=typeof t||e.aosp&&1===t.nodeType?(t+="","string"==typeof t?n.escapeHTML(t):t):(t=['<span class="obj-start">'+n.escapeHTML("{")+"</span>",Object.keys(t).map(function(t){var e;try{e=this[t]}catch(r){e=r.message}return"string"==typeof e?e='"'+e+'"':e+="",'<span class="obj-item"><span class="obj-k">'+s(t,i)+': </span><span class="obj-v">'+("string"==typeof e?n.escapeHTML(e):e)+"</span>,</span>"},t).join(""),'<span class="obj-end">'+n.escapeHTML("}")+"</span>"].join(""),'<span class="obj-wrap"><span class="obj-overview">'+t+'</span><span class="obj-end">...}</span><span class="obj-detail">'+t+"</span></span></span>")}var a=this.console=this.console||{},c={log:a.log,info:a.info,warn:a.warn,error:a.error},l=/^function[^(]*\([^)]*\)[^{]*\{([.\s\S]*)\}$/;return a.config=function(t){return this.output=t.output,this},a.enable=function(){this.output||(this.output=o());for(var t in c)a[t]=r(t);return a.run=i,this},a.disable=function(){for(var t in c)a[t]=c[t];return a.run=a.log,this},a});
+/*! cardkit - v0.1.0 */
+;
+
+
+define('mo/console', [
+  "mo/lang",
+  "mo/browsers",
+  "mo/template/string",
+  "mo/domready"
+], function(_, browsers, tpl){
+
+    var console = this.console = this.console || {},
+        origin_console = {
+            log: console.log,
+            info: console.info,
+            warn: console.warn,
+            error: console.error
+        },
+        RE_CODE = /^function[^(]*\([^)]*\)[^{]*\{([.\s\S]*)\}$/;
+
+    console.config = function(opt){
+        this.output = opt.output;
+        return this;
+    };
+
+    console.enable = function(){
+        if (!this.output) {
+            this.output = default_output();
+        }
+        for (var i in origin_console) {
+            console[i] = console_api(i);
+        }
+        console.run = run;
+        return this;
+    };
+
+    console.disable = function(){
+        for (var i in origin_console) {
+            console[i] = origin_console[i];
+        }
+        console.run = console.log;
+        return this;
+    };
+
+    function run(fn, opt){
+        opt = opt || {};
+        var code = fn.toString().trim()
+            .match(RE_CODE)[1]
+            .trim()
+            .replace(/return\s+/, '')
+            .replace(/;$/, '');
+        console.info('run `' + code + '`');
+        try {
+            console.info(fn());
+        } catch(ex) {
+            console.error(opt.showStack ? ex : ex.message);
+        }
+    }
+
+    function console_api(method){
+        return function(){
+            if (_.isFunction(origin_console[method])) {
+                origin_console[method].apply(console, arguments);
+            }
+            var output = this.output = this.output || default_output(),
+                content = output.innerHTML,
+                result = content && /\S/.test(content) ? [content] : [];
+            result.push.call(result, '<p>'
+                + '<span class="type type-' + method + '"></span>'
+                + '<span class="log">'
+                + Array.prototype.slice.call(arguments)
+                    .map(escape_log, method).join('</span><span class="log">')
+                + '</span></p>');
+            output.innerHTML = result.join('');
+        };
+    }
+
+    function default_output(){
+        var output = document.createElement('DIV');
+        output.setAttribute('id', 'console');
+        document.body.insertBefore(output, document.body.firstChild);
+        return output;
+    }
+
+    function escape_log(text){
+        var method = this;
+        if (text instanceof Error) {
+            text = text.stack ? text.stack.split(/at\s/) : [text.message];
+            return text.map(function(msg){
+                return escape_log('at ' + msg, method);
+            }).join('<br>');
+        } else if (method.toString() !== 'log' 
+                && text 
+                && typeof text === 'object'
+                && (!browsers.aosp || text.nodeType !== 1)) {
+            text = [
+                '<span class="obj-start">' + tpl.escapeHTML('{') + '</span>', 
+                Object.keys(text).map(function(key){
+                    var v;
+                    try {
+                        v = this[key];
+                    } catch(ex) {
+                        v = ex.message;
+                    }
+                    if (typeof v === 'string') {
+                        v = '"' + v + '"';
+                    } else {
+                        v = String(v);
+                    }
+                    return '<span class="obj-item">' 
+                        + '<span class="obj-k">'
+                        + escape_log(key, method) 
+                        + ': </span><span class="obj-v">'
+                        + (typeof v === 'string' ? tpl.escapeHTML(v) : v)
+                        + '</span>,</span>';
+                }, text).join(''), 
+                '<span class="obj-end">' + tpl.escapeHTML('}') + '</span>'
+            ].join('');
+            return '<span class="obj-wrap"><span class="obj-overview">' 
+                + text
+                + '</span><span class="obj-end">...}</span><span class="obj-detail">' 
+                + text 
+                + '</span></span></span>';
+        }
+        text = String(text);
+        return typeof text === 'string' ? tpl.escapeHTML(text) : text;
+    }
+
+    return console;
+
+});

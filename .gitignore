@@ -5,6 +5,7 @@ syncdb_dumps.bak
 .statictmp
 node_modules/
 .sass-cache/
-Gruntfile.js
+config.js
+**/Gruntfile.js
 target/
 report/

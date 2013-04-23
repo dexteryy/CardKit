@@ -19,8 +19,8 @@ A mobile UI framework provides building blocks which are classified as "Card", "
 
 ### Build and use in your mobile project
 
-1. `cp Gruntfile.js.tmpl Gruntfile.js`
-2. Resolve TODO in Gruntfile.js
+1. `cp config.js.tmpl config.js`
+2. Resolve TODO in config.js
 3. `grunt`
 4. `grunt deploy`
 
