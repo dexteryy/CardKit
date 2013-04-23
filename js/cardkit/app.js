@@ -251,11 +251,22 @@ define([
             height: h + 'px'
         });
     }).bind('actionView:cancelOpen', function(){
-        ck.disableView = false;
-        ck.changeView(last_view_for_actions);
+        if (!modalCard.isOpened) {
+            ck.disableView = false;
+        }
+        ck.changeView(last_view_for_actions, {
+            preventRender: modalCard.isOpened,
+            isModal: modalCard.isOpened
+        });
     }).bind('actionView:close', function(){
-        ck.disableView = false;
-        ck.changeView(last_view_for_actions);
+        if (!modalCard.isOpened) {
+            ck.disableView = false;
+        }
+        console.info("log: ", 1, last_view_for_actions); // log
+        ck.changeView(last_view_for_actions, {
+            preventRender: modalCard.isOpened,
+            isModal: modalCard.isOpened
+        });
     }).bind('actionView:jump', function(actionCard, href, target){
         actionCard.event.once('close', function(){
             ck.openURL(href, { target: target });
@@ -422,7 +433,7 @@ define([
 
             ck.sessionLocked = false;
 
-            var travel_history, restore_state;
+            var travel_history, restore_state, restore_modal;
 
             if (supports.HISTORY) {
                 $(window).bind("popstate", function(e){
@@ -487,13 +498,11 @@ define([
 
                 travel_history = check_footprint();
 
-                var current_state = history.state,
-                    restore_state = current_state && current_state.next; // alert(['init', current_state && [current_state.prev, current_state.next].join('-'), ck.viewport && ck.viewport[0].id].join(', '))
-                if (restore_state === '_modal_') { // @TODO
+                var current_state = history.state;
+                restore_state = current_state && current_state.next; // alert(['init', current_state && [current_state.prev, current_state.next].join('-'), ck.viewport && ck.viewport[0].id].join(', '))
+                if (restore_state === '_modal_') {
                     restore_state = current_state.prev;
-                    if (!modalCard.isOpened && ck.viewport) {
-                        modalCard.set(history.state.opt).open();
-                    }
+                    restore_modal = true;
                 }
 
                 //console.info(travel_history, restore_state, current_state)
@@ -512,6 +521,8 @@ define([
                 if (restore_state === 'ckLoading') {
                     // 9.  alert(9)
                     history.back();
+                } else if (restore_modal && !modalCard.isOpened) {
+                    modalCard.set(history.state.opt).open();
                 }
             } else {
                 if (travel_history) {
@@ -537,7 +548,7 @@ define([
         },
 
         initView: function(card, opt){
-            if (!card.data('rendered')) {
+            if (!card.data('rendered') && !opt.preventRender) {
                 render.initCard(card, this.raw, this.footer, opt);
                 if (!opt.isModal) {
                     card.data('rendered', '1');
