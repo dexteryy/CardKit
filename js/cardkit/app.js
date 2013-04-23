@@ -33,6 +33,8 @@ define([
         document = window.document,
         body = document.body,
         //back_timeout,
+        last_view_for_modal,
+        last_view_for_actions,
         gc_id = 0,
 
         TPL_MASK = '<div class="ck-viewmask"></div>';
@@ -190,8 +192,8 @@ define([
         ck.disableView = false;
         $(body).removeClass('bg').removeClass('modal-view');
     }).bind('open', function(){
-        var prev = ck.viewport,
-            current = modalCard._contentWrapper;
+        var current = modalCard._contentWrapper;
+        last_view_for_modal = ck.viewport;
         ck.changeView(current, { 
             isModal: true 
         });
@@ -221,9 +223,6 @@ define([
             ck.enableControl();
         }
         modalCard._content.css('minHeight', h + 'px');
-        modalCard.event.once('close', function(){
-            ck.changeView(prev);
-        });
     }).bind('prepareClose', function(){
         ck.disableView = false;
         $(body).removeClass('modal-view');
@@ -231,6 +230,7 @@ define([
         ck.disableView = true;
         $(body).addClass('modal-view');
     }).bind('close', function(){
+        ck.changeView(last_view_for_modal);
         $(body).removeClass('bg');
     }).bind('needclose', function(){
         ck.closeModal();
@@ -239,6 +239,7 @@ define([
     bus.bind('actionView:prepareOpen', function(actionCard){
         ck.disableView = true;
         var current = actionCard._wrapper;
+        last_view_for_actions = ck.viewport;
         ck.changeView(current, { 
             isModal: true 
         });
@@ -251,10 +252,10 @@ define([
         });
     }).bind('actionView:cancelOpen', function(){
         ck.disableView = false;
-        ck.changeView(ck.lastView);
+        ck.changeView(last_view_for_actions);
     }).bind('actionView:close', function(){
         ck.disableView = false;
-        ck.changeView(ck.lastView);
+        ck.changeView(last_view_for_actions);
     }).bind('actionView:jump', function(actionCard, href, target){
         actionCard.event.once('close', function(){
             ck.openURL(href, { target: target });
@@ -570,7 +571,6 @@ define([
             }
             var is_loading = card === this.loadingCard;
             this.initView(card, opt);
-            this.lastView = this.viewport;
             this.viewport = card.show();
             if (!is_loading) {
                 this.updateSize();

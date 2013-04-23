@@ -4403,7 +4403,7 @@ define('moui/overlay', [
             title: '',
             content: '',
             className: 'moui-overlay',
-            openDelay: 10,
+            openDelay: 50,
             closeDelay: 0,
             event: {}
         };
@@ -5331,6 +5331,15 @@ define("../cardkit/view/actionview", [
             bus.fire('actionView:prepareOpen', [view]);
         }).bind('cancelOpen', function(view){
             bus.fire('actionView:cancelOpen', [view]);
+        }).bind('close', function(){
+            bus.fire('actionView:close', [view]);
+            if (elm) {
+                elm.trigger('actionView:close', eprops);
+            }
+        }).bind('cancel', function(){
+            if (elm) {
+                elm.trigger('actionView:cancel', eprops);
+            }
         }).bind('confirm', function(view, picker){
             if (elm) {
                 elm.trigger('actionView:confirm', eprops);
@@ -5343,11 +5352,6 @@ define("../cardkit/view/actionview", [
             }
         });
         if (elm) {
-            view.event.bind('close', function(){
-                elm.trigger('actionView:close', eprops);
-            }).bind('cancel', function(){
-                elm.trigger('actionView:cancel', eprops);
-            });
         }
         return view;
     }
@@ -6677,6 +6681,8 @@ define("../cardkit/app", [
         document = window.document,
         body = document.body,
         //back_timeout,
+        last_view_for_modal,
+        last_view_for_actions,
         gc_id = 0,
 
         TPL_MASK = '<div class="ck-viewmask"></div>';
@@ -6834,8 +6840,8 @@ define("../cardkit/app", [
         ck.disableView = false;
         $(body).removeClass('bg').removeClass('modal-view');
     }).bind('open', function(){
-        var prev = ck.viewport,
-            current = modalCard._contentWrapper;
+        var current = modalCard._contentWrapper;
+        last_view_for_modal = ck.viewport;
         ck.changeView(current, { 
             isModal: true 
         });
@@ -6865,9 +6871,6 @@ define("../cardkit/app", [
             ck.enableControl();
         }
         modalCard._content.css('minHeight', h + 'px');
-        modalCard.event.once('close', function(){
-            ck.changeView(prev);
-        });
     }).bind('prepareClose', function(){
         ck.disableView = false;
         $(body).removeClass('modal-view');
@@ -6875,6 +6878,7 @@ define("../cardkit/app", [
         ck.disableView = true;
         $(body).addClass('modal-view');
     }).bind('close', function(){
+        ck.changeView(last_view_for_modal);
         $(body).removeClass('bg');
     }).bind('needclose', function(){
         ck.closeModal();
@@ -6883,6 +6887,7 @@ define("../cardkit/app", [
     bus.bind('actionView:prepareOpen', function(actionCard){
         ck.disableView = true;
         var current = actionCard._wrapper;
+        last_view_for_actions = ck.viewport;
         ck.changeView(current, { 
             isModal: true 
         });
@@ -6895,10 +6900,10 @@ define("../cardkit/app", [
         });
     }).bind('actionView:cancelOpen', function(){
         ck.disableView = false;
-        ck.changeView(ck.lastView);
+        ck.changeView(last_view_for_actions);
     }).bind('actionView:close', function(){
         ck.disableView = false;
-        ck.changeView(ck.lastView);
+        ck.changeView(last_view_for_actions);
     }).bind('actionView:jump', function(actionCard, href, target){
         actionCard.event.once('close', function(){
             ck.openURL(href, { target: target });
@@ -7214,7 +7219,6 @@ define("../cardkit/app", [
             }
             var is_loading = card === this.loadingCard;
             this.initView(card, opt);
-            this.lastView = this.viewport;
             this.viewport = card.show();
             if (!is_loading) {
                 this.updateSize();

@@ -22,7 +22,7 @@ define('moui/overlay', [
             title: '',
             content: '',
             className: 'moui-overlay',
-            openDelay: 10,
+            openDelay: 50,
             closeDelay: 0,
             event: {}
         };

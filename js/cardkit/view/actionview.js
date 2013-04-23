@@ -40,6 +40,15 @@ define([
             bus.fire('actionView:prepareOpen', [view]);
         }).bind('cancelOpen', function(view){
             bus.fire('actionView:cancelOpen', [view]);
+        }).bind('close', function(){
+            bus.fire('actionView:close', [view]);
+            if (elm) {
+                elm.trigger('actionView:close', eprops);
+            }
+        }).bind('cancel', function(){
+            if (elm) {
+                elm.trigger('actionView:cancel', eprops);
+            }
         }).bind('confirm', function(view, picker){
             if (elm) {
                 elm.trigger('actionView:confirm', eprops);
@@ -52,11 +61,6 @@ define([
             }
         });
         if (elm) {
-            view.event.bind('close', function(){
-                elm.trigger('actionView:close', eprops);
-            }).bind('cancel', function(){
-                elm.trigger('actionView:cancel', eprops);
-            });
         }
         return view;
     }
