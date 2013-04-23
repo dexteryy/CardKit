@@ -22,12 +22,12 @@ A mobile UI framework provides building blocks which are classified as "Card", "
 1. `cp Gruntfile.js.tmpl Gruntfile.js`
 2. Resolve TODO in Gruntfile.js
 3. `grunt`
-4. `grunt copy:dist2pub` or `grunt copy:static2pub`
+4. `grunt deploy`
 
 ## Docs & Demos
 
 1. `grunt connect`
-2. See [http://localhost:9100/](http://localhost:9001/) and `examples/`
+2. See [http://localhost:9100/](http://localhost:9001/) (or [official URL](http://code.dapps.douban.com/cardkit/docs/pages/index.html)) and `examples/`
 
 ## Dev Guild
 
