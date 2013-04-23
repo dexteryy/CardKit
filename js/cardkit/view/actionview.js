@@ -41,6 +41,7 @@ define([
         }).bind('cancelOpen', function(view){
             bus.fire('actionView:cancelOpen', [view]);
         }).bind('close', function(){
+            exports.current = null;
             bus.fire('actionView:close', [view]);
             if (elm) {
                 elm.trigger('actionView:close', eprops);

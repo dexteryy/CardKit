@@ -5242,10 +5242,7 @@ define('moui/actionview', [
         },
 
         ok: function(){
-            var self = this;
-            setTimeout(function(){
-                self.close();
-            }, 0);
+            this.close();
             return this.event.promise('close');
         },
 
@@ -5332,6 +5329,7 @@ define("../cardkit/view/actionview", [
         }).bind('cancelOpen', function(view){
             bus.fire('actionView:cancelOpen', [view]);
         }).bind('close', function(){
+            exports.current = null;
             bus.fire('actionView:close', [view]);
             if (elm) {
                 elm.trigger('actionView:close', eprops);
@@ -5497,10 +5495,7 @@ define('moui/modalview', [
         },
 
         ok: function(){
-            var self = this;
-            setTimeout(function(){
-                self.close();
-            }, 0);
+            this.close();
             return this.event.promise('close');
         },
 
@@ -7485,12 +7480,15 @@ define("../cardkit/app", [
     }
 
     function back_handler(prev_id){
+        if (actionView.current) {
+            actionView.current.close().event.once('close', function(){
+                back_handler(prev_id);
+            });
+            return;
+        }
         ck.sessionLocked = true;
         var prev = $('#' + prev_id);
         var current = ck.viewport;
-        if (actionView.current) {
-            actionView.current.close();
-        }
         //if (supports.PREVENT_CACHE && prev === ck.loadingCard) {
             //ck.sessionLocked = false;
             //history.back();

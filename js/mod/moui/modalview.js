@@ -133,10 +133,7 @@ define('moui/modalview', [
         },
 
         ok: function(){
-            var self = this;
-            setTimeout(function(){
-                self.close();
-            }, 0);
+            this.close();
             return this.event.promise('close');
         },
 

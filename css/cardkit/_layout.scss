@@ -103,7 +103,7 @@ a {
     z-index: $zindex_overlay;
 
     @include transform(translateY(-$nav_height));
-    @include transition(transform 400ms);
+    @include transition(transform 200ms);
 
     .ck-top-title {
       color:#fff;

@@ -837,12 +837,15 @@ define([
     }
 
     function back_handler(prev_id){
+        if (actionView.current) {
+            actionView.current.close().event.once('close', function(){
+                back_handler(prev_id);
+            });
+            return;
+        }
         ck.sessionLocked = true;
         var prev = $('#' + prev_id);
         var current = ck.viewport;
-        if (actionView.current) {
-            actionView.current.close();
-        }
         //if (supports.PREVENT_CACHE && prev === ck.loadingCard) {
             //ck.sessionLocked = false;
             //history.back();

@@ -228,9 +228,9 @@ a {
   -moz-transform: translateY(-42.5px);
   -ms-transform: translateY(-42.5px);
   transform: translateY(-42.5px);
-  -webkit-transition: -webkit-transform 400ms;
-  -moz-transition: -moz-transform 400ms;
-  transition: transform 400ms;
+  -webkit-transition: -webkit-transform 200ms;
+  -moz-transition: -moz-transform 200ms;
+  transition: transform 200ms;
 }
 .ck-root .ck-header .ck-top-title, .ck-root .ck-modalview > header .ck-top-title, .ck-root .ck-header .ck-modalview > header h1, .ck-modalview > header .ck-root .ck-header h1, .ck-root .ck-modalview > header h1 {
   color: #fff;
