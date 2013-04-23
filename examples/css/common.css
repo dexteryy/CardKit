@@ -4,14 +4,14 @@
     border-bottom:1px solid #dadada;
 }
 .topbox .mods {
-    padding:10px 0 0 20px;
+    padding:5px 0 0 20px;
 }
 .topbox .mods li {
     list-style:square;
 }
 
 .democode {
-  margin-left:-20px;
+  margin-left:-15px;
   font-size:14px;
 }
 

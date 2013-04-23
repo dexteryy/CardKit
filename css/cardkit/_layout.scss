@@ -7,7 +7,7 @@ body {
   font:$text_size Helvetica,sans-serif;
   color:$text_color;
   background:$view_color;
-  line-height:1.7;
+  line-height:1.6;
 
   &.bg {
     background: #666;
@@ -44,7 +44,8 @@ a {
 
 .ck-header {
   height: $nav_height;
-  @include box-shadow(0 2px 3px rgba(0,0,0,.35));
+  @include box-shadow(0 1px 2px rgba(0,0,0,.35));
+  border-bottom:1px solid rgba(0,0,0,.2);
   z-index:$zindex_step;
   @include user-select(none);
 
@@ -79,6 +80,7 @@ a {
 
 .ck-top-title {
   font-size:$article_size;
+  font-weight:bold;
   line-height: $nav_height;
   text-align:center;
   display:block;
@@ -96,7 +98,7 @@ a {
     top:0;
     left:0;
     width:100%;
-    @include background(linear-gradient(bottom, #78624f, #846f5b));
+    background:#9e816a;
     z-index: $zindex_overlay;
 
     @include transform(translateY(-$nav_height));

@@ -19,7 +19,7 @@ $experimental-support-for-khtml : false;
 
 $text_color: #252525;
 $desc_color: #787878;
-$border_color: #dadada;
+$border_color: #efefef;
 $view_color: #f2f2f2;
 $active_color: #006ae2;
 $notice_color: #df5001;
@@ -59,8 +59,9 @@ $zindex_step: 10;
   @include border-radius($radius);
   //@include box-shadow(0 1px #fff, inset 0 2px #fff);
 
-  line-height:(56px/2);
+  line-height:($button_height - 6px/2);
   font-size:$title_size;
+  font-weight:bold;
   color:$text_color;
   text-align:center;
   @include text-shadow(0 1px #fff);
