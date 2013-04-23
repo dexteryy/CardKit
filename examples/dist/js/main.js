@@ -3363,6 +3363,56 @@ define('momo/swipe', [
 
 });
 
+/* @source mo/easing/base.js */;
+
+
+define("mo/easing/base", [], function(){
+
+    return {
+
+        def: 'ease',
+
+        positions: {
+            'linear'         :  [0.250, 0.250, 0.750, 0.750],
+            'ease'           :  [0.250, 0.100, 0.250, 1.000],
+            'easeIn'         :  [0.420, 0.000, 1.000, 1.000],
+            'easeOut'        :  [0.000, 0.000, 0.580, 1.000],
+            'easeInOut'      :  [0.420, 0.000, 0.580, 1.000]
+        },
+
+        values: {
+            linear: 'linear',
+            ease: 'ease',
+            easeIn: 'ease-in',
+            easeOut: 'ease-out',
+            easeInOut: 'ease-in-out'
+        },
+
+        // http://gsgd.co.uk/sandbox/jquery/easing/
+        // t: current time, b: begInnIng value, c: change In value, d: duration
+        functions: {
+            linear: function(x, t, b, c) {
+                return b + c * x;
+            },
+            ease: function(x, t, b, c) {
+                return ((-Math.cos(x*Math.PI)/2) + 0.5) * c + b;
+            },
+            easeIn: function (x, t, b, c, d) {
+                return c*(t /= d)*t + b;
+            },
+            easeOut: function (x, t, b, c, d) {
+                return -c *(t /= d)*(t-2) + b;
+            },
+            easeInOut: function (x, t, b, c, d) {
+                if ((t /= d/2) < 1) return c/2*t*t + b;
+                return -c/2 * ((--t)*(t-2) - 1) + b;
+            }
+        },
+
+    };
+
+});
+
 /* @source choreo.js */;
 
 /**
@@ -3381,9 +3431,10 @@ define('momo/swipe', [
 define("choreo", [
   "mo/lang/es5",
   "mo/lang/mix",
+  "mo/easing/base",
   "mo/mainloop",
   "eventmaster"
-], function(es5, _, mainloop, Event){
+], function(es5, _, easing, mainloop, Event){
 
     var window = this,
         VENDORS = ['Moz', 'webkit', 'ms', 'O', ''],
@@ -3419,27 +3470,8 @@ define("choreo", [
         _stage = {},
         _transition_sets = {},
         _transform_promise = {},
-        timing_values = {
-            linear: 'linear',
-            easeIn: 'ease-in',
-            easeOut: 'ease-out',
-            easeInOut: 'ease-in-out'
-        },
-        timing_functions = {
-            linear: function(x, t, b, c) {
-                return b + c * x;
-            },
-            easeIn: function (x, t, b, c, d) {
-                return c*(t /= d)*t + b;
-            },
-            easeOut: function (x, t, b, c, d) {
-                return -c *(t /= d)*(t-2) + b;
-            },
-            easeInOut: function (x, t, b, c, d) {
-                if ((t /= d/2) < 1) return c/2*t*t + b;
-                return -c/2 * ((--t)*(t-2) - 1) + b;
-            }
-        };
+        timing_values = easing.values,
+        timing_functions = easing.functions;
 
     function fix_prop_name(lib, prefix, true_prop, succ){
         for (var prop in lib) {
@@ -7237,7 +7269,7 @@ define("../cardkit/app", [
             this._loadingAnimate.clear().play()
                 .actor(ck.loadingCard[0], {
                     opacity: 0
-                }, 400, 'easeInOut').follow().then(function(){
+                }, 400, 'ease').follow().then(function(){
                     ck.loadingCard.hide().css({
                         position: 'static',
                         opacity: '',
@@ -7429,7 +7461,7 @@ define("../cardkit/app", [
         ck.changeView(next);
         choreo().play().actor(ck.wrapper[0], {
             'transform': 'translateX(' + (0 - window.innerWidth) + 'px)'
-        }, 400, 'easeInOut').follow().done(function(){
+        }, 400, 'ease').follow().done(function(){
             current.hide();
             choreo.transform(ck.wrapper[0], 'translateX', '0');
             next.removeClass('moving');
@@ -7468,7 +7500,7 @@ define("../cardkit/app", [
         ck.changeView(prev);
         choreo().play().actor(ck.wrapper[0], {
             'transform': 'translateX(0)'
-        }, 400, 'easeInOut').follow().done(function(){
+        }, 400, 'ease').follow().done(function(){
             current.hide().removeClass('moving');
             ck.enableControl();
             ck.sessionLocked = false;
@@ -7632,6 +7664,7 @@ require.config({
 });
 
 define('mo/lang/es5', [], function(){});
+define('mo/easing/functions', [], function(){});
 define('mo/mainloop', [], function(){});
 
 define('cardkit/env', [], function(){

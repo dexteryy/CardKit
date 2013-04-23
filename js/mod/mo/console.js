@@ -1,9 +1,9 @@
 
 define('mo/console', [
-    'mo/lang',
-    'mo/browsers',
-    'mo/template/string',
-    'mo/domready'
+    './lang',
+    './browsers',
+    './template/string',
+    './domready'
 ], function(_, browsers, tpl){
 
     var console = this.console = this.console || {},

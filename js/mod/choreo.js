@@ -14,9 +14,10 @@
 define("choreo", [
     "mo/lang/es5", 
     "mo/lang/mix", 
+    "mo/easing/base", 
     "mo/mainloop", 
     "eventmaster"
-], function(es5, _, mainloop, Event){
+], function(es5, _, easing, mainloop, Event){
 
     var window = this,
         VENDORS = ['Moz', 'webkit', 'ms', 'O', ''],
@@ -52,27 +53,8 @@ define("choreo", [
         _stage = {},
         _transition_sets = {},
         _transform_promise = {},
-        timing_values = {
-            linear: 'linear',
-            easeIn: 'ease-in',
-            easeOut: 'ease-out',
-            easeInOut: 'ease-in-out'
-        },
-        timing_functions = {
-            linear: function(x, t, b, c) {
-                return b + c * x;
-            },
-            easeIn: function (x, t, b, c, d) {
-                return c*(t /= d)*t + b;
-            },
-            easeOut: function (x, t, b, c, d) {
-                return -c *(t /= d)*(t-2) + b;
-            },
-            easeInOut: function (x, t, b, c, d) {
-                if ((t /= d/2) < 1) return c/2*t*t + b;
-                return -c/2 * ((--t)*(t-2) - 1) + b;
-            }
-        };
+        timing_values = easing.values,
+        timing_functions = easing.functions;
 
     function fix_prop_name(lib, prefix, true_prop, succ){
         for (var prop in lib) {

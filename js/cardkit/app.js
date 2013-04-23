@@ -625,7 +625,7 @@ define([
             this._loadingAnimate.clear().play()
                 .actor(ck.loadingCard[0], {
                     opacity: 0
-                }, 400, 'easeInOut').follow().then(function(){
+                }, 400, 'ease').follow().then(function(){
                     ck.loadingCard.hide().css({
                         position: 'static',
                         opacity: '',
@@ -817,7 +817,7 @@ define([
         ck.changeView(next);
         choreo().play().actor(ck.wrapper[0], {
             'transform': 'translateX(' + (0 - window.innerWidth) + 'px)'
-        }, 400, 'easeInOut').follow().done(function(){
+        }, 400, 'ease').follow().done(function(){
             current.hide();
             choreo.transform(ck.wrapper[0], 'translateX', '0');
             next.removeClass('moving');
@@ -856,7 +856,7 @@ define([
         ck.changeView(prev);
         choreo().play().actor(ck.wrapper[0], {
             'transform': 'translateX(0)'
-        }, 400, 'easeInOut').follow().done(function(){
+        }, 400, 'ease').follow().done(function(){
             current.hide().removeClass('moving');
             ck.enableControl();
             ck.sessionLocked = false;

@@ -8,6 +8,7 @@ require.config({
 });
 
 define('mo/lang/es5', [], function(){});
+define('mo/easing/functions', [], function(){});
 define('mo/mainloop', [], function(){});
 
 define('cardkit/env', [], function(){

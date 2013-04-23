@@ -8,7 +8,10 @@
  * Copyright (C) 2010-2012, Dexter.Yy, MIT License
  * vim: et:ts=4:sw=4:sts=4
  */
-define("mo/mainloop", ["./lang"], function(_){
+define("mo/mainloop", [
+    "./lang",
+    "./easing/base"
+], function(_, easing){
 
     var window = this,
         ANIMATE_FRAME = "RequestAnimationFrame",
@@ -25,25 +28,9 @@ define("mo/mainloop", ["./lang"], function(_){
         renderlib = {},
         stageLib = {},
 
-        _default_easing = {
-            linear: function(x, t, b, c) {
-                return b + c * x;
-            },
-            easeIn: function (x, t, b, c, d) {
-                return c*(t /= d)*t + b;
-            },
-            easeOut: function (x, t, b, c, d) {
-                return -c *(t /= d)*(t-2) + b;
-            },
-            easeInOut: function (x, t, b, c, d) {
-                if ((t /= d/2) < 1) return c/2*t*t + b;
-                return -c/2 * ((--t)*(t-2) - 1) + b;
-            }
-        },
-
         _default_config = {
             fps: 0,
-            easing: _default_easing
+            easing: _.copy(easing.functions)
         };
 
     function loop(timestamp){
@@ -64,9 +51,6 @@ define("mo/mainloop", ["./lang"], function(_){
             _.config(this, opt, _default_config);
             if (opt.fps) {
                 fps_limit = this.fps ? (1000/this.fps) : 0;
-            }
-            if (opt.easing) {
-                this.easing = _.mix(this.easing || {}, opt.easing);
             }
             return this;
         },
