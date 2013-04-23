@@ -6,7 +6,5 @@ syncdb_dumps.bak
 node_modules/
 .sass-cache/
 Gruntfile.js
-dist/
-!examples/dist/
-static/
+target/
 report/

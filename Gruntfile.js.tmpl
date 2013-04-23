@@ -7,8 +7,8 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         meta: {
+            targetDir: 'target',
             distDir: 'dist',
-            staticDir: 'static',
             examplesDir: 'examples',
             jsPublicDir: publicDir + '/static/js/<%= pkg.name %>',
             cssPublicDir: publicDir + '/static/css/<%= pkg.name %>',
@@ -16,9 +16,14 @@ module.exports = function(grunt) {
         },
 
         clean: {
-            dist: ["<%= meta.distDir %>"],
             test: ["<%= meta.examplesDir %>/dist"],
-            statics: ["<%= meta.staticDir %>"]
+            pub: [
+                "<%= meta.jsPublicDir %>", 
+                "<%= meta.cssPublicDir %>", 
+                "<%= meta.picsPublicDir %>"
+            ],
+            target: ["<%= meta.targetDir %>"],
+            dist: ["<%= meta.distDir %>"]
         },
 
         furnace: {
@@ -43,7 +48,7 @@ module.exports = function(grunt) {
                 src: 'js/main.js',
                 config: {
                     baseUrl: "js/mod/",
-                    distUrl: "<%= meta.distDir %>/js/mod/",
+                    distUrl: "<%= meta.targetDir %>/js/mod/",
                     loader: "../lib/oz.js",
                     disableAutoSuffix: true
                 }
@@ -62,8 +67,8 @@ module.exports = function(grunt) {
                 options: {
                     config: 'css/config.rb',
                     sassDir: 'css',
-                    cssDir: '<%= meta.distDir %>/css',
-                    imagesDir: '<%= meta.distDir %>/pics',
+                    cssDir: '<%= meta.targetDir %>/css',
+                    imagesDir: '<%= meta.targetDir %>/pics',
                     relativeAssets: true,
                     outputStyle: 'expanded',
                     noLineComments: false,
@@ -85,7 +90,7 @@ module.exports = function(grunt) {
                     optimizationLevel: 3
                 },
                 files: {
-                    '<%= meta.distDir %>/pics/': 'pics/**/*.{png,jpg}'
+                    '<%= meta.targetDir %>/pics/': 'pics/**/*.{png,jpg}'
                 }
             }
         },
@@ -96,38 +101,66 @@ module.exports = function(grunt) {
                 banner: '/*! <%= pkg.name %> - v<%= pkg.version %> */\n'
             },
             js_main: {
-                src: ['<%= meta.distDir %>/js/main.js'],
-                dest: '<%= meta.staticDir %>/js/main.src.js'
+                src: ['<%= meta.targetDir %>/js/main.js'],
+                dest: '<%= meta.distDir %>/js/main.js'
             },
             css_main: {
-                src: ['<%= meta.distDir %>/css/main.css'],
-                dest: '<%= meta.staticDir %>/css/main.src.css'
+                src: ['<%= meta.targetDir %>/css/main.css'],
+                dest: '<%= meta.distDir %>/css/main.css'
             }
         },
 
         uglify: {
             main: {
-                src: ['<%= concat.js_main.dest %>'],
-                dest: '<%= meta.staticDir %>/js/main.js'
+                files: [{
+                    expand: true,
+                    cwd: '<%= meta.targetDir %>/js/',
+                    src: ['**/*.js'],
+                    dest: '<%= meta.distDir %>/js/'
+                }]
             }
         },
 
         cssmin: {
             main: {
-                src: ['<%= concat.css_main.dest %>'],
-                dest: '<%= meta.staticDir %>/css/main.css'
+                files: [{
+                    expand: true,
+                    cwd: '<%= meta.targetDir %>/css/',
+                    src: ['**/*.css'],
+                    dest: '<%= meta.distDir %>/css/'
+                }]
             }
         },
 
         copy: {
+            target2examples: {
+                files: [{
+                    expand: true,
+                    cwd: '<%= meta.targetDir %>/',
+                    src: ['**'],
+                    dest: '<%= meta.examplesDir %>/dist/'
+                }]
+            },
             dist2examples: {
-                files: {
-                    "<%= meta.examplesDir %>/": [
-                        "<%= meta.distDir %>/js/**", 
-                        "<%= meta.distDir %>/css/**",
-                        "<%= meta.distDir %>/pics/**"
-                    ]
-                }
+                files: [{
+                    expand: true,
+                    cwd: '<%= meta.distDir %>/',
+                    src: ['**'],
+                    dest: '<%= meta.examplesDir %>/dist/'
+                }]
+            },
+            target2pub: {
+                files: [{
+                    expand: true,
+                    cwd: '<%= meta.targetDir %>/js/',
+                    src: ['**'],
+                    dest: '<%= meta.jsPublicDir %>/'
+                }, {
+                    expand: true,
+                    cwd: '<%= meta.targetDir %>/css/',
+                    src: ['**'],
+                    dest: '<%= meta.cssPublicDir %>/'
+                }]
             },
             dist2pub: {
                 files: [{
@@ -138,19 +171,6 @@ module.exports = function(grunt) {
                 }, {
                     expand: true,
                     cwd: '<%= meta.distDir %>/css/',
-                    src: ['**'],
-                    dest: '<%= meta.cssPublicDir %>/'
-                }]
-            },
-            static2pub: {
-                files: [{
-                    expand: true,
-                    cwd: '<%= meta.staticDir %>/js/',
-                    src: ['**'],
-                    dest: '<%= meta.jsPublicDir %>/'
-                }, {
-                    expand: true,
-                    cwd: '<%= meta.staticDir %>/css/',
                     src: ['**'],
                     dest: '<%= meta.cssPublicDir %>/'
                 }]
@@ -240,13 +260,8 @@ module.exports = function(grunt) {
                     'css/**/*.scss'
                 ],
                 tasks: [
-                    'clean:dist', 
-                    'clean:test', 
-                    'furnace:tpl', 
-                    'imagemin', 
-                    'ozma', 
-                    'compass', 
-                    'copy:dist2examples'
+                    'dev', 
+                    'devtest'
                 ]
             },
             pub: {
@@ -258,14 +273,10 @@ module.exports = function(grunt) {
                     'css/**/*.scss'
                 ],
                 tasks: [
-                    'clean:dist', 
-                    'clean:test', 
-                    'furnace:tpl', 
-                    'imagemin', 
-                    'ozma', 
-                    'compass', 
-                    'copy:dist2examples', 
-                    'copy:dist2pub'
+                    'dev', 
+                    'devtest',
+                    'clean:pub',
+                    'copy:target2pub'
                 ]
             }
         }
@@ -290,11 +301,24 @@ module.exports = function(grunt) {
     
     grunt.registerTask('dev', [
         'jshint',
-        'clean:dist',
-        'furnace:tpl',
-        'ozma',
-        'imagemin',
+        'clean:target', 
+        'clean:test', 
+        'furnace:tpl', 
+        'imagemin', 
+        'ozma', 
         'compass'
+    ]);
+
+    grunt.registerTask('devtest', [
+        'clean:test',
+        'copy:target2examples'
+    ]);
+
+    grunt.registerTask('publish', [
+        'clean:dist',
+        'concat',
+        'uglify', 
+        'cssmin'
     ]);
 
     grunt.registerTask('test', [
@@ -303,16 +327,14 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask('deploy', [
-        'clean:statics',
-        'concat',
-        'uglify', 
-        'cssmin'
+        'clean:pub',
+        'copy:dist2pub'
     ]);
 
     grunt.registerTask('default', [
         'dev',
-        'test',
-        'deploy'
+        'publish',
+        'test'
     ]);
 
 };
