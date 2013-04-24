@@ -818,7 +818,8 @@ define("../cardkit/supports", [
             && !browsers.crios 
             && !browsers.aosp,
 
-        OVERFLOWSCROLL: "webkitOverflowScrolling" in body.style,
+        OVERFLOWSCROLL: !browsers.aosp 
+            && "webkitOverflowScrolling" in body.style,
 
         SAFARI_TOPBAR: browsers.mobilesafari
 
@@ -6680,7 +6681,8 @@ define("../cardkit/app", [
         last_view_for_actions,
         gc_id = 0,
 
-        TPL_MASK = '<div class="ck-viewmask"></div>';
+        TPL_MASK = '<div class="ck-viewmask"></div>',
+        TPL_CARD_MASK = '<div class="ck-cardmask"></div>';
 
     _.mix(momoBase.Class.prototype, {
         bind: function(ev, handler, elm){
@@ -6940,11 +6942,16 @@ define("../cardkit/app", [
                     'background': '#0f0'
                 });
             }
+            this.cardMask = $(TPL_CARD_MASK).appendTo(body);
             this.headerHeight = this.header.height();
             this.sizeInited = false;
             this.viewportGarbage = {};
             this.sessionLocked = true;
             this.initWindow();
+
+            if (env.enableConsole) {
+                console.info(supports);
+            }
 
             this.scrollGesture = momoScroll(document);
             momoTap(document);
@@ -7013,14 +7020,19 @@ define("../cardkit/app", [
             //}).bind('scrollup', function(){
                 //ck.showTopbar();
             }).bind('scrollstart', function(){
-                ck.scrollMask.show();
+                if (supports.OVERFLOWSCROLL) {
+                    ck.scrollMask.show();
+                }
             }).bind('scrollend', function(){
-                ck.scrollMask.hide();
+                if (supports.OVERFLOWSCROLL) {
+                    ck.scrollMask.hide();
+                }
                 prevent_window_scroll();
             }).bind('scroll', function(){
                 if (modalCard.isOpened) {
                     var y = window.scrollY;
                     ck.hideAddressbar();
+                    window.scrollTo(0, 0);
                     if (y > 40) {
                         ck.viewport[0].scrollTop = ck.viewport[0].scrollTop + y - 40;
                     }
@@ -7467,13 +7479,19 @@ define("../cardkit/app", [
         }
         ck.disableControl();
         //ck.showTopbar();
+        choreo.transform(next[0], 'translateX', window.innerWidth + 'px');
         next.addClass('moving');
         ck.changeView(next);
-        choreo().play().actor(ck.wrapper[0], {
-            'transform': 'translateX(' + (0 - window.innerWidth) + 'px)'
+        ck.cardMask.css('opacity', 0).addClass('moving');
+        var moving = choreo().play();
+        moving.actor(ck.cardMask[0], {
+            'opacity': '0.8'
+        }, 400, 'ease');
+        moving.actor(next[0], {
+            'transform': 'translateX(0)'
         }, 400, 'ease').follow().done(function(){
             current.hide();
-            choreo.transform(ck.wrapper[0], 'translateX', '0');
+            ck.cardMask.removeClass('moving');
             next.removeClass('moving');
             ck.enableControl();
             ck.sessionLocked = false;
@@ -7507,14 +7525,20 @@ define("../cardkit/app", [
         //}
         ck.disableControl();
         //ck.showTopbar();
-        choreo.transform(ck.wrapper[0], 'translateX', 0 - window.innerWidth + 'px');
+        choreo.transform(current[0], 'translateX', '0px');
         current.addClass('moving');
-        prev.show();
         ck.changeView(prev);
-        choreo().play().actor(ck.wrapper[0], {
-            'transform': 'translateX(0)'
+        ck.cardMask.css('opacity', '0.8').addClass('moving');
+        var moving = choreo().play();
+        moving.actor(ck.cardMask[0], {
+            'opacity': '0'
+        }, 400, 'ease');
+        moving.play().actor(current[0], {
+            'transform': 'translateX(' + window.innerWidth + 'px)'
         }, 400, 'ease').follow().done(function(){
+            ck.cardMask.removeClass('moving');
             current.hide().removeClass('moving');
+            choreo.transform(current[0], 'translateX', '0px');
             ck.enableControl();
             ck.sessionLocked = false;
             if (prev_id === 'ckLoading') {
@@ -7602,6 +7626,9 @@ define("../cardkit/app", [
     }
 
     function prevent_window_scroll(){
+        if (!supports.SAFARI_TOPBAR) {
+            return;
+        }
         var vp = ck.viewport[0],
             bottom;
         if (vp.scrollTop < 1) {

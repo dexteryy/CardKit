@@ -271,7 +271,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-ozjs');
     
     grunt.registerTask('dev', [
-        'jshint:dev',
         'clean:target', 
         'clean:test', 
         'furnace:tpl', 

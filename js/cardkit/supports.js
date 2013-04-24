@@ -13,7 +13,8 @@ define([
             && !browsers.crios 
             && !browsers.aosp,
 
-        OVERFLOWSCROLL: "webkitOverflowScrolling" in body.style,
+        OVERFLOWSCROLL: !browsers.aosp 
+            && "webkitOverflowScrolling" in body.style,
 
         SAFARI_TOPBAR: browsers.mobilesafari
 

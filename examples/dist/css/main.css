@@ -322,10 +322,6 @@ a {
   top: 0;
   left: 0;
   z-index: 10;
-  -webkit-transform: translateX(100%);
-  -moz-transform: translateX(100%);
-  -ms-transform: translateX(100%);
-  transform: translateX(100%);
 }
 
 .ck-loading {
@@ -387,6 +383,22 @@ a {
 
 .no-overflow-scrolling .ck-card {
   overflow-y: scroll;
+}
+
+.ck-cardmask {
+  display: none;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  padding-bottom: 60px;
+  z-index: 9;
+}
+.ck-cardmask.moving {
+  display: block;
 }
 
 @-moz-keyframes loading-dot {
