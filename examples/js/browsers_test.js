@@ -58,6 +58,9 @@ require([
     console.run(function(){
         return document.defaultView.getComputedStyle(test[0], '').getPropertyValue('padding-top');
     });
+    console.run(function(){
+        return typeof function(){}.bind;
+    });
 
     momo.init(document);
 

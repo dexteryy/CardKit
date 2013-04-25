@@ -7,7 +7,7 @@ require.config({
     }
 });
 
-define('mo/lang/es5', [], function(){});
+//define('mo/lang/es5', [], function(){});
 define('mo/easing/functions', [], function(){});
 define('mo/mainloop', [], function(){});
 
@@ -30,10 +30,10 @@ require([
 
     if (env.enableConsole) {
         require(['mo/console'], function(console){
-            init();
             console.config({
                 output: $('#console')[0]
             }).enable();
+            init();
         });
     } else {
         init();

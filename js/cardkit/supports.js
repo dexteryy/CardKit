@@ -11,7 +11,9 @@ define([
     
         HISTORY: 'pushState' in history
             && !browsers.crios 
-            && !browsers.aosp,
+            && !browsers.aosp
+            && !(browsers.engine === 'webkit' 
+                || parseInt(browsers.engineversion, 10) < 536), // ios5
 
         OVERFLOWSCROLL: !browsers.aosp 
             && "webkitOverflowScrolling" in body.style,
@@ -20,7 +22,8 @@ define([
 
     };
 
-    exports.PREVENT_CACHE = !exports.HISTORY && browsers.aosp;
+    exports.PREVENT_CACHE = !exports.HISTORY 
+        && (browsers.aosp || browsers.mobilesafari);
 
     return exports;
 
