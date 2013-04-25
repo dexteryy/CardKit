@@ -818,7 +818,7 @@ define("../cardkit/supports", [
             && !browsers.crios 
             && !browsers.aosp
             && !(browsers.engine === 'webkit' 
-                || parseInt(browsers.engineversion, 10) < 536), // ios5
+                && parseInt(browsers.engineversion, 10) < 536), // ios5
 
         OVERFLOWSCROLL: !browsers.aosp 
             && "webkitOverflowScrolling" in body.style,
