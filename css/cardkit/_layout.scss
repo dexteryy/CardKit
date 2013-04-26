@@ -54,10 +54,11 @@ a {
     -webkit-tap-highlight-color: rgba(0,0,0,0);
   }
 
-  $top_btn_space: 8px;
+  $top_btn_space: 1px;
 
   .opt {
     display:block;
+    line-height:1;
     position:absolute;
     top:$top_btn_space;
     left:$top_btn_space;
@@ -117,7 +118,12 @@ a {
       background:#fff;
       @include background(linear-gradient(bottom, #78624f, #846f5b));
       background-size:24px;
+      background-repeat:no-repeat;
+      background-position:7px 7px;
       border:1px solid transparent;
+      &:active {
+          @include box-shadow(inset 0 2px 4px rgba(0,0,0,.1), 0 1px 0 rgba(255,255,255,.1));
+      }
     }
     .ck-top-nav .btn {
       background-image:inline-image('menu.png');
