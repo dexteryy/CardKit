@@ -835,7 +835,7 @@ a {
   line-height: 15px;
   margin: 0 0 10px 0;
 }
-.ck-form-unit .ck-item input[type="text"], .ck-form-unit .ck-item input[type="number"], .ck-form-unit .ck-item textarea {
+.ck-form-unit .ck-item input[type="text"], .ck-form-unit .ck-item input[type="number"], .ck-form-unit .ck-item input[type="password"], .ck-form-unit .ck-item textarea {
   font-size: 13px;
   color: #787878;
   text-indent: 10px;
