@@ -92,10 +92,11 @@
 
 }
 
-.no-overflow-scrolling {
+.no-overflowscroll {
   
   .ck-card {
-    overflow-y:scroll;
+    -webkit-overflow-scrolling: auto;
+    overflow-y:visible;
   }
 
 }

@@ -50,7 +50,7 @@ define([
         return origin_set.call(this, opt);
     };
     
-    if (supports.HISTORY) {
+    if (supports.OVERFLOWSCROLL) {
         modalCard.ok = modalCard.done = function(){
             if (!history.state) {
                 history.go(-2);

@@ -810,25 +810,33 @@ define("../cardkit/supports", [
     var window = this,
         history = window.history,
         document = window.document,
-        body = document.body;
+        body = document.body,
+        is_ios5 = browsers.engine === 'webkit' 
+            && parseInt(browsers.engineversion, 10) < 536,
+        is_desktop = browsers.os === 'mac'
+            || browsers.os === 'windows'
+            || browsers.os === 'linux';
 
     var exports = {
     
         HISTORY: 'pushState' in history
             && !browsers.crios 
             && !browsers.aosp
-            && !(browsers.engine === 'webkit' 
-                && parseInt(browsers.engineversion, 10) < 536), // ios5
+            && !is_ios5,
 
-        OVERFLOWSCROLL: !browsers.aosp 
-            && "webkitOverflowScrolling" in body.style,
+        SAFARI_OVERFLOWSCROLL: "webkitOverflowScrolling" in body.style,
 
-        SAFARI_TOPBAR: browsers.mobilesafari
+        SAFARI_TOPBAR: !!browsers.mobilesafari
 
     };
 
     exports.PREVENT_CACHE = !exports.HISTORY 
-        && (browsers.aosp || browsers.mobilesafari);
+        && !!(browsers.aosp || browsers.mobilesafari);
+
+    exports.OVERFLOWSCROLL = exports.HISTORY
+        && !browsers.aosp 
+        && !is_ios5
+        && !is_desktop;
 
     return exports;
 
@@ -1485,8 +1493,11 @@ define("dollar/origin", [
                 return selector;
             } else if (typeof selector !== 'string') {
                 var nodes = new $();
-                _array_push[selector.push === _array_push 
-                    ? 'apply' : 'call'](nodes, selector);
+                if (selector.push === _array_push || selector[0]) {
+                    _array_push.apply(nodes, _array_slice.call(selector));
+                } else {
+                    _array_push.call(nodes, selector);
+                }
                 return nodes;
             } else {
                 selector = selector.trim();
@@ -1612,15 +1623,19 @@ define("dollar/origin", [
         prevUntil: find_sibs(PREV_SIB, false, true),
 
         children: function(){
-            return _.merge.apply(_, this.map(function(node){
-                return this(node.children);
-            }, $));
+            var r = new $();
+            this.forEach(function(node){
+                this(r, $(node.children));
+            }, _.merge);
+            return r;
         },
 
         contents: function(){
-            return _.merge.apply(_, this.map(function(node){
-                return this(node.childNodes);
-            }, $));
+            var r = new $();
+            this.forEach(function(node){
+                this(r, $(node.childNodes));
+            }, _.merge);
+            return r;
         },
 
         // Detection
@@ -5515,16 +5530,17 @@ define("../cardkit/view/actionview", [
         var eprops = {
             component: view
         };
-        view.event.bind('open', function(view){
+        view.event.bind('prepareOpen', function(view){
             exports.current = view;
+            bus.fire('actionView:prepareOpen', [view]);
+        }).bind('cancelOpen', function(view){
+            exports.current = null;
+            bus.fire('actionView:cancelOpen', [view]);
+        }).bind('open', function(view){
             bus.fire('actionView:open', [view]);
             if (elm) {
                 elm.trigger('actionView:open', eprops);
             }
-        }).bind('prepareOpen', function(view){
-            bus.fire('actionView:prepareOpen', [view]);
-        }).bind('cancelOpen', function(view){
-            bus.fire('actionView:cancelOpen', [view]);
         }).bind('close', function(){
             exports.current = null;
             bus.fire('actionView:close', [view]);
@@ -6030,7 +6046,7 @@ define("../cardkit/view/modalcard", [
         return origin_set.call(this, opt);
     };
     
-    if (supports.HISTORY) {
+    if (supports.OVERFLOWSCROLL) {
         modalCard.ok = modalCard.done = function(){
             if (!history.state) {
                 history.go(-2);
@@ -7026,44 +7042,84 @@ define("../cardkit/app", [
         ck.viewportGarbage[com.parentId] = 1;
     }
 
+    bus.bind('cardkit:updateSize', function(){
+        if (modalCard.isOpened) {
+            var current = modalCard._contentWrapper;
+            var h = window.innerHeight * 2;
+            if (modalCard._iframeContent) {
+                modalCard._iframeContent.css({
+                    minHeight: h + 'px',
+                    width: current[0].offsetWidth + 'px',
+                    height: current[0].offsetHeight - ck.headerHeight + 'px'
+                });
+            }
+            modalCard._content.css('minHeight', h + 'px');
+        }
+        var actionCard = actionView.current;
+        if (actionCard) {
+            var wh = window.innerHeight + 10,
+                h = actionCard._wrapperContent.children().map(function(node){
+                    return node.offsetHeight || 0;
+                }).reduce(function(a, b){
+                    return a + b;
+                }) + parseFloat(actionCard._wrapperContent
+                    .find('article').eq(0).css('bottom'));
+            if (h < wh) {
+                h = wh;
+            }
+            actionCard._wrapperContent.css({
+                minHeight: h + 'px'
+            });
+            actionCard._node.css({
+                height: h + 'px'
+            });
+        }
+    });
+
     modalCard.event.bind('prepareOpen', function(){
         ck.disableView = true;
-        $(body).addClass('bg').addClass('modal-view');
+        if (!supports.OVERFLOWSCROLL) {
+            window.scrollTo(0, 0);
+        } else {
+            $(body).addClass('bg').addClass('modal-view');
+        }
     }).bind('cancelOpen', function(){
         ck.disableView = false;
         $(body).removeClass('bg').removeClass('modal-view');
     }).bind('open', function(){
+        if (!supports.OVERFLOWSCROLL) {
+            $(body).addClass('bg').addClass('modal-view');
+        }
         var current = modalCard._contentWrapper;
         last_view_for_modal = ck.viewport;
         ck.changeView(current, { 
             isModal: true 
         });
-        var h = current[0].offsetHeight*2;
         if (modalCard._iframeContent) {
-            modalCard._iframeContent.css({
-                minHeight: h + 'px',
-                width: current[0].offsetWidth + 'px',
-                height: current[0].offsetHeight - ck.headerHeight + 'px'
-            });
             modalCard.event.done('frameOnload', function(){
                 var iframe_body = $(modalCard._iframeWindow[0].document.body);
                 iframe_body.bind('touchstart', prevent_window_scroll);
                 ck.initView(iframe_body, {
                     isModal: true
                 });
-                ck.enableControl();
+                setTimeout(function(){
+                    ck.enableControl();
+                }, 400);
             });
         } else if (!modalCard._content.html()) { // @TODO 换更靠谱的方法
             modalCard.event.done('contentchange', function(){
                 ck.initView(current, {
                     isModal: true
                 });
-                ck.enableControl();
+                setTimeout(function(){
+                    ck.enableControl();
+                }, 400);
             });
         } else {
-            ck.enableControl();
+            setTimeout(function(){
+                ck.enableControl();
+            }, 400);
         }
-        modalCard._content.css('minHeight', h + 'px');
     }).bind('prepareClose', function(){
         ck.disableView = false;
         $(body).removeClass('modal-view');
@@ -7081,19 +7137,19 @@ define("../cardkit/app", [
         ck.disableView = true;
         var current = actionCard._wrapper;
         last_view_for_actions = ck.viewport;
-        ck.changeView(current, { 
-            isModal: true 
+        ck.changeView(current, {
+            preventRender: true,
+            isActions: true
         });
-        var h = current[0].offsetHeight;
-        actionCard._wrapperContent.css({
-            height: h + 'px'
-        });
-        actionCard._node.css({
-            height: h + 'px'
-        });
+        if (!supports.OVERFLOWSCROLL) {
+            $(body).addClass('bg');
+        }
     }).bind('actionView:cancelOpen', function(){
         if (!modalCard.isOpened) {
             ck.disableView = false;
+        }
+        if (!supports.OVERFLOWSCROLL) {
+            $(body).removeClass('bg');
         }
         ck.changeView(last_view_for_actions, {
             preventRender: modalCard.isOpened,
@@ -7103,7 +7159,9 @@ define("../cardkit/app", [
         if (!modalCard.isOpened) {
             ck.disableView = false;
         }
-        console.info("log: ", 1, last_view_for_actions); // log
+        if (!supports.OVERFLOWSCROLL) {
+            $(body).removeClass('bg');
+        }
         ck.changeView(last_view_for_actions, {
             preventRender: modalCard.isOpened,
             isModal: modalCard.isOpened
@@ -7118,6 +7176,7 @@ define("../cardkit/app", [
 
         init: function(opt){
             var root = this.root = opt.root;
+            var doc = $(document);
             this.wrapper = $('.ck-wrapper', root);
             this.header = $('.ck-header', root);
             this.footer = $('.ck-footer', root);
@@ -7133,10 +7192,10 @@ define("../cardkit/app", [
             }
             this.controlMask = $(TPL_MASK).appendTo(body);
             if (env.showControlMask) {
-                this.controlMask.css({
-                    'opacity': '0.2',
-                    'background': '#0f0'
-                });
+                //this.controlMask.css({
+                    //'opacity': '0.2',
+                    //'background': '#0f0'
+                //});
             }
             this.cardMask = $(TPL_CARD_MASK).appendTo(body);
             this.headerHeight = this.header.height();
@@ -7153,7 +7212,7 @@ define("../cardkit/app", [
             momoTap(document);
 
             if (!supports.OVERFLOWSCROLL) {
-                $(body).addClass('no-overflow-scrolling');
+                $(body).addClass('no-overflowscroll');
             }
             if (supports.SAFARI_TOPBAR) {
                 $(body).addClass('mobilesafari-bar');
@@ -7200,7 +7259,7 @@ define("../cardkit/app", [
                 }
             });
 
-            $(document).bind('scrolldown', function(){
+            doc.bind('scrolldown', function(){
                 if (topbar_holded) {
                     return;
                 }
@@ -7215,29 +7274,35 @@ define("../cardkit/app", [
                 //}
             //}).bind('scrollup', function(){
                 //ck.showTopbar();
-            }).bind('scrollstart', function(){
-                if (supports.OVERFLOWSCROLL) {
-                    ck.scrollMask.show();
-                }
-            }).bind('scrollend', function(){
-                if (supports.OVERFLOWSCROLL) {
-                    ck.scrollMask.hide();
-                }
-                prevent_window_scroll();
-            }).bind('scroll', function(){
-                if (modalCard.isOpened) {
-                    var y = window.scrollY;
-                    ck.hideAddressbar();
-                    window.scrollTo(0, 0);
-                    if (y > 40) {
-                        ck.viewport[0].scrollTop = ck.viewport[0].scrollTop + y - 40;
-                    }
-                }
             });
+            
+            if (supports.OVERFLOWSCROLL 
+                    && supports.SAFARI_OVERFLOWSCROLL) {
 
-            $(document).bind('touchstart', prevent_window_scroll);
+                doc.bind('scrollstart', function(){
+                    ck.scrollMask.show();
+                }).bind('scrollend', function(){
+                    ck.scrollMask.hide();
+                    prevent_window_scroll();
+                });
 
-            if (supports.SAFARI_TOPBAR) {
+                doc.bind('scroll', function(){
+                    if (modalCard.isOpened) {
+                        var y = window.scrollY;
+                        ck.hideAddressbar();
+                        window.scrollTo(0, 0);
+                        if (y > 40) {
+                            ck.viewport[0].scrollTop = ck.viewport[0].scrollTop + y - 40;
+                        }
+                    }
+                });
+
+                doc.bind('touchstart', prevent_window_scroll);
+
+            }
+
+            if (supports.SAFARI_TOPBAR 
+                    && supports.OVERFLOWSCROLL) {
 
                 var startY,
                     hold_timer,
@@ -7286,7 +7351,7 @@ define("../cardkit/app", [
 
             var travel_history, restore_state, restore_modal;
 
-            if (supports.HISTORY) {
+            if (supports.OVERFLOWSCROLL) {
                 $(window).bind("popstate", function(e){
                     // alert(['pop', e.state && [e.state.prev, e.state.next].join('-'), ck.viewport && ck.viewport[0].id].join(', '))
                     if (ck.sessionLocked) {
@@ -7401,7 +7466,7 @@ define("../cardkit/app", [
         initView: function(card, opt){
             if (!card.data('rendered') && !opt.preventRender) {
                 render.initCard(card, this.raw, this.footer, opt);
-                if (!opt.isModal) {
+                if (!opt.isModal && !opt.isActions) {
                     card.data('rendered', '1');
                 }
                 card.find('.ck-mini-unit').forEach(function(unit){
@@ -7435,9 +7500,9 @@ define("../cardkit/app", [
             this.initView(card, opt);
             this.viewport = card.show();
             if (!is_loading) {
-                this.updateSize();
+                this.updateSize(opt);
             }
-            if (!opt.isModal) {
+            if (!opt.isModal && !opt.isActions) {
                 this.updateHeader();
             }
             sessionStorage['ck_lasturl'] = location.href;
@@ -7448,20 +7513,24 @@ define("../cardkit/app", [
             }
         },
 
-        updateSize: function(){
-            this.viewport[0].style.height = (this.sizeInited ? 
-                window.innerHeight : (screen.availHeight + 60)) + 'px';
-            // enable scrollable when height is not enough 
-            var ft = this.viewport.find('.ck-footer'),
-                last_unit = ft && ft.prev()[0];
-            if (last_unit) {
-                var d = screen.availHeight - (last_unit.offsetTop + last_unit.offsetHeight + this.viewport[0].scrollTop);
-                if (d > 0) {
-                    ft.css('paddingTop', d + 'px');
-                } else {
-                    ft.css('paddingTop', '0px');
+        updateSize: function(opt){
+            opt = opt || {};
+            if (supports.OVERFLOWSCROLL || opt.isActions) {
+                this.viewport[0].style.height = (this.sizeInited ? 
+                    window.innerHeight : (screen.availHeight + 60)) + 2 + 'px';
+                // enable scrollable when height is not enough 
+                var ft = this.viewport.find('.ck-footer'),
+                    last_unit = ft && ft.prev()[0];
+                if (last_unit) {
+                    var d = screen.availHeight - (last_unit.offsetTop + last_unit.offsetHeight + this.viewport[0].scrollTop);
+                    if (d > 0) {
+                        ft.css('paddingTop', d + 'px');
+                    } else {
+                        ft.css('paddingTop', '0px');
+                    }
                 }
             }
+            bus.fire('cardkit:updateSize');
         },
 
         watchScroll: function(card){
@@ -7513,17 +7582,18 @@ define("../cardkit/app", [
 
         hideAddressbar: function(){
             if (this.windowFullHeight > window.innerHeight) {
-                if (!this.sizeInited) {
-                    this.sizeInited = true;
-                }
                 this.loadingCard.find('div')[0].style.visibility = 'hidden';
-                if (supports.SAFARI_TOPBAR) {
+                if (supports.SAFARI_TOPBAR 
+                        && (supports.OVERFLOWSCROLL || !this.sizeInited)) {
                     window.scrollTo(0, 1);
                     //if (screen.availHeight - ck.viewport[0].offsetHeight 
                             //> ck.headerHeight + 10) {
                         //location.reload();
                         //return;
                     //}
+                }
+                if (!this.sizeInited) {
+                    this.sizeInited = true;
                 }
                 this.windowFullHeight = window.innerHeight;
                 ck.updateSize();
@@ -7662,7 +7732,7 @@ define("../cardkit/app", [
                 return;
             }
         }
-        if (supports.PREVENT_CACHE && next === ck.loadingCard) {
+        if (!supports.OVERFLOWSCROLL && next === ck.loadingCard) {
             if (true_link) {
                 location.href = true_link;
             }
@@ -7675,6 +7745,17 @@ define("../cardkit/app", [
         }
         ck.disableControl();
         //ck.showTopbar();
+        if (!supports.OVERFLOWSCROLL) {
+            ck.loadingCard.addClass('moving').show();
+            setTimeout(function(){
+                ck.changeView(next);
+                current.hide();
+                ck.loadingCard.hide().removeClass('moving');
+                ck.enableControl();
+                ck.sessionLocked = false;
+            }, 400);
+            return;
+        }
         choreo.transform(next[0], 'translateX', window.innerWidth + 'px');
         next.addClass('moving');
         ck.changeView(next);
@@ -7692,7 +7773,7 @@ define("../cardkit/app", [
             ck.enableControl();
             ck.sessionLocked = false;
             if (true_link) {
-                if (is_forward && supports.HISTORY) {
+                if (is_forward) {
                     history.forward();
                 } else {
                     clear_footprint();
@@ -7747,7 +7828,7 @@ define("../cardkit/app", [
     }
 
     function push_history(prev_id, next_id, link, opt){
-        if (supports.HISTORY) {
+        if (supports.OVERFLOWSCROLL) {
             history.pushState({
                 prev: prev_id,
                 next: next_id,
@@ -7822,7 +7903,7 @@ define("../cardkit/app", [
     }
 
     function prevent_window_scroll(){
-        if (!supports.SAFARI_TOPBAR) {
+        if (!supports.SAFARI_TOPBAR || !supports.OVERFLOWSCROLL) {
             return;
         }
         var vp = ck.viewport[0],

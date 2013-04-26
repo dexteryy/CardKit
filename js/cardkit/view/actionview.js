@@ -30,16 +30,17 @@ define([
         var eprops = {
             component: view
         };
-        view.event.bind('open', function(view){
+        view.event.bind('prepareOpen', function(view){
             exports.current = view;
+            bus.fire('actionView:prepareOpen', [view]);
+        }).bind('cancelOpen', function(view){
+            exports.current = null;
+            bus.fire('actionView:cancelOpen', [view]);
+        }).bind('open', function(view){
             bus.fire('actionView:open', [view]);
             if (elm) {
                 elm.trigger('actionView:open', eprops);
             }
-        }).bind('prepareOpen', function(view){
-            bus.fire('actionView:prepareOpen', [view]);
-        }).bind('cancelOpen', function(view){
-            bus.fire('actionView:cancelOpen', [view]);
         }).bind('close', function(){
             exports.current = null;
             bus.fire('actionView:close', [view]);

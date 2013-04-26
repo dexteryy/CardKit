@@ -3580,8 +3580,11 @@ define("dollar/origin", [
                 return selector;
             } else if (typeof selector !== 'string') {
                 var nodes = new $();
-                _array_push[selector.push === _array_push 
-                    ? 'apply' : 'call'](nodes, selector);
+                if (selector.push === _array_push || selector[0]) {
+                    _array_push.apply(nodes, _array_slice.call(selector));
+                } else {
+                    _array_push.call(nodes, selector);
+                }
                 return nodes;
             } else {
                 selector = selector.trim();
@@ -3707,15 +3710,19 @@ define("dollar/origin", [
         prevUntil: find_sibs(PREV_SIB, false, true),
 
         children: function(){
-            return _.merge.apply(_, this.map(function(node){
-                return this(node.children);
-            }, $));
+            var r = new $();
+            this.forEach(function(node){
+                this(r, $(node.children));
+            }, _.merge);
+            return r;
         },
 
         contents: function(){
-            return _.merge.apply(_, this.map(function(node){
-                return this(node.childNodes);
-            }, $));
+            var r = new $();
+            this.forEach(function(node){
+                this(r, $(node.childNodes));
+            }, _.merge);
+            return r;
         },
 
         // Detection
@@ -4936,6 +4943,21 @@ require([
 
     console.run(function(){
         return test[0].dataset.a;
+    });
+    console.run(function(){
+        return Array.prototype.push.apply([], test);
+    });
+    console.run(function(){
+        return Array.prototype.push.apply($(), test);
+    });
+    console.run(function(){
+        return Array.prototype.push.apply([], test[0].children);
+    });
+    console.run(function(){
+        return Array.prototype.slice.call(test[0].children);
+    });
+    console.run(function(){
+        return Array.prototype.push.apply([], Array.prototype.slice.call(test[0].children));
     });
     console.run(function(){
         return test[0].getAttribute('data-a');

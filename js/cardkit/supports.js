@@ -5,25 +5,33 @@ define([
     var window = this,
         history = window.history,
         document = window.document,
-        body = document.body;
+        body = document.body,
+        is_ios5 = browsers.engine === 'webkit' 
+            && parseInt(browsers.engineversion, 10) < 536,
+        is_desktop = browsers.os === 'mac'
+            || browsers.os === 'windows'
+            || browsers.os === 'linux';
 
     var exports = {
     
         HISTORY: 'pushState' in history
             && !browsers.crios 
             && !browsers.aosp
-            && !(browsers.engine === 'webkit' 
-                && parseInt(browsers.engineversion, 10) < 536), // ios5
+            && !is_ios5,
 
-        OVERFLOWSCROLL: !browsers.aosp 
-            && "webkitOverflowScrolling" in body.style,
+        SAFARI_OVERFLOWSCROLL: "webkitOverflowScrolling" in body.style,
 
-        SAFARI_TOPBAR: browsers.mobilesafari
+        SAFARI_TOPBAR: !!browsers.mobilesafari
 
     };
 
     exports.PREVENT_CACHE = !exports.HISTORY 
-        && (browsers.aosp || browsers.mobilesafari);
+        && !!(browsers.aosp || browsers.mobilesafari);
+
+    exports.OVERFLOWSCROLL = exports.HISTORY
+        && !browsers.aosp 
+        && !is_ios5
+        && !is_desktop;
 
     return exports;
 

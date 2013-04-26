@@ -47,6 +47,21 @@ require([
         return test[0].dataset.a;
     });
     console.run(function(){
+        return Array.prototype.push.apply([], test);
+    });
+    console.run(function(){
+        return Array.prototype.push.apply($(), test);
+    });
+    console.run(function(){
+        return Array.prototype.push.apply([], test[0].children);
+    });
+    console.run(function(){
+        return Array.prototype.slice.call(test[0].children);
+    });
+    console.run(function(){
+        return Array.prototype.push.apply([], Array.prototype.slice.call(test[0].children));
+    });
+    console.run(function(){
         return test[0].getAttribute('data-a');
     });
     console.run(function(){
