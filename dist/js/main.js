@@ -3690,7 +3690,9 @@ define("choreo", [
             true_prop = prefix ? ('-' + prefix + '-' + prop) : prop;
             if (css_method(true_prop) in test_elm.style) {
                 lib[prop] = true_prop;
-                TRANSIT_EVENT = EVENT_NAMES[prefix];
+                if (!TRANSIT_EVENT && prop === 'transition') {
+                    TRANSIT_EVENT = EVENT_NAMES[prefix];
+                }
                 succ = true;
                 continue;
             }
@@ -7230,6 +7232,10 @@ define("../cardkit/app", [
                 if (current !== ck.landscapeMode) {
                     ck.initWindow();
                     ck.hideAddressbar(); // @TODO 无效
+                    if (actionView.current 
+                            && !supports.OVERFLOWSCROLL) {
+                        ck.viewport[0].innerHTML = ck.viewport[0].innerHTML;
+                    }
                 }
             });
 

@@ -374,6 +374,10 @@ define([
                 if (current !== ck.landscapeMode) {
                     ck.initWindow();
                     ck.hideAddressbar(); // @TODO 无效
+                    if (actionView.current 
+                            && !supports.OVERFLOWSCROLL) {
+                        ck.viewport[0].innerHTML = ck.viewport[0].innerHTML;
+                    }
                 }
             });
 
