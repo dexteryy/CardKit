@@ -222,17 +222,18 @@ a {
 }
 .ck-header .opt, .ck-modalview > header .opt {
   display: block;
+  line-height: 1;
   position: absolute;
-  top: 8px;
-  left: 8px;
+  top: 1px;
+  left: 1px;
 }
 .ck-header .ck-top-action, .ck-modalview > header .ck-top-action {
   left: auto;
-  right: 8px;
+  right: 1px;
 }
 .ck-header .ck-top-create, .ck-modalview > header .ck-top-create {
   left: auto;
-  right: 48px;
+  right: 43px;
 }
 
 .ck-top-title, .ck-modalview > header h1 {
@@ -283,14 +284,21 @@ a {
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
-  width: 24px;
-  height: 24px;
+  width: 40px;
+  height: 40px;
   background: #fff;
   background: -webkit-linear-gradient(bottom, #78624f, #846f5b);
   background: -moz-linear-gradient(bottom, #78624f, #846f5b);
   background: linear-gradient(bottom, #78624f, #846f5b);
   background-size: 24px;
+  background-repeat: no-repeat;
+  background-position: 7px 7px;
   border: 1px solid transparent;
+}
+.ck-root .ck-header .btn:active, .ck-root .ck-modalview > header .btn:active {
+  -webkit-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 1px 0 rgba(255, 255, 255, 0.1);
+  -moz-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 .ck-root .ck-header .ck-top-nav .btn, .ck-root .ck-modalview > header .ck-top-nav .btn {
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAADFBMVEUAAAD///8AAAD////IZVEZAAAABHRSTlMAAFqzoa8xcgAAAClJREFUKM9jCEUCDFTm1P+Hgr9U52StgoKVSJY6MJLJGXUoDodSPVEAAN65RTMMRcUhAAAAAElFTkSuQmCC');
@@ -374,7 +382,7 @@ body.no-overflowscroll.modal-view .ck-wrapper {
   display: none;
 }
 .ck-card.moving {
-  position: absolute !important;
+  position: absolute!important;
   top: 0;
   left: 0;
   z-index: 10;
@@ -884,7 +892,7 @@ body.no-overflowscroll.modal-view .ck-wrapper {
   line-height: 15px;
   margin: 0 0 10px 0;
 }
-.ck-form-unit .ck-item input[type="text"], .ck-form-unit .ck-item input[type="number"], .ck-form-unit .ck-item textarea {
+.ck-form-unit .ck-item input[type="text"], .ck-form-unit .ck-item input[type="number"], .ck-form-unit .ck-item input[type="password"], .ck-form-unit .ck-item textarea {
   font-size: 13px;
   color: #787878;
   text-indent: 10px;
@@ -1086,7 +1094,7 @@ body.no-overflowscroll.modal-view .ck-wrapper {
 }
 
 .moui-actions li, .ck-actions li {
-  border-bottom: 1px solid #000;
+  border-bottom: 1px solid black;
   opacity: 0.8;
 }
 .moui-actions li a, .ck-actions li a {
@@ -1120,7 +1128,7 @@ body.no-overflowscroll.modal-view .ck-wrapper {
   background: #fff;
   padding: 0 5px;
   margin: 0 15px 0 0;
-  border-right: 1px solid #B2B2B2;
+  border-right: 1px solid #b2b2b2;
   font-size: 13px;
   font-weight: normal;
 }
@@ -1320,7 +1328,7 @@ body.no-overflowscroll.modal-view .ck-wrapper {
   line-height: 42.5px;
   display: block;
   color: #fff;
-  border-bottom: 1px solid #666;
+  border-bottom: 1px solid #666666;
 }
 .moui-actionview .wrapper .content > header h1:empty, .ck-actionview .wrapper .content > header h1:empty {
   border: none;
@@ -1357,7 +1365,7 @@ body.no-overflowscroll.modal-view .ck-wrapper {
   position: fixed;
   bottom: 0;
   left: 0;
-  border-top: 1px solid #000;
+  border-top: 1px solid black;
   background: rgba(13, 13, 13, 0.95);
   -webkit-box-shadow: inset 0px 1px 0px #212121;
   -moz-box-shadow: inset 0px 1px 0px #212121;

@@ -513,7 +513,7 @@
       margin:0 0 $space 0;
     }
 
-    input[type="text"], input[type="number"], textarea {
+    input[type="text"], input[type="number"], input[type="password"], textarea {
       font-size:$title_size;
       color:$desc_color;
       text-indent:10px;
