@@ -112,7 +112,12 @@ a {
     }
 
     .btn {
-      @extend %block;
+      display:inline-block;
+      margin:0;
+      padding:0;
+      text-decoration:none;
+      @include user-select(none);
+
       width:$top_btn_size;
       height:$top_btn_size;
       background:#fff;
@@ -125,15 +130,19 @@ a {
           @include box-shadow(inset 0 2px 4px rgba(0,0,0,.1), 0 1px 0 rgba(255,255,255,.1));
       }
     }
+
     .ck-top-nav .btn {
       background-image:inline-image('menu.png');
     }
+
     .ck-top-action .btn {
       background-image:inline-image('more.png');
     }
+
     .ck-top-create .btn {
       background-image:inline-image('compose.png');
     }
+
     .ck-top-create .btn.reply {
       background-image:inline-image('reply.png');
     }

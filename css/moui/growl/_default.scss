@@ -7,25 +7,25 @@
   right:$space*3;
   z-index: $zindex_overlay + $zindex_step*5;
   margin-top:0 - $space*2;
-  padding:$space;
-  background:#000;
+  padding:(28px/2);
+  background:rgba(13,13,13,0.95);
   opacity:0;
   color:#fff;
   font-size:$headtitle_size;
   text-align:center;
-  @include border-radius(5px);
+  @include border-radius($radius);
   @include user-select(none);
-  @include transition(opacity 0.3s ease-out);
 
   &.corner-center {
+    @include transform(scale(0));
+    @include transition(transform 0.3s cubic-bezier(0.175, 0.885, 0.320, 1.275));
   }
 
   &.corner-bottom {
     top:auto;
-    bottom:-$space;
-    padding:$space/2;
+    bottom:-(80px/2);
     font-size: $title_size;
-    @include transition(bottom 0.3s ease-out, opacity 0.3s ease-out);
+    @include transition(bottom 0.3s cubic-bezier(0.175, 0.885, 0.320, 1.275));
   }
 
   &.rendered {
@@ -33,7 +33,11 @@
   }
 
   &.active {
-    opacity:0.8;
+    opacity:1;
+
+    &.corner-center {
+      @include transform(scale(1));
+    }
 
     &.corner-bottom {
       bottom:$space;

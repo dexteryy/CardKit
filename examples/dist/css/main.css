@@ -55,7 +55,9 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   display: block;
 }
 
-.ckbase-btn, .ck-post-button, .ck-modal-button, .ck-actions-button, .ck-growl-button, .moui-segment .option, .ck-segment .option, .ck-segment .ck-option, .moui-modalview .wrapper > header button.confirm, .ck-modalview .wrapper > header button.confirm, .moui-modalview .wrapper > header button.cancel, .ck-modalview .wrapper > header button.cancel, .moui-actionview > footer button, .ck-actionview > footer button, .ck-root .ck-header .btn, .ck-root .ck-modalview > header .btn, .moui-switch, .ck-switch, .moui-switch .block, .ck-switch .block {
+.ckbase-btn, .ck-post-button, .ck-modal-button, .ck-actions-button, .ck-growl-button, .moui-segment .option, .ck-segment .option, .ck-segment .ck-option, .moui-modalview .wrapper > header button.confirm, .ck-modalview .wrapper > header button.confirm, .moui-modalview .wrapper > header button.cancel, .ck-modalview .wrapper > header button.cancel, .moui-actionview > footer button, .ck-actionview > footer button, .moui-switch, .ck-switch, .moui-switch .block, .ck-switch .block, .moui-switch .enable-text, .ck-switch .enable-text,
+.moui-switch .disable-text,
+.ck-switch .disable-text, .moui-select, .ck-select {
   display: inline-block;
   width: 80px;
   height: 29px;
@@ -66,52 +68,83 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   -moz-user-select: none;
   user-select: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  background-color: #81858b;
-  background-image: -webkit-linear-gradient(bottom, #cccccc, #ffffff);
-  background-image: -moz-linear-gradient(bottom, #cccccc, #ffffff);
-  background-image: linear-gradient(bottom, #cccccc, #ffffff);
-  border: solid 1px #bcbcbc;
+  background-color: #ececec;
+  background-image: -webkit-linear-gradient(bottom, #e2e2e2, #ececec);
+  background-image: -moz-linear-gradient(bottom, #e2e2e2, #ececec);
+  background-image: linear-gradient(bottom, #e2e2e2, #ececec);
+  border: solid 1px rgba(0, 0, 0, 0.3);
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   -ms-border-radius: 3px;
   border-radius: 3px;
-  line-height: 26px;
-  font-size: 13px;
+  -webkit-box-shadow: inset 0 1px 0px white;
+  -moz-box-shadow: inset 0 1px 0px white;
+  box-shadow: inset 0 1px 0px white;
+  line-height: 29px;
+  font-size: 15px;
   font-weight: bold;
   color: #252525;
   text-align: center;
-  text-shadow: 0 1px white;
+  text-shadow: 0 1px 1px white;
 }
 
-.ckbase-btn:active, .ck-post-button:active, .ck-modal-button:active, .ck-actions-button:active, .ck-growl-button:active, .moui-segment .option:active, .ck-segment .option:active, .ck-segment .ck-option:active, .moui-modalview .wrapper > header button.confirm:active, .ck-modalview .wrapper > header button.confirm:active, .moui-modalview .wrapper > header button.cancel:active, .ck-modalview .wrapper > header button.cancel:active, .moui-actionview > footer button:active, .ck-actionview > footer button:active, .moui-switch, .ck-switch, .moui-switch .enable-text, .ck-switch .enable-text,
+.ckbase-btn:active, .ck-post-button:active, .ck-modal-button:active, .ck-actions-button:active, .ck-growl-button:active, .moui-segment .option:active, .ck-segment .option:active, .ck-segment .ck-option:active, .moui-modalview .wrapper > header button.confirm:active, .ck-modalview .wrapper > header button.confirm:active, .moui-modalview .wrapper > header button.cancel:active, .ck-modalview .wrapper > header button.cancel:active, .moui-actionview > footer button:active, .ck-actionview > footer button:active, .moui-switch .enable-text, .ck-switch .enable-text,
 .moui-switch .disable-text,
-.ck-switch .disable-text, .ck-post-button.enabled, .moui-segment .enabled.option, .ck-segment .enabled.option, .ck-segment .enabled.ck-option {
-  -webkit-box-shadow: inset 0 2px 3px rgba(129, 129, 129, 0.5);
-  -moz-box-shadow: inset 0 2px 3px rgba(129, 129, 129, 0.5);
-  box-shadow: inset 0 2px 3px rgba(129, 129, 129, 0.5);
-  background-image: -webkit-linear-gradient(bottom, #cccccc, #ffffff);
-  background-image: -moz-linear-gradient(bottom, #cccccc, #ffffff);
-  background-image: linear-gradient(bottom, #cccccc, #ffffff);
+.ck-switch .disable-text, .ck-post-button.enabled, .moui-segment .enabled.option, .ck-segment .enabled.option, .ck-segment .enabled.ck-option, .moui-select:active, .ck-select:active {
+  border-color: #b2b2b2;
+  -webkit-box-shadow: inset 0 1px 1px rgba(115, 115, 115, 0.8);
+  -moz-box-shadow: inset 0 1px 1px rgba(115, 115, 115, 0.8);
+  box-shadow: inset 0 1px 1px rgba(115, 115, 115, 0.8);
+  background-color: #dbdbdb;
+  background-image: -webkit-linear-gradient(bottom, #dbdbdb, #cdcdcd);
+  background-image: -moz-linear-gradient(bottom, #dbdbdb, #cdcdcd);
+  background-image: linear-gradient(bottom, #dbdbdb, #cdcdcd);
 }
 
-[data-is-default="true"].ckbase-btn, [data-is-default="true"].ck-post-button, [data-is-default="true"].ck-modal-button, [data-is-default="true"].ck-actions-button, [data-is-default="true"].ck-growl-button, .moui-segment [data-is-default="true"].option, .ck-segment [data-is-default="true"].option, .ck-segment [data-is-default="true"].ck-option, .moui-modalview .wrapper > header button[data-is-default="true"].confirm, .ck-modalview .wrapper > header button[data-is-default="true"].confirm, .moui-modalview .wrapper > header button[data-is-default="true"].cancel, .ck-modalview .wrapper > header button[data-is-default="true"].cancel, .moui-actionview > footer button[data-is-default="true"], .ck-actionview > footer button[data-is-default="true"], .ckbase-mainbtn {
-  background-color: #81858b;
-  border: solid 1px #1366a4;
-  background-image: -webkit-linear-gradient(bottom, #1366a4, #278cd7);
-  background-image: -moz-linear-gradient(bottom, #1366a4, #278cd7);
-  background-image: linear-gradient(bottom, #1366a4, #278cd7);
+[data-is-default="true"].ckbase-btn, [data-is-default="true"].ck-post-button, [data-is-default="true"].ck-modal-button, [data-is-default="true"].ck-actions-button, [data-is-default="true"].ck-growl-button, .moui-segment [data-is-default="true"].option, .ck-segment [data-is-default="true"].option, .ck-segment [data-is-default="true"].ck-option, .moui-modalview .wrapper > header button[data-is-default="true"].confirm, .ck-modalview .wrapper > header button[data-is-default="true"].confirm, .moui-modalview .wrapper > header button[data-is-default="true"].cancel, .ck-modalview .wrapper > header button[data-is-default="true"].cancel, .moui-actionview > footer button[data-is-default="true"], .ck-actionview > footer button[data-is-default="true"], .ckbase-mainbtn, .moui-switch .enable-text, .ck-switch .enable-text {
+  border-color: rgba(0, 19, 79, 0.85);
+  -webkit-box-shadow: inset 0 1px 0px #429bff;
+  -moz-box-shadow: inset 0 1px 0px #429bff;
+  box-shadow: inset 0 1px 0px #429bff;
+  background-color: #005fbf;
+  background-image: -webkit-linear-gradient(bottom, #005fbf, #006ae1);
+  background-image: -moz-linear-gradient(bottom, #005fbf, #006ae1);
+  background-image: linear-gradient(bottom, #005fbf, #006ae1);
   color: #fff;
-  text-shadow: 0 1px black;
+  text-shadow: 0 1px 1px black;
 }
 
-[data-is-default="true"].ckbase-btn:active, [data-is-default="true"].ck-post-button:active, [data-is-default="true"].ck-modal-button:active, [data-is-default="true"].ck-actions-button:active, [data-is-default="true"].ck-growl-button:active, .moui-segment [data-is-default="true"].option:active, .ck-segment [data-is-default="true"].option:active, .ck-segment [data-is-default="true"].ck-option:active, .moui-modalview .wrapper > header button[data-is-default="true"].confirm:active, .ck-modalview .wrapper > header button[data-is-default="true"].confirm:active, .moui-modalview .wrapper > header button[data-is-default="true"].cancel:active, .ck-modalview .wrapper > header button[data-is-default="true"].cancel:active, .moui-actionview > footer button[data-is-default="true"]:active, .ck-actionview > footer button[data-is-default="true"]:active, .ckbase-mainbtn:active {
-  background-color: #81858b;
-  -webkit-box-shadow: 0 1px white, inset 0 2px 3px rgba(117, 117, 117, 0.51);
-  -moz-box-shadow: 0 1px white, inset 0 2px 3px rgba(117, 117, 117, 0.51);
-  box-shadow: 0 1px white, inset 0 2px 3px rgba(117, 117, 117, 0.51);
-  background-image: -webkit-linear-gradient(bottom, #1366a4, #278cd7);
-  background-image: -moz-linear-gradient(bottom, #1366a4, #278cd7);
-  background-image: linear-gradient(bottom, #1366a4, #278cd7);
+[data-is-default="true"].ckbase-btn:active, [data-is-default="true"].ck-post-button:active, [data-is-default="true"].ck-modal-button:active, [data-is-default="true"].ck-actions-button:active, [data-is-default="true"].ck-growl-button:active, .moui-segment [data-is-default="true"].option:active, .ck-segment [data-is-default="true"].option:active, .ck-segment [data-is-default="true"].ck-option:active, .moui-modalview .wrapper > header button[data-is-default="true"].confirm:active, .ck-modalview .wrapper > header button[data-is-default="true"].confirm:active, .moui-modalview .wrapper > header button[data-is-default="true"].cancel:active, .ck-modalview .wrapper > header button[data-is-default="true"].cancel:active, .moui-actionview > footer button[data-is-default="true"]:active, .ck-actionview > footer button[data-is-default="true"]:active, .ckbase-mainbtn:active, .moui-switch .enable-text, .ck-switch .enable-text {
+  -webkit-box-shadow: inset 0 1px 1px #024879;
+  -moz-box-shadow: inset 0 1px 1px #024879;
+  box-shadow: inset 0 1px 1px #024879;
+  background-color: #0077d6;
+  background-image: -webkit-linear-gradient(bottom, #0077d6, #0068d6);
+  background-image: -moz-linear-gradient(bottom, #0077d6, #0068d6);
+  background-image: linear-gradient(bottom, #0077d6, #0068d6);
+}
+
+[data-is-danger="true"].ckbase-btn, [data-is-danger="true"].ck-post-button, [data-is-danger="true"].ck-modal-button, [data-is-danger="true"].ck-actions-button, [data-is-danger="true"].ck-growl-button, .moui-segment [data-is-danger="true"].option, .ck-segment [data-is-danger="true"].option, .ck-segment [data-is-danger="true"].ck-option, .moui-modalview .wrapper > header button[data-is-danger="true"].confirm, .ck-modalview .wrapper > header button[data-is-danger="true"].confirm, .moui-modalview .wrapper > header button[data-is-danger="true"].cancel, .ck-modalview .wrapper > header button[data-is-danger="true"].cancel, .moui-actionview > footer button[data-is-danger="true"], .ck-actionview > footer button[data-is-danger="true"] {
+  border-color: rgba(60, 0, 0, 0.85);
+  -webkit-box-shadow: inset 0 1px 0px #ff5c5c;
+  -moz-box-shadow: inset 0 1px 0px #ff5c5c;
+  box-shadow: inset 0 1px 0px #ff5c5c;
+  background-color: #d50000;
+  background-image: -webkit-linear-gradient(bottom, #d50000, #ee0000);
+  background-image: -moz-linear-gradient(bottom, #d50000, #ee0000);
+  background-image: linear-gradient(bottom, #d50000, #ee0000);
+  color: #fff;
+  text-shadow: 0 1px 1px black;
+}
+
+[data-is-danger="true"].ckbase-btn:active, [data-is-danger="true"].ck-post-button:active, [data-is-danger="true"].ck-modal-button:active, [data-is-danger="true"].ck-actions-button:active, [data-is-danger="true"].ck-growl-button:active, .moui-segment [data-is-danger="true"].option:active, .ck-segment [data-is-danger="true"].option:active, .ck-segment [data-is-danger="true"].ck-option:active, .moui-modalview .wrapper > header button[data-is-danger="true"].confirm:active, .ck-modalview .wrapper > header button[data-is-danger="true"].confirm:active, .moui-modalview .wrapper > header button[data-is-danger="true"].cancel:active, .ck-modalview .wrapper > header button[data-is-danger="true"].cancel:active, .moui-actionview > footer button[data-is-danger="true"]:active, .ck-actionview > footer button[data-is-danger="true"]:active {
+  -webkit-box-shadow: inset 0 1px 1px #024879;
+  -moz-box-shadow: inset 0 1px 1px #024879;
+  box-shadow: inset 0 1px 1px #024879;
+  background-color: #0077d6;
+  background-image: -webkit-linear-gradient(bottom, #c50800, #b20600);
+  background-image: -moz-linear-gradient(bottom, #c50800, #b20600);
+  background-image: linear-gradient(bottom, #c50800, #b20600);
 }
 
 .ckbase-btn, .ck-post-button, .ck-modal-button, .ck-actions-button, .ck-growl-button, .moui-segment .option, .ck-segment .option, .ck-segment .ck-option, .moui-modalview .wrapper > header button.confirm, .ck-modalview .wrapper > header button.confirm, .moui-modalview .wrapper > header button.cancel, .ck-modalview .wrapper > header button.cancel, .moui-actionview > footer button, .ck-actionview > footer button {
@@ -123,6 +156,12 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 [data-fluid="true"].ckbase-btn, [data-fluid="true"].ck-post-button, [data-fluid="true"].ck-modal-button, [data-fluid="true"].ck-actions-button, [data-fluid="true"].ck-growl-button, .moui-segment [data-fluid="true"].option, .ck-segment [data-fluid="true"].option, .ck-segment [data-fluid="true"].ck-option, .moui-modalview .wrapper > header button[data-fluid="true"].confirm, .ck-modalview .wrapper > header button[data-fluid="true"].confirm, .moui-modalview .wrapper > header button[data-fluid="true"].cancel, .ck-modalview .wrapper > header button[data-fluid="true"].cancel, .moui-actionview > footer button[data-fluid="true"], .ck-actionview > footer button[data-fluid="true"] {
   width: auto;
   padding: 0 10px;
+}
+[data-style="big"].ckbase-btn, [data-style="big"].ck-post-button, [data-style="big"].ck-modal-button, [data-style="big"].ck-actions-button, [data-style="big"].ck-growl-button, .moui-segment [data-style="big"].option, .ck-segment [data-style="big"].option, .ck-segment [data-style="big"].ck-option, .moui-modalview .wrapper > header button[data-style="big"].confirm, .ck-modalview .wrapper > header button[data-style="big"].confirm, .moui-modalview .wrapper > header button[data-style="big"].cancel, .ck-modalview .wrapper > header button[data-style="big"].cancel, .moui-actionview > footer button[data-style="big"], .ck-actionview > footer button[data-style="big"] {
+  height: 39px;
+}
+[disabled].ckbase-btn, [disabled].ck-post-button, [disabled].ck-modal-button, [disabled].ck-actions-button, [disabled].ck-growl-button, .moui-segment [disabled].option, .ck-segment [disabled].option, .ck-segment [disabled].ck-option, .moui-modalview .wrapper > header button[disabled].confirm, .ck-modalview .wrapper > header button[disabled].confirm, .moui-modalview .wrapper > header button[disabled].cancel, .ck-modalview .wrapper > header button[disabled].cancel, .moui-actionview > footer button[disabled], .ck-actionview > footer button[disabled] {
+  color: #a1a1a1;
 }
 .ckbase-btn:active span, .ck-post-button:active span, .ck-modal-button:active span, .ck-actions-button:active span, .ck-growl-button:active span, .moui-segment .option:active span, .ck-segment .option:active span, .ck-segment .ck-option:active span, .moui-modalview .wrapper > header button.confirm:active span, .ck-modalview .wrapper > header button.confirm:active span, .moui-modalview .wrapper > header button.cancel:active span, .ck-modalview .wrapper > header button.cancel:active span, .moui-actionview > footer button:active span, .ck-actionview > footer button:active span {
   position: relative;
@@ -183,18 +222,17 @@ a {
 }
 .ck-header .opt, .ck-modalview > header .opt {
   display: block;
-  line-height: 1;
   position: absolute;
-  top: 1px;
-  left: 1px;
+  top: 8px;
+  left: 8px;
 }
 .ck-header .ck-top-action, .ck-modalview > header .ck-top-action {
   left: auto;
-  right: 1px;
+  right: 8px;
 }
 .ck-header .ck-top-create, .ck-modalview > header .ck-top-create {
   left: auto;
-  right: 43px;
+  right: 48px;
 }
 
 .ck-top-title, .ck-modalview > header h1 {
@@ -238,21 +276,21 @@ a {
   text-shadow: 0px 1px 0px black;
 }
 .ck-root .ck-header .btn, .ck-root .ck-modalview > header .btn {
-  width: 40px;
-  height: 40px;
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  text-decoration: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  width: 24px;
+  height: 24px;
   background: #fff;
   background: -webkit-linear-gradient(bottom, #78624f, #846f5b);
   background: -moz-linear-gradient(bottom, #78624f, #846f5b);
   background: linear-gradient(bottom, #78624f, #846f5b);
   background-size: 24px;
-  background-repeat: no-repeat;
-  background-position: 7px 7px;
   border: 1px solid transparent;
-}
-.ck-root .ck-header .btn:active, .ck-root .ck-modalview > header .btn:active {
-  -webkit-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 1px 0 rgba(255, 255, 255, 0.1);
-  -moz-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 1px 0 rgba(255, 255, 255, 0.1);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 .ck-root .ck-header .ck-top-nav .btn, .ck-root .ck-modalview > header .ck-top-nav .btn {
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAADFBMVEUAAAD///8AAAD////IZVEZAAAABHRSTlMAAFqzoa8xcgAAAClJREFUKM9jCEUCDFTm1P+Hgr9U52StgoKVSJY6MJLJGXUoDodSPVEAAN65RTMMRcUhAAAAAElFTkSuQmCC');
@@ -336,7 +374,7 @@ body.no-overflowscroll.modal-view .ck-wrapper {
   display: none;
 }
 .ck-card.moving {
-  position: absolute!important;
+  position: absolute !important;
   top: 0;
   left: 0;
   z-index: 10;
@@ -846,7 +884,7 @@ body.no-overflowscroll.modal-view .ck-wrapper {
   line-height: 15px;
   margin: 0 0 10px 0;
 }
-.ck-form-unit .ck-item input[type="text"], .ck-form-unit .ck-item input[type="number"], .ck-form-unit .ck-item input[type="password"], .ck-form-unit .ck-item textarea {
+.ck-form-unit .ck-item input[type="text"], .ck-form-unit .ck-item input[type="number"], .ck-form-unit .ck-item textarea {
   font-size: 13px;
   color: #787878;
   text-indent: 10px;
@@ -957,15 +995,16 @@ body.no-overflowscroll.modal-view .ck-wrapper {
 }
 
 .moui-switch, .ck-switch {
+  border: 0;
   position: relative;
   width: 75px;
-  overflow: hidden;
+  text-align: left;
 }
 .moui-switch .block, .ck-switch .block {
-  width: 36px;
-  height: 25px;
-  position: relative;
-  float: left;
+  width: 39px;
+  position: absolute;
+  top: 0;
+  left: 0;
   -webkit-transition: left 0.1s ease-in;
   -moz-transition: left 0.1s ease-in;
   transition: left 0.1s ease-in;
@@ -973,20 +1012,18 @@ body.no-overflowscroll.modal-view .ck-wrapper {
 .moui-switch .enable-text, .ck-switch .enable-text,
 .moui-switch .disable-text,
 .ck-switch .disable-text {
-  border: 0;
   width: 36px;
   position: absolute;
   right: 0;
   top: 0;
+  font-weight: normal;
 }
 .moui-switch .enable-text, .ck-switch .enable-text {
-  background: #278cd7;
-  color: #fff;
-  left: 0;
   right: auto;
+  left: 0;
 }
 .moui-switch.enabled .block, .enabled.ck-switch .block {
-  left: 35px;
+  left: 33px;
 }
 
 .moui-folder header, .ck-folder header {
@@ -1007,11 +1044,7 @@ body.no-overflowscroll.modal-view .ck-wrapper {
   height: auto;
 }
 
-.ck-actions-button span {
-  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAALAQMAAABFxz8AAAAABlBMVEX///+bm5tR7J1yAAAAAXRSTlMAQObYZgAAADJJREFUCB0FwTERABAAAMB3BpsEQhjFEUEEQYQRRQSj0b+tOobhaGErccqJlImL8HDRfc8xCDsaQayFAAAAAElFTkSuQmCC') no-repeat right center;
-  background-size: 10px;
-  padding-right: 20px;
-}
+.ck-select .ck-option,
 .ck-actions-button .ck-option {
   display: none;
 }
@@ -1053,7 +1086,7 @@ body.no-overflowscroll.modal-view .ck-wrapper {
 }
 
 .moui-actions li, .ck-actions li {
-  border-bottom: 1px solid black;
+  border-bottom: 1px solid #000;
   opacity: 0.8;
 }
 .moui-actions li a, .ck-actions li a {
@@ -1070,6 +1103,37 @@ body.no-overflowscroll.modal-view .ck-wrapper {
 }
 .moui-actions li:last-child, .ck-actions li:last-child {
   border: none;
+}
+
+.moui-select, .ck-select {
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAALAQMAAABFxz8AAAAABlBMVEX///+bm5tR7J1yAAAAAXRSTlMAQObYZgAAADJJREFUCB0FwTERABAAAMB3BpsEQhjFEUEEQYQRRQSj0b+tOobhaGErccqJlImL8HDRfc8xCDsaQayFAAAAAElFTkSuQmCC');
+  background-repeat: no-repeat;
+  background-position: right center;
+  background-origin: content-box;
+  background-size: 10px;
+  padding: 0 5px 0 0;
+}
+.moui-select span, .ck-select span {
+  display: block;
+  height: 100%;
+  text-align: left;
+  background: #fff;
+  padding: 0 5px;
+  margin: 0 15px 0 0;
+  border-right: 1px solid #B2B2B2;
+  font-size: 13px;
+  font-weight: normal;
+}
+.moui-select[data-fluid="true"], [data-fluid="true"].ck-select {
+  width: auto;
+}
+.moui-select:active, .ck-select:active {
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAALAQMAAABFxz8AAAAABlBMVEX///+bm5tR7J1yAAAAAXRSTlMAQObYZgAAADJJREFUCB0FwTERABAAAMB3BpsEQhjFEUEEQYQRRQSj0b+tOobhaGErccqJlImL8HDRfc8xCDsaQayFAAAAAElFTkSuQmCC');
+}
+.moui-select:active span, .ck-select:active span {
+  -webkit-box-shadow: inset 0 1px 2px rgba(115, 115, 115, 0.8);
+  -moz-box-shadow: inset 0 1px 2px rgba(115, 115, 115, 0.8);
+  box-shadow: inset 0 1px 2px rgba(115, 115, 115, 0.8);
 }
 
 .moui-slider, .ck-stars {
@@ -1256,7 +1320,7 @@ body.no-overflowscroll.modal-view .ck-wrapper {
   line-height: 42.5px;
   display: block;
   color: #fff;
-  border-bottom: 1px solid #666666;
+  border-bottom: 1px solid #666;
 }
 .moui-actionview .wrapper .content > header h1:empty, .ck-actionview .wrapper .content > header h1:empty {
   border: none;
@@ -1264,35 +1328,40 @@ body.no-overflowscroll.modal-view .ck-wrapper {
 .moui-actionview .wrapper .content > .desc, .ck-actionview .wrapper .content > .desc {
   color: #fff;
   padding: 25px 0;
+  font-size: 15px;
 }
 .moui-actionview .wrapper .content > article, .ck-actionview .wrapper .content > article {
   position: absolute;
   bottom: 129px;
   left: 25px;
   right: 25px;
-  background: #1a1a1a;
+  background: #343434;
   border: solid 1px #141414;
   padding: 0 18px;
-  margin-bottom: -1px;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  -ms-border-radius: 5px;
-  border-radius: 5px;
-  -webkit-box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.3);
-  -moz-box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.3);
-  box-shadow: 0px 1px 4px 0px rgba(0, 0, 0, 0.3);
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  border-radius: 3px;
+  -webkit-box-shadow: inset 0px 1px 0px #494949;
+  -moz-box-shadow: inset 0px 1px 0px #494949;
+  box-shadow: inset 0px 1px 0px #494949;
 }
 .moui-actionview .wrapper .content > article:empty, .ck-actionview .wrapper .content > article:empty {
   -webkit-box-shadow: none;
   -moz-box-shadow: none;
   box-shadow: none;
   border: none;
+  background: none;
 }
 .moui-actionview > footer, .ck-actionview > footer {
   position: fixed;
   bottom: 0;
   left: 0;
-  background: #000;
+  border-top: 1px solid #000;
+  background: rgba(13, 13, 13, 0.95);
+  -webkit-box-shadow: inset 0px 1px 0px #212121;
+  -moz-box-shadow: inset 0px 1px 0px #212121;
+  box-shadow: inset 0px 1px 0px #212121;
   width: 100%;
   height: 79px;
   -webkit-transform: translateY(100%);
@@ -1315,6 +1384,20 @@ body.no-overflowscroll.modal-view .ck-wrapper {
 .moui-actionview > footer button.confirm, .ck-actionview > footer button.confirm {
   display: none;
 }
+.moui-actionview > footer button.cancel, .ck-actionview > footer button.cancel {
+  border-color: #101010;
+  background: #343434;
+  -webkit-box-shadow: inset 0 1px 0px #494949;
+  -moz-box-shadow: inset 0 1px 0px #494949;
+  box-shadow: inset 0 1px 0px #494949;
+  color: #fff;
+  text-shadow: 0 1px 1px black;
+}
+.moui-actionview > footer button.cancel:active, .ck-actionview > footer button.cancel:active {
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+}
 .moui-actionview > footer.multi button, .ck-actionview > footer.multi button {
   right: 50%;
   margin: 0 12.5px 0 0px;
@@ -1331,7 +1414,7 @@ body.no-overflowscroll.modal-view .ck-wrapper {
   left: 0;
   width: 100%;
   height: 100%;
-  background: #191919;
+  background: rgba(13, 13, 13, 0.95);
   opacity: 0;
   -webkit-transition: opacity 0.3s;
   -webkit-transition-delay: 0.1s;
@@ -1345,7 +1428,7 @@ body.no-overflowscroll.modal-view .ck-wrapper {
   display: block;
 }
 .moui-actionview.active .shd, .active.ck-actionview .shd {
-  opacity: 0.85;
+  opacity: 1;
 }
 .moui-actionview.active .wrapper, .active.ck-actionview .wrapper {
   opacity: 1;
@@ -1366,11 +1449,17 @@ body.no-overflowscroll.modal-view .ck-wrapper {
   box-sizing: content-box;
   width: 100%;
   color: #fff;
-  background: #1a1a1a;
+  background: none;
   font-size: 13px;
   padding: 10px 0;
+  margin: 0;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  -ms-border-radius: 0;
+  border-radius: 0;
   border: none;
-  border-bottom: solid 1px #141414;
+  border-top: solid 1px #3e3e3e;
+  border-bottom: solid 1px #282828;
   text-align: center;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -1386,18 +1475,11 @@ body.no-overflowscroll.modal-view .ck-wrapper {
 .moui-actionview .wrapper .content > article .enabled.option,
 .ck-actionview .wrapper .content > article .enabled.option,
 .ck-actionview .wrapper .content > article .enabled.ck-option {
-  background-color: #006ae2;
-  text-shadow: 0 0.1rem 0 rbga(255, 255, 255, 0.25);
-  padding-left: 5px;
-  padding-right: 5px;
-  -webkit-transform: translateX(-5px);
-  -moz-transform: translateX(-5px);
-  -ms-transform: translateX(-5px);
-  transform: translateX(-5px);
-  -webkit-border-radius: 3px;
-  -moz-border-radius: 3px;
-  -ms-border-radius: 3px;
-  border-radius: 3px;
+  color: #006ae2;
+}
+
+.moui-actionview .wrapper .content > article .option:first-child, .ck-actionview .wrapper .content > article .option:first-child, .ck-actionview .wrapper .content > article .ck-option:first-child {
+  border-top: none;
 }
 
 .moui-actionview .wrapper .content > article .option:last-child, .ck-actionview .wrapper .content > article .option:last-child, .ck-actionview .wrapper .content > article .ck-option:last-child {
@@ -1412,37 +1494,48 @@ body.no-overflowscroll.modal-view .ck-wrapper {
   right: 75px;
   z-index: 150;
   margin-top: -50px;
-  padding: 25px;
-  background: #000;
+  padding: 14px;
+  background: rgba(13, 13, 13, 0.95);
   opacity: 0;
   color: #fff;
   font-size: 20px;
   text-align: center;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  -ms-border-radius: 5px;
-  border-radius: 5px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  -ms-border-radius: 3px;
+  border-radius: 3px;
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
-  -webkit-transition: opacity 0.3s ease-out;
-  -moz-transition: opacity 0.3s ease-out;
-  transition: opacity 0.3s ease-out;
+}
+.moui-growl.corner-center, .corner-center.ck-growl {
+  -webkit-transform: scale(0);
+  -moz-transform: scale(0);
+  -ms-transform: scale(0);
+  transform: scale(0);
+  -webkit-transition: -webkit-transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  -moz-transition: -moz-transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 .moui-growl.corner-bottom, .corner-bottom.ck-growl {
   top: auto;
-  bottom: -25px;
-  padding: 12.5px;
+  bottom: -40px;
   font-size: 13px;
-  -webkit-transition: bottom 0.3s ease-out, opacity 0.3s ease-out;
-  -moz-transition: bottom 0.3s ease-out, opacity 0.3s ease-out;
-  transition: bottom 0.3s ease-out, opacity 0.3s ease-out;
+  -webkit-transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  -moz-transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 .moui-growl.rendered, .rendered.ck-growl {
   display: block;
 }
 .moui-growl.active, .active.ck-growl {
-  opacity: 0.8;
+  opacity: 1;
+}
+.moui-growl.active.corner-center, .active.corner-center.ck-growl {
+  -webkit-transform: scale(1);
+  -moz-transform: scale(1);
+  -ms-transform: scale(1);
+  transform: scale(1);
 }
 .moui-growl.active.corner-bottom, .active.corner-bottom.ck-growl {
   bottom: 25px;

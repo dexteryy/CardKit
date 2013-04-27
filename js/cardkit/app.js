@@ -70,7 +70,7 @@ define([
             handle_control.call(this);
         },
 
-        '.ck-card .ck-switch span': function tap_ck_switch(){
+        '.ck-card .ck-switch, .ck-card .ck-switch span': function tap_ck_switch(){
             if (!$(this).hasClass('ck-switch')) {
                 return tap_ck_switch.call(this.parentNode);
             }
@@ -101,18 +101,20 @@ define([
             control(this.parentNode).toggle();
         },
 
+        '.ck-select, .ck-select span': function(){
+            var me = $(this);
+            if (!me.hasClass('ck-select')) {
+                me = me.parent();
+            }
+            return show_actions(me);
+        },
+
         '.ck-actions-button, .ck-actions-button span': function(){
             var me = $(this);
             if (!me.hasClass('ck-actions-button')) {
                 me = me.parent();
             }
-            var opt = _.mix({
-                confirmText: '确认',
-                cancelText: '取消',
-                multiselect: false
-            }, me.data());
-            opt.options = $(opt.options || '.ck-option', me);
-            actionView(me, opt).open();
+            return show_actions(me);
         },
 
         '.ck-modal-button': open_modal_card,
@@ -172,6 +174,16 @@ define([
         var controller = control(this).toggle();
         mark_gc(controller);
     } 
+
+    function show_actions(me){
+        var opt = _.mix({
+            confirmText: '确认',
+            cancelText: '取消',
+            multiselect: false
+        }, me.data());
+        opt.options = $(opt.options || '.ck-option', me);
+        actionView(me, opt).open();
+    }
 
     function respond_stars(e, method) {
         var rater = stars(this),
