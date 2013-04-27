@@ -3,7 +3,7 @@
   display:none;
   width:100%;
   background:$view_color;
-  //@include box-shadow(-3px 0px 10px 0px rgba(0,0,0,.35));
+  @include box-shadow(1px 0px 2px rgba(0,0,0,.1));
   @include user-select(none);
   overflow-y:scroll;
   -webkit-overflow-scrolling: touch;

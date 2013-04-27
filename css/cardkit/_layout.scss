@@ -17,6 +17,7 @@ body {
   &.modal-view {
 
     .ck-root {
+      @include box-shadow(0px 0px 10px rgba(0,0,0,.35));
       @include transform(scale(0.8));
     }
 
@@ -91,7 +92,6 @@ a {
 }
 
 .ck-root {
-  @include box-shadow(0px 0px 10px rgba(0,0,0,.35));
   @include transform-origin(50% 50%);
   //@include transform-style(preserve-3d);
   @include transition(transform 0.4s);
