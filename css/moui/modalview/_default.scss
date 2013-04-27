@@ -90,12 +90,12 @@
 body.no-overflowscroll {
 
   .moui-modalview {
-    position:static;
+    position:relative;
+    overflow:hidden;
 
     .wrapper {
-      @include transition(opacity 0.4s);
+      @include transition(none);
       @include transform(translateY(0));
-      opacity:0;
     
       & > article {
         -webkit-overflow-scrolling: auto;
@@ -113,7 +113,6 @@ body.no-overflowscroll {
     &.active {
 
       .wrapper {
-        opacity:1;
       }
 
     }

@@ -181,6 +181,9 @@ body {
   color: #252525;
   background: #f2f2f2;
   line-height: 1.6;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
 }
 body.bg {
   background: #666;
@@ -678,13 +681,13 @@ body.no-overflowscroll .ck-card {
   margin: 10px;
   padding: 0 0 10px 0;
   border-bottom: 1px solid #efefef;
-  -webkit-user-select: text;
-  -moz-user-select: text;
-  user-select: text;
 }
 .ck-box-unit[data-cfg-paper] > article > header {
   padding: 0 0 10px 0;
   line-height: 1.6;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  user-select: text;
 }
 .ck-box-unit[data-cfg-paper] > article > header .ck-link, .ck-box-unit[data-cfg-paper] > article > header > span {
   font-size: 20px;
@@ -695,6 +698,9 @@ body.no-overflowscroll .ck-card {
   font-size: 20px;
   line-height: 27px;
   font-size: 17px;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  user-select: text;
 }
 .ck-box-unit[data-cfg-paper] > article > section p {
   padding: 0 0 25px 0;
@@ -898,6 +904,9 @@ body.no-overflowscroll .ck-card {
 }
 .ck-form-unit .ck-item label {
   font-size: 15px;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  user-select: text;
 }
 .ck-form-unit .ck-item label em {
   color: #787878;
@@ -928,6 +937,9 @@ body.no-overflowscroll .ck-card {
   -moz-border-radius: 3px;
   -ms-border-radius: 3px;
   border-radius: 3px;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  user-select: text;
 }
 .ck-form-unit .ck-item input[type="number"] {
   width: 80px;
@@ -1284,17 +1296,17 @@ body.no-overflowscroll .ck-card {
 }
 
 body.no-overflowscroll .moui-modalview, body.no-overflowscroll .ck-modalview {
-  position: static;
+  position: relative;
+  overflow: hidden;
 }
 body.no-overflowscroll .moui-modalview .wrapper, body.no-overflowscroll .ck-modalview .wrapper {
-  -webkit-transition: opacity 0.4s;
-  -moz-transition: opacity 0.4s;
-  transition: opacity 0.4s;
+  -webkit-transition: none;
+  -moz-transition: none;
+  transition: none;
   -webkit-transform: translateY(0);
   -moz-transform: translateY(0);
   -ms-transform: translateY(0);
   transform: translateY(0);
-  opacity: 0;
 }
 body.no-overflowscroll .moui-modalview .wrapper > article, body.no-overflowscroll .ck-modalview .wrapper > article {
   -webkit-overflow-scrolling: auto;
@@ -1303,9 +1315,6 @@ body.no-overflowscroll .moui-modalview .wrapper > article, body.no-overflowscrol
 }
 body.no-overflowscroll .moui-modalview .wrapper > article > .content, body.no-overflowscroll .ck-modalview .wrapper > article > .content {
   min-height: 0;
-}
-body.no-overflowscroll .moui-modalview.active .wrapper, body.no-overflowscroll .active.ck-modalview .wrapper {
-  opacity: 1;
 }
 
 .moui-actionview, .ck-actionview {

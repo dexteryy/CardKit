@@ -8,6 +8,7 @@ body {
   color:$text_color;
   background:$view_color;
   line-height:1.6;
+  @include user-select(none);
 
   &.bg {
     background: #666;

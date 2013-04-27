@@ -19,7 +19,7 @@ define([
     supports){
 
     var TPL_TIPS = '<div class="ck-top-tips">'
-        + (supports.SAFARI_TOPBAR ? '长按顶部导航条，可拖出浏览器地址栏' : '')
+        + (supports.HIDE_TOPBAR ? '长按顶部导航条，可拖出浏览器地址栏' : '')
         + '</div>';
 
     var exports = {
