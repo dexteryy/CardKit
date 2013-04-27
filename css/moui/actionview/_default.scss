@@ -74,6 +74,7 @@
   }
 
   & > footer {
+    $myspace: (40px/2);
     position:fixed;
     bottom:0;
     left:0;
@@ -81,19 +82,18 @@
     background:rgba(13,13,13,0.95);
     @include box-shadow(inset 0px 1px 0px #212121);
     width:100%;
-    height:$space * 2 + $button_height;
+    //height:$bigbutton_height;
+    padding:$myspace 0;
+    overflow:hidden;
+    text-align:center;
     @include transform(translateY(100%));
     @include transition(transform 0.3s);
 
-    button {
+    input[type="button"] {
       @extend %button;
-      line-height:33px;
-      height:33px;
-      width:auto;
-      position:absolute;
-      top:$space;
-      left:$space;
-      right:$space;
+      line-height:$bigbutton_height;
+      height:$bigbutton_height;
+      width:90%;
 
       &.confirm {
         display:none;
@@ -116,15 +116,18 @@
 
     &.multi {
     
-      button {
-        right:50%;
-        margin:0 ($space/2) 0 0px;
+      input[type="button"] {
+        width:42%;
 
         &.confirm {
           display:inline-block;
-          left:50%;
-          right:$space;
-          margin:0 0 0 ($space/2);
+          float:right;
+          margin-right:$myspace;
+        }
+
+        &.cancel {
+          float:left;
+          margin-left:$myspace;
         }
 
       }
@@ -212,7 +215,7 @@
     //position:relative;
 
     .wrapper {
-      //-webkit-overflow-scrolling: auto;
+      -webkit-overflow-scrolling: auto;
       //overflow-y:visible;
       //height:auto;
     }

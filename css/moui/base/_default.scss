@@ -51,6 +51,7 @@ $zindex_step: 10;
   margin:0;
   padding:0;
   text-decoration:none;
+  @include appearance(none);
   @include user-select(none);
   -webkit-tap-highlight-color: rgba(0,0,0,0);
 
@@ -129,6 +130,7 @@ $zindex_step: 10;
 
   &[data-style="big"] {
     height:$bigbutton_height;
+    line-height:$bigbutton_height;
   }
 
   &[disabled] {

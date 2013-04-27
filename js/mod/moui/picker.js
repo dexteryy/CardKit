@@ -105,19 +105,18 @@ define('moui/picker', [
         getOption: function(elm){
             if (typeof elm === 'number') {
                 elm = this._options[elm];
+            } else if (typeof elm === 'string') {
+                elm = this._options.filter(function(controller){
+                    return controller.val() === elm;
+                })[0];
             } else {
                 var oid = $(elm)[0][OID];
                 if (!oid) {
                     return null;
                 }
-                for (var i = 0, controller, 
-                        l = this._options.length; i < l; i++) {
-                    controller = this._options[i];
-                    if (controller._node[0][OID] === oid) {
-                        elm = controller;
-                        break;
-                    }
-                }
+                elm = this._options.filter(function(controller){
+                    return controller._node[0][OID] === oid;
+                })[0];
             }
             return elm;
         },

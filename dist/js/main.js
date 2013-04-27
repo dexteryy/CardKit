@@ -5167,19 +5167,18 @@ define('moui/picker', [
         getOption: function(elm){
             if (typeof elm === 'number') {
                 elm = this._options[elm];
+            } else if (typeof elm === 'string') {
+                elm = this._options.filter(function(controller){
+                    return controller.val() === elm;
+                })[0];
             } else {
                 var oid = $(elm)[0][OID];
                 if (!oid) {
                     return null;
                 }
-                for (var i = 0, controller, 
-                        l = this._options.length; i < l; i++) {
-                    controller = this._options[i];
-                    if (controller._node[0][OID] === oid) {
-                        elm = controller;
-                        break;
-                    }
-                }
+                elm = this._options.filter(function(controller){
+                    return controller._node[0][OID] === oid;
+                })[0];
             }
             return elm;
         },
@@ -5362,8 +5361,8 @@ define('moui/actionview', [
                     </div>\
                 </div>\
                 <footer>\
-                    <button type="button" class="confirm" data-is-default="true"></button>\
-                    <button type="button" class="cancel"></button>\
+                    <input type="button" class="confirm" data-is-default="true">\
+                    <input type="button" class="cancel">\
                 </footer>\
             </div>',
 
@@ -5429,11 +5428,11 @@ define('moui/actionview', [
             }
 
             if (opt.confirmText) {
-                this._confirmBtn.html(opt.confirmText);
+                this._confirmBtn.val(opt.confirmText);
             }
 
             if (opt.cancelText) {
-                this._cancelBtn.html(opt.cancelText);
+                this._cancelBtn.val(opt.cancelText);
             }
 
             return this;
