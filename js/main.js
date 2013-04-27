@@ -19,7 +19,9 @@ define('cardkit/pageready', [
     'finish', 
     'cardkit/bus'
 ], function(finish, bus){
-    bus.once('readycardchange', finish);
+    bus.once('readycardchange', function(){
+        setTimeout(finish, 500);
+    });
 });
 
 require([

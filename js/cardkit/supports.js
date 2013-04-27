@@ -19,6 +19,8 @@ define([
             && !browsers.aosp
             && !is_ios5,
 
+        NEW_WIN: !is_ios5 && !browsers.aosp,
+
         SAFARI_OVERFLOWSCROLL: "webkitOverflowScrolling" in body.style,
 
         SAFARI_TOPBAR: !!browsers.mobilesafari

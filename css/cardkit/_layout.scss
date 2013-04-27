@@ -104,7 +104,7 @@ a {
     z-index: $zindex_overlay;
 
     @include transform(translateY(-$nav_height));
-    @include transition(transform 200ms);
+    @include transition(transform 150ms);
 
     .ck-top-title {
       color:#fff;
@@ -145,6 +145,10 @@ a {
 
     .ck-top-create .btn.reply {
       background-image:inline-image('reply.png');
+    }
+
+    body.ck-topbar-enabled & {
+        @include transform(translateY(0));
     }
 
   }
@@ -196,6 +200,7 @@ body.no-overflowscroll {
 
   &.bg {
 
+    background:$view_color;
     //.ck-wrapper {
       //position:fixed;
       //top:0;

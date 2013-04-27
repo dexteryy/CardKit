@@ -71,6 +71,12 @@
 
     }
 
+    body.no-overflowscroll & {
+      -webkit-overflow-scrolling: auto;
+      //overflow-y:visible;
+      //height:auto;
+    }
+
   }
 
   & > footer {
@@ -209,17 +215,3 @@
   border-bottom:none;
 }
 
-.no-overflowscroll {
-
-  .moui-actionview {
-    //position:relative;
-
-    .wrapper {
-      -webkit-overflow-scrolling: auto;
-      //overflow-y:visible;
-      //height:auto;
-    }
-
-  }
-
-}

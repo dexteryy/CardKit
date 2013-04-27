@@ -272,9 +272,9 @@ a {
   -moz-transform: translateY(-42.5px);
   -ms-transform: translateY(-42.5px);
   transform: translateY(-42.5px);
-  -webkit-transition: -webkit-transform 200ms;
-  -moz-transition: -moz-transform 200ms;
-  transition: transform 200ms;
+  -webkit-transition: -webkit-transform 150ms;
+  -moz-transition: -moz-transform 150ms;
+  transition: transform 150ms;
 }
 .ck-root .ck-header .ck-top-title, .ck-root .ck-modalview > header .ck-top-title, .ck-root .ck-header .ck-modalview > header h1, .ck-modalview > header .ck-root .ck-header h1, .ck-root .ck-modalview > header h1 {
   color: #fff;
@@ -316,6 +316,12 @@ a {
 .ck-root .ck-header .ck-top-create .btn.reply, .ck-root .ck-modalview > header .ck-top-create .btn.reply {
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAABcVBMVEUAAAD///8AAAD///8AAAAAAAAAAAD///8AAAD///8AAAAAAAD///8AAAD///8AAAAAAAD///////8AAAAAAAAAAAD///////////8fHx8AAAAAAAATExP///////8AAAAAAAD///8AAAD///8AAAAAAAD///////8DAwOysrIAAAAAAAAqKir///////8bGxsQEBANDQ3///8XFxcNDQ0dHR3///9EREQICAgPDw8qKiqMjIz///8AAAAAAAAAAAAICAj////////9/f06Ojr9/f1MTExPT0/09PRnZ2doaGiPj496enr///+YmJiRkZGTk5P///////+lpaWmpqb+/v6vr6+3t7f///+8vLzJycn+/v7Ly8vQ0NDR0dHT09PX19f+/v7a2tr////h4eH7+/v////j4+Pn5+f+/v7r6+vt7e3////t7e36+vr+/v719fX39/f5+fn+/v76+vr7+/v8/Pz8/Pz////+/v7////zRNODAAAAe3RSTlMAAAEBAgMEBAUFBgcHCw4PEBIUFhccHCAiIyQlJycpKywuLzAzNTc7PDw+P0BBQkNERUVNUFBSVFZWVlZWV1laW2JjZGVlZmZub3BxdXd7fX5/g4WFh4iMjI6RkZWXmJmbnJ2eoaGhoqSkpqenqKqrrK6vr7CxsbKys7NllTCSAAABQ0lEQVRIx+3VVVPDQBQF4Jw0NLi7u7trF3f34lqsFFq0+fU8QDpNmt3uHd4YzlNmbr5MZnN2o4AY5R9IAn3Cb8SPf1I3wZQhlxkTBCRBwASGbMSA3RABeo6IwN24HSYBqJXLIRIA8uYeJUHwdBcAkDl8IQGe9xYHW6q/m5DS5Y0HHtaGanPVSHe0uvUPEXjd6i1OsNatZEEAbmcrtJiC5kxzwVlfhkOj9XkeOOlMdLg/fYf3SlcdmsP9Bee8VQoOuCMPLaxp+Lmsf+Iu62oaACC/f8NnTuEa/eR+uPtSAElt+9HT1BVBl5ZUuNovLdPsQ1Fbi5C1aZ2W34n2g1crs027X4QbaKTKNvWJ9/R7E/UQuP71qRGbEBUc0ED4uNUGmDie5mQLCDP+CW8mGrx5QANjoAEGGmCggXHQAFMVufyVH/sXwVDn+GGtH9cAAAAASUVORK5CYII=');
 }
+body.ck-topbar-enabled .ck-root .ck-header, body.ck-topbar-enabled .ck-root .ck-modalview > header {
+  -webkit-transform: translateY(0);
+  -moz-transform: translateY(0);
+  -ms-transform: translateY(0);
+  transform: translateY(0);
+}
 
 .ck-wrapper {
   width: 100%;
@@ -351,6 +357,9 @@ a {
   display: none;
 }
 
+body.no-overflowscroll.bg {
+  background: #f2f2f2;
+}
 body.no-overflowscroll.modal-view .ck-root {
   -webkit-transform: scale(1);
   -moz-transform: scale(1);
@@ -381,6 +390,14 @@ body.no-overflowscroll.modal-view .ck-wrapper {
   height: 42.5px;
   line-height: 42.5px;
   width: 100%;
+  opacity: 0;
+  -webkit-transition: opacity 0.1s ease;
+  -webkit-transition-delay: 0.3s;
+  -moz-transition: opacity 0.1s ease 0.3s;
+  transition: opacity 0.1s ease 0.3s;
+}
+body.ck-topbar-enabled .ck-card .ck-top-tips {
+  opacity: 1;
 }
 .ck-card .ckd-top-create {
   display: none;
@@ -390,6 +407,10 @@ body.no-overflowscroll.modal-view .ck-wrapper {
   top: 0;
   left: 0;
   z-index: 10;
+}
+body.no-overflowscroll .ck-card {
+  -webkit-overflow-scrolling: auto;
+  overflow-y: visible;
 }
 
 .ck-loading {
@@ -447,11 +468,6 @@ body.no-overflowscroll.modal-view .ck-wrapper {
 }
 .ck-loading .ck-footer, .ck-loading .ck-top-tips {
   display: none;
-}
-
-.no-overflowscroll .ck-card {
-  -webkit-overflow-scrolling: auto;
-  overflow-y: visible;
 }
 
 .ck-cardmask {
@@ -1267,10 +1283,10 @@ body.no-overflowscroll.modal-view .ck-wrapper {
   transform: translateY(0);
 }
 
-.no-overflowscroll .moui-modalview, .no-overflowscroll .ck-modalview {
+body.no-overflowscroll .moui-modalview, body.no-overflowscroll .ck-modalview {
   position: static;
 }
-.no-overflowscroll .moui-modalview .wrapper, .no-overflowscroll .ck-modalview .wrapper {
+body.no-overflowscroll .moui-modalview .wrapper, body.no-overflowscroll .ck-modalview .wrapper {
   -webkit-transition: opacity 0.4s;
   -moz-transition: opacity 0.4s;
   transition: opacity 0.4s;
@@ -1280,15 +1296,15 @@ body.no-overflowscroll.modal-view .ck-wrapper {
   transform: translateY(0);
   opacity: 0;
 }
-.no-overflowscroll .moui-modalview .wrapper > article, .no-overflowscroll .ck-modalview .wrapper > article {
+body.no-overflowscroll .moui-modalview .wrapper > article, body.no-overflowscroll .ck-modalview .wrapper > article {
   -webkit-overflow-scrolling: auto;
   overflow-y: visible;
   height: auto;
 }
-.no-overflowscroll .moui-modalview .wrapper > article > .content, .no-overflowscroll .ck-modalview .wrapper > article > .content {
+body.no-overflowscroll .moui-modalview .wrapper > article > .content, body.no-overflowscroll .ck-modalview .wrapper > article > .content {
   min-height: 0;
 }
-.no-overflowscroll .moui-modalview.active .wrapper, .no-overflowscroll .active.ck-modalview .wrapper {
+body.no-overflowscroll .moui-modalview.active .wrapper, body.no-overflowscroll .active.ck-modalview .wrapper {
   opacity: 1;
 }
 
@@ -1364,6 +1380,9 @@ body.no-overflowscroll.modal-view .ck-wrapper {
   box-shadow: none;
   border: none;
   background: none;
+}
+body.no-overflowscroll .moui-actionview .wrapper, body.no-overflowscroll .ck-actionview .wrapper {
+  -webkit-overflow-scrolling: auto;
 }
 .moui-actionview > footer, .ck-actionview > footer {
   position: fixed;
@@ -1496,10 +1515,6 @@ body.no-overflowscroll.modal-view .ck-wrapper {
 
 .moui-actionview .wrapper .content > article .option:last-child, .ck-actionview .wrapper .content > article .option:last-child, .ck-actionview .wrapper .content > article .ck-option:last-child {
   border-bottom: none;
-}
-
-.no-overflowscroll .moui-actionview .wrapper, .no-overflowscroll .ck-actionview .wrapper {
-  -webkit-overflow-scrolling: auto;
 }
 
 .moui-growl, .ck-growl {
