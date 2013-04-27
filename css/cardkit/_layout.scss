@@ -96,7 +96,7 @@ a {
   @include transition(transform 0.4s);
   
   .ck-header {
-    position:absolute;
+    position:fixed;
     top:0;
     left:0;
     width:100%;
@@ -170,7 +170,7 @@ a {
 .ck-viewmask {
   display:none;
   opacity:0;
-  position:absolute;
+  position:fixed;
   top:0;
   left:0;
   width:100%;
@@ -181,4 +181,30 @@ a {
 
 .ck-raw {
   display:none;
+}
+
+body.no-overflowscroll {
+
+  &.bg {
+
+    //.ck-wrapper {
+      //position:fixed;
+      //top:0;
+      //left:0;
+    //}
+
+  }
+
+  &.modal-view {
+
+    .ck-root {
+      @include transform(scale(1));
+    }
+
+    .ck-wrapper {
+      display:none;
+    }
+
+  }
+
 }

@@ -186,44 +186,84 @@ define([
         ck.viewportGarbage[com.parentId] = 1;
     }
 
+    bus.bind('cardkit:updateSize', function(){
+        if (modalCard.isOpened) {
+            var current = modalCard._contentWrapper;
+            var h = window.innerHeight * 2;
+            if (modalCard._iframeContent) {
+                modalCard._iframeContent.css({
+                    minHeight: h + 'px',
+                    width: current[0].offsetWidth + 'px',
+                    height: current[0].offsetHeight - ck.headerHeight + 'px'
+                });
+            }
+            modalCard._content.css('minHeight', h + 'px');
+        }
+        var actionCard = actionView.current;
+        if (actionCard) {
+            var wh = window.innerHeight + 10,
+                h = actionCard._wrapperContent.children().map(function(node){
+                    return node.offsetHeight || 0;
+                }).reduce(function(a, b){
+                    return a + b;
+                }) + parseFloat(actionCard._wrapperContent
+                    .find('article').eq(0).css('bottom'));
+            if (h < wh) {
+                h = wh;
+            }
+            actionCard._wrapperContent.css({
+                minHeight: h + 'px'
+            });
+            actionCard._node.css({
+                height: h + 'px'
+            });
+        }
+    });
+
     modalCard.event.bind('prepareOpen', function(){
         ck.disableView = true;
-        $(body).addClass('bg').addClass('modal-view');
+        if (!supports.OVERFLOWSCROLL) {
+            window.scrollTo(0, 0);
+        } else {
+            $(body).addClass('bg').addClass('modal-view');
+        }
     }).bind('cancelOpen', function(){
         ck.disableView = false;
         $(body).removeClass('bg').removeClass('modal-view');
     }).bind('open', function(){
+        if (!supports.OVERFLOWSCROLL) {
+            $(body).addClass('bg').addClass('modal-view');
+        }
         var current = modalCard._contentWrapper;
         last_view_for_modal = ck.viewport;
         ck.changeView(current, { 
             isModal: true 
         });
-        var h = current[0].offsetHeight*2;
         if (modalCard._iframeContent) {
-            modalCard._iframeContent.css({
-                minHeight: h + 'px',
-                width: current[0].offsetWidth + 'px',
-                height: current[0].offsetHeight - ck.headerHeight + 'px'
-            });
             modalCard.event.done('frameOnload', function(){
                 var iframe_body = $(modalCard._iframeWindow[0].document.body);
                 iframe_body.bind('touchstart', prevent_window_scroll);
                 ck.initView(iframe_body, {
                     isModal: true
                 });
-                ck.enableControl();
+                setTimeout(function(){
+                    ck.enableControl();
+                }, 400);
             });
         } else if (!modalCard._content.html()) { // @TODO 换更靠谱的方法
             modalCard.event.done('contentchange', function(){
                 ck.initView(current, {
                     isModal: true
                 });
-                ck.enableControl();
+                setTimeout(function(){
+                    ck.enableControl();
+                }, 400);
             });
         } else {
-            ck.enableControl();
+            setTimeout(function(){
+                ck.enableControl();
+            }, 400);
         }
-        modalCard._content.css('minHeight', h + 'px');
     }).bind('prepareClose', function(){
         ck.disableView = false;
         $(body).removeClass('modal-view');
@@ -241,19 +281,19 @@ define([
         ck.disableView = true;
         var current = actionCard._wrapper;
         last_view_for_actions = ck.viewport;
-        ck.changeView(current, { 
-            isModal: true 
+        ck.changeView(current, {
+            preventRender: true,
+            isActions: true
         });
-        var h = current[0].offsetHeight;
-        actionCard._wrapperContent.css({
-            height: h + 'px'
-        });
-        actionCard._node.css({
-            height: h + 'px'
-        });
+        if (!supports.OVERFLOWSCROLL) {
+            $(body).addClass('bg');
+        }
     }).bind('actionView:cancelOpen', function(){
         if (!modalCard.isOpened) {
             ck.disableView = false;
+        }
+        if (!supports.OVERFLOWSCROLL) {
+            $(body).removeClass('bg');
         }
         ck.changeView(last_view_for_actions, {
             preventRender: modalCard.isOpened,
@@ -263,7 +303,9 @@ define([
         if (!modalCard.isOpened) {
             ck.disableView = false;
         }
-        console.info("log: ", 1, last_view_for_actions); // log
+        if (!supports.OVERFLOWSCROLL) {
+            $(body).removeClass('bg');
+        }
         ck.changeView(last_view_for_actions, {
             preventRender: modalCard.isOpened,
             isModal: modalCard.isOpened
@@ -278,6 +320,7 @@ define([
 
         init: function(opt){
             var root = this.root = opt.root;
+            var doc = $(document);
             this.wrapper = $('.ck-wrapper', root);
             this.header = $('.ck-header', root);
             this.footer = $('.ck-footer', root);
@@ -293,10 +336,10 @@ define([
             }
             this.controlMask = $(TPL_MASK).appendTo(body);
             if (env.showControlMask) {
-                this.controlMask.css({
-                    'opacity': '0.2',
-                    'background': '#0f0'
-                });
+                //this.controlMask.css({
+                    //'opacity': '0.2',
+                    //'background': '#0f0'
+                //});
             }
             this.cardMask = $(TPL_CARD_MASK).appendTo(body);
             this.headerHeight = this.header.height();
@@ -313,7 +356,7 @@ define([
             momoTap(document);
 
             if (!supports.OVERFLOWSCROLL) {
-                $(body).addClass('no-overflow-scrolling');
+                $(body).addClass('no-overflowscroll');
             }
             if (supports.SAFARI_TOPBAR) {
                 $(body).addClass('mobilesafari-bar');
@@ -331,6 +374,10 @@ define([
                 if (current !== ck.landscapeMode) {
                     ck.initWindow();
                     ck.hideAddressbar(); // @TODO 无效
+                    if (actionView.current 
+                            && !supports.OVERFLOWSCROLL) {
+                        ck.viewport[0].innerHTML = ck.viewport[0].innerHTML;
+                    }
                 }
             });
 
@@ -360,7 +407,7 @@ define([
                 }
             });
 
-            $(document).bind('scrolldown', function(){
+            doc.bind('scrolldown', function(){
                 if (topbar_holded) {
                     return;
                 }
@@ -375,29 +422,35 @@ define([
                 //}
             //}).bind('scrollup', function(){
                 //ck.showTopbar();
-            }).bind('scrollstart', function(){
-                if (supports.OVERFLOWSCROLL) {
-                    ck.scrollMask.show();
-                }
-            }).bind('scrollend', function(){
-                if (supports.OVERFLOWSCROLL) {
-                    ck.scrollMask.hide();
-                }
-                prevent_window_scroll();
-            }).bind('scroll', function(){
-                if (modalCard.isOpened) {
-                    var y = window.scrollY;
-                    ck.hideAddressbar();
-                    window.scrollTo(0, 0);
-                    if (y > 40) {
-                        ck.viewport[0].scrollTop = ck.viewport[0].scrollTop + y - 40;
-                    }
-                }
             });
+            
+            if (supports.OVERFLOWSCROLL 
+                    && supports.SAFARI_OVERFLOWSCROLL) {
 
-            $(document).bind('touchstart', prevent_window_scroll);
+                doc.bind('scrollstart', function(){
+                    ck.scrollMask.show();
+                }).bind('scrollend', function(){
+                    ck.scrollMask.hide();
+                    prevent_window_scroll();
+                });
 
-            if (supports.SAFARI_TOPBAR) {
+                doc.bind('scroll', function(){
+                    if (modalCard.isOpened) {
+                        var y = window.scrollY;
+                        ck.hideAddressbar();
+                        window.scrollTo(0, 0);
+                        if (y > 40) {
+                            ck.viewport[0].scrollTop = ck.viewport[0].scrollTop + y - 40;
+                        }
+                    }
+                });
+
+                doc.bind('touchstart', prevent_window_scroll);
+
+            }
+
+            if (supports.SAFARI_TOPBAR 
+                    && supports.OVERFLOWSCROLL) {
 
                 var startY,
                     hold_timer,
@@ -446,7 +499,7 @@ define([
 
             var travel_history, restore_state, restore_modal;
 
-            if (supports.HISTORY) {
+            if (supports.OVERFLOWSCROLL) {
                 $(window).bind("popstate", function(e){
                     // alert(['pop', e.state && [e.state.prev, e.state.next].join('-'), ck.viewport && ck.viewport[0].id].join(', '))
                     if (ck.sessionLocked) {
@@ -561,7 +614,7 @@ define([
         initView: function(card, opt){
             if (!card.data('rendered') && !opt.preventRender) {
                 render.initCard(card, this.raw, this.footer, opt);
-                if (!opt.isModal) {
+                if (!opt.isModal && !opt.isActions) {
                     card.data('rendered', '1');
                 }
                 card.find('.ck-mini-unit').forEach(function(unit){
@@ -595,9 +648,9 @@ define([
             this.initView(card, opt);
             this.viewport = card.show();
             if (!is_loading) {
-                this.updateSize();
+                this.updateSize(opt);
             }
-            if (!opt.isModal) {
+            if (!opt.isModal && !opt.isActions) {
                 this.updateHeader();
             }
             sessionStorage['ck_lasturl'] = location.href;
@@ -608,20 +661,24 @@ define([
             }
         },
 
-        updateSize: function(){
-            this.viewport[0].style.height = (this.sizeInited ? 
-                window.innerHeight : (screen.availHeight + 60)) + 'px';
-            // enable scrollable when height is not enough 
-            var ft = this.viewport.find('.ck-footer'),
-                last_unit = ft && ft.prev()[0];
-            if (last_unit) {
-                var d = screen.availHeight - (last_unit.offsetTop + last_unit.offsetHeight + this.viewport[0].scrollTop);
-                if (d > 0) {
-                    ft.css('paddingTop', d + 'px');
-                } else {
-                    ft.css('paddingTop', '0px');
+        updateSize: function(opt){
+            opt = opt || {};
+            if (supports.OVERFLOWSCROLL || opt.isActions) {
+                this.viewport[0].style.height = (this.sizeInited ? 
+                    window.innerHeight : (screen.availHeight + 60)) + 2 + 'px';
+                // enable scrollable when height is not enough 
+                var ft = this.viewport.find('.ck-footer'),
+                    last_unit = ft && ft.prev()[0];
+                if (last_unit) {
+                    var d = screen.availHeight - (last_unit.offsetTop + last_unit.offsetHeight + this.viewport[0].scrollTop);
+                    if (d > 0) {
+                        ft.css('paddingTop', d + 'px');
+                    } else {
+                        ft.css('paddingTop', '0px');
+                    }
                 }
             }
+            bus.fire('cardkit:updateSize');
         },
 
         watchScroll: function(card){
@@ -673,17 +730,18 @@ define([
 
         hideAddressbar: function(){
             if (this.windowFullHeight > window.innerHeight) {
-                if (!this.sizeInited) {
-                    this.sizeInited = true;
-                }
                 this.loadingCard.find('div')[0].style.visibility = 'hidden';
-                if (supports.SAFARI_TOPBAR) {
+                if (supports.SAFARI_TOPBAR 
+                        && (supports.OVERFLOWSCROLL || !this.sizeInited)) {
                     window.scrollTo(0, 1);
                     //if (screen.availHeight - ck.viewport[0].offsetHeight 
                             //> ck.headerHeight + 10) {
                         //location.reload();
                         //return;
                     //}
+                }
+                if (!this.sizeInited) {
+                    this.sizeInited = true;
                 }
                 this.windowFullHeight = window.innerHeight;
                 ck.updateSize();
@@ -822,7 +880,7 @@ define([
                 return;
             }
         }
-        if (supports.PREVENT_CACHE && next === ck.loadingCard) {
+        if (!supports.OVERFLOWSCROLL && next === ck.loadingCard) {
             if (true_link) {
                 location.href = true_link;
             }
@@ -835,6 +893,17 @@ define([
         }
         ck.disableControl();
         //ck.showTopbar();
+        if (!supports.OVERFLOWSCROLL) {
+            ck.loadingCard.addClass('moving').show();
+            setTimeout(function(){
+                ck.changeView(next);
+                current.hide();
+                ck.loadingCard.hide().removeClass('moving');
+                ck.enableControl();
+                ck.sessionLocked = false;
+            }, 400);
+            return;
+        }
         choreo.transform(next[0], 'translateX', window.innerWidth + 'px');
         next.addClass('moving');
         ck.changeView(next);
@@ -852,7 +921,7 @@ define([
             ck.enableControl();
             ck.sessionLocked = false;
             if (true_link) {
-                if (is_forward && supports.HISTORY) {
+                if (is_forward) {
                     history.forward();
                 } else {
                     clear_footprint();
@@ -907,7 +976,7 @@ define([
     }
 
     function push_history(prev_id, next_id, link, opt){
-        if (supports.HISTORY) {
+        if (supports.OVERFLOWSCROLL) {
             history.pushState({
                 prev: prev_id,
                 next: next_id,
@@ -982,7 +1051,7 @@ define([
     }
 
     function prevent_window_scroll(){
-        if (!supports.SAFARI_TOPBAR) {
+        if (!supports.SAFARI_TOPBAR || !supports.OVERFLOWSCROLL) {
             return;
         }
         var vp = ck.viewport[0],

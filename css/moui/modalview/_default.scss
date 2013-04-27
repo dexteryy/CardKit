@@ -19,7 +19,7 @@
       border-bottom:1px solid rgba(0,0,0,.2);
       z-index:$zindex_step;
       @include user-select(none);
-      position:absolute;
+      position:fixed;
       top:0;
       left:0;
       width:100%;
@@ -81,6 +81,41 @@
 
     .wrapper {
       @include transform(translateY(0));
+    }
+
+  }
+
+}
+
+.no-overflowscroll {
+
+  .moui-modalview {
+    position:static;
+
+    .wrapper {
+      @include transition(opacity 0.4s);
+      @include transform(translateY(0));
+      opacity:0;
+    
+      & > article {
+        -webkit-overflow-scrolling: auto;
+        overflow-y:visible;
+        height:auto;
+
+        & > .content {
+          min-height:0;
+        }
+
+      }
+
+    }
+
+    &.active {
+
+      .wrapper {
+        opacity:1;
+      }
+
     }
 
   }
