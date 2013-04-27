@@ -24,14 +24,15 @@ $view_color: #f2f2f2;
 $active_color: #006ae2;
 $notice_color: #df5001;
 
-$headtitle_size: 40px/2; // 文章正文
-$article_size: 40px/2; // 文章正文
-$maintitle_size: 30px/2; // 标题
-$title_size: 26px/2;  // 按钮
-$text_size: 22px/2; // 内容
-
+$headtitle_size: 40px/2;
+$article_size: 40px/2;
+$maintitle_size: 30px/2;
+$button_size: 30px/2;
 $title_size: 26px/2;
+$text_size: 22px/2;
+
 $button_height: 58px/2;
+$bigbutton_height: 78px/2;
 $nav_height: 85px/2;
 
 $radius: 6px/2;
@@ -53,37 +54,55 @@ $zindex_step: 10;
   @include user-select(none);
   -webkit-tap-highlight-color: rgba(0,0,0,0);
 
-  background-color: #81858b;
-  @include background-image(linear-gradient(bottom, #ccc, #fff));
-  border: solid 1px #bcbcbc;
+  background-color: #ececec;
+  @include background-image(linear-gradient(bottom, #e2e2e2, #ececec));
+  border: solid 1px rgba(0,0,0,.3);
   @include border-radius($radius);
-  //@include box-shadow(0 1px #fff, inset 0 2px #fff);
+  @include box-shadow(inset 0 1px 0px #fff);
 
-  line-height:($button_height - 6px/2);
-  font-size:$title_size;
+  line-height:$button_height;
+  font-size:$button_size;
   font-weight:bold;
   color:$text_color;
   text-align:center;
-  @include text-shadow(0 1px #fff);
+  @include text-shadow(0 1px 1px #fff);
 }
 
 %block-pressed {
-  @include box-shadow(inset 0 2px 3px rgba(129,129,129,.5));
-  @include background-image(linear-gradient(bottom, #ccc, #fff));
+  border-color:#b2b2b2;
+  @include box-shadow(inset 0 1px 1px rgba(115,115,115,.8));
+  background-color: #dbdbdb;
+  @include background-image(linear-gradient(bottom, #dbdbdb, #cdcdcd));
 }
 
-%block-enabled {
-  background-color: #81858b;
-  border: solid 1px #1366a4;
-  @include background-image(linear-gradient(bottom, #1366a4, #278cd7));
+%block-main {
+  border-color: rgba(0,19,79,.85);
+  @include box-shadow(inset 0 1px 0px #429bff);
+  background-color: #005fbf;
+  @include background-image(linear-gradient(bottom, #005fbf, #006ae1));
   color:#fff;
-  @include text-shadow(0 1px #000);
+  @include text-shadow(0 1px 1px #000);
 }
 
-%block-enabled-active {
-  background-color: #81858b;
-  @include box-shadow(0 1px #fff, inset 0 2px 3px rgba(117,117,117,.51));
-  @include background-image(linear-gradient(bottom, #1366a4, #278cd7));
+%block-main-pressed {
+  @include box-shadow(inset 0 1px 1px rgba(2,72,121,1));
+  background-color: #0077d6;
+  @include background-image(linear-gradient(bottom, #0077d6, #0068d6));
+}
+
+%block-danger {
+  border-color: rgba(60,0,0,.85);
+  @include box-shadow(inset 0 1px 0px #ff5c5c);
+  background-color: #d50000;
+  @include background-image(linear-gradient(bottom, #d50000, #ee0000));
+  color:#fff;
+  @include text-shadow(0 1px 1px #000);
+}
+
+%block-danger-pressed {
+  @include box-shadow(inset 0 1px 1px rgba(2,72,121,1));
+  background-color: #0077d6;
+  @include background-image(linear-gradient(bottom, #c50800, #b20600));
 }
 
 
@@ -104,6 +123,18 @@ $zindex_step: 10;
     @extend %main-button;
   }
 
+  &[data-is-danger="true"] {
+    @extend %danger-button;
+  }
+
+  &[data-style="big"] {
+    height:$bigbutton_height;
+  }
+
+  &[disabled] {
+    color:#a1a1a1;
+  }
+
   &:active {
     @extend %block-pressed;
 
@@ -117,10 +148,19 @@ $zindex_step: 10;
 }
 
 %main-button {
-  @extend %block-enabled;
+  @extend %block-main;
 
   &:active {
-    @extend %block-enabled-active;
+    @extend %block-main-pressed;
+  }
+
+}
+
+%danger-button {
+  @extend %block-danger;
+
+  &:active {
+    @extend %block-danger-pressed;
   }
 
 }

@@ -20,8 +20,8 @@ define('moui/actionview', [
                     </div>\
                 </div>\
                 <footer>\
-                    <button class="confirm" data-is-default="true"></button>\
-                    <button class="cancel"></button>\
+                    <button type="button" class="confirm" data-is-default="true"></button>\
+                    <button type="button" class="cancel"></button>\
                 </footer>\
             </div>',
 

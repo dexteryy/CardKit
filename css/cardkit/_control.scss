@@ -22,16 +22,17 @@
   @extend .ckbase-btn;
 }
 
+.ck-select,
 .ck-actions-button {
-  @extend .ckbase-btn;
-  span {
-    background:$folder_icon no-repeat right center;
-    background-size:10px;
-    padding-right: 20px;
-  }
+
   .ck-option {
     display:none;
   }
+
+}
+
+.ck-actions-button {
+  @extend .ckbase-btn;
 }
 
 .ck-growl-button {

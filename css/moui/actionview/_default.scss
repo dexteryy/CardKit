@@ -28,7 +28,7 @@
         height: $nav_height;
 
         h1 {
-          font-size:$article_size;
+          font-size:$headtitle_size;
           line-height: $nav_height;
           display:block;
           color:#fff;
@@ -43,6 +43,7 @@
       & > .desc {
         color:#fff;
         padding:$space 0;
+        font-size:$maintitle_size;
       }
 
       & > article {
@@ -50,16 +51,16 @@
         bottom:$space * 4 + $button_height;
         left:$space;
         right:$space;
-        background:#1a1a1a;
+        background:#343434;
         border: solid 1px #141414;
         padding:0 18px;
-        margin-bottom:-1px;
-        @include border-radius(5px);
-        @include box-shadow(0px 1px 4px 0px rgba(0,0,0,0.3));
+        @include border-radius($radius);
+        @include box-shadow(inset 0px 1px 0px #494949);
 
         &:empty {
             @include box-shadow(none);
             border:none;
+            background:none;
         }
 
         .option {
@@ -76,7 +77,9 @@
     position:fixed;
     bottom:0;
     left:0;
-    background:#000;
+    border-top:1px solid #000;
+    background:rgba(13,13,13,0.95);
+    @include box-shadow(inset 0px 1px 0px #212121);
     width:100%;
     height:$space * 2 + $button_height;
     @include transform(translateY(100%));
@@ -96,6 +99,19 @@
         display:none;
       }
 
+      &.cancel {
+        border-color:#101010;
+        background:#343434;
+        @include box-shadow(inset 0 1px 0px #494949);
+        color:#fff;
+        @include text-shadow(0 1px 1px #000);
+
+        &:active {
+          @include box-shadow(none);
+        }
+
+      }
+
     }
 
     &.multi {
@@ -103,7 +119,7 @@
       button {
         right:50%;
         margin:0 ($space/2) 0 0px;
-      
+
         &.confirm {
           display:inline-block;
           left:50%;
@@ -123,7 +139,7 @@
     left:0;
     width:100%;
     height:100%;
-    background:rgba(25,25,25,1);
+    background:rgba(13,13,13,0.95);
     opacity:0;
     @include transition(opacity 0.3s 0.1s);
   }
@@ -143,7 +159,7 @@
   &.active {
 
     .shd {
-      opacity:0.85;
+      opacity:1;
     }
 
     .wrapper {
@@ -164,11 +180,14 @@
   box-sizing:content-box;
   width:100%;
   color:#fff;
-  background:#1a1a1a;
+  background:none;
   font-size:$title_size;
   padding:10px 0;
+  margin:0;
+  @include border-radius(0);
   border:none;
-  border-bottom:solid 1px #141414;
+  border-top:solid 1px #3e3e3e;
+  border-bottom:solid 1px #282828;
   text-align:center;
   @include appearance(none);
   @include user-select(none);
@@ -177,14 +196,12 @@
 }
 %action-option:active,
 %action-option.enabled {
-  background-color:$active_color;
-  text-shadow:0 0.1rem 0 rbga(255,255,255,0.25);
-  padding-left:5px;
-  padding-right:5px;
-  @include transform(translateX(-5px));
-  @include border-radius(3px);
+  color:$active_color;
 }
 
+%action-option:first-child {
+  border-top:none;
+}
 %action-option:last-child {
   border-bottom:none;
 }

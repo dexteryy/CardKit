@@ -13,8 +13,8 @@ define('moui/modalview', [
                 <div class="shd"></div>\
                 <div class="wrapper">\
                     <header>\
-                        <button class="confirm" data-is-default="true"></button>\
-                        <button class="cancel"></button>\
+                        <button type="button" class="confirm" data-is-default="true"></button>\
+                        <button type="button" class="cancel"></button>\
                         <h1></h1>\
                     </header>\
                     <article><div class="content"></div></article>\

@@ -1,6 +1,7 @@
 @import "moui/picker/segment";
 @import "moui/picker/tags";
 @import "moui/picker/actions";
+@import "moui/picker/select";
 @import "moui/picker/slider";
 
 .ck-segment {
@@ -19,6 +20,10 @@
 
 .ck-actions {
   @extend .moui-actions;
+}
+
+.ck-select {
+  @extend .moui-select;
 }
 
 .ck-stars {
