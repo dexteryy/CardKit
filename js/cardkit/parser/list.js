@@ -40,23 +40,29 @@ define([
 
     function get_item(item, custom){
         item = $(item);
-        var title = item.find('.ckd-title'),
-            author = item.find('.ckd-author');
+        var title = item.find('.ckd-title');
         if (!title[0] && util.getHref(item)) {
             title = item;
         }
+        var author = item.find('.ckd-author');
         var data = {
             title: getInnerHTML(title),
             href: util.getHref(title),
-            author: getInnerHTML(author),
-            author_url: util.getHref(author),
-            info: getInnerHTML(item.find('.ckd-info')),
-            subtitle: util.getInnerHTML(item.find('.ckd-subtitle')),
-            meta: item.find('.ckd-meta').map(function(node){
-                return node.innerHTML;
-            }),
+            titlePrefix: getInnerHTML(item.find('.ckd-title-prefix')),
+            titleSuffix: getInnerHTML(item.find('.ckd-title-suffix')),
+            titleTag: util.getOuterHTML(item.find('.ckd-title-tag')),
             icon: item.find('.ckd-icon').attr('src'),
-            content: util.getOuterHTML(item.find('.ckd-content'))
+            desc: util.getInnerHTML(item.find('.ckd-desc,ckd-subtitle')),
+            info: getInnerHTML(item.find('.ckd-info')),
+            content: util.getOuterHTML(item.find('.ckd-content')),
+            meta: getInnerHTML(item.find('.ckd-meta')),
+            author: getInnerHTML(author),
+            authorUrl: util.getHref(author),
+            authorPrefix: getInnerHTML(item.find('.ckd-author-prefix')),
+            authorSuffix: getInnerHTML(item.find('.ckd-author-suffix')),
+            avatar: item.find('.ckd-avatar').attr('src'),
+            authorDesc: util.getInnerHTML(item.find('.ckd-author-desc')),
+            authorMeta: getInnerHTML(item.find('.ckd-author-mata'))
         };
         if (custom && typeof custom === 'object') {
             custom = get_item(custom);

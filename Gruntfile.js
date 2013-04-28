@@ -190,12 +190,12 @@ module.exports = function(grunt) {
                     asi: true 
                 },
                 files: {
-                    src: ['./*.js', 'js/**/*.js', '!js/mod/**']
+                    src: ['./*.js', 'js/**/*.js', '!js/mod/**', '!js/cardkit/tpl/**']
                 }
             },
             dist: {
                 files: {
-                    src: ['./*.js', 'js/**/*.js', '!js/mod/**']
+                    src: ['./*.js', 'js/**/*.js', '!js/mod/**', '!js/cardkit/tpl/**']
                 }
             }
         },
