@@ -6,8 +6,10 @@ define([
         history = window.history,
         document = window.document,
         body = document.body,
-        is_ios5 = browsers.engine === 'webkit' 
+        is_android = browsers.os === 'android',
+        is_ios5 = browsers.engine === 'webkit'
             && parseInt(browsers.engineversion, 10) < 536,
+        is_mobilefirefox = browsers.mozilla && is_android,
         is_desktop = browsers.os === 'mac'
             || browsers.os === 'windows'
             || browsers.os === 'linux';
@@ -17,9 +19,14 @@ define([
         HISTORY: 'pushState' in history
             && !browsers.crios 
             && !browsers.aosp
+            && !is_mobilefirefox
             && !is_ios5,
 
         NEW_WIN: !is_ios5 && !browsers.aosp,
+
+        CARD_SCROLL: !browsers.aosp 
+            && !is_ios5
+            && !is_desktop,
 
         SAFARI_OVERFLOWSCROLL: "webkitOverflowScrolling" in body.style,
 
@@ -29,12 +36,8 @@ define([
 
     };
 
-    exports.PREVENT_CACHE = !exports.HISTORY 
-        && !!(browsers.aosp || browsers.mobilesafari);
-
-    exports.CARD_SCROLL = !browsers.aosp 
-        && !is_ios5
-        && !is_desktop;
+    exports.PREVENT_CACHE = browsers.aosp 
+        || browsers.mobilesafari && !exports.HISTORY;
 
     exports.UNIVERSAL_TRANS = exports.HISTORY
         && exports.CARD_SCROLL
@@ -43,7 +46,7 @@ define([
         && !is_desktop;
 
     exports.WINDOW_SCROLL = !exports.CARD_SCROLL 
-        || browsers.os === 'android';
+        || is_android;
 
     return exports;
 

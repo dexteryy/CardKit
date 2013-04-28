@@ -687,6 +687,7 @@ define("mo/domready", [
 define("mo/browsers", [], function(){
 
     var match, skin, os,
+        ua = this.navigator.userAgent.toLowerCase(),
         rank = { 
             "360ee": 2,
             "maxthon/3": 2,
@@ -699,8 +700,7 @@ define("mo/browsers", [], function(){
         };
 
     try {
-        var ua = this.navigator.userAgent.toLowerCase(),
-            rwindows = /(windows) nt ([\w.]+)/,
+        var rwindows = /(windows) nt ([\w.]+)/,
             rmac = /(mac) os \w+ ([\w.]+)/,
             riphone = /(iphone) os ([\w._]+)/,
             ripad = /(ipad) os ([\w.]+)/,
@@ -779,7 +779,8 @@ define("mo/browsers", [], function(){
         engineversion: match[4] || "0",
         os: os[1],
         osversion: os[2] || "0",
-        skin: skin[1] || ""
+        skin: skin[1] || "",
+        ua: ua
     };
 
     if (result.os === 'android' && !result.browser) {
@@ -811,8 +812,10 @@ define("../cardkit/supports", [
         history = window.history,
         document = window.document,
         body = document.body,
-        is_ios5 = browsers.engine === 'webkit' 
+        is_android = browsers.os === 'android',
+        is_ios5 = browsers.engine === 'webkit'
             && parseInt(browsers.engineversion, 10) < 536,
+        is_mobilefirefox = browsers.mozilla && is_android,
         is_desktop = browsers.os === 'mac'
             || browsers.os === 'windows'
             || browsers.os === 'linux';
@@ -822,9 +825,14 @@ define("../cardkit/supports", [
         HISTORY: 'pushState' in history
             && !browsers.crios 
             && !browsers.aosp
+            && !is_mobilefirefox
             && !is_ios5,
 
         NEW_WIN: !is_ios5 && !browsers.aosp,
+
+        CARD_SCROLL: !browsers.aosp 
+            && !is_ios5
+            && !is_desktop,
 
         SAFARI_OVERFLOWSCROLL: "webkitOverflowScrolling" in body.style,
 
@@ -834,12 +842,8 @@ define("../cardkit/supports", [
 
     };
 
-    exports.PREVENT_CACHE = !exports.HISTORY 
-        && !!(browsers.aosp || browsers.mobilesafari);
-
-    exports.CARD_SCROLL = !browsers.aosp 
-        && !is_ios5
-        && !is_desktop;
+    exports.PREVENT_CACHE = browsers.aosp 
+        || browsers.mobilesafari && !exports.HISTORY;
 
     exports.UNIVERSAL_TRANS = exports.HISTORY
         && exports.CARD_SCROLL
@@ -848,7 +852,7 @@ define("../cardkit/supports", [
         && !is_desktop;
 
     exports.WINDOW_SCROLL = !exports.CARD_SCROLL 
-        || browsers.os === 'android';
+        || is_android;
 
     return exports;
 
@@ -7231,6 +7235,7 @@ define("../cardkit/app", [
 
             if (env.enableConsole) {
                 console.info(supports);
+                console.info(browsers);
             }
 
             this.scrollGesture = momoScroll(document);
@@ -7775,7 +7780,6 @@ define("../cardkit/app", [
                 return;
             }
         }
-        ck.hideTopbar();
         if (!supports.UNIVERSAL_TRANS 
                 && next === ck.loadingCard) {
             if (true_link) {
@@ -7783,6 +7787,7 @@ define("../cardkit/app", [
             }
             return;
         }
+        ck.hideTopbar();
         ck.sessionLocked = true;
         var current = ck.viewport;
         if (!is_forward) {
@@ -7983,13 +7988,16 @@ define("../cardkit/app", [
         if (opt.target !== '_self') {
             open_window(true_link, opt.target);
         } else {
-            ck.hideTopbar();
-            if (supports.PREVENT_CACHE) {
-                ck.viewport.hide();
-                ck.changeView(ck.loadingCard);
+            if (!supports.UNIVERSAL_TRANS) {
+                if (supports.PREVENT_CACHE) {
+                    ck.hideTopbar();
+                    ck.viewport.hide();
+                    ck.changeView(ck.loadingCard);
+                }
                 location.href = true_link;
                 return;
             }
+            ck.hideTopbar();
             ck.sessionLocked = true;
             var next_id = 'ckLoading';
             var next = ck.loadingCard;

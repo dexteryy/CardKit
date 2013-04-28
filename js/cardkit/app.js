@@ -362,6 +362,7 @@ define([
 
             if (env.enableConsole) {
                 console.info(supports);
+                console.info(browsers);
             }
 
             this.scrollGesture = momoScroll(document);
@@ -906,7 +907,6 @@ define([
                 return;
             }
         }
-        ck.hideTopbar();
         if (!supports.UNIVERSAL_TRANS 
                 && next === ck.loadingCard) {
             if (true_link) {
@@ -914,6 +914,7 @@ define([
             }
             return;
         }
+        ck.hideTopbar();
         ck.sessionLocked = true;
         var current = ck.viewport;
         if (!is_forward) {
@@ -1114,13 +1115,16 @@ define([
         if (opt.target !== '_self') {
             open_window(true_link, opt.target);
         } else {
-            ck.hideTopbar();
-            if (supports.PREVENT_CACHE) {
-                ck.viewport.hide();
-                ck.changeView(ck.loadingCard);
+            if (!supports.UNIVERSAL_TRANS) {
+                if (supports.PREVENT_CACHE) {
+                    ck.hideTopbar();
+                    ck.viewport.hide();
+                    ck.changeView(ck.loadingCard);
+                }
                 location.href = true_link;
                 return;
             }
+            ck.hideTopbar();
             ck.sessionLocked = true;
             var next_id = 'ckLoading';
             var next = ck.loadingCard;

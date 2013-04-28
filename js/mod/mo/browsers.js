@@ -10,6 +10,7 @@
 define("mo/browsers", [], function(){
 
     var match, skin, os,
+        ua = this.navigator.userAgent.toLowerCase(),
         rank = { 
             "360ee": 2,
             "maxthon/3": 2,
@@ -22,8 +23,7 @@ define("mo/browsers", [], function(){
         };
 
     try {
-        var ua = this.navigator.userAgent.toLowerCase(),
-            rwindows = /(windows) nt ([\w.]+)/,
+        var rwindows = /(windows) nt ([\w.]+)/,
             rmac = /(mac) os \w+ ([\w.]+)/,
             riphone = /(iphone) os ([\w._]+)/,
             ripad = /(ipad) os ([\w.]+)/,
@@ -102,7 +102,8 @@ define("mo/browsers", [], function(){
         engineversion: match[4] || "0",
         os: os[1],
         osversion: os[2] || "0",
-        skin: skin[1] || ""
+        skin: skin[1] || "",
+        ua: ua
     };
 
     if (result.os === 'android' && !result.browser) {
