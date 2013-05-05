@@ -30,26 +30,31 @@ define('moui/growl', [
         _defaults: _.merge({}, default_config, Growl.prototype._defaults),
 
         set: function(opt) {
-            this.superClass.set.call(this, opt);
+            var self = this;
+            self.superClass.set.call(self, opt);
 
-            if (opt.corner && opt.corner !== this._currentCorner) {
-                if (this._currentCorner) {
-                    this._node.removeClass(CORNER + this._currentCorner);
+            if (opt.corner && opt.corner !== self._currentCorner) {
+                if (self._currentCorner) {
+                    self._node.removeClass(CORNER + self._currentCorner);
                 }
-                this._node.addClass(CORNER + opt.corner);
-                this._currentCorner = opt.corner;
+                self._node.addClass(CORNER + opt.corner);
+                self._currentCorner = opt.corner;
             }
 
-            return this;
+            if (opt.expires !== undefined) {
+                clearTimeout(self._exptimer);
+                if (self.isOpened) {
+                    set_expires(self);
+                }
+            }
+
+            return self;
         },
 
         applyOpen: function(){
             clearTimeout(this._exptimer);
             if (this._config.expires != -1) {
-                var self = this;
-                this._exptimer = setTimeout(function(){
-                    self.close();
-                }, this._config.expires);
+                set_expires(this);
             }
             return this.superClass.applyOpen.apply(this, arguments);
         },
@@ -64,6 +69,12 @@ define('moui/growl', [
         }
 
     });
+
+    function set_expires(self){
+        self._exptimer = setTimeout(function(){
+            self.close();
+        }, self._config.expires);
+    }
 
     function exports(opt){
         return new exports.Growl(opt);

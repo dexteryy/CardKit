@@ -4,24 +4,40 @@ define('momo/tap', [
     'momo/base'
 ], function(_, momoBase){
 
-    var MomoTap = _.construct(momoBase.Class);
+    var MomoTap = _.construct(momoBase.Class, function(){
+        this._pressTrigger = nothing;
+        this.superConstructor.apply(this, arguments);
+    });
 
     _.mix(MomoTap.prototype, {
 
-        EVENTS: ['tap', 'doubletap', 'hold'],
+        EVENTS: ['tap', 'doubletap', 'hold', 'tapstart', 'tapcancel'],
         DEFAULT_CONFIG: {
             'tapRadius': 10,
             'doubleTimeout': 300,
+            'tapThreshold': 10,
             'holdThreshold': 500
         },
 
         press: function(e){
-            var t = this.SUPPORT_TOUCH ? e.touches[0] : e;
-            this._startTime = e.timeStamp;
-            this._startTarget = t.target;
-            this._startPosX = t.clientX;
-            this._startPosY = t.clientY;
-            this._movePosX = this._movePosY = this._moveTarget = NaN;
+            var self = this,
+                t = self.SUPPORT_TOUCH ? e.touches[0] : e;
+            self._startTime = e.timeStamp;
+            self._startTarget = t.target;
+            self._startPosX = t.clientX;
+            self._startPosY = t.clientY;
+            self._movePosX = self._movePosY = self._moveTarget = NaN;
+            self._started = false;
+            self._pressTrigger = function(){
+                self._started = true;
+                self.trigger(e, self.event.tapstart);
+                self._pressTrigger = nothing;
+            };
+            self._activeTimer = setTimeout(function(){
+                if (!is_moved(self)) {
+                    self._pressTrigger();
+                }
+            }, self._config.tapThreshold);
         },
 
         move: function(e){
@@ -33,28 +49,54 @@ define('momo/tap', [
 
         release: function(e){
             var self = this,
-                tm = e.timeStamp;
-            if (this._moveTarget && this._moveTarget !== this._startTarget 
-                    || Math.abs(self._movePosX - self._startPosX) > self._config.tapRadius
-                    || Math.abs(self._movePosY - self._startPosY) > self._config.tapRadius) {
+                tm = e.timeStamp,
+                moved = is_moved(self);
+            clearTimeout(self._activeTimer);
+            if (moved || tm - self._startTime < self._config.tapThreshold) {
+                if (!moved) {
+                    self._firstTap = tm;
+                }
+                if (self._started) {
+                    self.trigger(e, self.event.tapcancel);
+                }
                 return;
             }
-            if (tm - self._startTime > self._config.holdThreshold) {
+            if (!self._started) {
+                self._pressTrigger();
+            }
+            if (tm - self._startTime > self._config.holdThreshold + self._config.holdThreshold) {
                 self.trigger(e, self.event.hold);
             } else {
-                if (self._lastTap 
-                        && (tm - self._lastTap < self._config.doubleTimeout)) {
+                if (self._firstTap
+                        && (tm - self._firstTap < self._config.doubleTimeout)) {
                     e.preventDefault();
                     self.trigger(e, self.event.doubletap);
-                    self._lastTap = 0;
+                    self._firstTap = 0;
                 } else {
                     self.trigger(e, self.event.tap);
-                    self._lastTap = tm;
+                    self._firstTap = tm;
                 }
+            }
+        },
+
+        cancel: function(e){
+            clearTimeout(this._activeTimer);
+            if (this._started) {
+                this.trigger(e, this.event.tapcancel);
             }
         }
     
     });
+
+    function is_moved(self){
+        if (self._moveTarget && self._moveTarget !== self._startTarget 
+                || Math.abs(self._movePosX - self._startPosX) > self._config.tapRadius
+                || Math.abs(self._movePosY - self._startPosY) > self._config.tapRadius) {
+            return true;
+        }
+    }
+
+    function nothing(){}
 
     function exports(elm, opt, cb){
         return new exports.Class(elm, opt, cb);

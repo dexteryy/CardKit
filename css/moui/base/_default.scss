@@ -21,6 +21,7 @@ $text_color: #252525;
 $desc_color: #787878;
 $border_color: #efefef;
 $view_color: #f2f2f2;
+$view_border_color: #e6e6e6;
 $active_color: #006ae2;
 $notice_color: #df5001;
 
@@ -37,10 +38,12 @@ $nav_height: 85px/2;
 
 $radius: 6px/2;
 $space: 20px/2;
+$morespace: 30px/2;
 
-$zindex_view: 10;
-$zindex_overlay: 100;
-$zindex_mask: 1000;
+$zindex_item: 100;
+$zindex_view: 200;
+$zindex_overlay: 1000;
+$zindex_mask: 5000;
 $zindex_step: 10;
 
 

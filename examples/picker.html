@@ -187,10 +187,8 @@
             </div>
         </div>
 
-        <div class="ck-box-unit">
-            <header class="ckd-hd">Console</header>
-            <div class="ckd-content" id="console">
-            </div>
+        <div class="ck-box-unit" data-cfg-paper="true">
+            <div class="ckd-content" id="console"></div>
         </div>
 
     </div>
@@ -261,6 +259,7 @@ require([
             var result = e.component.responseData;
             console.info('response: ', result);
             notify.set({
+                expires: 1400,
                 content: 'response: ' + result
             }).open();
         }
@@ -271,6 +270,7 @@ require([
         var result = e.component.val();
         console.info('value: ', result);
         notify.set({
+            expires: 1400,
             content: 'value: ' + result
         }).open();
     }

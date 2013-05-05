@@ -1,9 +1,12 @@
 
 .moui-tagselector {
   overflow:hidden;
+  @include user-select(none);
+
   .option {
     @extend %tag-option;
   }
+
 }
 
 %tag-option {

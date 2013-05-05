@@ -4544,6 +4544,8 @@ define('momo/scroll', [
         EVENTS: [
             'scrolldown', 
             'scrollup', 
+            'scrollright', 
+            'scrollleft', 
             'scrollstart', 
             'scrollend'
         ],
@@ -4556,7 +4558,7 @@ define('momo/scroll', [
             this.scrollingNode = elm;
         },
 
-        checkScollDirection: function(y){
+        checkScollDirection: function(x, y){
             var node = { target: this.node },
                 d = y - this._lastY,
                 threshold = this._config.directThreshold;
@@ -4573,14 +4575,31 @@ define('momo/scroll', [
                 this._lastY = y;
                 this._scrollDown = false;
             }
+            d = x - this._lastX;
+            if (d < 0 - threshold) {
+                if (this._scrollRight !== true) {
+                    this.trigger(node, this.event.scrollright);
+                }
+                this._lastX = x;
+                this._scrollRight = true;
+            } else if (d > threshold) {
+                if (this._scrollRight !== false) {
+                    this.trigger(node, this.event.scrollleft);
+                }
+                this._lastX = x;
+                this._scrollRight = false;
+            }
         },
 
         press: function(e){
             var self = this,
                 t = this.SUPPORT_TOUCH ? e.touches[0] : e;
             self._scrollDown = null;
+            self._scrollRight = null;
             self._lastY = t.clientY;
+            self._lastX = t.clientX;
             self._scrollY = null;
+            self._scrollX = null;
             if (self.scrollingNode) {
                 var scrolling = self._scrolling;
                 self._scrolling = false;
@@ -4589,6 +4608,7 @@ define('momo/scroll', [
                     self.once('scroll', function(){
                         if (tm === self._tm) {
                             self._scrollY = self.scrollingNode.scrollTop;
+                            self._scrollX = self.scrollingNode.scrollLeft;
                             if (!scrolling) {
                                 self._started = true;
                                 self.trigger({ target: self.node }, self.event.scrollstart);
@@ -4601,10 +4621,11 @@ define('momo/scroll', [
 
         move: function(e){
             var t = this.SUPPORT_TOUCH ? e.touches[0] : e;
-            this.checkScollDirection(t.clientY);
+            this.checkScollDirection(t.clientX, t.clientY);
             //this._lastY = t.clientY;
             if (this.scrollingNode) {
                 this._scrollY = this.scrollingNode.scrollTop;
+                this._scrollX = this.scrollingNode.scrollLeft;
             }
         },
 
@@ -4613,28 +4634,44 @@ define('momo/scroll', [
                 t = this.SUPPORT_TOUCH ? e.changedTouches[0] : e,
                 node = { target: self.node };
             // up/down
-            this.checkScollDirection(t.clientY);
+            this.checkScollDirection(t.clientX, t.clientY);
             // end
+            var gap, wait_scroll, vp = self.scrollingNode;
             if (self._scrollY !== null) {
-                var vp = self.scrollingNode,
-                    gap = Math.abs(vp.scrollTop - self._scrollY);
+                gap = Math.abs(vp.scrollTop - self._scrollY);
+                wait_scroll = 1;
                 if (self._scrollY >= 0 && (self._scrollY <= vp.scrollHeight + vp.offsetHeight)
                         && (gap && gap < self._config.scrollEndGap)) {
                     self._started = false;
                     self.trigger(node, self.event.scrollend);
                 } else {
-                    var tm = self._tm;
-                    self._scrolling = true;
-                    self.once('scroll', function(){
-                        if (tm === self._tm) {
-                            self._scrolling = false;
-                            self._started = false;
-                            self.trigger(node, self.event.scrollend);
-                        }
-                    }, vp);
+                    wait_scroll = 2;
                 }
                 self._scrollY = null;
-            } else if (self._started) {
+            } else if (self._scrollX !== null) {
+                gap = Math.abs(vp.scrollLeft - self._scrollX);
+                wait_scroll = 1;
+                if (self._scrollX >= 0 && (self._scrollX <= vp.scrollWidth + vp.offsetWidth)
+                        && (gap && gap < self._config.scrollEndGap)) {
+                    self._started = false;
+                    self.trigger(node, self.event.scrollend);
+                } else {
+                    wait_scroll = 2;
+                }
+                self._scrollX = null;
+            } 
+            if (wait_scroll === 2) {
+                var tm = self._tm;
+                self._scrolling = true;
+                self.once('scroll', function(){
+                    if (tm === self._tm) {
+                        self._scrolling = false;
+                        self._started = false;
+                        self.trigger(node, self.event.scrollend);
+                    }
+                }, vp);
+            }
+            if (!wait_scroll && self._started) {
                 self._started = false;
                 self.trigger(node, self.event.scrollend);
             }
@@ -4779,24 +4816,40 @@ define('momo/tap', [
   "momo/base"
 ], function(_, momoBase){
 
-    var MomoTap = _.construct(momoBase.Class);
+    var MomoTap = _.construct(momoBase.Class, function(){
+        this._pressTrigger = nothing;
+        this.superConstructor.apply(this, arguments);
+    });
 
     _.mix(MomoTap.prototype, {
 
-        EVENTS: ['tap', 'doubletap', 'hold'],
+        EVENTS: ['tap', 'doubletap', 'hold', 'tapstart', 'tapcancel'],
         DEFAULT_CONFIG: {
             'tapRadius': 10,
             'doubleTimeout': 300,
+            'tapThreshold': 10,
             'holdThreshold': 500
         },
 
         press: function(e){
-            var t = this.SUPPORT_TOUCH ? e.touches[0] : e;
-            this._startTime = e.timeStamp;
-            this._startTarget = t.target;
-            this._startPosX = t.clientX;
-            this._startPosY = t.clientY;
-            this._movePosX = this._movePosY = this._moveTarget = NaN;
+            var self = this,
+                t = self.SUPPORT_TOUCH ? e.touches[0] : e;
+            self._startTime = e.timeStamp;
+            self._startTarget = t.target;
+            self._startPosX = t.clientX;
+            self._startPosY = t.clientY;
+            self._movePosX = self._movePosY = self._moveTarget = NaN;
+            self._started = false;
+            self._pressTrigger = function(){
+                self._started = true;
+                self.trigger(e, self.event.tapstart);
+                self._pressTrigger = nothing;
+            };
+            self._activeTimer = setTimeout(function(){
+                if (!is_moved(self)) {
+                    self._pressTrigger();
+                }
+            }, self._config.tapThreshold);
         },
 
         move: function(e){
@@ -4808,28 +4861,54 @@ define('momo/tap', [
 
         release: function(e){
             var self = this,
-                tm = e.timeStamp;
-            if (this._moveTarget && this._moveTarget !== this._startTarget 
-                    || Math.abs(self._movePosX - self._startPosX) > self._config.tapRadius
-                    || Math.abs(self._movePosY - self._startPosY) > self._config.tapRadius) {
+                tm = e.timeStamp,
+                moved = is_moved(self);
+            clearTimeout(self._activeTimer);
+            if (moved || tm - self._startTime < self._config.tapThreshold) {
+                if (!moved) {
+                    self._firstTap = tm;
+                }
+                if (self._started) {
+                    self.trigger(e, self.event.tapcancel);
+                }
                 return;
             }
-            if (tm - self._startTime > self._config.holdThreshold) {
+            if (!self._started) {
+                self._pressTrigger();
+            }
+            if (tm - self._startTime > self._config.holdThreshold + self._config.holdThreshold) {
                 self.trigger(e, self.event.hold);
             } else {
-                if (self._lastTap 
-                        && (tm - self._lastTap < self._config.doubleTimeout)) {
+                if (self._firstTap
+                        && (tm - self._firstTap < self._config.doubleTimeout)) {
                     e.preventDefault();
                     self.trigger(e, self.event.doubletap);
-                    self._lastTap = 0;
+                    self._firstTap = 0;
                 } else {
                     self.trigger(e, self.event.tap);
-                    self._lastTap = tm;
+                    self._firstTap = tm;
                 }
+            }
+        },
+
+        cancel: function(e){
+            clearTimeout(this._activeTimer);
+            if (this._started) {
+                this.trigger(e, this.event.tapcancel);
             }
         }
     
     });
+
+    function is_moved(self){
+        if (self._moveTarget && self._moveTarget !== self._startTarget 
+                || Math.abs(self._movePosX - self._startPosX) > self._config.tapRadius
+                || Math.abs(self._movePosY - self._startPosY) > self._config.tapRadius) {
+            return true;
+        }
+    }
+
+    function nothing(){}
 
     function exports(elm, opt, cb){
         return new exports.Class(elm, opt, cb);

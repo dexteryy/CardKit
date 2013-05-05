@@ -16,7 +16,6 @@ define([
     './view/modalcard',
     './view/actionview',
     './view/growl',
-    './view/slidelist',
     './bus',
     './render',
     './supports',
@@ -24,7 +23,7 @@ define([
     'mo/domready'
 ], function($, _, browsers, tpl, soviet, choreo, 
     momoBase, momoTap, momoSwipe, momoDrag, momoScroll, 
-    control, picker, stars, modalCard, actionView, growl, slidelist,
+    control, picker, stars, modalCard, actionView, growl,
     bus, render, supports, env){
 
     var window = this,
@@ -59,6 +58,10 @@ define([
 
         'a': link_handler,
         'a *': link_handler,
+
+        //'.ck-link-mask': function(){
+            //clear_active_item_mask(ck.viewport);
+        //},
 
         '.ck-card .ck-post-link': handle_control,
 
@@ -404,7 +407,15 @@ define([
             }).on('click', {
                 'a': nothing,
                 'a *': nothing
-            }).on('tap', tap_events).on('touchend', {
+            //}).on('tapstart', {
+                //'.ck-link-mask': function(){
+                    //$(this).addClass('ck-link-mask-active');
+                //}
+            //}).on('tapcancel', {
+                //'.ck-link-mask': function(){
+                    //clear_active_item_mask(ck.viewport);
+                //}
+            }).on('touchend', {
                 '.ck-stars': function(e) {
                     respond_stars.call(this, e, 'val');
                 },
@@ -418,7 +429,7 @@ define([
                 '.ck-stars .slider-selected': function(e) {
                     respond_stars.call(this.parentNode, e, 'pretend');
                 }
-            });
+            }).on('tap', tap_events);
 
             doc.bind('scrolldown', function(){
                 if (topbar_holded) {
@@ -435,6 +446,15 @@ define([
                 //}
             //}).bind('scrollup', function(){
                 //ck.showTopbar();
+            
+            //}).bind('scrollright', function(e){
+                //console.info('right')
+            //}).bind('scrollleft', function(e){
+                //console.info('left')
+            //}).bind('scrollstart', function(e){
+                //console.info('start')
+            //}).bind('scrollend', function(e){
+                //console.info('end')
             });
             
             if (supports.CARD_SCROLL 
@@ -643,18 +663,9 @@ define([
                 if (!opt.isModal && !opt.isActions) {
                     card.data('rendered', '1');
                 }
-                card.find('.ck-mini-unit').forEach(function(unit){
-                    var slide = $('.ck-inslide', unit);
-                    if (slide[0]) {
-                        var pagers = $('.ck-page span', unit);
-                        slidelist(slide).event.bind('change', function(n){
-                            pagers.removeClass('enable');
-                            pagers.eq(n).addClass('enable');
-                        });
-                    }
-                });
             }
             this.watchScroll(card);
+            //clear_active_item_mask(card);
         },
 
         releaseView: function(){
@@ -689,9 +700,12 @@ define([
 
         updateSize: function(opt){
             opt = opt || {};
+
             if (supports.CARD_SCROLL || opt.isActions) {
+
                 this.viewport[0].style.height = (this.sizeInited ? 
                     window.innerHeight : (screen.availHeight + 60)) + 2 + 'px';
+
                 // enable scrollable when height is not enough 
                 var ft = this.viewport.find('.ck-footer'),
                     last_unit = ft && ft.prev()[0];
@@ -704,11 +718,22 @@ define([
                     }
                 }
             }
+
+            var mini = this.viewport.find('.ck-mini-unit'),
+                mini_items = mini.find('.ck-item'),
+                mini_item_margin = parseFloat(mini_items.css('margin-left')),
+                w = window.innerWidth - mini_item_margin - 15;
+            mini_items.css('width', w - mini_item_margin + 'px');
+            mini.find('.ck-list').css('width', w * mini_items.length + mini_item_margin + 'px');
+
             bus.fire('cardkit:updateSize');
         },
 
         watchScroll: function(card){
             this.scrollGesture.watchScroll(card[0]);
+            card.find('.ck-mini-unit .ck-list-wrap').forEach(function(wrap){
+                momoScroll(this).watchScroll(wrap);
+            }, document);
         },
 
         updateHeader: function(){
@@ -872,6 +897,10 @@ define([
 
     function nothing(){}
 
+    //function clear_active_item_mask(card){
+        //card.find('.ck-link-mask-active').removeClass('ck-link-mask-active');
+    //}
+
     function link_handler(next_id, true_link){
         if (modalCard.isOpened) {
             modalCard.event.once('close', function(){
@@ -939,11 +968,12 @@ define([
         ck.cardMask.css('opacity', 0).addClass('moving');
         var moving = choreo().play();
         moving.actor(ck.cardMask[0], {
-            'opacity': '1'
-        }, 350, 'ease');
+            'opacity': '0.8'
+        }, 400, 'ease');
         moving.actor(next[0], {
             'transform': 'translateX(0)'
-        }, 400, 'ease').follow().done(function(){
+        }, 450, 'ease');
+        moving.follow().done(function(){
             current.hide();
             ck.cardMask.removeClass('moving');
             next.removeClass('moving');
@@ -982,14 +1012,15 @@ define([
         choreo.transform(current[0], 'translateX', '0px');
         current.addClass('moving');
         ck.changeView(prev);
-        ck.cardMask.css('opacity', '1').addClass('moving');
+        ck.cardMask.css('opacity', '0.8').addClass('moving');
         var moving = choreo().play();
         moving.actor(ck.cardMask[0], {
             'opacity': '0'
-        }, 350, 'ease');
+        }, 450, 'ease');
         moving.play().actor(current[0], {
             'transform': 'translateX(' + window.innerWidth + 'px)'
-        }, 400, 'ease').follow().done(function(){
+        }, 450, 'ease');
+        moving.follow().done(function(){
             ck.cardMask.removeClass('moving');
             current.hide().removeClass('moving');
             choreo.transform(current[0], 'translateX', '0px');

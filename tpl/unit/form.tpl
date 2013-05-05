@@ -3,14 +3,18 @@
 
     {% if (data.hd) { %}
     <header>
-        {% if (data.hd_url) { %}
-        <a href="{%= data.hd_url %}" class="ck-link">{%= data.hd %}</a>
-        {% } else { %}
-        <span>{%= data.hd %}</span>
-        {% } %}
+
+        <span class="ck-hd {%= (data.hd_url && 'clickable' || '') %}">
+            {% if (data.hd_url) { %}
+            <a href="{%= data.hd_url %}" class="ck-link ck-link-mask"></a>
+            {% } %}
+            <span>{%= data.hd %}</span>
+        </span>
+
         {% if (data.hd_opt) { %}
         <div class="ck-hdopt">{%=data.hd_opt%}</div>
         {% } %}
+
     </header>
     {% } %}
 

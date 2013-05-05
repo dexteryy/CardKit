@@ -6,21 +6,29 @@
   border:1px solid rgb(255,255,255);
   @include border-radius($radius);
   @include box-shadow(0 1px 2px 0 rgba(0, 0, 0, .2));
+  word-wrap: break-word;
+  //word-break: break-all;
+  //@include user-select(text);
+}
+
+%unit-parts {
 
   & > article > header {
     @extend %item;
+    position:relative;
 
-    .ck-link, & > span {
-      @extend %item-inner;
+    .ck-hd {
+      //overflow:hidden;
+      padding:($space/2) 0;
+      font-size:$maintitle_size;
+      font-weight:bold;
+      color:$text_color;
+      display:block;
     }
 
-    .ck-link {
+    .ck-hd.clickable {
       @extend %more-link;
-
-      &:active {
-        @extend %item-inner-active;
-      }
-
+      position:relative;
     }
 
   }
@@ -28,38 +36,20 @@
   & > article > footer {
     @extend %info-text;
     border-top:1px solid $border_color;
-    margin:0 15px;
+    margin:0 $morespace;
     padding:($space) 0;
+  }
+
+  &[data-cfg-plainhd="true"] {
+    @extend %plain-hd-parts;
   }
 
 }
 
 %item {
   border-bottom:1px solid $border_color;
-  margin:0 15px;
+  margin:0 $morespace;
   padding:($space/2) 0;
-}
-
-%item-inner {
-  overflow:hidden;
-  padding:($space/2) 0;
-  font-size:$maintitle_size;
-  color:$text_color;
-  display:block;
-}
-
-%item-inverse {
-  background:$active_color!important;
-  color:#fff;
-}
-
-%item-inner-active {
-  @extend %item-inverse;
-  @include border-radius($radius);
-  padding-left:10px;
-  padding-right:10px;
-  margin-left:-20px;
-  @include transform(translateX(10px));
 }
 
 %more-link {
@@ -67,7 +57,7 @@
     image: inline-image('drawer_icon.png');
     repeat: no-repeat;
     position: right;
-    size: 5.5px 10px;
+    size: 5.5px $space;
   }
 }
 
@@ -76,15 +66,170 @@
   color:$desc_color;
 }
 
+%plain-hd-parts {
+  position:relative;
+  margin-top:($maintitle_size + $space*3);
+
+  & > article > header {
+    @extend %plain-hd;
+    position:absolute;
+    top:-($maintitle_size + $space*2);
+    left:0;
+    width:100%;
+    padding:0;
+    margin-left:0;
+    margin-right:0;
+    border:none;
+  }
+
+  & > article > section {
+    border-top:none;
+  }
+
+}
+
+%plain-hd {
+
+  .ck-hd {
+    padding:0 $morespace 0 5px;
+    background-origin: content-box;
+    color:$desc_color;
+    //font-weight:normal;
+  }
+
+  .ck-link-mask {
+    //padding:$space/2 0;
+    //@include transform(translateX(0) translateY(-$space/2));
+    padding:0;
+    @include transform(translateX(0));
+  }
+
+}
+
+%plain-unit {
+  padding:0;
+  background:none;
+  border:none;
+  @include border-radius(0);
+  @include box-shadow(none);
+
+  & > article > header {
+    @extend %plain-hd;
+    padding:0;
+    margin-left:0;
+    margin-right:0;
+  }
+
+  & > article > footer {
+    padding:0;
+    margin-left:0;
+    margin-right:0;
+    border-color:$view_border_color;
+  }
+
+  & > article > section {
+    margin:0;
+    padding-left:$text_space;
+    padding-right:$text_space;
+    border-color:$view_border_color;
+
+    &:first-child {
+      padding-top:0;
+      padding-bottom:0;
+    }
+
+  }
+
+}
+
+%paper-unit {
+  margin:$morespace;
+  padding:0 0 ($space) 0;
+  border-bottom:1px solid $view_border_color;
+
+  & > article > header {
+    //border-bottom:1px solid $view_border_color;
+    //padding:0 0 $space 0;
+    line-height:1.6;
+
+    .ck-hd {
+      font-size: $headtitle_size;
+    }
+
+  }
+
+  & > article > footer {
+    border-color:$view_border_color;
+  }
+
+  .ck-item,
+  & > article > section {
+    margin:0;
+  }
+
+  & > article > section {
+    border-color:$view_border_color;
+    padding:40px 0 $space 0;
+    //line-height:(54px/2);
+    font-size:(34px/2);
+    @include user-select(text);
+
+    p {
+      margin:0 0 (50px/2) 0;
+    }
+
+  }
+
+  .ck-item {
+    padding:$morespace 0;
+    border-bottom:1px solid $view_border_color;
+    @include user-select(text);
+
+    &:last-child {
+      margin-bottom:$morespace;
+    }
+
+  }
+
+}
+
+.ck-link-mask {
+  display:block;
+  width:100%;
+  height:100%;
+  //padding:0 (($morespace + $space)/2);
+  //@include transform(translateX(-($morespace + $space)/2));
+  padding:0 (($morespace)/2);
+  @include transform(translateX(-($morespace)/2));
+  @include border-radius($radius);
+  position:absolute;
+  top:0;
+  left:0;
+  z-index:$zindex_item;
+  //-webkit-tap-highlight-color: rgba(0,0,0,0);
+  -webkit-tap-highlight-color: rgba(0,131,225,0.5);
+
+  //&.ck-link-mask-active {
+    //background:$active_color;
+    //opacity:.4;
+  //}
+
+}
 
 .ck-box-unit {
 
   &:not([data-cfg-paper]) {
     @extend %ck-unit;
+    @extend %unit-parts;
     //overflow:visible;
 
     & > article > header {
       border-bottom:0;
+
+      &:last-child {
+        @extend %plain-hd;
+      }
+
     }
 
     & > article > footer {
@@ -111,87 +256,19 @@
   }
 
   &[data-cfg-plain] {
-    padding:0;
-    background:none;
-    border:none;
-    @include border-radius(0);
-    @include box-shadow(none);
-
-    & > article > header {
-      padding:0;
-      margin-left:0;
-      margin-right:0;
-
-      & > span {
-        padding:0;
-      }
-    }
-
-    & > article > footer {
-      padding:0;
-      margin-left:0;
-      margin-right:0;
-    }
-
-    & > article > section {
-      margin:0;
-      padding-left:$text_space;
-      padding-right:$text_space;
-
-      &:first-child {
-        padding-top:0;
-        padding-bottom:0;
-      }
-
-    }
-
+    @extend %plain-unit;
   }
 
   &[data-cfg-paper] {
-    margin:$space;
-    padding:0 0 ($space) 0;
-    border-bottom:1px solid $border_color;
-
-    & > article > header {
-      //border-bottom:1px solid $border_color;
-      padding:0 0 $space 0;
-      line-height:1.6;
-      @include user-select(text);
-
-      .ck-link, & > span {
-        font-size: $headtitle_size;
-      }
-
-    }
-
-    & > article > section {
-      padding:40px 0 $space 0;
-      margin:0;
-      font-size:$article_size;
-      line-height:(54px/2);
-      font-size:(34px/2);
-      @include user-select(text);
-
-      p {
-        padding:0 0 (50px/2) 0;
-      }
-
-    }
-
+    @extend %paper-unit;
   }
 
 }
 
 
-.ck-list-unit {
-  @extend %ck-unit;
+%list-parts {
 
   .ck-item {
-    @extend %item;
-
-    &:last-child {
-      border:none;
-    }
 
     &.blank {
       text-align:center;
@@ -205,261 +282,353 @@
   }
 
   .ck-initem {
-    @extend %item-inner;
+    position:relative;
+    font-size: $text_size;
+    padding:($space/2) 0;
+    color:$text_color;
+    display:block;
+  }
 
-    &.ck-link:active {
-      @extend %item-inner-active;
+  .ck-title-box {
+    display:block;
+    overflow:hidden;
+  }
 
-      .ck-info, .ck-subtitle {
-        color:#ccc;
+  .ck-author-box {
+    display:block;
+    overflow:hidden;
+    margin:$space 0 0 0;
+  }
+
+  .ck-avatar,
+  .ck-icon {
+    float:left;
+    margin:2px $space 0 0;
+
+    img {
+      width:(60px / 2);
+      min-height:30px;
+      background:#666;
+      float:left;
+    }
+
+  }
+
+  .ck-title-set {
+    display:block;
+    overflow:hidden;
+    position:relative;
+  }
+
+  .ck-info-wrap {
+    display:inline;
+    @extend %info-text;
+    position:absolute;
+    bottom:0;
+    right:0;
+  }
+
+  .ck-info {
+    display:inline;
+  }
+
+  .ck-title-line {
+    font-size:$title_size;
+    line-height:1.2;
+    display:block;
+    padding:0 0 4px 0;
+  }
+
+  .ck-author-line {
+    line-height:1.2;
+    display:block;
+    //padding:0 0 4px 0;
+  }
+
+  a.ck-avatar img,
+  a.ck-author {
+    position:relative;
+    z-index:$zindex_item + $zindex_step;
+  }
+
+  .ck-title-prefix,
+  .ck-title-suffix,
+  .ck-title,
+  .ck-author-prefix,
+  .ck-author-suffix,
+  .ck-author {
+    display:inline;
+  }
+
+  .ck-title-prefix,
+  .ck-title-suffix,
+  .ck-author-prefix,
+  .ck-author-suffix {
+    color:$desc_color;
+  }
+
+  .ck-title-tag {
+    display:inline-block;
+    font-size: $text_size;
+    background:#ffc;
+    padding:0px 2px;
+    margin:0 4p;
+    @include border-radius($radius);
+  }
+
+  .ck-desc-wrap,
+  .ck-author-desc-wrap {
+    @extend %info-text;
+    display:block;
+    line-height:1.2;
+  }
+
+  .ck-desc,
+  .ck-author-desc {
+    display:inline;
+  }
+
+  .ck-content-wrap,
+  .ck-author-content-wrap {
+    font-size:$title_size;
+    display:block;
+    line-height: 1.4;
+  }
+
+  .ck-meta-wrap,
+  .ck-author-meta-wrap {
+    @extend %info-text;
+  }
+
+  .ck-meta,
+  .ck-author-meta{
+    display:inline;
+  }
+
+}
+
+.ck-list-unit {
+  @extend %list-parts;
+
+  &:not([data-cfg-paper]):not([data-style="split"]) {
+    @extend %ck-unit;
+    @extend %unit-parts;
+
+    .ck-item {
+      @extend %item;
+
+      &:last-child {
+        border:none;
       }
 
     }
 
   }
 
-  .ck-icon {
-    width:(60px / 2);
-    min-height:30px;
-    background:#666;
-    float:left;
-    margin:0 10px 0 0;
-  }
+  &[data-style="more"],
+  &[data-style="menu"] {
 
-  .ck-info {
-    @extend %info-text;
-    float:right;
-    margin-left:10px;
-  }
+    .ck-author-box, 
+    .ck-meta-wrap, 
+    .ck-content-wrap {
+      display:none;
+    }
 
-  .ck-title, .ck-initem .ck-link {
-    font-size:$title_size;
-    display:block;
-    line-height:1.4;
-  }
-
-  .ck-title {
-    padding-right:10px;
-  }
-
-  .ck-subtitle {
-    @extend %info-text;
-    display:block;
-    line-height:1.3;
-  }
-
-  .ck-content {
-    font-size:$title_size;
-    display:block;
-  }
-
-  .ck-meta {
-    @extend %info-text;
   }
 
   &[data-style="more"] {
 
-    .ck-info, .ck-icon, .ck-subtitle {
+    .ck-icon,
+    .ck-desc-wrap,
+    .ck-info-wrap {
       display:none;
+    } 
+
+    .ck-title-line {
+      font-size:$maintitle_size;
+      padding-right:$space;
+    }
+
+    .ck-title {
+      font-weight:bold;
+      color:$text_color;
     }
 
     .ck-initem {
       @extend %more-link;
-
     }
 
-    .ck-title {
-      font-size:$maintitle_size;
-    }
-  
   }
 
   &[data-style="menu"] {
 
-    .ck-icon, .ck-subtitle, .ck-meta, .ck-content {
-      display:none;
-    }
-
-  }
-
-  &[data-style="post"] {
-  
   }
 
   &[data-style="grid"] {
-  
-    .ck-info, .ck-subtitle, .ck-meta, .ck-content {
+
+    .ck-author-box, 
+    .ck-info-wrap, 
+    .ck-meta-wrap, 
+    .ck-content-wrap {
       display:none;
     }
 
-    & > article > ul {
+    .ck-list {
       overflow:hidden;
-      margin:0 15px;
-      padding:10px 0;
+      margin:0 $morespace;
+      padding:$space 0;
       border-bottom:1px solid $border_color;
 
       &:last-child {
         border-bottom:none;
       }
 
+      .ck-item {
+        float:left;
+        padding:0;
+        margin:0;
+        border:none;
+        text-align:center;
+      }
+
+      .ck-icon,
+      .ck-icon img {
+        float:none;
+        margin:0;
+      }
+
+      .ck-title-line {
+        padding:0;
+      }
+
+      .ck-desc-wrap {
+        padding:5px 0 0 0;
+      }
+    
     }
 
     footer {
       border-top:none;
     }
 
-    .ck-item {
-      float:left;
-      padding:0;
+    .ck-initem {
       margin:0;
-      border:none;
-      text-align:center;
+      padding:0 5px;
+    }
+
+    .ck-link-mask {
+      padding:$space/2 0;
+      @include transform(translateY(-$space/2));
+    }
+
+  }
+
+  &[data-style="split"] {
+    @extend %unit-parts;
+    @extend %plain-hd-parts;
+
+    & > article > header {
+
+      .ck-hd {
+        margin: 0 $space;
+      }
+
+    }
+
+    .ck-item {
+      @extend %ck-unit;
+      padding:5px 0;
+
+      &:first-child {
+        margin-top:0;
+      }
+
+      &:last-child {
+        margin-bottom:0;
+      }
+
     }
 
     .ck-initem {
-      margin:0;
-      padding:($space/2) 5px;
-
-      &.ck-link:active {
-        padding:($space/2) 5px;
-        margin:0;
-        @include transform(translateX(0));
-      }
+      @extend %item;
+      border:none;
+      //padding:$space 0;
     }
 
-    .ck-icon {
-      float:none;
-      margin:0;
+    .ck-author-box {
+      padding:$space 0 0 0;
+      border-top:1px solid $border_color;
     }
 
-    .ck-title {
+  }
+
+  &[data-cfg-paper] {
+    @extend %paper-unit;
+    padding-bottom:0;
+    border-bottom:none;
+
+    .ck-initem {
       padding:0;
     }
-  
+
+    .ck-link-mask {
+      padding:$space/2;
+      @include transform(translateX(-$space/2) translateY(-$space/2));
+    }
+
   }
 
 }
 
-
 .ck-mini-unit {
-  @extend %ck-unit;
-
-  .ck-item {
-    @extend %item;
-    border:none;
-
-    &.blank {
-      text-align:center;
-    }
-
-  }
-
-  .ck-title {
-    font-size:$maintitle_size;
-    line-height:1.4;
-  }
-
-  .ck-content {
-    font-size:$title_size;
-    padding:($space/2) 0;
-  }
-
-  .ck-info {
-    @extend %info-text;
-    display:block;
-  }
-
-  .ck-initem {
-    overflow:hidden;
-    border-top:1px solid #e3e3e3;
-    padding:($space/2) 0;
-  }
-
-  .ck-icon {
-    width:(60px / 2);
-    min-height:30px;
-    background:#666;
-    float:left;
-    margin:0 10px 0 0;
-  }
-
-  .ck-author {
-    font-size:$title_size;
-    display:block;
-    line-height:1.4;
-  }
-
-  .ck-subtitle {
-    @extend %info-text;
-    display:block;
-    line-height:1.3;
-  }
-
-  .ck-meta {
-    @extend %info-text;
-  }
-
+  @extend %list-parts;
 
   &[data-style="slide"] {
+    @extend %unit-parts;
+    @extend %plain-hd-parts;
 
     & > article > header {
-      border-bottom:none;
+
+      .ck-hd {
+        margin: 0 $space;
+      }
+
     }
 
-    & > article > footer {
-      border-top:none;
-      padding:5px 0;
+    .ck-list-wrap {
+      overflow-x:auto;
+      -webkit-overflow-scrolling: touch;
+
+      body.no-overflowscroll & {
+        -webkit-overflow-scrolling: auto;
+        overflow-x:auto;
+      }
+
     }
 
-    .ck-slide {
-      background:$view_color;
-      margin:0 10px;
+    .ck-list {
+      width:5000px;
+      padding:0 10px 10px 0;
       overflow:hidden;
-      position:relative;
     }
 
     .ck-item {
-      padding-left:10px;
-      padding-right:10px;
-      margin:0;
-      position:absolute;
-      top:0;
-      left:0;
-      background:$view_color;
-
-      &.enable {
-        position:relative;
-        z-index:$zindex_step;
-      }
-
-      &.moving {
-        z-index:$zindex_step*2;
-      }
-
+      @extend %ck-unit;
+      padding:5px 0;
+      margin:0 0 0 10px;
+      float:left;
     }
 
-    .ck-page {
-      text-align:center;
-    
-      span {
-        display:inline-block;
-        margin:0 10px 0 0;
-        width: (12px/2);
-        height: (12px/2);
-        @include border-radius(6px);
-        background:#D6D6D6;
-        border: solid 1px #b3b3b3;
-
-        &.enable {
-          background-color: #252525;
-          border: solid 1px #0058ba;
-          @include background-image(linear-gradient(bottom, #0084ff, #00a2ff));
-        }
-
-      }
-
+    .ck-initem {
+      @extend %item;
+      border:none;
+      //padding:$space 0;
     }
 
+    .ck-author-box {
+      padding:$space 0 0 0;
+      border-top:1px solid $border_color;
+    }
 
   }
 
@@ -468,6 +637,7 @@
 
 .ck-form-unit {
   @extend %ck-unit;
+  @extend %unit-parts;
 
   .ck-item {
     @extend %item;
@@ -494,7 +664,6 @@
     label {
       font-size:$maintitle_size;
       //margin:0 0 0 $space/2;
-      @include user-select(text);
 
       em {
         color:$desc_color;
@@ -518,7 +687,7 @@
     input[type="text"], input[type="number"], input[type="password"], textarea {
       font-size:$title_size;
       color:$desc_color;
-      text-indent:10px;
+      text-indent:$space;
       width:100%;
       height:20px;
       line-height:20px;
@@ -547,15 +716,12 @@
 .ck-list-unit,
 .ck-form-unit {
 
-  & > article > header {
-    position:relative;
-  }
-
   .ck-hdopt {
     display:inline-block;
     position:absolute;
-    top:$space;
+    top:$space/2;
     right:0;
+    z-index:$zindex_item + $zindex_step;
     font-size:$title_size;
     line-height:$button_height+2px;
     height:$button_height+2px;
@@ -578,32 +744,6 @@
 
   }
 
-  &[data-cfg-plainhd="true"] {
-    position:relative;
-    margin-top:($maintitle_size + $space*3);
-  
-    & > article > header {
-      position:absolute;
-      top:-($maintitle_size + $space*2);
-      left:0;
-      width:100%;
-      padding:0;
-      margin-left:0;
-      margin-right:0;
-      border:none;
-
-      & > span {
-        padding:0;
-      }
-
-    }
-
-    & > article > section {
-      border-top:none;
-    }
-
-  }
-
 }
 
 .ck-banner-unit {
@@ -618,6 +758,7 @@
 
 .ck-blank-unit {
   @extend %ck-unit;
+  @extend %unit-parts;
 
   article {
     @extend %item;

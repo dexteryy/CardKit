@@ -2253,6 +2253,8 @@ define("../cardkit/parser/util", [
   "mo/lang"
 ], function($){
 
+    var RE_CKD_NAME = /([^\w-])ckd\-([\w\-]+)(?=[^\w\-])/;
+
     var exports = {
 
         getSource: function(node, raw){
@@ -2263,7 +2265,7 @@ define("../cardkit/parser/util", [
             }
         },
 
-        getCustom: function(tag, unit, raw, fn){
+        getCustom: function(tag, unit, raw, fn, ckdname){
             var tags = unit.find(tag);
             if (!tags.length) {
                 return;
@@ -2275,40 +2277,101 @@ define("../cardkit/parser/util", [
                     if (!content[0]) {
                         content = source;
                     }
-                    return fn(content, elm);
+                    return fn(content, elm, ckdname);
                 }
-                return fn(elm);
+                return fn(elm, undefined, ckdname);
             });
         },
 
-        getHref: function(nodes){
-            for (var href, i = 0, l = nodes.length; i < l; i++) {
-                href = nodes[i].href;
-                if (href) {
-                    return href;
-                }
-            }
-        },
+        getHref: getHref,
 
-        getText: function(nodes){
-            return nodes.map(function(elm){
-                return elm.textContent;
-            }).join('');
-        },
+        getText: getText,
 
-        getInnerHTML: function(nodes){
-            return nodes.map(function(elm){
-                return elm.innerHTML;
-            }, $).join('');
-        },
+        getInnerHTML: getInnerHTML,
 
-        getOuterHTML: function(nodes){
-            return nodes.map(function(elm){
-                return elm.outerHTML;
-            }, $).join('');
-        }
+        getOuterHTML: getOuterHTML,
+
+        getItemData: getItemData
 
     }; 
+
+    function getHref(nodes){
+        if (!nodes) {
+            return;
+        }
+        for (var href, i = 0, l = nodes.length; i < l; i++) {
+            href = nodes[i].href;
+            if (href) {
+                return href;
+            }
+        }
+    }
+
+    function getText(nodes){
+        return nodes.map(function(elm){
+            return elm.textContent;
+        }).join('');
+    }
+
+    function getInnerHTML(nodes){
+        return nodes.map(function(elm){
+            return elm.innerHTML;
+        }, $).join('');
+    }
+
+    function getOuterHTML(nodes, name){
+        return nodes.map(function(elm){
+            var html = elm.outerHTML;
+            if (!name) {
+                return html;
+            }
+            return html.replace(RE_CKD_NAME, function($0, $1, $2){ 
+                if ($2 === name) {
+                    return $1 + 'ck-' + $2;
+                } else {
+                    return $0;
+                }
+            });
+        }, $).join('');
+    }
+
+    function getItemData(item, custom){
+        item = $(item);
+        var title = item.find('.ckd-title'),
+            author = item.find('.ckd-author');
+        if (!title[0] && getHref(item)) {
+            title = item;
+        }
+        var data = {
+            title: getInnerHTML(title),
+            href: getHref(item.find('.ckd-title-link')) || getHref(title),
+            titlePrefix: getOuterHTML(item.find('.ckd-title-prefix'), 'title-prefix'),
+            titleSuffix: getOuterHTML(item.find('.ckd-title-suffix'), 'title-suffix'),
+            titleTag: getOuterHTML(item.find('.ckd-title-tag'), 'title-tag'),
+            icon: item.find('.ckd-icon').attr('src'),
+            desc: getOuterHTML(item.find('.ckd-desc'), 'desc') 
+                + getOuterHTML(item.find('.ckd-subtitle'), 'subtitle'),
+            info: getOuterHTML(item.find('.ckd-info'), 'info'),
+            content: getOuterHTML(item.find('.ckd-content'), 'content'),
+            meta: getOuterHTML(item.find('.ckd-meta'), 'meta'),
+            author: getInnerHTML(author),
+            authorUrl: getHref(item.find('.ckd-author-link')) || getHref(author),
+            authorPrefix: getOuterHTML(item.find('.ckd-author-prefix'), 'author-prefix'),
+            authorSuffix: getOuterHTML(item.find('.ckd-author-suffix'), 'author-suffix'),
+            avatar: item.find('.ckd-avatar').attr('src'),
+            authorDesc: getOuterHTML(item.find('.ckd-author-desc'), 'author-desc'),
+            authorMeta: getOuterHTML(item.find('.ckd-author-meta'), 'author-meta')
+        };
+        if (custom && typeof custom === 'object') {
+            custom = getItemData(custom);
+            for (var i in custom) {
+                if (custom[i]) {
+                    data[i] = custom[i];
+                }
+            }
+        }
+        return data;
+    }
 
     return exports;
 
@@ -2331,10 +2394,12 @@ define("../cardkit/parser/form", [
                 plainhd: unit.data('cfgPlainhd')
             },
             hd = get_hd(source && source.find('.ckd-hd')),
+            hd_link = get_hd(source && source.find('.ckd-hd-link')),
             hd_opt = get_all_outer(source && source.find('.ckd-hdopt')),
             ft = get_hd(source && source.find('.ckd-ft')),
             items = source && source.find('.ckd-item').map(get_item),
             custom_hd = (util.getCustom('.ckd-hd', unit, raw, get_hd) || [{}])[0],
+            custom_hd_link = (util.getCustom('.ckd-hd-link', unit, raw, get_hd) || [{}])[0],
             custom_hd_opt = (util.getCustom('.ckd-hdopt', unit, raw, get_all_outer) || []).join(''),
             custom_ft = (util.getCustom('.ckd-ft', unit, raw, get_hd) || [{}])[0],
             custom_items = util.getCustom('.ckd-item', unit, raw, get_item) || $();
@@ -2343,7 +2408,10 @@ define("../cardkit/parser/form", [
             style: unit.data('style'),
             items: custom_items.concat(items || $()),
             hd: custom_hd.html === undefined ? hd.html : custom_hd.html,
-            hd_url: custom_hd.href || custom_hd.href !== null && hd.href,
+            hd_url: custom_hd_link.href 
+                || custom_hd_link.href !== null && hd_link.href 
+                || custom_hd.href 
+                || custom_hd.href !== null && hd.href,
             hd_opt: custom_hd_opt + hd_opt,
             ft: custom_ft.html === undefined ? ft.html : custom_ft.html
         };
@@ -2394,103 +2462,6 @@ define("../cardkit/parser/form", [
 
 });
 
-/* @source ../cardkit/parser/mini.js */;
-
-
-define("../cardkit/parser/mini", [
-  "dollar",
-  "mo/lang",
-  "../cardkit/parser/util"
-], function($, _, util){
-    
-    var getInnerHTML = util.getInnerHTML;
-
-    function exports(unit, raw){
-        unit = $(unit);
-        var source = util.getSource(unit, raw),
-            config = {
-                blank: unit.data('cfgBlank'),
-                limit: unit.data('cfgLimit'),
-                plain: unit.data('cfgPlain'),
-                plainhd: unit.data('cfgPlainhd')
-            },
-            hd = get_hd(source && source.find('.ckd-hd')),
-            hd_opt = get_all_outer(source && source.find('.ckd-hdopt')),
-            items = source && source.find('.ckd-item'),
-            custom_hd = (util.getCustom('.ckd-hd', unit, raw, get_hd) || [{}])[0],
-            custom_hd_opt = (util.getCustom('.ckd-hdopt', unit, raw, get_all_outer) || []).join(''),
-            custom_items = util.getCustom('.ckd-item', unit, raw, get_item) || $();
-        if (source && !items[0]) {
-            items = source;
-        }
-        items = items && items.map(get_item);
-        var data = {
-            config: config,
-            style: unit.data('style'),
-            items: custom_items.concat(items || $()),
-            hd_opt: custom_hd_opt + hd_opt,
-            hd: custom_hd.html === undefined ? hd.html : custom_hd.html,
-            hd_url: custom_hd.href || custom_hd.href !== null && hd.href
-        };
-        return data;
-    }
-
-    function get_item(item, custom){
-        item = $(item);
-        var title = item.find('.ckd-title'),
-            author = item.find('.ckd-author');
-        var data = {
-            title: getInnerHTML(title),
-            href: util.getHref(title),
-            author: getInnerHTML(author),
-            author_url: util.getHref(author),
-            info: getInnerHTML(item.find('.ckd-info')),
-            subtitle: getInnerHTML(item.find('.ckd-subtitle')),
-            meta: item.find('.ckd-meta').map(function(node){
-                return node.innerHTML;
-            }),
-            icon: item.find('.ckd-icon').attr('src'),
-            content: util.getOuterHTML(item.find('.ckd-content'))
-        };
-        if (custom && typeof custom === 'object') {
-            custom = get_item(custom);
-            for (var i in custom) {
-                if (custom[i]) {
-                    data[i] = custom[i];
-                }
-            }
-        }
-        return data;
-    }
-
-    function get_hd(source, custom){
-        source = $(source);
-        var data = source && {
-            html: getInnerHTML(source),
-            href: util.getHref(source)
-        } || {};
-        if (custom && typeof custom === 'object') {
-            custom = get_hd(custom);
-            for (var i in custom) {
-                if (custom[i]) {
-                    data[i] = custom[i];
-                }
-            }
-        }
-        return data;
-    }
-
-    function get_all_outer(source){
-        source = $(source);
-        var data = util.getOuterHTML(source) || '';
-        source.remove();
-        return data;
-    }
-
-    return exports;
-
-});
-
 /* @source ../cardkit/parser/list.js */;
 
 
@@ -2500,7 +2471,7 @@ define("../cardkit/parser/list", [
   "../cardkit/parser/util"
 ], function($, _, util){
     
-    var getInnerHTML = util.getInnerHTML;
+    var getItemData = util.getItemData;
 
     function exports(unit, raw){
         unit = $(unit);
@@ -2514,66 +2485,34 @@ define("../cardkit/parser/list", [
                 plainhd: unit.data('cfgPlainhd')
             },
             hd = get_hd(source && source.find('.ckd-hd')),
-            hd_opt = get_all_outer(source && source.find('.ckd-hdopt')),
+            hd_link = get_hd(source && source.find('.ckd-hd-link')),
+            hd_opt = get_all_outer(source && source.find('.ckd-hdopt'), 'hdopt'),
             ft = get_hd(source && source.find('.ckd-ft')),
-            items = source && source.find('.ckd-item').map(get_item),
+            items = source && source.find('.ckd-item').map(getItemData),
             custom_hd = (util.getCustom('.ckd-hd', unit, raw, get_hd) || [{}])[0],
-            custom_hd_opt = (util.getCustom('.ckd-hdopt', unit, raw, get_all_outer) || []).join(''),
+            custom_hd_link = (util.getCustom('.ckd-hd-link', unit, raw, get_hd) || [{}])[0],
+            custom_hd_opt = (util.getCustom('.ckd-hdopt', unit, raw, get_all_outer, 'hdopt') || []).join(''),
             custom_ft = (util.getCustom('.ckd-ft', unit, raw, get_hd) || [{}])[0],
-            custom_items = util.getCustom('.ckd-item', unit, raw, get_item) || $();
+            custom_items = util.getCustom('.ckd-item', unit, raw, getItemData) || $();
         var data = {
             config: config,
             style: unit.data('style'),
             items: custom_items.concat(items || $()),
             hd: custom_hd.html === undefined ? hd.html : custom_hd.html,
-            hd_url: custom_hd.href || custom_hd.href !== null && hd.href,
+            hd_url: custom_hd_link.href 
+                || custom_hd_link.href !== null && hd_link.href 
+                || custom_hd.href 
+                || custom_hd.href !== null && hd.href,
             hd_opt: custom_hd_opt + hd_opt,
             ft: custom_ft.html === undefined ? ft.html : custom_ft.html
         };
         return data;
     }
 
-    function get_item(item, custom){
-        item = $(item);
-        var title = item.find('.ckd-title');
-        if (!title[0] && util.getHref(item)) {
-            title = item;
-        }
-        var author = item.find('.ckd-author');
-        var data = {
-            title: getInnerHTML(title),
-            href: util.getHref(title),
-            titlePrefix: getInnerHTML(item.find('.ckd-title-prefix')),
-            titleSuffix: getInnerHTML(item.find('.ckd-title-suffix')),
-            titleTag: util.getOuterHTML(item.find('.ckd-title-tag')),
-            icon: item.find('.ckd-icon').attr('src'),
-            desc: util.getInnerHTML(item.find('.ckd-desc,ckd-subtitle')),
-            info: getInnerHTML(item.find('.ckd-info')),
-            content: util.getOuterHTML(item.find('.ckd-content')),
-            meta: getInnerHTML(item.find('.ckd-meta')),
-            author: getInnerHTML(author),
-            authorUrl: util.getHref(author),
-            authorPrefix: getInnerHTML(item.find('.ckd-author-prefix')),
-            authorSuffix: getInnerHTML(item.find('.ckd-author-suffix')),
-            avatar: item.find('.ckd-avatar').attr('src'),
-            authorDesc: util.getInnerHTML(item.find('.ckd-author-desc')),
-            authorMeta: getInnerHTML(item.find('.ckd-author-mata'))
-        };
-        if (custom && typeof custom === 'object') {
-            custom = get_item(custom);
-            for (var i in custom) {
-                if (custom[i]) {
-                    data[i] = custom[i];
-                }
-            }
-        }
-        return data;
-    }
-
     function get_hd(source, custom){
         source = $(source);
         var data = source && {
-            html: getInnerHTML(source),
+            html: util.getInnerHTML(source),
             href: util.getHref(source)
         } || {};
         if (custom && typeof custom === 'object') {
@@ -2587,9 +2526,9 @@ define("../cardkit/parser/list", [
         return data;
     }
 
-    function get_all_outer(source){
+    function get_all_outer(source, custom, ckdname){
         source = $(source);
-        var data = util.getOuterHTML(source) || '';
+        var data = util.getOuterHTML(source, ckdname) || '';
         source.remove();
         return data;
     }
@@ -2598,6 +2537,24 @@ define("../cardkit/parser/list", [
 
 });
 
+
+/* @source ../cardkit/parser/mini.js */;
+
+
+define("../cardkit/parser/mini", [
+  "dollar",
+  "mo/lang",
+  "../cardkit/parser/list"
+], function($, _, listParser){
+    
+    function exports(unit, raw){
+        var data = listParser(unit, raw);
+        return data;
+    }
+
+    return exports;
+
+});
 
 /* @source ../cardkit/parser/box.js */;
 
@@ -2617,6 +2574,7 @@ define("../cardkit/parser/box", [
                 plainhd: unit.data('cfgPlainhd')
             },
             hd = get_hd(source && source.find('.ckd-hd')),
+            hd_link = get_hd(source && source.find('.ckd-hd-link')),
             hd_opt = get_all_outer(source && source.find('.ckd-hdopt')),
             ft = get_hd(source && source.find('.ckd-ft')),
             contents = source && (
@@ -2624,6 +2582,7 @@ define("../cardkit/parser/box", [
                 || util.getInnerHTML(source)
             ),
             custom_hd = (util.getCustom('.ckd-hd', unit, raw, get_hd) || [{}])[0],
+            custom_hd_link = (util.getCustom('.ckd-hd-link', unit, raw, get_hd) || [{}])[0],
             custom_hd_opt = (util.getCustom('.ckd-hdopt', unit, raw, get_all_outer) || []).join(''),
             custom_ft = (util.getCustom('.ckd-ft', unit, raw, get_hd) || [{}])[0];
         util.getCustom('.ckd-content', unit, raw, replace_content);
@@ -2632,7 +2591,10 @@ define("../cardkit/parser/box", [
             style: unit.data('style'),
             content: unit[0].innerHTML + (contents || ''),
             hd: custom_hd.html === undefined ? hd.html : custom_hd.html,
-            hd_url: custom_hd.href || custom_hd.href !== null && hd.href,
+            hd_url: custom_hd_link.href 
+                || custom_hd_link.href !== null && hd_link.href 
+                || custom_hd.href 
+                || custom_hd.href !== null && hd.href,
             hd_opt: custom_hd_opt + hd_opt,
             ft: custom_ft.html === undefined ? ft.html 
                 : (custom_ft.html || (config.plain || config.paper) && ' ')
@@ -2689,28 +2651,28 @@ define("../cardkit/tpl/unit/blank", [], function(){
 
 define("../cardkit/tpl/unit/form", [], function(){
 
-    return {"template":"\n<article>\n\n    {% if (data.hd) { %}\n    <header>\n        {% if (data.hd_url) { %}\n        <a href=\"{%= data.hd_url %}\" class=\"ck-link\">{%= data.hd %}</a>\n        {% } else { %}\n        <span>{%= data.hd %}</span>\n        {% } %}\n        {% if (data.hd_opt) { %}\n        <div class=\"ck-hdopt\">{%=data.hd_opt%}</div>\n        {% } %}\n    </header>\n    {% } %}\n\n    <section>\n    {% if (!data.items.length) { %}\n    <div class=\"ck-item blank\">{%=(data.config.blank || '目前还没有内容')%}</div>\n    {% } %}\n    {% data.items.forEach(function(item){ %}\n        <div class=\"ck-item\">\n            {%= item.content %}\n        </div>\n    {% }); %}\n    </section>\n\n    {% if (data.ft) { %}\n    <footer>{%= data.ft %}</footer>\n    {% } %}\n\n</article>\n\n"}; 
+    return {"template":"\n<article>\n\n    {% if (data.hd) { %}\n    <header>\n\n        <span class=\"ck-hd {%= (data.hd_url && 'clickable' || '') %}\">\n            {% if (data.hd_url) { %}\n            <a href=\"{%= data.hd_url %}\" class=\"ck-link ck-link-mask\"></a>\n            {% } %}\n            <span>{%= data.hd %}</span>\n        </span>\n\n        {% if (data.hd_opt) { %}\n        <div class=\"ck-hdopt\">{%=data.hd_opt%}</div>\n        {% } %}\n\n    </header>\n    {% } %}\n\n    <section>\n    {% if (!data.items.length) { %}\n    <div class=\"ck-item blank\">{%=(data.config.blank || '目前还没有内容')%}</div>\n    {% } %}\n    {% data.items.forEach(function(item){ %}\n        <div class=\"ck-item\">\n            {%= item.content %}\n        </div>\n    {% }); %}\n    </section>\n\n    {% if (data.ft) { %}\n    <footer>{%= data.ft %}</footer>\n    {% } %}\n\n</article>\n\n"}; 
 
 });
 /* @source ../cardkit/tpl/unit/mini.js */;
 
 define("../cardkit/tpl/unit/mini", [], function(){
 
-    return {"template":"\n<article>\n\n    {% if (data.hd) { %}\n    <header>\n        {% if (data.hd_url) { %}\n        <a href=\"{%= data.hd_url %}\" class=\"ck-link\">{%= data.hd %}</a>\n        {% } else { %}\n        <span>{%= data.hd %}</span>\n        {% } %}\n        {% if (data.hd_opt) { %}\n        <div class=\"ck-hdopt\">{%=data.hd_opt%}</div>\n        {% } %}\n    </header>\n    {% } %}\n\n    {% if (data.style === 'slide') { %}\n    <div class=\"ck-slide\"><div class=\"ck-inslide\">\n    {% } %}\n\n        {% if (!data.items.length) { %}\n        <div class=\"ck-item enable blank\">\n            <div class=\"ck-content\">{%=(data.config.blank || '目前还没有内容')%}</div>\n        </div>\n        {% } %}\n\n        {% data.items.forEach(function(item, i){ %}\n        <div class=\"ck-item{%=(i === 0 && ' enable' || '')%}\">\n            {% if (item.title) { %}\n            <p class=\"ck-title\">{%= item.title %}</p>\n            {% } %}\n            <div class=\"ck-content\">\n                {%= item.content %}\n                {% if (item.info) { %}\n                <span class=\"ck-info\">{%= item.info %}</span>\n                {% } %}\n            </div>\n            {% if (item.author) { %}\n\n            <p class=\"ck-initem\">\n                {% if (item.icon) { %}\n                <img src=\"{%= item.icon %}\" class=\"ck-icon\"/>\n                {% } %}\n                {% if (item.author_url) { %}\n                <a href=\"{%= item.author_url %}\" class=\"ck-author ck-link\">{%= item.author %}</a>\n                {% } else if (item.author) { %}\n                <span class=\"ck-author\">{%= item.author %}</span>\n                {% } %}\n                {% if (item.subtitle) { %}\n                <span class=\"ck-subtitle\">{%= item.subtitle %}</span>\n                {% } %}\n            </p>\n            {% if (item.meta && item.meta.length) { %}\n            <span class=\"ck-meta\">{%= item.meta.join('</span><span class=\"ck-meta\">') %}</span>\n            {% } %}\n\n            {% } %}\n        </div>\n        {% }); %}\n\n    {% if (data.style === 'slide') { %}\n    </div></div>\n    <footer>\n        {% if (data.items.length > 1) { %}\n        <div class=\"ck-page\">\n        {% data.items.forEach(function(item, i){ %}\n            <span class=\"{%=(i === 0 && 'enable' || '')%}\"></span>\n        {% }); %}\n        </div>\n        {% } %}\n    </footer>\n    {% } %}\n\n</article>\n\n"}; 
+    return {"template":"\n<article>\n\n    {% if (data.hd) { %}\n    <header>\n\n        <span class=\"ck-hd {%= (data.hd_url && 'clickable' || '') %}\">\n            {% if (data.hd_url) { %}\n            <a href=\"{%= data.hd_url %}\" class=\"ck-link ck-link-mask\"></a>\n            {% } %}\n            <span>{%= data.hd %}</span>\n        </span>\n\n        {% if (data.hd_opt) { %}\n        <div class=\"ck-hdopt\">{%=data.hd_opt%}</div>\n        {% } %}\n\n    </header>\n    {% } %}\n\n    <div class=\"ck-list-wrap\">\n    {% if (data.items.length) { %}\n\n        <div class=\"ck-list\">\n        {% data.items.forEach(function(item, i){ %}\n            <div class=\"ck-item {%= (item.href && 'clickable' || '') %}\">\n\n                <div class=\"ck-initem\">\n\n                    {% if (item.href) { %}\n                    <a href=\"{%= item.href %}\" class=\"ck-link ck-link-mask\"></a>\n                    {% } %}\n\n                    <div class=\"ck-title-box\">\n\n                        {% if (item.icon) { %}\n                        <span class=\"ck-icon\">\n                            <img src=\"{%= item.icon %}\"/>\n                        </span>\n                        {% } %}\n\n                        <div class=\"ck-title-set\">\n\n                            {% if (item.title) { %}\n                            <div class=\"ck-title-line\">\n                                {%= item.titlePrefix %}\n                                <span class=\"ck-title\">{%= item.title %}</span>\n                                {%= item.titleSuffix %}\n                                {%= item.titleTag %}\n                            </div>\n                            {% } %}\n\n                            {% if (item.info) { %}\n                            <div class=\"ck-info-wrap\">\n                                {%= item.info %}\n                            </div>\n                            {% } %}\n\n                            {% if (item.desc) { %}\n                            <div class=\"ck-desc-wrap\">\n                                {%= item.desc %}\n                            </div>\n                            {% } %}\n\n                        </div>\n\n                        {% if (item.content) { %}\n                        <div class=\"ck-content-wrap\">\n                            {%= item.content %}\n                        </div>\n                        {% } %}\n\n                        {% if (item.meta) { %}\n                        <div class=\"ck-meta-wrap\">\n                            {%= item.meta %}\n                        </div>\n                        {% } %}\n\n                    </div>\n\n                    {% if (item.author || item.authorDesc || item.authorMeta) { %}\n                    <div class=\"ck-author-box\">\n\n                        {% if (item.avatar) { %}\n                            {% if (item.authorUrl) { %}\n                            <a href=\"{%= item.authorUrl %}\" class=\"ck-avatar ck-link\">\n                                <img src=\"{%= item.avatar %}\"/>\n                            </a>\n                            {% } else { %}\n                            <span class=\"ck-avatar\">\n                                <img src=\"{%= item.avatar %}\"/>\n                            </span>\n                            {% } %}\n                        {% } %}\n\n                        <div class=\"ck-author-line\">\n                            {%= item.authorPrefix %}\n                            {% if (item.authorUrl) { %}\n                            <a href=\"{%= item.authorUrl %}\" class=\"ck-author ck-link\">{%= item.author %}</a>\n                            {% } else { %}\n                            <span class=\"ck-author\">{%= item.author %}</span>\n                            {% } %}\n                            {%= item.authorSuffix %}\n                        </div>\n\n                        {% if (item.authorDesc) { %}\n                        <div class=\"ck-author-desc-wrap\">\n                            {%= item.authorDesc %}\n                        </div>\n                        {% } %}\n\n                        {% if (item.authorMeta) { %}\n                        <div class=\"ck-author-meta-wrap\">\n                            {%= item.authorMeta %}\n                        </div>\n                        {% } %}\n\n\n                    </div>\n                    {% } %}\n\n                </div>\n\n            </div>\n        {% }); %}\n        </div>\n\n    {% } else { %}\n\n        <div class=\"ck-list\">\n            <div class=\"ck-item blank\">\n                <div class=\"ck-initem\">{%=(data.config.blank || '目前还没有内容')%}</div>\n            </div>\n        </div>\n\n    {% } %}\n    </div>\n\n    {% if (data.ft) { %}\n    <footer>{%= data.ft %}</footer>\n    {% } %}\n\n</article>\n\n"}; 
 
 });
 /* @source ../cardkit/tpl/unit/list.js */;
 
 define("../cardkit/tpl/unit/list", [], function(){
 
-    return {"template":"\n{% function get_item(item){ %}\n    {% if (item.href) { %}\n        <a href=\"{%= item.href %}\" class=\"ck-link ck-initem\">{% get_content(item); %}</a>\n    {% } else { %}\n        <p class=\"ck-initem\">{% get_content(item); %}</p>\n    {% } %}\n{% } %}\n\n{% function get_content(item){ %}\n\n    {% if (item.info) { %}\n    <span class=\"ck-info\">{%= item.info %}</span>\n    {% } %}\n\n    {% if (item.icon) { %}\n    <img src=\"{%= item.icon %}\" class=\"ck-icon\"/>\n    {% } %}\n\n    {% if (item.title) { %}\n    <span class=\"ck-title\">{%= item.title %}</span>\n    {% } %}\n\n    {% if (data.style === 'post' || data.style === 'grid') { %}\n        {% if (!item.href) { %}\n            {% if (item.author_url) { %}\n            <a href=\"{%= item.author_url %}\" class=\"ck-link\">{%= item.author %}</a>\n            {% } else if (item.author) { %}\n            <span class=\"ck-title\">{%= item.author %}</span>\n            {% } %}\n        {% } %}\n        {% if (item.subtitle) { %}\n        <span class=\"ck-subtitle\">{%= item.subtitle %}</span>\n        {% } %}\n    {% } %}\n\n{% } %}\n\n\n<article>\n\n    {% if (data.hd) { %}\n    <header>\n        {% if (data.hd_url) { %}\n        <a href=\"{%= data.hd_url %}\" class=\"ck-link\">{%= data.hd %}</a>\n        {% } else { %}\n        <span>{%= data.hd %}</span>\n        {% } %}\n        {% if (data.hd_opt) { %}\n        <div class=\"ck-hdopt\">{%=data.hd_opt%}</div>\n        {% } %}\n    </header>\n    {% } %}\n\n    {% if (data.items.length) { %}\n\n        {% if (data.style === 'more') { %}\n\n        <nav>\n        {% data.items.forEach(function(item){ %}\n            <div class=\"ck-item\">\n                {% get_item(item); %}\n            </div>\n        {% }); %}\n        </nav>\n\n        {% } else { %}\n\n        <ul>\n        {% data.items.forEach(function(item, i){ %}\n            {% if (i && (i % data.config.col === 0)) { %}\n                </ul><ul>\n            {% } %}\n            <li class=\"ck-item\" style=\"width:{%= (data.config.col ? Math.floor(1000/data.config.col)/10 + '%' : '') %};\">\n                {% get_item(item); %}\n                {% if (item.content) { %}\n                <span class=\"ck-content\">{%= item.content %}</span>\n                {% } %}\n                {% if (item.meta && item.meta.length) { %}\n                <span class=\"ck-meta\">{%= item.meta.join('</span><span class=\"ck-meta\">') %}</span>\n                {% } %}\n            </li>\n        {% }); %}\n        </ul>\n\n        {% } %}\n\n    {% } else { %}\n\n        <ul>\n            <li class=\"ck-item blank\">\n                <p class=\"ck-initem\">{%=(data.config.blank || '目前还没有内容')%}</p>\n            </li>\n        </ul>\n\n    {% } %}\n\n    {% if (data.ft) { %}\n    <footer>{%= data.ft %}</footer>\n    {% } %}\n\n</article>\n"}; 
+    return {"template":"\n<article>\n\n    {% if (data.hd) { %}\n    <header>\n\n        <span class=\"ck-hd {%= (data.hd_url && 'clickable' || '') %}\">\n            {% if (data.hd_url) { %}\n            <a href=\"{%= data.hd_url %}\" class=\"ck-link ck-link-mask\"></a>\n            {% } %}\n            <span>{%= data.hd %}</span>\n        </span>\n\n        {% if (data.hd_opt) { %}\n        <div class=\"ck-hdopt\">{%=data.hd_opt%}</div>\n        {% } %}\n\n    </header>\n    {% } %}\n\n    <div class=\"ck-list-wrap\">\n    {% if (data.items.length) { %}\n\n        <div class=\"ck-list\">\n        {% data.items.forEach(function(item, i){ %}\n            {% if (i && (i % data.config.col === 0)) { %}\n            </div><div class=\"ck-list\">\n            {% } %}\n            <div class=\"ck-item {%= (item.href && 'clickable' || '') %}\" \n                    style=\"width:{%= (data.config.col ? Math.floor(1000/data.config.col)/10 + '%' : '') %};\">\n\n                <div class=\"ck-initem\">\n\n                    {% if (item.href) { %}\n                    <a href=\"{%= item.href %}\" class=\"ck-link ck-link-mask\"></a>\n                    {% } %}\n\n                    <div class=\"ck-title-box\">\n\n                        {% if (item.icon) { %}\n                        <span class=\"ck-icon\">\n                            <img src=\"{%= item.icon %}\"/>\n                        </span>\n                        {% } %}\n\n                        <div class=\"ck-title-set\">\n\n                            {% if (item.title) { %}\n                            <div class=\"ck-title-line\">\n                                {%= item.titlePrefix %}\n                                <span class=\"ck-title\">{%= item.title %}</span>\n                                {%= item.titleSuffix %}\n                                {%= item.titleTag %}\n                            </div>\n                            {% } %}\n\n                            {% if (item.info) { %}\n                            <div class=\"ck-info-wrap\">\n                                {%= item.info %}\n                            </div>\n                            {% } %}\n\n                            {% if (item.desc) { %}\n                            <div class=\"ck-desc-wrap\">\n                                {%= item.desc %}\n                            </div>\n                            {% } %}\n\n                        </div>\n\n                        {% if (item.content) { %}\n                        <div class=\"ck-content-wrap\">\n                            {%= item.content %}\n                        </div>\n                        {% } %}\n\n                        {% if (item.meta) { %}\n                        <div class=\"ck-meta-wrap\">\n                            {%= item.meta %}\n                        </div>\n                        {% } %}\n\n                    </div>\n\n                    {% if (item.author || item.authorDesc || item.authorMeta) { %}\n                    <div class=\"ck-author-box\">\n\n                        {% if (item.avatar) { %}\n                            {% if (item.authorUrl) { %}\n                            <a href=\"{%= item.authorUrl %}\" class=\"ck-avatar ck-link\">\n                                <img src=\"{%= item.avatar %}\"/>\n                            </a>\n                            {% } else { %}\n                            <span class=\"ck-avatar\">\n                                <img src=\"{%= item.avatar %}\"/>\n                            </span>\n                            {% } %}\n                        {% } %}\n\n                        <div class=\"ck-author-line\">\n                            {%= item.authorPrefix %}\n                            {% if (item.authorUrl) { %}\n                            <a href=\"{%= item.authorUrl %}\" class=\"ck-author ck-link\">{%= item.author %}</a>\n                            {% } else { %}\n                            <span class=\"ck-author\">{%= item.author %}</span>\n                            {% } %}\n                            {%= item.authorSuffix %}\n                        </div>\n\n                        {% if (item.authorDesc) { %}\n                        <div class=\"ck-author-desc-wrap\">\n                            {%= item.authorDesc %}\n                        </div>\n                        {% } %}\n\n                        {% if (item.authorMeta) { %}\n                        <div class=\"ck-author-meta-wrap\">\n                            {%= item.authorMeta %}\n                        </div>\n                        {% } %}\n\n\n                    </div>\n                    {% } %}\n\n                </div>\n\n            </div>\n        {% }); %}\n        </div>\n\n    {% } else { %}\n\n        <div class=\"ck-list\">\n            <div class=\"ck-item blank\">\n                <div class=\"ck-initem\">{%=(data.config.blank || '目前还没有内容')%}</div>\n            </div>\n        </div>\n\n    {% } %}\n    </div>\n\n    {% if (data.ft) { %}\n    <footer>{%= data.ft %}</footer>\n    {% } %}\n\n</article>\n"}; 
 
 });
 /* @source ../cardkit/tpl/unit/box.js */;
 
 define("../cardkit/tpl/unit/box", [], function(){
 
-    return {"template":"\n<article>\n\n    {% if (data.hd) { %}\n    <header>\n        {% if (data.hd_url) { %}\n        <a href=\"{%= data.hd_url %}\" class=\"ck-link\">{%= data.hd %}</a>\n        {% } else { %}\n        <span>{%= data.hd %}</span>\n        {% } %}\n        {% if (data.hd_opt) { %}\n        <div class=\"ck-hdopt\">{%=data.hd_opt%}</div>\n        {% } %}\n    </header>\n    {% } %}\n\n    {% if (data.hasContent) { %}\n    <section>{%= data.content %}</section>\n    {% } %}\n\n    {% if (data.ft) { %}\n    <footer>{%= data.ft %}</footer>\n    {% } %}\n\n</article>\n"}; 
+    return {"template":"\n<article>\n\n    {% if (data.hd) { %}\n    <header>\n\n        <span class=\"ck-hd {%= (data.hd_url && 'clickable' || '') %}\">\n            {% if (data.hd_url) { %}\n            <a href=\"{%= data.hd_url %}\" class=\"ck-link ck-link-mask\"></a>\n            {% } %}\n            <span>{%= data.hd %}</span>\n        </span>\n\n        {% if (data.hd_opt) { %}\n        <div class=\"ck-hdopt\">{%=data.hd_opt%}</div>\n        {% } %}\n\n    </header>\n    {% } %}\n\n    {% if (data.hasContent) { %}\n    <section>{%= data.content %}</section>\n    {% } %}\n\n    {% if (data.ft) { %}\n    <footer>{%= data.ft %}</footer>\n    {% } %}\n\n</article>\n"}; 
 
 });
 /* @source mo/template/string.js */;
@@ -3375,1244 +3337,6 @@ define("../cardkit/bus", [
 
 });
 
-/* @source momo/base.js */;
-
-
-define('momo/base', [
-  "mo/lang/es5",
-  "mo/lang/type",
-  "mo/lang/mix"
-], function(es5, type, _){
-
-    var isFunction = type.isFunction,
-        gid = 0,
-
-        SUPPORT_TOUCH = false;
-
-    try {
-        document.createEvent("TouchEvent");  
-        SUPPORT_TOUCH = true;
-    } catch (e) {}
-
-    function MomoBase(elm, opt, cb){
-        if (!opt || isFunction(opt)) {
-            cb = opt;
-            opt = {};
-        }
-        this._listener = cb;
-        var eid = cb && ++gid;
-        this.event = {};
-        this.EVENTS.forEach(function(ev){
-            this[ev] = ev + (cb ? '_' + eid : '');
-        }, this.event);
-        this.node = elm;
-        this._config = {
-            event: this.EVENTS[0]
-        };
-        this.config(opt);
-        this.enable();
-    }
-
-    MomoBase.prototype = {
-
-        SUPPORT_TOUCH: SUPPORT_TOUCH,
-
-        PRESS: SUPPORT_TOUCH ? 'touchstart' : 'mousedown',
-        MOVE: SUPPORT_TOUCH ? 'touchmove' : 'mousemove',
-        RELEASE: SUPPORT_TOUCH ? 'touchend' : 'mouseup',
-        //CANCEL: 'touchcancel',
-
-        EVENTS: [],
-        DEFAULT_CONFIG: {},
-
-        config: function(opt){
-            _.merge(_.mix(this._config, opt), this.DEFAULT_CONFIG);
-            return this;
-        },
-
-        enable: function(){
-            var self = this;
-            self.bind(self.PRESS, 
-                    self._press || (self._press = self.press.bind(self)))
-                .bind(self.MOVE, 
-                    self._move || (self._move = self.move.bind(self)))
-                .bind(self.CANCEL, 
-                    self._cancel || (self._cancel = self.cancel.bind(self)))
-                .bind(self.RELEASE, 
-                    self._release || (self._release = self.release.bind(self)));
-            if (self._listener) {
-                self.bind(this.event[this._config.event], self._listener);
-            }
-            return self;
-        },
-
-        disable: function(){
-            var self = this;
-            self.unbind(self.PRESS, self._press)
-                .unbind(self.MOVE, self._move)
-                .unbind(self.CANCEL, self._cancel)
-                .unbind(self.RELEASE, self._release);
-            if (self._listener) {
-                self.unbind(this.event[this._config.event], self._listener);
-            }
-            return self;
-        },
-
-        once: function(ev, handler, node){
-            var self = this;
-            this.bind(ev, function fn(){
-                self.unbind(ev, fn, node);
-                handler.apply(this, arguments);
-            }, node);
-        },
-
-        // implement
-
-        bind: nothing,
-
-        unbind: nothing,
-
-        trigger: nothing,
-
-        // extension
-
-        press: nothing,
-
-        move: nothing,
-
-        release: nothing,
-
-        cancel: nothing
-    
-    };
-
-    function nothing(){}
-
-    function exports(elm, opt, cb){
-        return new exports.Class(elm, opt, cb);
-    }
-
-    exports.Class = MomoBase;
-
-    return exports;
-
-});
-
-/* @source momo/swipe.js */;
-
-
-define('momo/swipe', [
-  "mo/lang",
-  "momo/base"
-], function(_, momoBase){
-
-    var MomoSwipe = _.construct(momoBase.Class);
-
-    _.mix(MomoSwipe.prototype, {
-
-        EVENTS: [
-            'swipeup',
-            'swipedown',
-            'swiperight',
-            'swipeleft'
-        ],
-        DEFAULT_CONFIG: {
-            'timeThreshold': 200,
-            'distanceThreshold': 20
-        },
-
-        press: function(e) {
-            var t = this.SUPPORT_TOUCH ? e.touches[0] : e;
-            this._startX = t.clientX;
-            this._startY = t.clientY;
-            this._moveX = NaN;
-            this._moveY = NaN;
-            this._startTime = e.timeStamp;
-        },
-
-        move: function(e) {
-            var t = this.SUPPORT_TOUCH ? e.touches[0] : e;
-            this._moveX = t.clientX;
-            this._moveY = t.clientY;
-        },
-
-        release: function(e) {
-            var self = this,
-                startPos = {
-                    x: self._startX,
-                    y: self._startY
-                },
-                movePos = {
-                    x: self._moveX,
-                    y: self._moveY
-                },
-                distance = get_distance(startPos, movePos),
-                direction = get_direction(startPos, movePos),
-                touchTime = e.timeStamp - self._startTime;
-
-            if (touchTime < self._config.timeThreshold &&
-                    distance > self._config.distanceThreshold) {
-                self.trigger(e, self.event['swipe' + direction]);
-            }
-        }
-
-    });
-
-    function get_distance(pos1, pos2) {
-        var x = pos2.x - pos1.x,
-            y = pos2.y - pos1.y;
-        return Math.sqrt((x * x) + (y * y));
-    }
-
-    function get_angle(pos1, pos2) {
-        return Math.atan2(pos2.y - pos1.y, pos2.x - pos1.x) * 180 / Math.PI;
-    }
-
-    function get_direction(pos1, pos2) {
-        var angle = get_angle(pos1, pos2);
-        var directions = {
-            down: angle >= 45 && angle < 135, //90
-            left: angle >= 135 || angle <= -135, //180
-            up: angle < -45 && angle > -135, //270
-            right: angle >= -45 && angle <= 45 //0
-        };
-
-        var direction, key;
-        for(key in directions){
-            if(directions[key]){
-                direction = key;
-                break;
-            }
-        }
-        return direction;
-    }
-
-    function exports(elm, opt, cb){
-        return new exports.Class(elm, opt, cb);
-    }
-
-    exports.Class = MomoSwipe;
-
-    return exports;
-
-});
-
-/* @source mo/easing/base.js */;
-
-
-define("mo/easing/base", [], function(){
-
-    return {
-
-        def: 'ease',
-
-        positions: {
-            'linear'         :  [0.250, 0.250, 0.750, 0.750],
-            'ease'           :  [0.250, 0.100, 0.250, 1.000],
-            'easeIn'         :  [0.420, 0.000, 1.000, 1.000],
-            'easeOut'        :  [0.000, 0.000, 0.580, 1.000],
-            'easeInOut'      :  [0.420, 0.000, 0.580, 1.000]
-        },
-
-        values: {
-            linear: 'linear',
-            ease: 'ease',
-            easeIn: 'ease-in',
-            easeOut: 'ease-out',
-            easeInOut: 'ease-in-out'
-        },
-
-        // http://gsgd.co.uk/sandbox/jquery/easing/
-        // t: current time, b: begInnIng value, c: change In value, d: duration
-        functions: {
-            linear: function(x, t, b, c) {
-                return b + c * x;
-            },
-            ease: function(x, t, b, c) {
-                return ((-Math.cos(x*Math.PI)/2) + 0.5) * c + b;
-            },
-            easeIn: function (x, t, b, c, d) {
-                return c*(t /= d)*t + b;
-            },
-            easeOut: function (x, t, b, c, d) {
-                return -c *(t /= d)*(t-2) + b;
-            },
-            easeInOut: function (x, t, b, c, d) {
-                if ((t /= d/2) < 1) return c/2*t*t + b;
-                return -c/2 * ((--t)*(t-2) - 1) + b;
-            }
-        },
-
-    };
-
-});
-
-/* @source choreo.js */;
-
-/**
- * ChoreoJS
- * An animation library which uses "stage" and "actor" as metaphors
- * Automatic switch between CSS transitions and JS tweening
- * Provide a flexible way to write asynchronous sequence of actions
- * Support CSS transform value
- *
- * using AMD (Asynchronous Module Definition) API with OzJS
- * see http://ozjs.org for details
- *
- * Copyright (C) 2010-2012, Dexter.Yy, MIT License
- * vim: et:ts=4:sw=4:sts=4
- */
-define("choreo", [
-  "mo/lang/es5",
-  "mo/lang/mix",
-  "mo/easing/base",
-  "mo/mainloop",
-  "eventmaster"
-], function(es5, _, easing, mainloop, Event){
-
-    var window = this,
-        VENDORS = ['Moz', 'webkit', 'ms', 'O', ''],
-        EVENT_NAMES = {
-            '': 'transitionend',
-            'Moz': 'transitionend',
-            'webkit': 'webkitTransitionEnd',
-            'ms': 'MSTransitionEnd',
-            'O': 'oTransitionEnd'
-        },
-        TRANSIT_EVENT,
-        TRANSFORM_PROPS = { 'rotate': -2, 
-            'rotateX': -1, 'rotateY': -1, 'rotateZ': -1, 
-            'scale': 2, 'scale3d': 3, 
-            'scaleX': -1, 'scaleY': -1, 'scaleZ': -1, 
-            'skew': 2, 'skewX': -1, 'skewY': -1, 
-            'translate': 2, 'translate3d': 3, 
-            'translateX': -1, 'translateY': -1, 'translateZ': -1 },
-        TRANSFORM_DEFAULT = 'rotateX(0deg) rotateY(0deg) rotateZ(0deg)'
-            + ' translateX(0px) translateY(0px) translateZ(0px)'
-            + ' scaleX(1) scaleY(1) scaleZ(1) skewX(0deg) skewY(0deg)',
-        ACTOR_OPS = ['target', 'prop', 'duration', 'easing', 'delay', 'to'],
-        RE_PROP_SPLIT = /\)\s+/,
-        RE_UNIT = /^[\-\d\.]+/,
-        test_elm = window.document.body,
-        _array_slice = Array.prototype.slice,
-        _getComputedStyle = (document.defaultView || {}).getComputedStyle,
-        vendor_prop = { 'transform': '', 'transition': '' },
-        useCSS = false,
-        hash_id = 0,
-        stage_id = 0,
-        render_id = 0,
-        _stage = {},
-        _transition_sets = {},
-        _transform_promise = {},
-        timing_values = easing.values,
-        timing_functions = easing.functions;
-
-    function fix_prop_name(lib, prefix, true_prop, succ){
-        for (var prop in lib) {
-            true_prop = prefix ? ('-' + prefix + '-' + prop) : prop;
-            if (css_method(true_prop) in test_elm.style) {
-                lib[prop] = true_prop;
-                if (!TRANSIT_EVENT && prop === 'transition') {
-                    TRANSIT_EVENT = EVENT_NAMES[prefix];
-                }
-                succ = true;
-                continue;
-            }
-        }
-        return succ;
-    }
-    
-    for (var i = 0, l = VENDORS.length; i < l; i++) {
-        if (fix_prop_name(vendor_prop, VENDORS[i])) {
-            break;
-        }
-    }
-    fix_prop_name(vendor_prop, '');
-
-    var TRANSFORM = vendor_prop['transform'],
-        TRANSITION = vendor_prop['transition'],
-        TRANSFORM_METHOD = css_method(TRANSFORM),
-        TRANSITION_METHOD = css_method(TRANSITION); 
-    if (TRANSFORM_METHOD && TRANSITION_METHOD) {
-        useCSS = true;
-    }
-
-    function Stage(name){
-        if (!name) {
-            name = '_oz_choreo_' + stage_id++;
-        }
-        if (_stage[name]) {
-            return _stage[name];
-        }
-        var self = this;
-        _stage[name] = this;
-        this.name = name;
-        this._promise = new Event.Promise();
-        this._reset_promise = new Event.Promise();
-        this._count = 0;
-        this._optCache = [];
-        if (useCSS) {
-            this._runningActors = [];
-        } else {
-            mainloop.addStage(name);
-        }
-        this._reset_promise.bind(function(){
-            self._promise.reset();
-        });
-    }
-
-    Stage.prototype = {
-
-        isPlaying: function(){
-            return useCSS ? !!this._runningActors.state 
-                : mainloop.isRunning(this.name);
-        },
-
-        isCompleted: function(){
-            return this._count <= 0;
-        },
-
-        play: function(){
-            // reinitialize all user-written opts if stage has completed
-            if (this.isCompleted()) {
-                clearTimeout(this._end_timer);
-                this._reset_promise.fire();
-                this._optCache.forEach(function(opt){
-                    this.actor(opt);
-                }, this);
-            }
-            // nothing happen if stage is running
-            if (useCSS) {
-                if (!this.isPlaying()) {
-                    this._runningActors.state = 1;
-                    this._runningActors.forEach(play);
-                }
-            } else {
-                mainloop.run(this.name);
-            }
-            return this;
-        },
-
-        pause: function(){
-            if (useCSS) {
-                this._runningActors.state = 0;
-                this._runningActors.forEach(stop);
-            } else {
-                mainloop.pause(this.name);
-            }
-            return this;
-        },
-
-        clear: function(){
-            this.cancel();
-            // remove all all user-written opts
-            this._optCache.forEach(function(opt){
-                opt._cached = false;
-            });
-            this._optCache.length = 0;
-            return this;
-        },
-
-        cancel: function(){
-            to_end(this, function(name, opt){
-                if (useCSS) {
-                    stop(opt);
-                } else {
-                    mainloop.remove(name);
-                }
-            });
-            this._optCache.forEach(function(opt){
-                opt._promise.reject([{
-                    target: opt.target, 
-                    succ: false
-                }]).disable();
-            });
-            return this;
-        },
-
-        complete: function(){
-            to_end(this, function(name, opt){
-                if (useCSS) {
-                    complete(opt);
-                    opt._promise.resolve([{
-                        target: opt.target, 
-                        succ: true 
-                    }]).disable();
-                } else {
-                    mainloop.complete(name);
-                }
-            });
-            return this;
-        },
-
-        actor: function(opt, opt2){
-            var self = this, name = this.name, actorObj, actors;
-
-            // when new actor coming, cancel forthcoming complete event 
-            clearTimeout(this._end_timer);
-
-            // Actor Group
-            if (opt2) {
-                if (opt.nodeType) { // convert jquery style to mutiple Single Actor
-                    var base_opt = {}, props;
-                    ACTOR_OPS.forEach(function(op, i){
-                        if (op === 'prop') {
-                            props = this[i];
-                        } else if (op !== 'to') {
-                            base_opt[op] = this[i];
-                        }
-                    }, arguments);
-                    actors = Object.keys(props).map(function(prop){
-                        return self.actor(_.mix({ 
-                            _parent: true,
-                            prop: prop,
-                            to: props[prop]
-                        }, this));
-                    }, base_opt);
-                    if (actors.length === 1) {
-                        return actors[0];
-                    }
-                } else { // convert multiple options to mutiple Single Actor
-                    actors = _array_slice.call(arguments);
-                    actors = actors.map(function(sub_opt){
-                        sub_opt._parent = true;
-                        return self.actor(sub_opt);
-                    });
-                }
-                this._reset_promise.bind(when_reset);
-                return actorObj = new Actor(actors, self);
-            }
-
-            // normalize opt 
-            opt.prop = vendor_prop[opt.prop] || opt.prop;
-
-            // reset opt
-            if (opt._promise) {
-                when_reset(opt._promise);
-            }
-            // @TODO avoid setting the same prop
-
-            // convert from Transform Actor to Actor Group
-            if (opt.prop === TRANSFORM) { 
-                var transform_promise = promise_proxy(opt.target);
-                actors = split_transform(opt.to, function(sub_opt){
-                    _.merge(sub_opt, opt);
-                    sub_opt._parent = true;
-                    sub_opt._promise = transform_promise;
-                    return self.actor(sub_opt);
-                });
-                this._reset_promise.bind(when_reset);
-                return actorObj = new Actor(actors, self);
-            }
-
-            self._count++; // count actors created by user
-
-            // Single Actor or Split Actor
-            if (!opt._promise) {
-                opt._promise = new Event.Promise();
-            }
-            if (useCSS) {
-                this._runningActors.push(opt);
-                if (this.isPlaying()) {
-                    play(opt);
-                }
-            } else {
-                render_opt(name, opt);
-            }
-            actorObj = new Actor(opt, self);
-
-            if (!opt._cached) {
-                // cache Single Actor and Split Actor
-                opt._cached = true;
-                this._optCache.push(opt);
-
-                watch(actorObj);
-            }
-
-            function when_reset(promise){
-                (promise || actorObj.follow()).reset().enable();
-            }
-
-            function watch(actor){
-                actor.follow().bind(watcher);
-                actor._opt._watcher = watcher;
-                delete actor._opt._parent;
-                return actor;
-            }
-
-            function watcher(res){
-                if (--self._count > 0) {
-                    return;
-                }
-                self._end_timer = setTimeout(function(){
-                    to_end(self);
-                    self._promise[
-                        res.succ ? 'resolve': 'reject'
-                    ]([{ succ: res.succ }]);
-                }, 0);
-            }
-
-            return actorObj;
-        },
-
-        group: function(){
-            var self = this,
-                actorObj,
-                actors = _array_slice.call(arguments).filter(function(actor){
-                    return actor.stage === self;
-                });
-            this._reset_promise.bind(function(){
-                actorObj.follow().reset().enable();
-            });
-            return actorObj = new Actor(actors, self);
-        },
-
-        follow: function(){
-            return this._promise;
-        }
-
-    };
-
-    function Actor(opt, stage){
-        if (Array.isArray(opt)) { // Actor Group
-            this.members = opt;
-            opt = {
-                _promise: Event.when.apply(Event, 
-                    this.members.map(function(actor){
-                        return actor.follow();
-                    })
-                )
-            };
-            opt._promise.bind(opt._promise.pipe.disable);
-        }
-        this._opt = opt;
-        this.stage = stage;
-    }
-
-    Actor.prototype = {
-
-        enter: function(stage){
-            if (this.stage) {
-                this.exit();
-            }
-            var actor = stage.actor.apply(
-                stage, 
-                [].concat(actor_opts(this))
-            );
-            actor.follow().merge(this.follow());
-            return _.mix(this, actor);
-        },
-
-        exit: function(){
-            var stage = this.stage,
-                opt = this._opt;
-            if (!stage) {
-                return this;
-            }
-            if (this.members) {
-                this.members = this.members.map(function(actor){
-                    return actor.exit();
-                });
-            } else {
-                if (useCSS) {
-                    clear_member(stage._runningActors, opt);
-                    if (stage.isPlaying()) {
-                        stop(opt);
-                    }
-                } else {
-                    mainloop.remove(stage.name, opt._render);
-                }
-                clear_member(stage._optCache, opt);
-                opt._promise.reject([{
-                    target: opt.target, 
-                    succ: false
-                }]).disable();
-                // @TODO remove when_reset
-            }
-            var actor = this.fork();
-            if (!opt._parent) {
-                actor.follow().merge(opt._promise);
-            }
-            _.occupy(opt, actor._opt);
-            delete this.stage;
-            return this;
-        },
-
-        fork: function(){
-            if (this.members) {
-                return new Actor(this.members.map(function(actor){
-                    return actor.fork();
-                }));
-            }
-            var opt = {};
-            ACTOR_OPS.forEach(function(i){
-                opt[i] = this[i];
-            }, this._opt);
-            opt._promise = new Event.Promise(); // useless for member actor
-            return new Actor(opt);
-        },
-
-        setto: function(v){
-            return actor_setter(this, v, function(opt, v){
-                return (v || v === 0) ? v : opt.to;
-            });
-        },
-
-        extendto: function(v){
-            return actor_setter(this, v, function(opt, v){
-                if (!v) {
-                    return opt.to;
-                }
-                var unit = get_unit(opt.to, v);
-                return parseFloat(opt.to) + parseFloat(v) + unit;
-            });
-        },
-
-        reverse: function(){
-            return actor_setter(this, {}, function(opt){
-                return opt.from !== undefined 
-                    ? opt.from : opt._current_from;
-            });
-        },
-
-        follow: function(){
-            return this._opt._promise;
-        }
-        
-    };
-
-    function to_end(stage, fn){
-        if (useCSS) {
-            var _actors = stage._runningActors;
-            if (stage.isPlaying()) {
-                _actors.forEach(function(opt){
-                    if (fn) {
-                        fn(stage.name, opt);
-                    }
-                });
-                _actors.state = 0;
-                _actors.length = 0;
-            }
-        } else if (fn) {
-            fn(stage.name);
-        }
-    }
-
-    function stop(opt){
-        var elm = opt.target,
-            from = parseFloat(opt._current_from || opt.from),
-            end = parseFloat(opt.to),
-            d = end - from,
-            time = opt._startTime ? (+new Date() - opt._startTime) : 0;
-        if (time < 0) {
-            time = 0;
-        }
-        var progress = time / (opt.duration || 1),
-            hash = elm2hash(elm),
-            sets = _transition_sets[hash];
-        if (sets && sets[opt.prop] === opt) {
-            clearTimeout((sets[opt.prop] || {})._runtimer);
-            delete sets[opt.prop];
-        } else {
-            progress = 0;
-        }
-        if (!progress) {
-            return;
-        }
-        var str = transitionStr(hash);
-        elm.style[TRANSITION_METHOD] = str;
-        if (progress < 1) { // pause
-            if (timing_functions[opt.easing]) {
-                progress = timing_functions[opt.easing](progress, time, 0, 1, opt.duration);
-            }
-            var unit = get_unit(opt.from, opt.to);
-            from = from + d * progress + unit;
-        } else { // complete
-            from = opt.to;
-        }
-        set_style_prop(elm, opt.prop, from);
-    }
-
-    function complete(opt){
-        var elm = opt.target,
-            hash = elm2hash(elm),
-            sets = _transition_sets[hash];
-        if (sets) {
-            delete sets[opt.prop];
-        }
-        var str = transitionStr(hash);
-        elm.style[TRANSITION_METHOD] = str;
-        set_style_prop(elm, opt.prop, opt.to);
-    }
-
-    function play(opt){
-        var elm = opt.target,
-            prop = opt.prop,
-            hash = elm2hash(elm),
-            sets = _transition_sets[hash],
-            from = opt.from || get_style_value(elm, prop);
-        if (from == opt.to) { // completed
-            var completed = true;
-            if (sets) {
-                delete sets[prop];
-            }
-            if (TRANSFORM_PROPS[prop]) {
-                for (var p in sets) {
-                    if (TRANSFORM_PROPS[p]) {
-                        completed = false; // wait for other transform prop
-                        break;
-                    }
-                }
-            }
-            if (completed) {
-                opt._promise.resolve([{
-                    target: opt.target, 
-                    succ: true 
-                }]).disable();
-            }
-            return;
-        }
-        opt._current_from = from; // for pause or reverse
-        opt._startTime = +new Date() + (opt.delay || 0);
-        sets[prop] = opt;
-        set_style_prop(elm, prop, from);
-        var str = transitionStr(hash);
-        opt._runtimer = setTimeout(function(){
-            delete opt._runtimer;
-            elm.style[TRANSITION_METHOD] = str;
-            set_style_prop(elm, prop, opt.to);
-        }, 0);
-    }
-
-    function render_opt(name, opt){
-        var elm = opt.target,
-            end = parseFloat(opt.to),
-            from = opt.from || get_style_value(opt.target, opt.prop),
-            unit = get_unit(from, opt.to);
-        if (unit && from.toString().indexOf(unit) < 0) {
-            from = 0;
-        }
-        opt._current_from = from; // for pause or reverse
-        var current = parseFloat(from),
-            rid = opt.delay && ('_oz_anim_' + render_id++);
-        mainloop.addTween(name, current, end, opt.duration, {
-            easing: opt.easing,
-            delay: opt.delay,
-            step: function(v){
-                set_style_prop(elm, opt.prop, v + unit);
-            },
-            renderId: rid,
-            callback: function(){
-                opt._promise.resolve([{
-                    target: elm,
-                    succ: true
-                }]).disable();
-            }
-        });
-        opt._render = mainloop.getRender(rid);
-    }
-
-    function split_transform(value, fn){
-        var to_lib = parse_transform(value);
-        return Object.keys(to_lib).map(function(prop){
-            return fn({
-                prop: prop,
-                to: this[prop]
-            });
-        }, to_lib);
-    }
-
-    function parse_transform(value){
-        var lib = {};
-        value.split(RE_PROP_SPLIT).forEach(function(str){
-            var kv = str.match(/([^\(\)]+)/g),
-                values = kv[1].split(/\,\s*/),
-                isSupported = TRANSFORM_PROPS[kv[0]],
-                is3D = isSupported === 3,
-                isSingle = isSupported < 0 || values.length <= 1,
-                xyz = isSingle ? [''] : ['X', 'Y', 'Z'];
-            if (!isSupported) {
-                return;
-            }
-            values.forEach(function(v, i){
-                if (v && i <= xyz.length && is3D || isSingle && i < 1 || !isSingle && i < 2) {
-                    var k = kv[0].replace('3d', '') + xyz[i];
-                    this[k] = v;
-                }
-            }, this);
-        }, lib);
-        return lib;
-    }
-
-    function elm2hash(elm){
-        var hash = elm._oz_fx;
-        if (!hash) {
-            hash = ++hash_id;
-            elm._oz_fx = hash;
-            elm.removeEventListener(TRANSIT_EVENT, when_transition_end);
-            elm.addEventListener(TRANSIT_EVENT, when_transition_end);
-        }
-        if (!_transition_sets[hash]) {
-            _transition_sets[hash] = {};
-        }
-        return hash;
-    }
-
-    function when_transition_end(e){
-        if (e.target !== this) {
-            return;
-        }
-        var self = this,
-            hash = this._oz_fx,
-            sets = _transition_sets[hash];
-        if (sets) {
-            if (e.propertyName === TRANSFORM) { 
-                for (var i in TRANSFORM_PROPS) {
-                    delete sets[i];
-                }
-                var promises = _transform_promise[hash] || [];
-                this.style[TRANSITION_METHOD] = transitionStr(hash);
-                promises.forEach(function(promise){
-                    promise.resolve([{
-                        target: self,
-                        succ: true
-                    }]).disable();
-                }); 
-            } else {
-                var opt = sets[e.propertyName];
-                if (opt) {
-                    delete sets[opt.prop];
-                    this.style[TRANSITION_METHOD] = transitionStr(hash);
-                    if (opt._promise) {
-                        opt._promise.resolve([{
-                            target: this,
-                            succ: true
-                        }]).disable();
-                    }
-                }
-            }
-        }
-    }
-
-    function get_style_value(node, name){
-        if (TRANSFORM_PROPS[name]) {
-            return transform(node, name) || 0;
-        }
-        if (name === TRANSFORM) {
-            return node && node.style[
-                TRANSFORM_METHOD || name
-            ] || TRANSFORM_DEFAULT;
-        }
-        var method = css_method(name);
-        var r = node && (node.style[method] 
-            || (_getComputedStyle 
-                ? _getComputedStyle(node, '').getPropertyValue(name)
-                : node.currentStyle[name]));
-        return (r && /\d/.test(r)) && r || 0;
-    }
-
-    function set_style_prop(elm, prop, v){
-        if (TRANSFORM_PROPS[prop]) {
-            if (TRANSFORM) {
-                transform(elm, prop, v);
-            }
-        } else {
-            elm.style[css_method(prop)] = v;
-        }
-    }
-
-    function transform(elm, prop, v){
-        var current = parse_transform(get_style_value(elm, TRANSFORM));
-        if (v) {
-            var kv = parse_transform(prop + '(' + v + ')');
-            _.mix(current, kv);
-            elm.style[TRANSFORM_METHOD] = Object.keys(current).map(function(prop){
-                return prop + '(' + this[prop] + ')';
-            }, current).join(' ');
-        } else {
-            return current[prop] || prop === 'rotate' && '0deg';
-        }
-    }
-
-    function transitionStr(hash){
-        var sets = _transition_sets[hash];
-        if (sets) {
-            var str = [], opt;
-            for (var prop in sets) {
-                opt = sets[prop];
-                if (opt && opt.prop) {
-                    str.push([
-                        TRANSFORM_PROPS[opt.prop] && TRANSFORM || opt.prop,
-                        (opt.duration || 0) + 'ms',
-                        timing_values[opt.easing] || 'linear',
-                        (opt.delay || 0) + 'ms'
-                    ].join(' '));
-                }
-            }
-            return str.join(",");
-        } else {
-            return '';
-        }
-    }
-
-    function get_unit(from, to){
-        var from_unit = (from || '').toString().replace(RE_UNIT, ''),
-            to_unit = (to || '').toString().replace(RE_UNIT, '');
-        return parseFloat(from) === 0 && to_unit 
-            || parseFloat(to) === 0 && from_unit 
-            || to_unit || from_unit;
-    }
-
-    function css_method(name){
-        return name.replace(/-+(.)?/g, function($0, $1){
-            return $1 ? $1.toUpperCase() : '';
-        }); 
-    }
-
-    function clear_member(array, member){
-        var n = array.indexOf(member);
-        if (n !== -1) {
-            array.splice(n, 1);
-        }
-    }
-
-    function promise_proxy(target){
-        var transform_promise;
-        if (useCSS) {
-            transform_promise = new Event.Promise();
-            var hash = elm2hash(target);
-            if (!_transform_promise[hash]) {
-                _transform_promise[hash] = [];
-            }
-            _transform_promise[hash].push(transform_promise);
-        }
-        return transform_promise;
-    }
-
-    function actor_opts(actor){
-        if (actor.members) {
-            // convert from Actor Group to original Transform Actor 
-            var eg = actor.members[0]._opt;
-            if (!TRANSFORM_PROPS[eg.prop]) {
-                return actor.members.map(function(sub){
-                    return actor_opts(sub);
-                });
-            } else {
-                var opt = actor._opt = _.copy(eg);
-                opt.prop = TRANSFORM;
-                opt.to = actor.members.map(function(actor){
-                    return actor._opt.prop + '(' + actor._opt.to + ')';
-                }).join(' ');
-                delete opt._parent;
-            }
-        }
-        return actor._opt;
-    }
-
-    function actor_setter(actor, v, fn){
-        var opt = actor._opt, 
-            stage = actor.stage;
-        if (stage && !stage.isCompleted()) {
-            stage.cancel();
-        }
-        if (actor.members) {
-            if (typeof v === 'string' 
-                && TRANSFORM_PROPS[actor.members[0]._opt.prop]) {
-                var lib = {};
-                split_transform(v, function(sub_opt){
-                    lib[sub_opt.prop] = sub_opt.to;
-                });
-                v = lib;
-            }
-            actor.members.forEach(function(actor){
-                var mem_opt = actor._opt;
-                mem_opt.to = fn(mem_opt, this[mem_opt.prop]);
-            }, v);
-        } else {
-            opt.to = fn(actor._opt, v);
-        }
-        return actor;
-    }
-
-    function exports(name){
-        return new Stage(name);
-    }
-
-    _.mix(exports, {
-
-        VERSION: '1.0.3',
-        renderMode: useCSS ? 'css' : 'js',
-        Stage: Stage,
-        Actor: Actor,
-
-        config: function(opt){
-            if (opt.easing) {
-                _.mix(timing_values, opt.easing.values);
-                _.mix(timing_functions, opt.easing.functions);
-                mainloop.config({ easing: timing_functions });
-            }
-            if (/(js|css)/.test(opt.renderMode)) {
-                useCSS = opt.renderMode === 'css';
-                this.renderMode = opt.renderMode;
-            }
-        },
-
-        transform: transform
-
-    });
-
-    return exports;
-
-});
-
-/* @source ../cardkit/view/slidelist.js */;
-
-
-define("../cardkit/view/slidelist", [
-  "mo/lang",
-  "dollar",
-  "choreo",
-  "eventmaster",
-  "momo/swipe"
-], function(_, $, choreo, event, momoSwipe) {
-
-    var UID = '_ckMiniUid',
-    
-        uid = 0,
-        lib = {};
-
-    var default_config = {
-        items: '.item'
-    };
-
-    function Slidelist(elm, opt){
-        this.init(elm, opt);
-        this.set(this._config);
-    }
-
-    Slidelist.prototype = {
-
-        _defaults: default_config,
-
-        init: function(elm, opt){
-            this.event = event();
-            this._node = $(elm);
-            this._items = [];
-            opt = _.mix({}, this.data(), opt);
-            this._config = _.config({}, opt, this._defaults);
-        },
-
-        set: function(opt){
-            if (!opt) {
-                return this;
-            }
-            _.mix(this._config, opt);
-
-            if (opt.items) {
-                this._items.forEach(this._removeItem, this);
-                $(opt.items, this._node).forEach(this._addItem, this);
-            }
-
-            return this;
-        },
-
-        data: function(){
-            return this._node.data();
-        },
-
-        _addItem: function(elm){
-            elm = $(elm);
-            var self = this;
-            var item = {
-                order: this._items.length,
-                node: elm,
-                swipeLeft: momoSwipe(elm[0], {
-                    event: 'swipeleft'
-                }, function(){
-                    var n = item.order + 1;
-                    if (n > self._items.length - 1) {
-                        choreo().play().actor(self._node[0], {
-                            'transform': 'translateX(-20px)'
-                        }, 100, 'easeOut').follow().done(function(){
-                            return choreo().play().actor(self._node[0], {
-                                'transform': 'translateX(0px)'
-                            }, 100, 'easeIn').follow();
-                        });
-                        return;
-                        //n = 0;
-                    }
-                    var next = self._items[n].node;
-                    next.addClass('moving');
-                    choreo.transform(next[0], 'translateX', elm[0].offsetWidth + 'px');
-                    choreo().play().actor(self._node[0], {
-                        'transform': 'translateX(' + (0 - elm[0].offsetWidth) + 'px)'
-                    }, 300, 'easeInOut').follow().done(function(){
-                        choreo.transform(next[0], 'translateX', '0');
-                        next.addClass('enable').removeClass('moving');
-                        elm.removeClass('enable');
-                        choreo.transform(self._node[0], 'translateX', '0');
-                    });
-                    self.event.fire('change', [n]);
-                }),
-                swipeRight: momoSwipe(elm[0], {
-                    event: 'swiperight'
-                }, function(){
-                    var n = item.order - 1;
-                    if (n < 0) {
-                        choreo().play().actor(self._node[0], {
-                            'transform': 'translateX(20px)'
-                        }, 100, 'easeOut').follow().done(function(){
-                            return choreo().play().actor(self._node[0], {
-                                'transform': 'translateX(0px)'
-                            }, 100, 'easeIn').follow();
-                        });
-                        return;
-                        //n = self._items.length - 1;
-                    }
-                    var next = self._items[n].node;
-                    next.addClass('moving');
-                    choreo.transform(next[0], 'translateX', 0 - elm[0].offsetWidth + 'px');
-                    choreo().play().actor(self._node[0], {
-                        'transform': 'translateX(' + elm[0].offsetWidth + 'px)'
-                    }, 300, 'easeInOut').follow().done(function(){
-                        choreo.transform(next[0], 'translateX', '0');
-                        next.addClass('enable').removeClass('moving');
-                        elm.removeClass('enable');
-                        choreo.transform(self._node[0], 'translateX', '0');
-                    });
-                    self.event.fire('change', [n]);
-                })
-            };
-            this._items.push(item);
-        },
-
-        _removeItem: function(item){
-            item.swipeLeft.disable();
-            item.swipeRight.disable();
-            this._items.splice(this._items.indexOf(item), 1);
-        }
-    
-    };
-
-    function exports(elm, opt){
-        elm = $(elm);
-        var id = elm[0][UID];
-        if (id && lib[id]) {
-            return lib[id];
-        }
-        id = elm[0][UID] = ++uid;
-        opt = opt || {};
-        opt.items = '.ck-item';
-        var slide = lib[id] = new exports.Slidelist(elm, opt);
-        return slide;
-    }
-
-    exports.Slidelist = Slidelist;
-
-    return exports;
-
-});
-
 /* @source moui/overlay.js */;
 
 define('moui/overlay', [
@@ -4828,26 +3552,31 @@ define('moui/growl', [
         _defaults: _.merge({}, default_config, Growl.prototype._defaults),
 
         set: function(opt) {
-            this.superClass.set.call(this, opt);
+            var self = this;
+            self.superClass.set.call(self, opt);
 
-            if (opt.corner && opt.corner !== this._currentCorner) {
-                if (this._currentCorner) {
-                    this._node.removeClass(CORNER + this._currentCorner);
+            if (opt.corner && opt.corner !== self._currentCorner) {
+                if (self._currentCorner) {
+                    self._node.removeClass(CORNER + self._currentCorner);
                 }
-                this._node.addClass(CORNER + opt.corner);
-                this._currentCorner = opt.corner;
+                self._node.addClass(CORNER + opt.corner);
+                self._currentCorner = opt.corner;
             }
 
-            return this;
+            if (opt.expires !== undefined) {
+                clearTimeout(self._exptimer);
+                if (self.isOpened) {
+                    set_expires(self);
+                }
+            }
+
+            return self;
         },
 
         applyOpen: function(){
             clearTimeout(this._exptimer);
             if (this._config.expires != -1) {
-                var self = this;
-                this._exptimer = setTimeout(function(){
-                    self.close();
-                }, this._config.expires);
+                set_expires(this);
             }
             return this.superClass.applyOpen.apply(this, arguments);
         },
@@ -4862,6 +3591,12 @@ define('moui/growl', [
         }
 
     });
+
+    function set_expires(self){
+        self._exptimer = setTimeout(function(){
+            self.close();
+        }, self._config.expires);
+    }
 
     function exports(opt){
         return new exports.Growl(opt);
@@ -6414,6 +5149,129 @@ define("../cardkit/view/control", [
 
 });
 
+/* @source momo/base.js */;
+
+
+define('momo/base', [
+  "mo/lang/es5",
+  "mo/lang/type",
+  "mo/lang/mix"
+], function(es5, type, _){
+
+    var isFunction = type.isFunction,
+        gid = 0,
+
+        SUPPORT_TOUCH = false;
+
+    try {
+        document.createEvent("TouchEvent");  
+        SUPPORT_TOUCH = true;
+    } catch (e) {}
+
+    function MomoBase(elm, opt, cb){
+        if (!opt || isFunction(opt)) {
+            cb = opt;
+            opt = {};
+        }
+        this._listener = cb;
+        var eid = cb && ++gid;
+        this.event = {};
+        this.EVENTS.forEach(function(ev){
+            this[ev] = ev + (cb ? '_' + eid : '');
+        }, this.event);
+        this.node = elm;
+        this._config = {
+            event: this.EVENTS[0]
+        };
+        this.config(opt);
+        this.enable();
+    }
+
+    MomoBase.prototype = {
+
+        SUPPORT_TOUCH: SUPPORT_TOUCH,
+
+        PRESS: SUPPORT_TOUCH ? 'touchstart' : 'mousedown',
+        MOVE: SUPPORT_TOUCH ? 'touchmove' : 'mousemove',
+        RELEASE: SUPPORT_TOUCH ? 'touchend' : 'mouseup',
+        //CANCEL: 'touchcancel',
+
+        EVENTS: [],
+        DEFAULT_CONFIG: {},
+
+        config: function(opt){
+            _.merge(_.mix(this._config, opt), this.DEFAULT_CONFIG);
+            return this;
+        },
+
+        enable: function(){
+            var self = this;
+            self.bind(self.PRESS, 
+                    self._press || (self._press = self.press.bind(self)))
+                .bind(self.MOVE, 
+                    self._move || (self._move = self.move.bind(self)))
+                .bind(self.CANCEL, 
+                    self._cancel || (self._cancel = self.cancel.bind(self)))
+                .bind(self.RELEASE, 
+                    self._release || (self._release = self.release.bind(self)));
+            if (self._listener) {
+                self.bind(this.event[this._config.event], self._listener);
+            }
+            return self;
+        },
+
+        disable: function(){
+            var self = this;
+            self.unbind(self.PRESS, self._press)
+                .unbind(self.MOVE, self._move)
+                .unbind(self.CANCEL, self._cancel)
+                .unbind(self.RELEASE, self._release);
+            if (self._listener) {
+                self.unbind(this.event[this._config.event], self._listener);
+            }
+            return self;
+        },
+
+        once: function(ev, handler, node){
+            var self = this;
+            this.bind(ev, function fn(){
+                self.unbind(ev, fn, node);
+                handler.apply(this, arguments);
+            }, node);
+        },
+
+        // implement
+
+        bind: nothing,
+
+        unbind: nothing,
+
+        trigger: nothing,
+
+        // extension
+
+        press: nothing,
+
+        move: nothing,
+
+        release: nothing,
+
+        cancel: nothing
+    
+    };
+
+    function nothing(){}
+
+    function exports(elm, opt, cb){
+        return new exports.Class(elm, opt, cb);
+    }
+
+    exports.Class = MomoBase;
+
+    return exports;
+
+});
+
 /* @source momo/scroll.js */;
 
 
@@ -6429,6 +5287,8 @@ define('momo/scroll', [
         EVENTS: [
             'scrolldown', 
             'scrollup', 
+            'scrollright', 
+            'scrollleft', 
             'scrollstart', 
             'scrollend'
         ],
@@ -6441,7 +5301,7 @@ define('momo/scroll', [
             this.scrollingNode = elm;
         },
 
-        checkScollDirection: function(y){
+        checkScollDirection: function(x, y){
             var node = { target: this.node },
                 d = y - this._lastY,
                 threshold = this._config.directThreshold;
@@ -6458,14 +5318,31 @@ define('momo/scroll', [
                 this._lastY = y;
                 this._scrollDown = false;
             }
+            d = x - this._lastX;
+            if (d < 0 - threshold) {
+                if (this._scrollRight !== true) {
+                    this.trigger(node, this.event.scrollright);
+                }
+                this._lastX = x;
+                this._scrollRight = true;
+            } else if (d > threshold) {
+                if (this._scrollRight !== false) {
+                    this.trigger(node, this.event.scrollleft);
+                }
+                this._lastX = x;
+                this._scrollRight = false;
+            }
         },
 
         press: function(e){
             var self = this,
                 t = this.SUPPORT_TOUCH ? e.touches[0] : e;
             self._scrollDown = null;
+            self._scrollRight = null;
             self._lastY = t.clientY;
+            self._lastX = t.clientX;
             self._scrollY = null;
+            self._scrollX = null;
             if (self.scrollingNode) {
                 var scrolling = self._scrolling;
                 self._scrolling = false;
@@ -6474,6 +5351,7 @@ define('momo/scroll', [
                     self.once('scroll', function(){
                         if (tm === self._tm) {
                             self._scrollY = self.scrollingNode.scrollTop;
+                            self._scrollX = self.scrollingNode.scrollLeft;
                             if (!scrolling) {
                                 self._started = true;
                                 self.trigger({ target: self.node }, self.event.scrollstart);
@@ -6486,10 +5364,11 @@ define('momo/scroll', [
 
         move: function(e){
             var t = this.SUPPORT_TOUCH ? e.touches[0] : e;
-            this.checkScollDirection(t.clientY);
+            this.checkScollDirection(t.clientX, t.clientY);
             //this._lastY = t.clientY;
             if (this.scrollingNode) {
                 this._scrollY = this.scrollingNode.scrollTop;
+                this._scrollX = this.scrollingNode.scrollLeft;
             }
         },
 
@@ -6498,28 +5377,44 @@ define('momo/scroll', [
                 t = this.SUPPORT_TOUCH ? e.changedTouches[0] : e,
                 node = { target: self.node };
             // up/down
-            this.checkScollDirection(t.clientY);
+            this.checkScollDirection(t.clientX, t.clientY);
             // end
+            var gap, wait_scroll, vp = self.scrollingNode;
             if (self._scrollY !== null) {
-                var vp = self.scrollingNode,
-                    gap = Math.abs(vp.scrollTop - self._scrollY);
+                gap = Math.abs(vp.scrollTop - self._scrollY);
+                wait_scroll = 1;
                 if (self._scrollY >= 0 && (self._scrollY <= vp.scrollHeight + vp.offsetHeight)
                         && (gap && gap < self._config.scrollEndGap)) {
                     self._started = false;
                     self.trigger(node, self.event.scrollend);
                 } else {
-                    var tm = self._tm;
-                    self._scrolling = true;
-                    self.once('scroll', function(){
-                        if (tm === self._tm) {
-                            self._scrolling = false;
-                            self._started = false;
-                            self.trigger(node, self.event.scrollend);
-                        }
-                    }, vp);
+                    wait_scroll = 2;
                 }
                 self._scrollY = null;
-            } else if (self._started) {
+            } else if (self._scrollX !== null) {
+                gap = Math.abs(vp.scrollLeft - self._scrollX);
+                wait_scroll = 1;
+                if (self._scrollX >= 0 && (self._scrollX <= vp.scrollWidth + vp.offsetWidth)
+                        && (gap && gap < self._config.scrollEndGap)) {
+                    self._started = false;
+                    self.trigger(node, self.event.scrollend);
+                } else {
+                    wait_scroll = 2;
+                }
+                self._scrollX = null;
+            } 
+            if (wait_scroll === 2) {
+                var tm = self._tm;
+                self._scrolling = true;
+                self.once('scroll', function(){
+                    if (tm === self._tm) {
+                        self._scrolling = false;
+                        self._started = false;
+                        self.trigger(node, self.event.scrollend);
+                    }
+                }, vp);
+            }
+            if (!wait_scroll && self._started) {
                 self._started = false;
                 self.trigger(node, self.event.scrollend);
             }
@@ -6557,6 +5452,105 @@ define('momo/drag', [
 
 });
 
+/* @source momo/swipe.js */;
+
+
+define('momo/swipe', [
+  "mo/lang",
+  "momo/base"
+], function(_, momoBase){
+
+    var MomoSwipe = _.construct(momoBase.Class);
+
+    _.mix(MomoSwipe.prototype, {
+
+        EVENTS: [
+            'swipeup',
+            'swipedown',
+            'swiperight',
+            'swipeleft'
+        ],
+        DEFAULT_CONFIG: {
+            'timeThreshold': 200,
+            'distanceThreshold': 20
+        },
+
+        press: function(e) {
+            var t = this.SUPPORT_TOUCH ? e.touches[0] : e;
+            this._startX = t.clientX;
+            this._startY = t.clientY;
+            this._moveX = NaN;
+            this._moveY = NaN;
+            this._startTime = e.timeStamp;
+        },
+
+        move: function(e) {
+            var t = this.SUPPORT_TOUCH ? e.touches[0] : e;
+            this._moveX = t.clientX;
+            this._moveY = t.clientY;
+        },
+
+        release: function(e) {
+            var self = this,
+                startPos = {
+                    x: self._startX,
+                    y: self._startY
+                },
+                movePos = {
+                    x: self._moveX,
+                    y: self._moveY
+                },
+                distance = get_distance(startPos, movePos),
+                direction = get_direction(startPos, movePos),
+                touchTime = e.timeStamp - self._startTime;
+
+            if (touchTime < self._config.timeThreshold &&
+                    distance > self._config.distanceThreshold) {
+                self.trigger(e, self.event['swipe' + direction]);
+            }
+        }
+
+    });
+
+    function get_distance(pos1, pos2) {
+        var x = pos2.x - pos1.x,
+            y = pos2.y - pos1.y;
+        return Math.sqrt((x * x) + (y * y));
+    }
+
+    function get_angle(pos1, pos2) {
+        return Math.atan2(pos2.y - pos1.y, pos2.x - pos1.x) * 180 / Math.PI;
+    }
+
+    function get_direction(pos1, pos2) {
+        var angle = get_angle(pos1, pos2);
+        var directions = {
+            down: angle >= 45 && angle < 135, //90
+            left: angle >= 135 || angle <= -135, //180
+            up: angle < -45 && angle > -135, //270
+            right: angle >= -45 && angle <= 45 //0
+        };
+
+        var direction, key;
+        for(key in directions){
+            if(directions[key]){
+                direction = key;
+                break;
+            }
+        }
+        return direction;
+    }
+
+    function exports(elm, opt, cb){
+        return new exports.Class(elm, opt, cb);
+    }
+
+    exports.Class = MomoSwipe;
+
+    return exports;
+
+});
+
 /* @source momo/tap.js */;
 
 
@@ -6565,24 +5559,40 @@ define('momo/tap', [
   "momo/base"
 ], function(_, momoBase){
 
-    var MomoTap = _.construct(momoBase.Class);
+    var MomoTap = _.construct(momoBase.Class, function(){
+        this._pressTrigger = nothing;
+        this.superConstructor.apply(this, arguments);
+    });
 
     _.mix(MomoTap.prototype, {
 
-        EVENTS: ['tap', 'doubletap', 'hold'],
+        EVENTS: ['tap', 'doubletap', 'hold', 'tapstart', 'tapcancel'],
         DEFAULT_CONFIG: {
             'tapRadius': 10,
             'doubleTimeout': 300,
+            'tapThreshold': 10,
             'holdThreshold': 500
         },
 
         press: function(e){
-            var t = this.SUPPORT_TOUCH ? e.touches[0] : e;
-            this._startTime = e.timeStamp;
-            this._startTarget = t.target;
-            this._startPosX = t.clientX;
-            this._startPosY = t.clientY;
-            this._movePosX = this._movePosY = this._moveTarget = NaN;
+            var self = this,
+                t = self.SUPPORT_TOUCH ? e.touches[0] : e;
+            self._startTime = e.timeStamp;
+            self._startTarget = t.target;
+            self._startPosX = t.clientX;
+            self._startPosY = t.clientY;
+            self._movePosX = self._movePosY = self._moveTarget = NaN;
+            self._started = false;
+            self._pressTrigger = function(){
+                self._started = true;
+                self.trigger(e, self.event.tapstart);
+                self._pressTrigger = nothing;
+            };
+            self._activeTimer = setTimeout(function(){
+                if (!is_moved(self)) {
+                    self._pressTrigger();
+                }
+            }, self._config.tapThreshold);
         },
 
         move: function(e){
@@ -6594,34 +5604,928 @@ define('momo/tap', [
 
         release: function(e){
             var self = this,
-                tm = e.timeStamp;
-            if (this._moveTarget && this._moveTarget !== this._startTarget 
-                    || Math.abs(self._movePosX - self._startPosX) > self._config.tapRadius
-                    || Math.abs(self._movePosY - self._startPosY) > self._config.tapRadius) {
+                tm = e.timeStamp,
+                moved = is_moved(self);
+            clearTimeout(self._activeTimer);
+            if (moved || tm - self._startTime < self._config.tapThreshold) {
+                if (!moved) {
+                    self._firstTap = tm;
+                }
+                if (self._started) {
+                    self.trigger(e, self.event.tapcancel);
+                }
                 return;
             }
-            if (tm - self._startTime > self._config.holdThreshold) {
+            if (!self._started) {
+                self._pressTrigger();
+            }
+            if (tm - self._startTime > self._config.holdThreshold + self._config.holdThreshold) {
                 self.trigger(e, self.event.hold);
             } else {
-                if (self._lastTap 
-                        && (tm - self._lastTap < self._config.doubleTimeout)) {
+                if (self._firstTap
+                        && (tm - self._firstTap < self._config.doubleTimeout)) {
                     e.preventDefault();
                     self.trigger(e, self.event.doubletap);
-                    self._lastTap = 0;
+                    self._firstTap = 0;
                 } else {
                     self.trigger(e, self.event.tap);
-                    self._lastTap = tm;
+                    self._firstTap = tm;
                 }
+            }
+        },
+
+        cancel: function(e){
+            clearTimeout(this._activeTimer);
+            if (this._started) {
+                this.trigger(e, this.event.tapcancel);
             }
         }
     
     });
+
+    function is_moved(self){
+        if (self._moveTarget && self._moveTarget !== self._startTarget 
+                || Math.abs(self._movePosX - self._startPosX) > self._config.tapRadius
+                || Math.abs(self._movePosY - self._startPosY) > self._config.tapRadius) {
+            return true;
+        }
+    }
+
+    function nothing(){}
 
     function exports(elm, opt, cb){
         return new exports.Class(elm, opt, cb);
     }
 
     exports.Class = MomoTap;
+
+    return exports;
+
+});
+
+/* @source mo/easing/base.js */;
+
+
+define("mo/easing/base", [], function(){
+
+    return {
+
+        def: 'ease',
+
+        positions: {
+            'linear'         :  [0.250, 0.250, 0.750, 0.750],
+            'ease'           :  [0.250, 0.100, 0.250, 1.000],
+            'easeIn'         :  [0.420, 0.000, 1.000, 1.000],
+            'easeOut'        :  [0.000, 0.000, 0.580, 1.000],
+            'easeInOut'      :  [0.420, 0.000, 0.580, 1.000]
+        },
+
+        values: {
+            linear: 'linear',
+            ease: 'ease',
+            easeIn: 'ease-in',
+            easeOut: 'ease-out',
+            easeInOut: 'ease-in-out'
+        },
+
+        // http://gsgd.co.uk/sandbox/jquery/easing/
+        // t: current time, b: begInnIng value, c: change In value, d: duration
+        functions: {
+            linear: function(x, t, b, c) {
+                return b + c * x;
+            },
+            ease: function(x, t, b, c) {
+                return ((-Math.cos(x*Math.PI)/2) + 0.5) * c + b;
+            },
+            easeIn: function (x, t, b, c, d) {
+                return c*(t /= d)*t + b;
+            },
+            easeOut: function (x, t, b, c, d) {
+                return -c *(t /= d)*(t-2) + b;
+            },
+            easeInOut: function (x, t, b, c, d) {
+                if ((t /= d/2) < 1) return c/2*t*t + b;
+                return -c/2 * ((--t)*(t-2) - 1) + b;
+            }
+        },
+
+    };
+
+});
+
+/* @source choreo.js */;
+
+/**
+ * ChoreoJS
+ * An animation library which uses "stage" and "actor" as metaphors
+ * Automatic switch between CSS transitions and JS tweening
+ * Provide a flexible way to write asynchronous sequence of actions
+ * Support CSS transform value
+ *
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
+define("choreo", [
+  "mo/lang/es5",
+  "mo/lang/mix",
+  "mo/easing/base",
+  "mo/mainloop",
+  "eventmaster"
+], function(es5, _, easing, mainloop, Event){
+
+    var window = this,
+        VENDORS = ['Moz', 'webkit', 'ms', 'O', ''],
+        EVENT_NAMES = {
+            '': 'transitionend',
+            'Moz': 'transitionend',
+            'webkit': 'webkitTransitionEnd',
+            'ms': 'MSTransitionEnd',
+            'O': 'oTransitionEnd'
+        },
+        TRANSIT_EVENT,
+        TRANSFORM_PROPS = { 'rotate': -2, 
+            'rotateX': -1, 'rotateY': -1, 'rotateZ': -1, 
+            'scale': 2, 'scale3d': 3, 
+            'scaleX': -1, 'scaleY': -1, 'scaleZ': -1, 
+            'skew': 2, 'skewX': -1, 'skewY': -1, 
+            'translate': 2, 'translate3d': 3, 
+            'translateX': -1, 'translateY': -1, 'translateZ': -1 },
+        TRANSFORM_DEFAULT = 'rotateX(0deg) rotateY(0deg) rotateZ(0deg)'
+            + ' translateX(0px) translateY(0px) translateZ(0px)'
+            + ' scaleX(1) scaleY(1) scaleZ(1) skewX(0deg) skewY(0deg)',
+        ACTOR_OPS = ['target', 'prop', 'duration', 'easing', 'delay', 'to'],
+        RE_PROP_SPLIT = /\)\s+/,
+        RE_UNIT = /^[\-\d\.]+/,
+        test_elm = window.document.body,
+        _array_slice = Array.prototype.slice,
+        _getComputedStyle = (document.defaultView || {}).getComputedStyle,
+        vendor_prop = { 'transform': '', 'transition': '' },
+        useCSS = false,
+        hash_id = 0,
+        stage_id = 0,
+        render_id = 0,
+        _stage = {},
+        _transition_sets = {},
+        _transform_promise = {},
+        timing_values = easing.values,
+        timing_functions = easing.functions;
+
+    function fix_prop_name(lib, prefix, true_prop, succ){
+        for (var prop in lib) {
+            true_prop = prefix ? ('-' + prefix + '-' + prop) : prop;
+            if (css_method(true_prop) in test_elm.style) {
+                lib[prop] = true_prop;
+                if (!TRANSIT_EVENT && prop === 'transition') {
+                    TRANSIT_EVENT = EVENT_NAMES[prefix];
+                }
+                succ = true;
+                continue;
+            }
+        }
+        return succ;
+    }
+    
+    for (var i = 0, l = VENDORS.length; i < l; i++) {
+        if (fix_prop_name(vendor_prop, VENDORS[i])) {
+            break;
+        }
+    }
+    fix_prop_name(vendor_prop, '');
+
+    var TRANSFORM = vendor_prop['transform'],
+        TRANSITION = vendor_prop['transition'],
+        TRANSFORM_METHOD = css_method(TRANSFORM),
+        TRANSITION_METHOD = css_method(TRANSITION); 
+    if (TRANSFORM_METHOD && TRANSITION_METHOD) {
+        useCSS = true;
+    }
+
+    function Stage(name){
+        if (!name) {
+            name = '_oz_choreo_' + stage_id++;
+        }
+        if (_stage[name]) {
+            return _stage[name];
+        }
+        var self = this;
+        _stage[name] = this;
+        this.name = name;
+        this._promise = new Event.Promise();
+        this._reset_promise = new Event.Promise();
+        this._count = 0;
+        this._optCache = [];
+        if (useCSS) {
+            this._runningActors = [];
+        } else {
+            mainloop.addStage(name);
+        }
+        this._reset_promise.bind(function(){
+            self._promise.reset();
+        });
+    }
+
+    Stage.prototype = {
+
+        isPlaying: function(){
+            return useCSS ? !!this._runningActors.state 
+                : mainloop.isRunning(this.name);
+        },
+
+        isCompleted: function(){
+            return this._count <= 0;
+        },
+
+        play: function(){
+            // reinitialize all user-written opts if stage has completed
+            if (this.isCompleted()) {
+                clearTimeout(this._end_timer);
+                this._reset_promise.fire();
+                this._optCache.forEach(function(opt){
+                    this.actor(opt);
+                }, this);
+            }
+            // nothing happen if stage is running
+            if (useCSS) {
+                if (!this.isPlaying()) {
+                    this._runningActors.state = 1;
+                    this._runningActors.forEach(play);
+                }
+            } else {
+                mainloop.run(this.name);
+            }
+            return this;
+        },
+
+        pause: function(){
+            if (useCSS) {
+                this._runningActors.state = 0;
+                this._runningActors.forEach(stop);
+            } else {
+                mainloop.pause(this.name);
+            }
+            return this;
+        },
+
+        clear: function(){
+            this.cancel();
+            // remove all all user-written opts
+            this._optCache.forEach(function(opt){
+                opt._cached = false;
+            });
+            this._optCache.length = 0;
+            return this;
+        },
+
+        cancel: function(){
+            to_end(this, function(name, opt){
+                if (useCSS) {
+                    stop(opt);
+                } else {
+                    mainloop.remove(name);
+                }
+            });
+            this._optCache.forEach(function(opt){
+                opt._promise.reject([{
+                    target: opt.target, 
+                    succ: false
+                }]).disable();
+            });
+            return this;
+        },
+
+        complete: function(){
+            to_end(this, function(name, opt){
+                if (useCSS) {
+                    complete(opt);
+                    opt._promise.resolve([{
+                        target: opt.target, 
+                        succ: true 
+                    }]).disable();
+                } else {
+                    mainloop.complete(name);
+                }
+            });
+            return this;
+        },
+
+        actor: function(opt, opt2){
+            var self = this, name = this.name, actorObj, actors;
+
+            // when new actor coming, cancel forthcoming complete event 
+            clearTimeout(this._end_timer);
+
+            // Actor Group
+            if (opt2) {
+                if (opt.nodeType) { // convert jquery style to mutiple Single Actor
+                    var base_opt = {}, props;
+                    ACTOR_OPS.forEach(function(op, i){
+                        if (op === 'prop') {
+                            props = this[i];
+                        } else if (op !== 'to') {
+                            base_opt[op] = this[i];
+                        }
+                    }, arguments);
+                    actors = Object.keys(props).map(function(prop){
+                        return self.actor(_.mix({ 
+                            _parent: true,
+                            prop: prop,
+                            to: props[prop]
+                        }, this));
+                    }, base_opt);
+                    if (actors.length === 1) {
+                        return actors[0];
+                    }
+                } else { // convert multiple options to mutiple Single Actor
+                    actors = _array_slice.call(arguments);
+                    actors = actors.map(function(sub_opt){
+                        sub_opt._parent = true;
+                        return self.actor(sub_opt);
+                    });
+                }
+                this._reset_promise.bind(when_reset);
+                return actorObj = new Actor(actors, self);
+            }
+
+            // normalize opt 
+            opt.prop = vendor_prop[opt.prop] || opt.prop;
+
+            // reset opt
+            if (opt._promise) {
+                when_reset(opt._promise);
+            }
+            // @TODO avoid setting the same prop
+
+            // convert from Transform Actor to Actor Group
+            if (opt.prop === TRANSFORM) { 
+                var transform_promise = promise_proxy(opt.target);
+                actors = split_transform(opt.to, function(sub_opt){
+                    _.merge(sub_opt, opt);
+                    sub_opt._parent = true;
+                    sub_opt._promise = transform_promise;
+                    return self.actor(sub_opt);
+                });
+                this._reset_promise.bind(when_reset);
+                return actorObj = new Actor(actors, self);
+            }
+
+            self._count++; // count actors created by user
+
+            // Single Actor or Split Actor
+            if (!opt._promise) {
+                opt._promise = new Event.Promise();
+            }
+            if (useCSS) {
+                this._runningActors.push(opt);
+                if (this.isPlaying()) {
+                    play(opt);
+                }
+            } else {
+                render_opt(name, opt);
+            }
+            actorObj = new Actor(opt, self);
+
+            if (!opt._cached) {
+                // cache Single Actor and Split Actor
+                opt._cached = true;
+                this._optCache.push(opt);
+
+                watch(actorObj);
+            }
+
+            function when_reset(promise){
+                (promise || actorObj.follow()).reset().enable();
+            }
+
+            function watch(actor){
+                actor.follow().bind(watcher);
+                actor._opt._watcher = watcher;
+                delete actor._opt._parent;
+                return actor;
+            }
+
+            function watcher(res){
+                if (--self._count > 0) {
+                    return;
+                }
+                self._end_timer = setTimeout(function(){
+                    to_end(self);
+                    self._promise[
+                        res.succ ? 'resolve': 'reject'
+                    ]([{ succ: res.succ }]);
+                }, 0);
+            }
+
+            return actorObj;
+        },
+
+        group: function(){
+            var self = this,
+                actorObj,
+                actors = _array_slice.call(arguments).filter(function(actor){
+                    return actor.stage === self;
+                });
+            this._reset_promise.bind(function(){
+                actorObj.follow().reset().enable();
+            });
+            return actorObj = new Actor(actors, self);
+        },
+
+        follow: function(){
+            return this._promise;
+        }
+
+    };
+
+    function Actor(opt, stage){
+        if (Array.isArray(opt)) { // Actor Group
+            this.members = opt;
+            opt = {
+                _promise: Event.when.apply(Event, 
+                    this.members.map(function(actor){
+                        return actor.follow();
+                    })
+                )
+            };
+            opt._promise.bind(opt._promise.pipe.disable);
+        }
+        this._opt = opt;
+        this.stage = stage;
+    }
+
+    Actor.prototype = {
+
+        enter: function(stage){
+            if (this.stage) {
+                this.exit();
+            }
+            var actor = stage.actor.apply(
+                stage, 
+                [].concat(actor_opts(this))
+            );
+            actor.follow().merge(this.follow());
+            return _.mix(this, actor);
+        },
+
+        exit: function(){
+            var stage = this.stage,
+                opt = this._opt;
+            if (!stage) {
+                return this;
+            }
+            if (this.members) {
+                this.members = this.members.map(function(actor){
+                    return actor.exit();
+                });
+            } else {
+                if (useCSS) {
+                    clear_member(stage._runningActors, opt);
+                    if (stage.isPlaying()) {
+                        stop(opt);
+                    }
+                } else {
+                    mainloop.remove(stage.name, opt._render);
+                }
+                clear_member(stage._optCache, opt);
+                opt._promise.reject([{
+                    target: opt.target, 
+                    succ: false
+                }]).disable();
+                // @TODO remove when_reset
+            }
+            var actor = this.fork();
+            if (!opt._parent) {
+                actor.follow().merge(opt._promise);
+            }
+            _.occupy(opt, actor._opt);
+            delete this.stage;
+            return this;
+        },
+
+        fork: function(){
+            if (this.members) {
+                return new Actor(this.members.map(function(actor){
+                    return actor.fork();
+                }));
+            }
+            var opt = {};
+            ACTOR_OPS.forEach(function(i){
+                opt[i] = this[i];
+            }, this._opt);
+            opt._promise = new Event.Promise(); // useless for member actor
+            return new Actor(opt);
+        },
+
+        setto: function(v){
+            return actor_setter(this, v, function(opt, v){
+                return (v || v === 0) ? v : opt.to;
+            });
+        },
+
+        extendto: function(v){
+            return actor_setter(this, v, function(opt, v){
+                if (!v) {
+                    return opt.to;
+                }
+                var unit = get_unit(opt.to, v);
+                return parseFloat(opt.to) + parseFloat(v) + unit;
+            });
+        },
+
+        reverse: function(){
+            return actor_setter(this, {}, function(opt){
+                return opt.from !== undefined 
+                    ? opt.from : opt._current_from;
+            });
+        },
+
+        follow: function(){
+            return this._opt._promise;
+        }
+        
+    };
+
+    function to_end(stage, fn){
+        if (useCSS) {
+            var _actors = stage._runningActors;
+            if (stage.isPlaying()) {
+                _actors.forEach(function(opt){
+                    if (fn) {
+                        fn(stage.name, opt);
+                    }
+                });
+                _actors.state = 0;
+                _actors.length = 0;
+            }
+        } else if (fn) {
+            fn(stage.name);
+        }
+    }
+
+    function stop(opt){
+        var elm = opt.target,
+            from = parseFloat(opt._current_from || opt.from),
+            end = parseFloat(opt.to),
+            d = end - from,
+            time = opt._startTime ? (+new Date() - opt._startTime) : 0;
+        if (time < 0) {
+            time = 0;
+        }
+        var progress = time / (opt.duration || 1),
+            hash = elm2hash(elm),
+            sets = _transition_sets[hash];
+        if (sets && sets[opt.prop] === opt) {
+            clearTimeout((sets[opt.prop] || {})._runtimer);
+            delete sets[opt.prop];
+        } else {
+            progress = 0;
+        }
+        if (!progress) {
+            return;
+        }
+        var str = transitionStr(hash);
+        elm.style[TRANSITION_METHOD] = str;
+        if (progress < 1) { // pause
+            if (timing_functions[opt.easing]) {
+                progress = timing_functions[opt.easing](progress, time, 0, 1, opt.duration);
+            }
+            var unit = get_unit(opt.from, opt.to);
+            from = from + d * progress + unit;
+        } else { // complete
+            from = opt.to;
+        }
+        set_style_prop(elm, opt.prop, from);
+    }
+
+    function complete(opt){
+        var elm = opt.target,
+            hash = elm2hash(elm),
+            sets = _transition_sets[hash];
+        if (sets) {
+            delete sets[opt.prop];
+        }
+        var str = transitionStr(hash);
+        elm.style[TRANSITION_METHOD] = str;
+        set_style_prop(elm, opt.prop, opt.to);
+    }
+
+    function play(opt){
+        var elm = opt.target,
+            prop = opt.prop,
+            hash = elm2hash(elm),
+            sets = _transition_sets[hash],
+            from = opt.from || get_style_value(elm, prop);
+        if (from == opt.to) { // completed
+            var completed = true;
+            if (sets) {
+                delete sets[prop];
+            }
+            if (TRANSFORM_PROPS[prop]) {
+                for (var p in sets) {
+                    if (TRANSFORM_PROPS[p]) {
+                        completed = false; // wait for other transform prop
+                        break;
+                    }
+                }
+            }
+            if (completed) {
+                opt._promise.resolve([{
+                    target: opt.target, 
+                    succ: true 
+                }]).disable();
+            }
+            return;
+        }
+        opt._current_from = from; // for pause or reverse
+        opt._startTime = +new Date() + (opt.delay || 0);
+        sets[prop] = opt;
+        set_style_prop(elm, prop, from);
+        var str = transitionStr(hash);
+        opt._runtimer = setTimeout(function(){
+            delete opt._runtimer;
+            elm.style[TRANSITION_METHOD] = str;
+            set_style_prop(elm, prop, opt.to);
+        }, 0);
+    }
+
+    function render_opt(name, opt){
+        var elm = opt.target,
+            end = parseFloat(opt.to),
+            from = opt.from || get_style_value(opt.target, opt.prop),
+            unit = get_unit(from, opt.to);
+        if (unit && from.toString().indexOf(unit) < 0) {
+            from = 0;
+        }
+        opt._current_from = from; // for pause or reverse
+        var current = parseFloat(from),
+            rid = opt.delay && ('_oz_anim_' + render_id++);
+        mainloop.addTween(name, current, end, opt.duration, {
+            easing: opt.easing,
+            delay: opt.delay,
+            step: function(v){
+                set_style_prop(elm, opt.prop, v + unit);
+            },
+            renderId: rid,
+            callback: function(){
+                opt._promise.resolve([{
+                    target: elm,
+                    succ: true
+                }]).disable();
+            }
+        });
+        opt._render = mainloop.getRender(rid);
+    }
+
+    function split_transform(value, fn){
+        var to_lib = parse_transform(value);
+        return Object.keys(to_lib).map(function(prop){
+            return fn({
+                prop: prop,
+                to: this[prop]
+            });
+        }, to_lib);
+    }
+
+    function parse_transform(value){
+        var lib = {};
+        value.split(RE_PROP_SPLIT).forEach(function(str){
+            var kv = str.match(/([^\(\)]+)/g),
+                values = kv[1].split(/\,\s*/),
+                isSupported = TRANSFORM_PROPS[kv[0]],
+                is3D = isSupported === 3,
+                isSingle = isSupported < 0 || values.length <= 1,
+                xyz = isSingle ? [''] : ['X', 'Y', 'Z'];
+            if (!isSupported) {
+                return;
+            }
+            values.forEach(function(v, i){
+                if (v && i <= xyz.length && is3D || isSingle && i < 1 || !isSingle && i < 2) {
+                    var k = kv[0].replace('3d', '') + xyz[i];
+                    this[k] = v;
+                }
+            }, this);
+        }, lib);
+        return lib;
+    }
+
+    function elm2hash(elm){
+        var hash = elm._oz_fx;
+        if (!hash) {
+            hash = ++hash_id;
+            elm._oz_fx = hash;
+            elm.removeEventListener(TRANSIT_EVENT, when_transition_end);
+            elm.addEventListener(TRANSIT_EVENT, when_transition_end);
+        }
+        if (!_transition_sets[hash]) {
+            _transition_sets[hash] = {};
+        }
+        return hash;
+    }
+
+    function when_transition_end(e){
+        if (e.target !== this) {
+            return;
+        }
+        var self = this,
+            hash = this._oz_fx,
+            sets = _transition_sets[hash];
+        if (sets) {
+            if (e.propertyName === TRANSFORM) { 
+                for (var i in TRANSFORM_PROPS) {
+                    delete sets[i];
+                }
+                var promises = _transform_promise[hash] || [];
+                this.style[TRANSITION_METHOD] = transitionStr(hash);
+                promises.forEach(function(promise){
+                    promise.resolve([{
+                        target: self,
+                        succ: true
+                    }]).disable();
+                }); 
+            } else {
+                var opt = sets[e.propertyName];
+                if (opt) {
+                    delete sets[opt.prop];
+                    this.style[TRANSITION_METHOD] = transitionStr(hash);
+                    if (opt._promise) {
+                        opt._promise.resolve([{
+                            target: this,
+                            succ: true
+                        }]).disable();
+                    }
+                }
+            }
+        }
+    }
+
+    function get_style_value(node, name){
+        if (TRANSFORM_PROPS[name]) {
+            return transform(node, name) || 0;
+        }
+        if (name === TRANSFORM) {
+            return node && node.style[
+                TRANSFORM_METHOD || name
+            ] || TRANSFORM_DEFAULT;
+        }
+        var method = css_method(name);
+        var r = node && (node.style[method] 
+            || (_getComputedStyle 
+                ? _getComputedStyle(node, '').getPropertyValue(name)
+                : node.currentStyle[name]));
+        return (r && /\d/.test(r)) && r || 0;
+    }
+
+    function set_style_prop(elm, prop, v){
+        if (TRANSFORM_PROPS[prop]) {
+            if (TRANSFORM) {
+                transform(elm, prop, v);
+            }
+        } else {
+            elm.style[css_method(prop)] = v;
+        }
+    }
+
+    function transform(elm, prop, v){
+        var current = parse_transform(get_style_value(elm, TRANSFORM));
+        if (v) {
+            var kv = parse_transform(prop + '(' + v + ')');
+            _.mix(current, kv);
+            elm.style[TRANSFORM_METHOD] = Object.keys(current).map(function(prop){
+                return prop + '(' + this[prop] + ')';
+            }, current).join(' ');
+        } else {
+            return current[prop] || prop === 'rotate' && '0deg';
+        }
+    }
+
+    function transitionStr(hash){
+        var sets = _transition_sets[hash];
+        if (sets) {
+            var str = [], opt;
+            for (var prop in sets) {
+                opt = sets[prop];
+                if (opt && opt.prop) {
+                    str.push([
+                        TRANSFORM_PROPS[opt.prop] && TRANSFORM || opt.prop,
+                        (opt.duration || 0) + 'ms',
+                        timing_values[opt.easing] || 'linear',
+                        (opt.delay || 0) + 'ms'
+                    ].join(' '));
+                }
+            }
+            return str.join(",");
+        } else {
+            return '';
+        }
+    }
+
+    function get_unit(from, to){
+        var from_unit = (from || '').toString().replace(RE_UNIT, ''),
+            to_unit = (to || '').toString().replace(RE_UNIT, '');
+        return parseFloat(from) === 0 && to_unit 
+            || parseFloat(to) === 0 && from_unit 
+            || to_unit || from_unit;
+    }
+
+    function css_method(name){
+        return name.replace(/-+(.)?/g, function($0, $1){
+            return $1 ? $1.toUpperCase() : '';
+        }); 
+    }
+
+    function clear_member(array, member){
+        var n = array.indexOf(member);
+        if (n !== -1) {
+            array.splice(n, 1);
+        }
+    }
+
+    function promise_proxy(target){
+        var transform_promise;
+        if (useCSS) {
+            transform_promise = new Event.Promise();
+            var hash = elm2hash(target);
+            if (!_transform_promise[hash]) {
+                _transform_promise[hash] = [];
+            }
+            _transform_promise[hash].push(transform_promise);
+        }
+        return transform_promise;
+    }
+
+    function actor_opts(actor){
+        if (actor.members) {
+            // convert from Actor Group to original Transform Actor 
+            var eg = actor.members[0]._opt;
+            if (!TRANSFORM_PROPS[eg.prop]) {
+                return actor.members.map(function(sub){
+                    return actor_opts(sub);
+                });
+            } else {
+                var opt = actor._opt = _.copy(eg);
+                opt.prop = TRANSFORM;
+                opt.to = actor.members.map(function(actor){
+                    return actor._opt.prop + '(' + actor._opt.to + ')';
+                }).join(' ');
+                delete opt._parent;
+            }
+        }
+        return actor._opt;
+    }
+
+    function actor_setter(actor, v, fn){
+        var opt = actor._opt, 
+            stage = actor.stage;
+        if (stage && !stage.isCompleted()) {
+            stage.cancel();
+        }
+        if (actor.members) {
+            if (typeof v === 'string' 
+                && TRANSFORM_PROPS[actor.members[0]._opt.prop]) {
+                var lib = {};
+                split_transform(v, function(sub_opt){
+                    lib[sub_opt.prop] = sub_opt.to;
+                });
+                v = lib;
+            }
+            actor.members.forEach(function(actor){
+                var mem_opt = actor._opt;
+                mem_opt.to = fn(mem_opt, this[mem_opt.prop]);
+            }, v);
+        } else {
+            opt.to = fn(actor._opt, v);
+        }
+        return actor;
+    }
+
+    function exports(name){
+        return new Stage(name);
+    }
+
+    _.mix(exports, {
+
+        VERSION: '1.0.3',
+        renderMode: useCSS ? 'css' : 'js',
+        Stage: Stage,
+        Actor: Actor,
+
+        config: function(opt){
+            if (opt.easing) {
+                _.mix(timing_values, opt.easing.values);
+                _.mix(timing_functions, opt.easing.functions);
+                mainloop.config({ easing: timing_functions });
+            }
+            if (/(js|css)/.test(opt.renderMode)) {
+                useCSS = opt.renderMode === 'css';
+                this.renderMode = opt.renderMode;
+            }
+        },
+
+        transform: transform
+
+    });
 
     return exports;
 
@@ -6895,7 +6799,6 @@ define("../cardkit/app", [
   "../cardkit/view/modalcard",
   "../cardkit/view/actionview",
   "../cardkit/view/growl",
-  "../cardkit/view/slidelist",
   "../cardkit/bus",
   "../cardkit/render",
   "../cardkit/supports",
@@ -6903,7 +6806,7 @@ define("../cardkit/app", [
   "mo/domready"
 ], function($, _, browsers, tpl, soviet, choreo, 
     momoBase, momoTap, momoSwipe, momoDrag, momoScroll, 
-    control, picker, stars, modalCard, actionView, growl, slidelist,
+    control, picker, stars, modalCard, actionView, growl,
     bus, render, supports, env){
 
     var window = this,
@@ -6938,6 +6841,10 @@ define("../cardkit/app", [
 
         'a': link_handler,
         'a *': link_handler,
+
+        //'.ck-link-mask': function(){
+            //clear_active_item_mask(ck.viewport);
+        //},
 
         '.ck-card .ck-post-link': handle_control,
 
@@ -7283,7 +7190,15 @@ define("../cardkit/app", [
             }).on('click', {
                 'a': nothing,
                 'a *': nothing
-            }).on('tap', tap_events).on('touchend', {
+            //}).on('tapstart', {
+                //'.ck-link-mask': function(){
+                    //$(this).addClass('ck-link-mask-active');
+                //}
+            //}).on('tapcancel', {
+                //'.ck-link-mask': function(){
+                    //clear_active_item_mask(ck.viewport);
+                //}
+            }).on('touchend', {
                 '.ck-stars': function(e) {
                     respond_stars.call(this, e, 'val');
                 },
@@ -7297,7 +7212,7 @@ define("../cardkit/app", [
                 '.ck-stars .slider-selected': function(e) {
                     respond_stars.call(this.parentNode, e, 'pretend');
                 }
-            });
+            }).on('tap', tap_events);
 
             doc.bind('scrolldown', function(){
                 if (topbar_holded) {
@@ -7314,6 +7229,15 @@ define("../cardkit/app", [
                 //}
             //}).bind('scrollup', function(){
                 //ck.showTopbar();
+            
+            //}).bind('scrollright', function(e){
+                //console.info('right')
+            //}).bind('scrollleft', function(e){
+                //console.info('left')
+            //}).bind('scrollstart', function(e){
+                //console.info('start')
+            //}).bind('scrollend', function(e){
+                //console.info('end')
             });
             
             if (supports.CARD_SCROLL 
@@ -7522,18 +7446,9 @@ define("../cardkit/app", [
                 if (!opt.isModal && !opt.isActions) {
                     card.data('rendered', '1');
                 }
-                card.find('.ck-mini-unit').forEach(function(unit){
-                    var slide = $('.ck-inslide', unit);
-                    if (slide[0]) {
-                        var pagers = $('.ck-page span', unit);
-                        slidelist(slide).event.bind('change', function(n){
-                            pagers.removeClass('enable');
-                            pagers.eq(n).addClass('enable');
-                        });
-                    }
-                });
             }
             this.watchScroll(card);
+            //clear_active_item_mask(card);
         },
 
         releaseView: function(){
@@ -7568,9 +7483,12 @@ define("../cardkit/app", [
 
         updateSize: function(opt){
             opt = opt || {};
+
             if (supports.CARD_SCROLL || opt.isActions) {
+
                 this.viewport[0].style.height = (this.sizeInited ? 
                     window.innerHeight : (screen.availHeight + 60)) + 2 + 'px';
+
                 // enable scrollable when height is not enough 
                 var ft = this.viewport.find('.ck-footer'),
                     last_unit = ft && ft.prev()[0];
@@ -7583,11 +7501,22 @@ define("../cardkit/app", [
                     }
                 }
             }
+
+            var mini = this.viewport.find('.ck-mini-unit'),
+                mini_items = mini.find('.ck-item'),
+                mini_item_margin = parseFloat(mini_items.css('margin-left')),
+                w = window.innerWidth - mini_item_margin - 15;
+            mini_items.css('width', w - mini_item_margin + 'px');
+            mini.find('.ck-list').css('width', w * mini_items.length + mini_item_margin + 'px');
+
             bus.fire('cardkit:updateSize');
         },
 
         watchScroll: function(card){
             this.scrollGesture.watchScroll(card[0]);
+            card.find('.ck-mini-unit .ck-list-wrap').forEach(function(wrap){
+                momoScroll(this).watchScroll(wrap);
+            }, document);
         },
 
         updateHeader: function(){
@@ -7751,6 +7680,10 @@ define("../cardkit/app", [
 
     function nothing(){}
 
+    //function clear_active_item_mask(card){
+        //card.find('.ck-link-mask-active').removeClass('ck-link-mask-active');
+    //}
+
     function link_handler(next_id, true_link){
         if (modalCard.isOpened) {
             modalCard.event.once('close', function(){
@@ -7818,11 +7751,12 @@ define("../cardkit/app", [
         ck.cardMask.css('opacity', 0).addClass('moving');
         var moving = choreo().play();
         moving.actor(ck.cardMask[0], {
-            'opacity': '1'
-        }, 350, 'ease');
+            'opacity': '0.8'
+        }, 400, 'ease');
         moving.actor(next[0], {
             'transform': 'translateX(0)'
-        }, 400, 'ease').follow().done(function(){
+        }, 450, 'ease');
+        moving.follow().done(function(){
             current.hide();
             ck.cardMask.removeClass('moving');
             next.removeClass('moving');
@@ -7861,14 +7795,15 @@ define("../cardkit/app", [
         choreo.transform(current[0], 'translateX', '0px');
         current.addClass('moving');
         ck.changeView(prev);
-        ck.cardMask.css('opacity', '1').addClass('moving');
+        ck.cardMask.css('opacity', '0.8').addClass('moving');
         var moving = choreo().play();
         moving.actor(ck.cardMask[0], {
             'opacity': '0'
-        }, 350, 'ease');
+        }, 450, 'ease');
         moving.play().actor(current[0], {
             'transform': 'translateX(' + window.innerWidth + 'px)'
-        }, 400, 'ease').follow().done(function(){
+        }, 450, 'ease');
+        moving.follow().done(function(){
             ck.cardMask.removeClass('moving');
             current.hide().removeClass('moving');
             choreo.transform(current[0], 'translateX', '0px');

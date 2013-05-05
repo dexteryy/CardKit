@@ -2,18 +2,21 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>DEMO & DOCS</title>
+<title>豆瓣读书</title>
 <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
 <meta name="format-detection" content="telephone=no">
 
 <link href="dist/css/main.css" rel="stylesheet">
+<link href="css/console.css" rel="stylesheet">
 <link href="css/common.css" rel="stylesheet">
 <style>
+.ck-list-unit code {
+  text-decoration:underline;
+}
 </style>
 <script>function ckControl(){return false}</script>
 </head>
 <body ontouchstart="return ckControl()">
-
 
 <div class="ck-root">
     
@@ -38,211 +41,27 @@
             </ul>
         </div>
 
-        <div class="ck-box-unit" data-cfg-plain="true">
-            <h2 class="ckd-hd">Without <code>data-source</code>:</h2>
+        <!--demo-->
+        <div class="ck-mini-unit" 
+                data-style="slide" 
+                data-source="ckdListA">
+            <a class="ckd-hd" href="#hdLink">Mini ("slide" style)</a>
         </div>
+        <!--demo end-->
 
-        <div class="ck-list-unit" data-style="post">
-            <a href="box.html" class="ckd-hd">This is header</a>
-
-            <a class="ckd-hdopt ck-modal-link" href="#" data-url="formcontent.html">Edit</a>
-
-            <div class="ckd-item">
-
-                <div class="ckd-title-prefix">Before title</div>
-                <a class="ckd-title" href="#title">This is title</a>
-                <div class="ckd-title-suffix">After title</div>
-
-                <div class="ckd-titletag">tag1</div>
-                <div class="ckd-titletag">tag2</div>
-
-                <div><img class="ckd-icon" src="http://img3.douban.com/view/photo/photo/public/p1702376626.jpg"></div>
-
-                <div class="ckd-subtitle">This is subtitle or desc</div>
-                <div class="ckd-info">some info</div>
-
-                <div class="ckd-content">This is content</div>
-                <div class="ckd-meta">This is meta</div>
-
-                <div class="ckd-author-prefix">Before author</div>
-                <a class="ckd-author" href="#author">This is author</a>
-                <div class="ckd-author-suffix">After author</div>
-
-                <div><img class="ckd-avatar" src="http://img3.douban.com/icon/ul1137591-9.jpg"></div>
-
-                <div class="ckd-author-desc">This is desc for author</div>
-                <div class="ckd-author-meta">This is meta for author</div>
-
-            </div>
-
-            <div class="ckd-ft">This is footer</div>
+        <div class="ck-box-unit" data-cfg-paper="true">
+            <div class="ckd-content" id="console"></div>
         </div>
-
-        <!-- demo -->
-        <div class="ck-mini-unit">
-            <h2 class="ckd-hd">This is header</h2>
-
-            <div class="ckd-item">
-
-                <div class="ckd-title-prefix">Before title</div>
-                <a class="ckd-title" href="#title">This is title</a>
-                <div class="ckd-title-suffix">After title</div>
-
-                <div class="ckd-titletag">tag1</div>
-                <div class="ckd-titletag">tag2</div>
-
-                <div><img class="ckd-icon" src="http://img3.douban.com/view/photo/photo/public/p1702376626.jpg"></div>
-
-                <div class="ckd-subtitle">This is subtitle or desc</div>
-                <div class="ckd-info">some info</div>
-
-                <div class="ckd-content">This is content</div>
-                <div class="ckd-meta">This is meta</div>
-
-                <div class="ckd-author-prefix">Before author</div>
-                <a class="ckd-author" href="#author">This is author</a>
-                <div class="ckd-author-suffix">After author</div>
-
-                <div><img class="ckd-avatar" src="http://img3.douban.com/icon/ul1137591-9.jpg"></div>
-
-                <div class="ckd-author-desc">This is desc for author</div>
-                <div class="ckd-author-meta">This is meta for author</div>
-
-            </div>
-
-            <div class="ckd-ft">This is footer</div>
-        </div>
-        <!-- demo end -->
-
-        <div class="ck-list-unit" data-style="post" data-cfg-plainhd="true">
-            <h2 class="ckd-hd">This is header</h2>
-
-            <div class="ckd-item">
-
-                <div class="ckd-title-prefix">Before title</div>
-                <a class="ckd-title" href="#title">This is title</a>
-                <div class="ckd-title-suffix">After title</div>
-
-                <div class="ckd-titletag">tag1</div>
-                <div class="ckd-titletag">tag2</div>
-
-                <div><img class="ckd-icon" src="http://img3.douban.com/view/photo/photo/public/p1702376626.jpg"></div>
-
-                <div class="ckd-subtitle">This is subtitle or desc</div>
-                <div class="ckd-info">some info</div>
-
-                <div class="ckd-content">This is content</div>
-                <div class="ckd-meta">This is meta</div>
-
-                <div class="ckd-author-prefix">Before author</div>
-                <a class="ckd-author" href="#author">This is author</a>
-                <div class="ckd-author-suffix">After author</div>
-
-                <div><img class="ckd-avatar" src="http://img3.douban.com/icon/ul1137591-9.jpg"></div>
-
-                <div class="ckd-author-desc">This is desc for author</div>
-                <div class="ckd-author-meta">This is meta for author</div>
-
-                <!--<div class="ckd-subitem">-->
-
-                    <!--<div class="ckd-title-prefix">Before title</div>-->
-                    <!--<a class="ckd-title" href="#title">This is title</a>-->
-                    <!--<div class="ckd-title-suffix">After title</div>-->
-
-                    <!--<div class="ckd-titletag">tag1</div>-->
-                    <!--<div class="ckd-titletag">tag2</div>-->
-
-                    <!--<div><img class="ckd-icon" src="http://img3.douban.com/view/photo/photo/public/p1702376626.jpg"></div>-->
-
-                    <!--<div class="ckd-subtitle">This is subtitle or desc</div>-->
-                    <!--<div class="ckd-info">some info</div>-->
-
-                    <!--<div class="ckd-content">This is content</div>-->
-                    <!--<div class="ckd-meta">This is meta</div>-->
-
-                    <!--<div class="ckd-author-prefix">Before author</div>-->
-                    <!--<a class="ckd-author" href="#author">This is author</a>-->
-                    <!--<div class="ckd-author-suffix">After author</div>-->
-
-                    <!--<div><img class="ckd-avatar" src="http://img3.douban.com/icon/ul1137591-9.jpg"></div>-->
-
-                    <!--<div class="ckd-author-desc">This is desc for author</div>-->
-                    <!--<div class="ckd-author-meta">This is meta for author</div>-->
-
-                <!--</div>-->
-
-                <!--<div class="ckd-subitem">-->
-
-                    <!--<div class="ckd-title-prefix">Before title</div>-->
-                    <!--<a class="ckd-title" href="#title">This is title</a>-->
-                    <!--<div class="ckd-title-suffix">After title</div>-->
-
-                    <!--<div class="ckd-titletag">tag1</div>-->
-                    <!--<div class="ckd-titletag">tag2</div>-->
-
-                    <!--<div><img class="ckd-icon" src="http://img3.douban.com/view/photo/photo/public/p1702376626.jpg"></div>-->
-
-                    <!--<div class="ckd-subtitle">This is subtitle or desc</div>-->
-                    <!--<div class="ckd-info">some info</div>-->
-
-                    <!--<div class="ckd-content">This is content</div>-->
-                    <!--<div class="ckd-meta">This is meta</div>-->
-
-                    <!--<div class="ckd-author-prefix">Before author</div>-->
-                    <!--<a class="ckd-author" href="#author">This is author</a>-->
-                    <!--<div class="ckd-author-suffix">After author</div>-->
-
-                    <!--<div><img class="ckd-avatar" src="http://img3.douban.com/icon/ul1137591-9.jpg"></div>-->
-
-                    <!--<div class="ckd-author-desc">This is desc for author</div>-->
-                    <!--<div class="ckd-author-meta">This is meta for author</div>-->
-
-                <!--</div>-->
-
-            </div>
-
-            <div class="ckd-ft">This is footer</div>
-        </div>
-
-        <!-- demo -->
-        <div class="ck-mini-unit" data-cfg-plainhd="true">
-            <h2 class="ckd-hd">This is header</h2>
-
-            <div class="ckd-item">
-
-                <div class="ckd-title-prefix">Before title</div>
-                <a class="ckd-title" href="#title">This is title</a>
-                <div class="ckd-title-suffix">After title</div>
-
-                <div class="ckd-titletag">tag1</div>
-                <div class="ckd-titletag">tag2</div>
-
-                <div><img class="ckd-icon" src="http://img3.douban.com/view/photo/photo/public/p1702376626.jpg"></div>
-
-                <div class="ckd-subtitle">This is subtitle or desc</div>
-                <div class="ckd-info">some info</div>
-
-                <div class="ckd-content">This is content</div>
-                <div class="ckd-meta">This is meta</div>
-
-                <div class="ckd-author-prefix">Before author</div>
-                <a class="ckd-author" href="#author">This is author</a>
-                <div class="ckd-author-suffix">After author</div>
-
-                <div><img class="ckd-avatar" src="http://img3.douban.com/icon/ul1137591-9.jpg"></div>
-
-                <div class="ckd-author-desc">This is desc for author</div>
-                <div class="ckd-author-meta">This is meta for author</div>
-
-            </div>
-
-            <div class="ckd-ft">This is footer</div>
-        </div>
-        <!-- demo end -->
 
     </div>
 
-    <div class="ck-card">
+    <div class="ck-card" id="hdLink" data-cfg-blank="Link of header">
+    </div>
+
+    <div class="ck-card" id="titleLink" data-cfg-blank="Link of title">
+    </div>
+
+    <div class="ck-card" id="authorLink" data-cfg-blank="Link of author">
     </div>
 
     <div class="ck-card ck-loading" id="ckLoading">
@@ -256,6 +75,67 @@
         <div class="copyright">&copy; 2005－2012 douban.com, all rights reserved</div>
     </footer>
 
+    <div class="ck-raw">
+
+        <div class="ckd-source ckdListA">
+            <div class="ckd-item ckdItemA">
+                <img class="ckd-icon" src="http://img3.douban.com/lpic/s1959726.jpg">
+                <a class="ckd-title" href="#">This is <code>title</code>.</a>
+                <a class="ckd-title-link" href="#titleLink"></a>
+                <span class="ckd-title-prefix"><code>prefix</code></span>
+                <span class="ckd-title-suffix"><code>Suffix</code></span>
+                <span class="ckd-title-tag"><code>tag</code>1</span>
+                <span class="ckd-title-tag"><code>tag</code>2</span>
+                <span class="ckd-info"><code>info</code></span>
+                <span class="ckd-desc">This is <code>desc</code> or <code>subtitle</code>.</span>
+                <span class="ckd-content">This is <code>content</code>. This is content. This is content. This is content. This is content. This is content. This is content. This is content.</span>
+                <span class="ckd-meta">This is <code>meta</code>.</span>
+                <img class="ckd-avatar" src="http://img3.douban.com/icon/ul1137591-9.jpg">
+                <a class="ckd-author" href="#">This is <code>author</code>.</a>
+                <a class="ckd-author-link" href="#authorLink"></a>
+                <span class="ckd-author-prefix"><code>author-prefix</code></span>
+                <span class="ckd-author-suffix"><code>author-Suffix</code></span>
+                <span class="ckd-author-desc">This is <code>author-desc</code>.</span>
+                <span class="ckd-author-content">This is <code>author-content</code>.</span>
+                <span class="ckd-author-meta">This is <code>author-meta</code>.</span>
+            </div>
+            <div class="ckd-item ckdItemB">
+                <img class="ckd-icon" src="http://img5.douban.com/lpic/s25812589.jpg">
+                <a class="ckd-title" href="#">This is <code>title</code>. This is title. This is title. This is title. This is title.</a>
+                <a class="ckd-title-link" href="#titleLink"></a>
+                <span class="ckd-info"><code>info</code></span>
+                <!--<span class="ckd-desc">This is <code>desc</code> or <code>subtitle</code>.</span>-->
+                <span class="ckd-content">This is <code>content</code>. This is content. This is content. This is content. This is content. This is content. This is content. This is content.</span>
+                <span class="ckd-meta">This is <code>meta</code>.</span>
+                <img class="ckd-avatar" src="http://img3.douban.com/icon/ul24955975-13.jpg">
+                <a class="ckd-author" href="#">This is <code>author</code>.</a>
+                <a class="ckd-author-link" href="#authorLink"></a>
+                <span class="ckd-author-prefix"><code>author-prefix</code></span>
+                <span class="ckd-author-suffix"><code>author-Suffix</code></span>
+                <span class="ckd-author-desc">This is <code>author-desc</code>.</span>
+                <span class="ckd-author-content">This is <code>author-content</code>.</span>
+                <span class="ckd-author-meta">This is <code>author-meta</code>.</span>
+            </div>
+            <div class="ckd-item">
+                <span class="ckd-title">This is <code>title</code>.</span>
+                <span class="ckd-title-prefix"><code>prefix</code></span>
+                <span class="ckd-title-suffix"><code>Suffix</code></span>
+                <span class="ckd-title-tag"><code>tag</code>1</span>
+                <span class="ckd-title-tag"><code>tag</code>2</span>
+                <span class="ckd-info"><code>info</code></span>
+                <span class="ckd-desc">This is <code>desc</code> or <code>subtitle</code>.</span>
+                <span class="ckd-content">This is <code>content</code>. This is content. This is content. This is content. This is content. This is content. This is content. This is content.</span>
+                <span class="ckd-meta">This is <code>meta</code>.</span>
+                <span class="ckd-author">This is <code>author</code>.</span>
+                <span class="ckd-author-prefix"><code>author-prefix</code></span>
+                <span class="ckd-author-suffix"><code>author-Suffix</code></span>
+                <span class="ckd-author-desc">This is <code>author-desc</code>.</span>
+                <span class="ckd-author-content">This is <code>author-content</code>.</span>
+                <span class="ckd-author-meta">This is <code>author-meta</code>.</span>
+            </div>
+        </div>
+
+    </div>
 </div>
 
 </div>
@@ -263,6 +143,13 @@
 <script src="dist/js/main.js"></script>
 <!-- COLLECTED JS -->
 <script>
+define('cardkit/env', [], function(){
+    return {
+        showScrollMask: true,
+        showControlMask: true,
+        enableConsole: true
+    };
+});
 </script>
 </body>
 </html>

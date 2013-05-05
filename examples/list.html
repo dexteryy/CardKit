@@ -7,10 +7,11 @@
 <meta name="format-detection" content="telephone=no">
 
 <link href="dist/css/main.css" rel="stylesheet">
-<style type="text/css">
-.ck-mini-unit header .opt{
-    font-size:12px;
-    float:right;
+<link href="css/console.css" rel="stylesheet">
+<link href="css/common.css" rel="stylesheet">
+<style>
+.ck-list-unit code {
+  text-decoration:underline;
 }
 </style>
 <script>function ckControl(){return false}</script>
@@ -32,39 +33,88 @@
     
     <div class="ck-card" id="ckDefault">
 
-        <div class="ck-list-unit" data-style="more">
-            <div class="ckd-item"><a class="ckd-title" href="#listCard1">查看更多列表类型（页内切换）</a></div>
-            <div class="ckd-item"><a class="ckd-title" href="#paperCard1">查看正文（页内切换）</a></div>
+        <div class="ck-banner-unit topbox">
+            <h2>List Unit</h2>
+            <ul class="mods">
+                <li><a href="http://code.dapps.douban.com/cardkit/blob/master/tpl/unit/list.tpl" target="_blank">tpl/unit/list</a></li>
+                <li><a href="http://code.dapps.douban.com/cardkit/blob/master/js/cardkit/parser/list.js" target="_blank">cardkit/parser/list</a></li>
+            </ul>
+        </div>
+
+        <!--demo-->
+        <div class="ck-list-unit" 
+                data-style="more" 
+                data-cfg-plainhd="true"
+                data-source="ckdListA">
+            <a class="ckd-hd" href="#hdLink">List ("more" style)</a>
+        </div>
+        <!--demo end-->
+
+        <!--demo-->
+        <div class="ck-list-unit" 
+                data-style="menu" 
+                data-source="ckdListA">
+            <div class="ckd-hd">List ("menu" style)</div>
+            <a class="ckd-hd-link" href="#hdLink"></a>
+        </div>
+        <!--demo end-->
+
+        <!--demo-->
+        <div class="ck-list-unit" 
+                data-style="post" 
+                data-cfg-plainhd="true"
+                data-source="ckdListA">
+            <div class="ckd-hd">List ("post" style)</div>
+        </div>
+        <!--demo end-->
+
+        <!--demo-->
+        <div class="ck-list-unit" 
+                data-style="split" 
+                data-source="ckdListA">
+            <div class="ckd-hd">List ("split" style)</div>
+            <a class="ckd-hd-link" href="#hdLink"></a>
+            <div class="ckd-ft">This is footer</div>
+        </div>
+        <!--demo end-->
+
+        <!--demo-->
+        <div class="ck-list-unit" 
+                data-style="post" 
+                data-cfg-paper="true" 
+                data-source="ckdListA">
+            <div class="ckd-hd">List (Plain "post" style)</div>
+            <div class="ckd-ft">This is footer</div>
+        </div>
+        <!--demo end-->
+
+        <!--demo-->
+        <div class="ck-list-unit" 
+                data-style="grid" 
+                data-cfg-plainhd="true"
+                data-cfg-col="3" 
+                data-source="ckdListA">
+            <div class="ckd-hd">List ("grid" style)</div>
+            <div class="ckd-item" data-source="ckdItemA"></div>
+            <div class="ckd-item" data-source="ckdItemB"></div>
+            <div class="ckd-item" data-source="ckdItemA"></div>
+            <div class="ckd-item" data-source="ckdItemB"></div>
+        </div>
+        <!--demo end-->
+
+        <div class="ck-box-unit" data-cfg-paper="true">
+            <div class="ckd-content" id="console"></div>
         </div>
 
     </div>
 
-
-    <div class="ck-card" id="listCard1">
-
-        <div class="ck-list-unit" data-style="more" data-source="ckdBox1">
-            <div class="ckd-hd">列表（"more" style）</div>
-        </div>
-
-        <div class="ck-list-unit" data-style="menu" data-source="ckdBox1">
-            <div class="ckd-hd">列表（"menu" style）</div>
-        </div>
-
-        <div class="ck-list-unit" data-style="post" data-source="ckdBox1">
-            <div class="ckd-hd">列表（"post" style）</div>
-        </div>
-
-        <div class="ck-list-unit" data-style="grid" data-source="ckdBox1" data-cfg-col="3">
-            <div class="ckd-hd">列表（"grid" style）</div>
-        </div>
-
+    <div class="ck-card" id="hdLink" data-cfg-blank="Link of header">
     </div>
 
-    <div class="ck-card" id="paperCard1">
+    <div class="ck-card" id="titleLink" data-cfg-blank="Link of title">
+    </div>
 
-        <div class="ck-box-unit" data-cfg-paper="true" data-source="ckdBox1">
-        </div>
-
+    <div class="ck-card" id="authorLink" data-cfg-blank="Link of author">
     </div>
 
     <div class="ck-card ck-loading" id="ckLoading">
@@ -74,82 +124,71 @@
         </div>
     </div>
 
-    <div class="ck-raw">
-
-
-        <div class="box ckd-source ckdBox1">
-            <h1><a href="page.html" class="link ckd-hd">内容模板1 - 链接标题</a></h1>
-            <blockquote class="ckd-content">
-                <p>
-                    <span class="text ckd-source ckdBox1Sub1">内容模板1 - 子内容1</span>
-                </p>
-                <p>
-                    <span class="text ckd-source ckdBox1Sub2">内容模板1 - 子内容2<a href="page.html" class="ckd-title">内容模板1 - 页间跳转1</a></span>
-                </p>
-                <p>
-                    <span class="text ckd-source ckdBox1Sub3">内容模板1 - 子内容3</span>
-                </p>
-            </blockquote>
-            <ul>
-                <li class="ckd-item">
-                    <a href="page.html" class="ckd-author">作者</a>
-                    <span class="ckd-info">信息</span>
-                    <span class="ckd-subtitle">次要标题</span>
-                    <img class="ckd-icon" src="http://img3.douban.com/icon/ul1137591-9.jpg" />
-                </li>
-                <li class="ckd-item">
-                    <a href="page.html" class="ckd-author">作者</a>
-                    <span class="ckd-info">信息</span>
-                    <span class="ckd-subtitle">次要标题</span>
-                    <span class="ckd-meta">更多信息</span>
-                    <img class="ckd-icon" src="http://img3.douban.com/icon/ul1137591-9.jpg" />
-                    <span class="ckd-content"><em>内容摘要</em><em>内容摘要</em><em>内容摘要</em></span>
-                </li>
-                <li class="ckd-item">
-                    <a href="page.html" class="ckd-title">主标题</a>
-                    <span class="ckd-subtitle">次要标题</span>
-                    <img class="ckd-icon" src="http://img3.douban.com/lpic/s24428953.jpg" />
-                </li>
-                <li class="ckd-item">
-                    <span class="ckd-author">作者（不带链接）</span>
-                    <span class="ckd-info">信息</span>
-                    <span class="ckd-subtitle">次要标题</span>
-                    <span class="ckd-meta">更多信息1</span>
-                    <span class="ckd-meta">更多信息2</span>
-                    <span class="ckd-meta">更多信息3</span>
-                    <img class="ckd-icon" src="http://img3.douban.com/icon/ul1137591-9.jpg" />
-                    <span class="ckd-content"><em>内容摘要</em><em>内容摘要</em><em>内容摘要</em></span>
-                </li>
-                <li class="ckd-item ckd-source ckdBox1Sub4">
-                    <a href="page.html" class="ckd-title">多行的主标题，多行的主标题，多行的主标题</a>
-                    <a href="page.html" class="ckd-author">作者</a>
-                    <span class="ckd-info">信息</span>
-                    <span class="ckd-subtitle">次要标题</span>
-                    <span class="ckd-meta">更多信息1</span>
-                    <span class="ckd-meta">更多信息2</span>
-                    <span class="ckd-meta">更多信息3</span>
-                    <img class="ckd-icon" src="http://img3.douban.com/lpic/s24428953.jpg" />
-                    <span class="ckd-content"><em>内容摘要</em><em>内容摘要</em><em>内容摘要</em></span>
-                </li>
-                <li class="ckd-item">
-                    <h6 class="ckd-title">主标题（不带链接）</h6>
-                    <span class="ckd-info">信息</span>
-                    <span class="ckd-subtitle">次要标题</span>
-                </li>
-                <li class="ckd-item">
-                    <a href="page.html" class="ckd-title">主标题</a>
-                    <span class="ckd-info">信息</span>
-                    <span class="ckd-subtitle">次要标题</span>
-                </li>
-            </ul>
-            <div class="ckd-ft">底部信息</div>
-        </div>
-
-    </div>
-
     <footer class="ck-footer">
         <div class="copyright">&copy; 2005－2012 douban.com, all rights reserved</div>
     </footer>
+
+    <div class="ck-raw">
+
+        <div class="ckd-source ckdListA">
+            <div class="ckd-item ckdItemA">
+                <img class="ckd-icon" src="http://img3.douban.com/lpic/s1959726.jpg">
+                <a class="ckd-title" href="#">This is <code>title</code>.</a>
+                <a class="ckd-title-link" href="#titleLink"></a>
+                <span class="ckd-title-prefix"><code>prefix</code></span>
+                <span class="ckd-title-suffix"><code>Suffix</code></span>
+                <span class="ckd-title-tag"><code>tag</code>1</span>
+                <span class="ckd-title-tag"><code>tag</code>2</span>
+                <span class="ckd-info"><code>info</code></span>
+                <span class="ckd-desc">This is <code>desc</code> or <code>subtitle</code>.</span>
+                <span class="ckd-content">This is <code>content</code>. This is content. This is content. This is content. This is content. This is content. This is content. This is content.</span>
+                <span class="ckd-meta">This is <code>meta</code>.</span>
+                <img class="ckd-avatar" src="http://img3.douban.com/icon/ul1137591-9.jpg">
+                <a class="ckd-author" href="#">This is <code>author</code>.</a>
+                <a class="ckd-author-link" href="#authorLink"></a>
+                <span class="ckd-author-prefix"><code>author-prefix</code></span>
+                <span class="ckd-author-suffix"><code>author-Suffix</code></span>
+                <span class="ckd-author-desc">This is <code>author-desc</code>.</span>
+                <span class="ckd-author-content">This is <code>author-content</code>.</span>
+                <span class="ckd-author-meta">This is <code>author-meta</code>.</span>
+            </div>
+            <div class="ckd-item ckdItemB">
+                <img class="ckd-icon" src="http://img5.douban.com/lpic/s25812589.jpg">
+                <a class="ckd-title" href="#">This is <code>title</code>. This is title. This is title. This is title. This is title.</a>
+                <a class="ckd-title-link" href="#titleLink"></a>
+                <span class="ckd-info"><code>info</code></span>
+                <!--<span class="ckd-desc">This is <code>desc</code> or <code>subtitle</code>.</span>-->
+                <span class="ckd-content">This is <code>content</code>. This is content. This is content. This is content. This is content. This is content. This is content. This is content.</span>
+                <span class="ckd-meta">This is <code>meta</code>.</span>
+                <img class="ckd-avatar" src="http://img3.douban.com/icon/ul24955975-13.jpg">
+                <a class="ckd-author" href="#">This is <code>author</code>.</a>
+                <a class="ckd-author-link" href="#authorLink"></a>
+                <span class="ckd-author-prefix"><code>author-prefix</code></span>
+                <span class="ckd-author-suffix"><code>author-Suffix</code></span>
+                <span class="ckd-author-desc">This is <code>author-desc</code>.</span>
+                <span class="ckd-author-content">This is <code>author-content</code>.</span>
+                <span class="ckd-author-meta">This is <code>author-meta</code>.</span>
+            </div>
+            <div class="ckd-item">
+                <span class="ckd-title">This is <code>title</code>.</span>
+                <span class="ckd-title-prefix"><code>prefix</code></span>
+                <span class="ckd-title-suffix"><code>Suffix</code></span>
+                <span class="ckd-title-tag"><code>tag</code>1</span>
+                <span class="ckd-title-tag"><code>tag</code>2</span>
+                <span class="ckd-info"><code>info</code></span>
+                <span class="ckd-desc">This is <code>desc</code> or <code>subtitle</code>.</span>
+                <span class="ckd-content">This is <code>content</code>. This is content. This is content. This is content. This is content. This is content. This is content. This is content.</span>
+                <span class="ckd-meta">This is <code>meta</code>.</span>
+                <span class="ckd-author">This is <code>author</code>.</span>
+                <span class="ckd-author-prefix"><code>author-prefix</code></span>
+                <span class="ckd-author-suffix"><code>author-Suffix</code></span>
+                <span class="ckd-author-desc">This is <code>author-desc</code>.</span>
+                <span class="ckd-author-content">This is <code>author-content</code>.</span>
+                <span class="ckd-author-meta">This is <code>author-meta</code>.</span>
+            </div>
+        </div>
+
+    </div>
 
 </div>
 </div>
@@ -160,10 +199,10 @@
 define('cardkit/env', [], function(){
     return {
         showScrollMask: true,
-        showControlMask: true
+        showControlMask: true,
+        enableConsole: true
     };
 });
 </script>
-<!-- vagrant-->
 </body>
 </html>
