@@ -1,9 +1,7 @@
 
 .moui-select {
   @extend %block;
-
-  background-image:$folder_icon;
-  background-repeat:no-repeat;
+  @extend %unfold-icon;
   background-position:right center;
   background-origin: content-box;
   background-size:10px;
@@ -30,7 +28,7 @@
 
   &:active {
     @extend %block-pressed;
-    background-image:$folder_icon;
+    @extend %unfold-icon;
 
     button.enabled,
     span {

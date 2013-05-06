@@ -36,6 +36,7 @@ pre {
 a {
   text-decoration:none;
   color:$active_color;
+  -webkit-tap-highlight-color: $highlight_color;
 }
 
 .ck-link {
