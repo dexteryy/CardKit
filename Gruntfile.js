@@ -83,9 +83,12 @@ module.exports = function(grunt) {
                 options: {
                     optimizationLevel: 3
                 },
-                files: {
-                    '<%= meta.targetDir %>/pics/': 'pics/**/*.{png,jpg}'
-                }
+                files: [{
+                    expand: true,
+                    cwd: 'pics/',
+                    src: ['**/*.{png,jpg}'],
+                    dest: '<%= meta.targetDir %>/pics/'
+                }]
             }
         },
 
