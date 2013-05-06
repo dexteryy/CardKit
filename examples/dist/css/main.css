@@ -1486,10 +1486,10 @@ body.no-overflowscroll .moui-modalview .wrapper > article > .content, body.no-ov
   -moz-transform: translateY(50%);
   -ms-transform: translateY(50%);
   transform: translateY(50%);
-  -webkit-transition: -webkit-transform 0.3s, opacity 0.3s;
+  -webkit-transition: -webkit-transform 0.4s, opacity 0.2s;
   -webkit-transition-delay: 0.1s, 0.1s;
-  -moz-transition: -moz-transform 0.3s 0.1s, opacity 0.3s 0.1s;
-  transition: transform 0.3s 0.1s, opacity 0.3s 0.1s;
+  -moz-transition: -moz-transform 0.4s 0.1s, opacity 0.2s 0.1s;
+  transition: transform 0.4s 0.1s, opacity 0.2s 0.1s;
 }
 .moui-actionview .wrapper .content, .ck-actionview .wrapper .content {
   padding: 0 25px 25px 25px;
@@ -1603,10 +1603,9 @@ body.no-overflowscroll .moui-actionview .wrapper, body.no-overflowscroll .ck-act
   height: 100%;
   background: rgba(13, 13, 13, 0.95);
   opacity: 0;
-  -webkit-transition: opacity 0.3s;
-  -webkit-transition-delay: 0.1s;
-  -moz-transition: opacity 0.3s 0.1s;
-  transition: opacity 0.3s 0.1s;
+  -webkit-transition: opacity 0.5s;
+  -moz-transition: opacity 0.5s;
+  transition: opacity 0.5s;
 }
 .moui-actionview.confirm-kind .content header, .confirm-kind.ck-actionview .content header {
   padding-top: 30%;

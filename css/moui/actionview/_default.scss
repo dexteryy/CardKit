@@ -17,7 +17,7 @@
     position:relative;
     opacity:0;
     @include transform(translateY(50%));
-    @include transition(transform 0.3s 0.1s, opacity 0.3s 0.1s);
+    @include transition(transform 0.4s 0.1s, opacity 0.2s 0.1s);
 
     .content {
       padding:0 $space $space $space;
@@ -150,7 +150,7 @@
     height:100%;
     background:rgba(13,13,13,0.95);
     opacity:0;
-    @include transition(opacity 0.3s 0.1s);
+    @include transition(opacity 0.5s);
   }
 
   &.confirm-kind {

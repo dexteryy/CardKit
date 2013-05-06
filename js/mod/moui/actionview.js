@@ -27,7 +27,7 @@ define('moui/actionview', [
 
         default_config = {
             className: 'moui-actionview',
-            closeDelay: 300,
+            closeDelay: 500,
             confirmText: '确认',
             cancelText: '取消',
             options: null,
