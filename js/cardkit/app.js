@@ -446,15 +446,6 @@ define([
                 //}
             //}).bind('scrollup', function(){
                 //ck.showTopbar();
-            
-            //}).bind('scrollright', function(e){
-                //console.info('right')
-            //}).bind('scrollleft', function(e){
-                //console.info('left')
-            //}).bind('scrollstart', function(e){
-                //console.info('start')
-            //}).bind('scrollend', function(e){
-                //console.info('end')
             });
             
             if (supports.CARD_SCROLL 
@@ -722,8 +713,8 @@ define([
             var mini = this.viewport.find('.ck-mini-unit'),
                 mini_items = mini.find('.ck-item'),
                 mini_item_margin = parseFloat(mini_items.css('margin-left')),
-                w = window.innerWidth - mini_item_margin - 15;
-            mini_items.css('width', w - mini_item_margin + 'px');
+                w = this.slideItemWidth = window.innerWidth - mini_item_margin - 15;
+            mini_items.css('width', w - mini_item_margin - 2 + 'px');
             mini.find('.ck-list').css('width', w * mini_items.length + mini_item_margin + 'px');
 
             bus.fire('cardkit:updateSize');
@@ -732,7 +723,15 @@ define([
         watchScroll: function(card){
             this.scrollGesture.watchScroll(card[0]);
             card.find('.ck-mini-unit .ck-list-wrap').forEach(function(wrap){
-                momoScroll(this).watchScroll(wrap);
+                $(wrap).bind('touchstart', function(){
+                    //var d = parseFloat($(this).data('ckScrollOffset'));
+                    //if (d) {
+                        //choreo.transform($('.ck-list', this)[0], 'translateX', '0');
+                        //this.scrollLeft -= d;
+                    //}
+                }).bind('scroll', function(){
+                    $(this).bind('touchend', stick_item);
+                });
             }, document);
         },
 
@@ -896,6 +895,31 @@ define([
     };
 
     function nothing(){}
+
+    function stick_item(){
+        var self = this;
+        $(self).unbind('touchend', stick_item);
+        var w = ck.slideItemWidth,
+            n = self.scrollLeft / w,
+            l = $('.ck-item', self).length - 1,
+            list = $('.ck-list', self)[0];
+        if (n > 0 && n < l) {
+            var d = self.scrollLeft - Math.round(n) * w + (Math.round(n) === l ? 15 : 0);
+            if (supports.SAFARI_OVERFLOWSCROLL) {
+                self.style.overflow = 'hidden';
+            }
+            choreo().play().actor(list, {
+                transform: 'translateX(' + d + 'px)'
+            }, 400, 'ease').follow().then(function(){
+                //$(self).data('ckScrollOffset', d);
+                choreo.transform(list, 'translateX', '0');
+                self.scrollLeft -= d;
+                if (supports.SAFARI_OVERFLOWSCROLL) {
+                    self.style.overflow = '';
+                }
+            });
+        }
+    }
 
     //function clear_active_item_mask(card){
         //card.find('.ck-link-mask-active').removeClass('ck-link-mask-active');

@@ -393,6 +393,13 @@
     font-size:$title_size;
     display:block;
     line-height: 1.4;
+
+    img {
+      max-width:100%;
+      margin:$space/2 auto;
+      display:block;
+    }
+
   }
 
   .ck-meta-wrap,
@@ -608,7 +615,7 @@
 
     .ck-list {
       width:5000px;
-      padding:0 10px 10px 0;
+      padding:0 0 10px 0;
       overflow:hidden;
     }
 

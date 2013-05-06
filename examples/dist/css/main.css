@@ -879,6 +879,13 @@ body.no-overflowscroll .ck-card {
   display: block;
   line-height: 1.4;
 }
+.ck-list-unit .ck-content-wrap img, .ck-mini-unit .ck-content-wrap img,
+.ck-list-unit .ck-author-content-wrap img,
+.ck-mini-unit .ck-author-content-wrap img {
+  max-width: 100%;
+  margin: 5px auto;
+  display: block;
+}
 .ck-list-unit .ck-meta, .ck-mini-unit .ck-meta,
 .ck-list-unit .ck-author-meta,
 .ck-mini-unit .ck-author-meta {
@@ -1002,7 +1009,7 @@ body.no-overflowscroll .ck-mini-unit[data-style="slide"] .ck-list-wrap {
 }
 .ck-mini-unit[data-style="slide"] .ck-list {
   width: 5000px;
-  padding: 0 10px 10px 0;
+  padding: 0 0 10px 0;
   overflow: hidden;
 }
 .ck-mini-unit[data-style="slide"] .ck-item {
