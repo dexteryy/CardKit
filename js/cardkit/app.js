@@ -751,20 +751,11 @@ define([
         },
 
         hideLoadingCard: function() {
-            if (!this._loadingAnimate) {
-                this._loadingAnimate = choreo();
-            }
-            this._loadingAnimate.clear().play()
-                .actor(ck.loadingCard[0], {
-                    opacity: 0
-                }, 400, 'ease').follow().then(function(){
-                    ck.loadingCard.hide().css({
-                        position: 'static',
-                        opacity: '',
-                        height: window.innerHeight + 'px'
-                    });
-                    ck.showTopbar();
-                });
+            ck.loadingCard.hide().css({
+                position: 'static',
+                height: window.innerHeight + 'px'
+            });
+            ck.showTopbar();
         },
 
         hideTopbar: function(){
@@ -993,7 +984,7 @@ define([
         next.addClass('moving');
         ck.changeView(next);
         ck.cardMask.css('opacity', 0).addClass('moving');
-        var moving = choreo().play();
+        var moving = choreo('card:moving').clear().play();
         moving.actor(ck.cardMask[0], {
             'opacity': '0.8'
         }, 400, 'ease');
@@ -1040,7 +1031,7 @@ define([
         current.addClass('moving');
         ck.changeView(prev);
         ck.cardMask.css('opacity', '0.8').addClass('moving');
-        var moving = choreo().play();
+        var moving = choreo('card:moving').clear().play();
         moving.actor(ck.cardMask[0], {
             'opacity': '0'
         }, 400, 'ease');
