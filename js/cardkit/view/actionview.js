@@ -43,6 +43,7 @@ define([
             }
         }).bind('close', function(){
             exports.current = null;
+            bus.unbind('actionView:confirmOnThis');
             bus.fire('actionView:close', [view]);
             if (elm) {
                 elm.trigger('actionView:close', eprops);
@@ -52,6 +53,7 @@ define([
                 elm.trigger('actionView:cancel', eprops);
             }
         }).bind('confirm', function(view, picker){
+            bus.fire('actionView:confirmOnThis', [view]);
             if (elm) {
                 elm.trigger('actionView:confirm', eprops);
             }

@@ -117,27 +117,51 @@
             <header class="ckd-hd">Action View</header>
             <div class="ckd-item">
                 <!--demo-->
-                <button type="button" class="ck-select actions1"
+                <button type="button" class="ck-select"
                         data-fluid="true"
-                        data-title="选择排序方式">
-                    <span>Order by default</span>
-                    <a href="#price" class="ck-option">Order by price</a>
-                    <a href="#date" class="ck-option">Order by date</a>
-                    <a href="#alpha" class="ck-option">Order by alphabet</a>
-                    <a href="#editor" class="ck-option">Order by editor</a>
+                        data-title="Choose the page">
+                    <span>Choose the page</span>
+                    <a href="picker.html" class="ck-option" target="_self">picker.html</a>
+                    <a href="control.html" class="ck-option" target="_self">control.html</a>
+                    <a href="index.html" class="ck-option" target="_self">index.html</a>
                 </button>
                 <!--demo end-->
                 <div class="democode">
                     <script type="syntaxhighlighter" class="brush: html"><![CDATA[
-                    <button type="button" class="ck-select actions1"
+                    <button type="button" class="ck-select"
                             data-fluid="true"
-                            data-title="选择排序方式">
-                        <span>Order by default</span>
-                        <a href="#price" class="ck-option">Order by price</a>
-                        <a href="#date" class="ck-option">Order by date</a>
-                        <a href="#alpha" class="ck-option">Order by alphabet</a>
-                        <a href="#editor" class="ck-option">Order by editor</a>
+                            data-title="Choose the page">
+                        <span>Choose the page</span>
+                        <a href="picker.html" class="ck-option" target="_self">picker.html</a>
+                        <a href="control.html" class="ck-option" target="_self">control.html</a>
+                        <a href="index.html" class="ck-option" target="_self">index.html</a>
                     </button>
+                    ]]></script>
+                </div>
+            </div>
+            <div class="ckd-item">
+                <!--demo-->
+                <div type="button" class="ck-select actions1"
+                        data-fluid="true"
+                        data-title="Choose the order">
+                    <input type="hidden" value="date">
+                    <button type="button" value="price" class="ck-option">Order by price</button>
+                    <button type="button" value="date" class="ck-option enabled">Order by date</button>
+                    <button type="button" value="alpha" class="ck-option">Order by alphabet</button>
+                    <button type="button" value="editor" class="ck-option">Order by editor</button>
+                </div>
+                <!--demo end-->
+                <div class="democode">
+                    <script type="syntaxhighlighter" class="brush: html"><![CDATA[
+                    <div type="button" class="ck-select actions1"
+                            data-fluid="true"
+                            data-title="Choose the order">
+                        <input type="hidden" value="date">
+                        <button type="button" value="price" class="ck-option">Order by price</button>
+                        <button type="button" value="date" class="ck-option enabled">Order by date</button>
+                        <button type="button" value="alpha" class="ck-option">Order by alphabet</button>
+                        <button type="button" value="editor" class="ck-option">Order by editor</button>
+                    </div>
                     ]]></script>
                 </div>
             </div>

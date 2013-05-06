@@ -104,12 +104,16 @@ define([
             control(this.parentNode).toggle();
         },
 
-        '.ck-select, .ck-select span': function(){
+        '.ck-select, .ck-select span, .ck-select .enabled': function(){
             var me = $(this);
             if (!me.hasClass('ck-select')) {
                 me = me.parent();
             }
-            return show_actions(me);
+            var p = picker(me);
+            show_actions(me);
+            bus.bind('actionView:confirmOnThis', function(actions){
+                p.select(actions.val());
+            });
         },
 
         '.ck-actions-button, .ck-actions-button span': function(){
@@ -117,7 +121,7 @@ define([
             if (!me.hasClass('ck-actions-button')) {
                 me = me.parent();
             }
-            return show_actions(me);
+            show_actions(me);
         },
 
         '.ck-modal-button': open_modal_card,
@@ -185,7 +189,7 @@ define([
             multiselect: false
         }, me.data());
         opt.options = $(opt.options || '.ck-option', me);
-        actionView(me, opt).open();
+        return actionView(me, opt).open();
     }
 
     function respond_stars(e, method) {
@@ -383,6 +387,7 @@ define([
                 ck.hideAddressbar();
                 ck.hideLoadingCard();
                 ck.enableControl();
+                ck.sessionLocked = false;
             }, 0);
 
             $(window).bind('resize', function(){
@@ -526,8 +531,6 @@ define([
         },
 
         initState: function(){
-
-            ck.sessionLocked = false;
 
             var travel_history, restore_state, restore_modal;
 
@@ -997,7 +1000,7 @@ define([
         moving.actor(next[0], {
             'transform': 'translateX(0)'
         }, 450, 'ease');
-        moving.follow().done(function(){
+        moving.follow().then(function(){
             current.hide();
             ck.cardMask.removeClass('moving');
             next.removeClass('moving');
@@ -1040,11 +1043,11 @@ define([
         var moving = choreo().play();
         moving.actor(ck.cardMask[0], {
             'opacity': '0'
-        }, 450, 'ease');
-        moving.play().actor(current[0], {
+        }, 400, 'ease');
+        moving.actor(current[0], {
             'transform': 'translateX(' + window.innerWidth + 'px)'
         }, 450, 'ease');
-        moving.follow().done(function(){
+        moving.follow().then(function(){
             ck.cardMask.removeClass('moving');
             current.hide().removeClass('moving');
             choreo.transform(current[0], 'translateX', '0px');

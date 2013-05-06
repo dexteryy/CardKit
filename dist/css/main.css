@@ -1267,13 +1267,19 @@ body.no-overflowscroll .ck-mini-unit[data-style="slide"] .ck-list-wrap {
   background-size: 10px;
   padding: 0 5px 0 0;
 }
-.moui-select span, .ck-select span {
+.moui-select button.enabled, .ck-select button.enabled,
+.moui-select span,
+.ck-select span {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
   display: block;
   height: 100%;
   text-align: left;
   background: #fff;
   padding: 0 7.5px;
   margin: 0 15px 0 0;
+  border: none;
   border-right: 1px solid #B2B2B2;
   font-size: 13px;
   font-weight: normal;
@@ -1284,7 +1290,9 @@ body.no-overflowscroll .ck-mini-unit[data-style="slide"] .ck-list-wrap {
 .moui-select:active, .ck-select:active {
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAALAQMAAABFxz8AAAAABlBMVEX///+bm5tR7J1yAAAAAXRSTlMAQObYZgAAADJJREFUCB0FwTERABAAAMB3BpsEQhjFEUEEQYQRRQSj0b+tOobhaGErccqJlImL8HDRfc8xCDsaQayFAAAAAElFTkSuQmCC');
 }
-.moui-select:active span, .ck-select:active span {
+.moui-select:active button.enabled, .ck-select:active button.enabled,
+.moui-select:active span,
+.ck-select:active span {
   -webkit-box-shadow: inset 0 1px 2px rgba(115, 115, 115, 0.8);
   -moz-box-shadow: inset 0 1px 2px rgba(115, 115, 115, 0.8);
   box-shadow: inset 0 1px 2px rgba(115, 115, 115, 0.8);
