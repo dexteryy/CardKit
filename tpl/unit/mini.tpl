@@ -12,7 +12,7 @@
         </span>
 
         {% if (data.hd_opt) { %}
-        <div class="ck-hdopt">{%=data.hd_opt%}</div>
+        <div class="ck-hdopt-wrap">{%=data.hd_opt%}</div>
         {% } %}
 
     </header>

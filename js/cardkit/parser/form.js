@@ -14,12 +14,12 @@ define([
             },
             hd = get_hd(source && source.find('.ckd-hd')),
             hd_link = get_hd(source && source.find('.ckd-hd-link')),
-            hd_opt = get_all_outer(source && source.find('.ckd-hdopt')),
+            hd_opt = get_all_outer(source && source.find('.ckd-hdopt'), 'hdopt'),
             ft = get_hd(source && source.find('.ckd-ft')),
             items = source && source.find('.ckd-item').map(get_item),
             custom_hd = (util.getCustom('.ckd-hd', unit, raw, get_hd) || [{}])[0],
             custom_hd_link = (util.getCustom('.ckd-hd-link', unit, raw, get_hd) || [{}])[0],
-            custom_hd_opt = (util.getCustom('.ckd-hdopt', unit, raw, get_all_outer) || []).join(''),
+            custom_hd_opt = (util.getCustom('.ckd-hdopt', unit, raw, get_all_outer, 'hdopt') || []).join(''),
             custom_ft = (util.getCustom('.ckd-ft', unit, raw, get_hd) || [{}])[0],
             custom_items = util.getCustom('.ckd-item', unit, raw, get_item) || $();
         var data = {
@@ -70,9 +70,9 @@ define([
         return data;
     }
 
-    function get_all_outer(source){
+    function get_all_outer(source, custom, ckdname){
         source = $(source);
-        var data = util.getOuterHTML(source) || '';
+        var data = util.getOuterHTML(source, ckdname) || '';
         source.remove();
         return data;
     }

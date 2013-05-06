@@ -663,11 +663,10 @@ body.no-overflowscroll .ck-card {
 }
 .ck-box-unit[data-cfg-plain] > article > header {
   padding: 0;
-  margin-left: 0;
-  margin-right: 0;
+  margin: 10px 0;
 }
 .ck-box-unit[data-cfg-plain] > article > footer {
-  padding: 0;
+  padding: 10px 0 0 5px;
   margin-left: 0;
   margin-right: 0;
   border-color: #e6e6e6;
@@ -1084,10 +1083,10 @@ body.no-overflowscroll .ck-mini-unit[data-style="slide"] .ck-list-wrap {
   height: 176px;
 }
 
-.ck-box-unit .ck-hdopt,
-.ck-mini-unit .ck-hdopt,
-.ck-list-unit .ck-hdopt,
-.ck-form-unit .ck-hdopt {
+.ck-box-unit .ck-hdopt-wrap,
+.ck-mini-unit .ck-hdopt-wrap,
+.ck-list-unit .ck-hdopt-wrap,
+.ck-form-unit .ck-hdopt-wrap {
   display: inline-block;
   position: absolute;
   top: 5px;
@@ -1098,22 +1097,22 @@ body.no-overflowscroll .ck-mini-unit[data-style="slide"] .ck-list-wrap {
   height: 31px;
   background: #fff;
 }
-.ck-box-unit .ck-hdopt > *,
-.ck-mini-unit .ck-hdopt > *,
-.ck-list-unit .ck-hdopt > *,
-.ck-form-unit .ck-hdopt > * {
+.ck-box-unit .ck-hdopt-wrap > *,
+.ck-mini-unit .ck-hdopt-wrap > *,
+.ck-list-unit .ck-hdopt-wrap > *,
+.ck-form-unit .ck-hdopt-wrap > * {
   margin: 0 5px;
   position: relative;
 }
-.ck-box-unit[data-cfg-plain="true"] .ck-hdopt, .ck-box-unit[data-cfg-plainhd="true"] .ck-hdopt,
-.ck-mini-unit[data-cfg-plain="true"] .ck-hdopt,
-.ck-mini-unit[data-cfg-plainhd="true"] .ck-hdopt,
-.ck-list-unit[data-cfg-plain="true"] .ck-hdopt,
-.ck-list-unit[data-cfg-plainhd="true"] .ck-hdopt,
-.ck-form-unit[data-cfg-plain="true"] .ck-hdopt,
-.ck-form-unit[data-cfg-plainhd="true"] .ck-hdopt {
-  top: 0;
-  background: none;
+.ck-box-unit[data-cfg-plain="true"] .ck-hdopt-wrap, .ck-box-unit[data-cfg-plainhd="true"] .ck-hdopt-wrap,
+.ck-mini-unit[data-cfg-plain="true"] .ck-hdopt-wrap,
+.ck-mini-unit[data-cfg-plainhd="true"] .ck-hdopt-wrap,
+.ck-list-unit[data-cfg-plain="true"] .ck-hdopt-wrap,
+.ck-list-unit[data-cfg-plainhd="true"] .ck-hdopt-wrap,
+.ck-form-unit[data-cfg-plain="true"] .ck-hdopt-wrap,
+.ck-form-unit[data-cfg-plainhd="true"] .ck-hdopt-wrap {
+  top: -2px;
+  background: #f2f2f2;
 }
 
 .ck-banner-unit {

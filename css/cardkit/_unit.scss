@@ -116,12 +116,11 @@
   & > article > header {
     @extend %plain-hd;
     padding:0;
-    margin-left:0;
-    margin-right:0;
+    margin:$space 0;
   }
 
   & > article > footer {
-    padding:0;
+    padding:$space 0 0 $space/2;
     margin-left:0;
     margin-right:0;
     border-color:$view_border_color;
@@ -723,7 +722,7 @@
 .ck-list-unit,
 .ck-form-unit {
 
-  .ck-hdopt {
+  .ck-hdopt-wrap {
     display:inline-block;
     position:absolute;
     top:$space/2;
@@ -744,9 +743,9 @@
   &[data-cfg-plain="true"],
   &[data-cfg-plainhd="true"] {
 
-    .ck-hdopt {
-      top:0;
-      background:none;
+    .ck-hdopt-wrap {
+      top:-2px;
+      background:$view_color;
     }
 
   }
