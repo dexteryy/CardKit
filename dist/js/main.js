@@ -2939,10 +2939,8 @@ define("../cardkit/render", [
                 $(unit).remove();
                 return;
             }
-            if (!data.style) {
-                data.config.limit = 1;
-            }
-            if (data.config.limit) {
+            if (data.config.limit 
+                    && data.config.limit < data.items.length) {
                 data.items.length = data.config.limit;
             }
             unit.innerHTML = tpl.convertTpl(tpl_mini.template, data, 'data');
@@ -2966,7 +2964,8 @@ define("../cardkit/render", [
                 }
                 return true;
             }, data);
-            if (data.config.limit) {
+            if (data.config.limit 
+                    && data.config.limit < data.items.length) {
                 data.items.length = data.config.limit;
             }
             if (!data.items.length 
