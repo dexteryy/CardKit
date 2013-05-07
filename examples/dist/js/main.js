@@ -2448,7 +2448,9 @@ define("../cardkit/parser/form", [
             hd_link = getHd(source && source.find('.ckd-hd-link')),
             hd_opt = getItemDataOuter(source && source.find('.ckd-hdopt'), 'hdopt'),
             ft = getHd(source && source.find('.ckd-ft')),
-            items = source && source.find('.ckd-item').map(getFormItemData),
+            items = source && source.find('.ckd-item').map(function(elm){
+                return getFormItemData(elm, null, null, raw);
+            }) || $(),
             custom_hd = getCustom('.ckd-hd', unit, raw, getHd)[0] || {},
             custom_hd_link = getCustom('.ckd-hd-link', unit, raw, getHd)[0] || {},
             custom_hd_opt = getCustom('.ckd-hdopt', unit, raw, getItemDataOuter, 'hdopt').join(''),
@@ -2472,7 +2474,8 @@ define("../cardkit/parser/form", [
     function getFormItemData(item, custom, ckdname, raw){
         item = $(item);
         var data = {
-            content: getCustom('.ckd-content', item, raw, getItemDataOuter, 'content'),
+            content: getCustom('.ckd-content', item, raw, getItemDataOuter, 'content').join('') 
+                || util.getInnerHTML(item),
         };
         return util.mergeSource(data, custom, getFormItemData, raw);
     }
@@ -2639,7 +2642,7 @@ define("../cardkit/tpl/unit/blank", [], function(){
 
 define("../cardkit/tpl/unit/form", [], function(){
 
-    return {"template":"\n<article>\n\n    {% if (data.hd) { %}\n    <header>\n\n        <span class=\"ck-hd {%= (data.hd_url && 'clickable' || '') %}\">\n            {% if (data.hd_url) { %}\n            <a href=\"{%= data.hd_url %}\" class=\"ck-link ck-link-mask\"></a>\n            {% } %}\n            <span>{%= data.hd %}</span>\n        </span>\n\n        {% if (data.hd_opt) { %}\n        <div class=\"ck-hdopt-wrap\">{%=data.hd_opt%}</div>\n        {% } %}\n\n    </header>\n    {% } %}\n\n    <section>\n    {% if (!data.items.length) { %}\n    <div class=\"ck-item blank\">{%=(data.config.blank || '目前还没有内容')%}</div>\n    {% } %}\n    {% data.items.forEach(function(item){ %}\n        <div class=\"ck-item\">\n        {% if (item.content.length) { %}\n            {%= item.content.join('') %}\n        {% } %}\n        </div>\n    {% }); %}\n    </section>\n\n    {% if (data.ft) { %}\n    <footer>{%= data.ft %}</footer>\n    {% } %}\n\n</article>\n\n"}; 
+    return {"template":"\n<article>\n\n    {% if (data.hd) { %}\n    <header>\n\n        <span class=\"ck-hd {%= (data.hd_url && 'clickable' || '') %}\">\n            {% if (data.hd_url) { %}\n            <a href=\"{%= data.hd_url %}\" class=\"ck-link ck-link-mask\"></a>\n            {% } %}\n            <span>{%= data.hd %}</span>\n        </span>\n\n        {% if (data.hd_opt) { %}\n        <div class=\"ck-hdopt-wrap\">{%=data.hd_opt%}</div>\n        {% } %}\n\n    </header>\n    {% } %}\n\n    <section>\n    {% if (!data.items.length) { %}\n    <div class=\"ck-item blank\">{%=(data.config.blank || '目前还没有内容')%}</div>\n    {% } %}\n    {% data.items.forEach(function(item){ %}\n        <div class=\"ck-item\">\n            {%= item.content %}\n        </div>\n    {% }); %}\n    </section>\n\n    {% if (data.ft) { %}\n    <footer>{%= data.ft %}</footer>\n    {% } %}\n\n</article>\n\n"}; 
 
 });
 /* @source ../cardkit/tpl/unit/mini.js */;
@@ -6805,7 +6808,7 @@ define("../cardkit/app", [
         //'.ck-link-mask': function(){
             //clear_active_item_mask(ck.viewport);
         //},
-
+        
         '.ck-card .ck-post-link': handle_control,
 
         '.ck-card .ck-post-button': handle_control,
@@ -7680,7 +7683,12 @@ define("../cardkit/app", [
             while (!me.href) {
                 me = me.parentNode;
             }
-            if ($(me).hasClass('ck-link')) {
+            if ($(me).hasClass('ck-link-extern')) {
+                open_url(me.href, {
+                    target: '_blank'
+                });
+                return;
+            } else if ($(me).hasClass('ck-link')) {
                 next_id = (me.href.replace(location.href, '')
                     .match(/^#(.+)/) || [])[1];
             } else if (/(^|\s)ck-\w+/.test(me.className)) {

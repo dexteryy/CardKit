@@ -20,7 +20,9 @@ define([
             hd_link = getHd(source && source.find('.ckd-hd-link')),
             hd_opt = getItemDataOuter(source && source.find('.ckd-hdopt'), 'hdopt'),
             ft = getHd(source && source.find('.ckd-ft')),
-            items = source && source.find('.ckd-item').map(getFormItemData),
+            items = source && source.find('.ckd-item').map(function(elm){
+                return getFormItemData(elm, null, null, raw);
+            }) || $(),
             custom_hd = getCustom('.ckd-hd', unit, raw, getHd)[0] || {},
             custom_hd_link = getCustom('.ckd-hd-link', unit, raw, getHd)[0] || {},
             custom_hd_opt = getCustom('.ckd-hdopt', unit, raw, getItemDataOuter, 'hdopt').join(''),
@@ -44,7 +46,8 @@ define([
     function getFormItemData(item, custom, ckdname, raw){
         item = $(item);
         var data = {
-            content: getCustom('.ckd-content', item, raw, getItemDataOuter, 'content'),
+            content: getCustom('.ckd-content', item, raw, getItemDataOuter, 'content').join('') 
+                || util.getInnerHTML(item),
         };
         return util.mergeSource(data, custom, getFormItemData, raw);
     }

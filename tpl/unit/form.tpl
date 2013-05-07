@@ -24,9 +24,7 @@
     {% } %}
     {% data.items.forEach(function(item){ %}
         <div class="ck-item">
-        {% if (item.content.length) { %}
-            {%= item.content.join('') %}
-        {% } %}
+            {%= item.content %}
         </div>
     {% }); %}
     </section>

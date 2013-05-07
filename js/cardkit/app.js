@@ -62,7 +62,7 @@ define([
         //'.ck-link-mask': function(){
             //clear_active_item_mask(ck.viewport);
         //},
-
+        
         '.ck-card .ck-post-link': handle_control,
 
         '.ck-card .ck-post-button': handle_control,
@@ -937,7 +937,12 @@ define([
             while (!me.href) {
                 me = me.parentNode;
             }
-            if ($(me).hasClass('ck-link')) {
+            if ($(me).hasClass('ck-link-extern')) {
+                open_url(me.href, {
+                    target: '_blank'
+                });
+                return;
+            } else if ($(me).hasClass('ck-link')) {
                 next_id = (me.href.replace(location.href, '')
                     .match(/^#(.+)/) || [])[1];
             } else if (/(^|\s)ck-\w+/.test(me.className)) {
