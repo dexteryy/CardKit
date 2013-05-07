@@ -622,12 +622,12 @@
     .ck-list-wrap {
 
       &.slide {
-        overflow-x:auto;
+        overflow-x:scroll;
         -webkit-overflow-scrolling: touch;
 
         .ck-list {
           width:5000px;
-          padding:0 0 10px 0;
+          padding:0 0 15px 0;
           overflow:hidden;
         }
 
@@ -643,7 +643,7 @@
         }
 
         body.no-overflowscroll & {
-          -webkit-overflow-scrolling: auto;
+          -webkit-overflow-scrolling: scroll;
           overflow-x:auto;
         }
 

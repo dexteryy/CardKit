@@ -716,7 +716,7 @@ define([
             this.viewport.find('.ck-mini-unit').forEach(function(mini){
                 var mini_items = $('.ck-item', mini),
                     mini_item_margin = parseFloat(mini_items.css('margin-left')),
-                    w = this.slideItemWidth = window.innerWidth - mini_item_margin - 15;
+                    w = ck.slideItemWidth = window.innerWidth - mini_item_margin - 15;
                 if (mini_items.length > 1) {
                     mini_items.css('width', w - mini_item_margin - 2 + 'px');
                     $('.ck-list', mini).css('width', w * mini_items.length + mini_item_margin + 'px');

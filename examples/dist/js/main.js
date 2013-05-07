@@ -2581,14 +2581,11 @@ define("../cardkit/parser/box", [
             hd_link = getHd(source && source.find('.ckd-hd-link')),
             hd_opt = getItemDataOuter(source && source.find('.ckd-hdopt'), 'hdopt'),
             ft = getHd(source && source.find('.ckd-ft')),
-            contents = source && (
-                util.getOuterHTML(source.find('.ckd-content'))
-                || util.getInnerHTML(source)
-            ),
-            custom_hd = getCustom('.ckd-hd', unit, raw, getHd)[0] || {},
-            custom_hd_link = getCustom('.ckd-hd-link', unit, raw, getHd)[0] || {},
-            custom_hd_opt = getCustom('.ckd-hdopt', unit, raw, getItemDataOuter, 'hdopt').join(''),
-            custom_ft = getCustom('.ckd-ft', unit, raw, getHd)[0] || {};
+            contents = source && util.getOuterHTML(source.find('.ckd-content')),
+            custom_hd = getCustom('.ckd-hd', unit, raw, take_hd)[0] || {},
+            custom_hd_link = getCustom('.ckd-hd-link', unit, raw, take_hd)[0] || {},
+            custom_hd_opt = getCustom('.ckd-hdopt', unit, raw, take_item_outer, 'hdopt').join(''),
+            custom_ft = getCustom('.ckd-ft', unit, raw, take_hd)[0] || {};
         getCustom('.ckd-content', unit, raw, replace_content);
         var data = {
             config: config,
@@ -2613,6 +2610,18 @@ define("../cardkit/parser/box", [
         if (custom) {
             $(custom).replaceWith(source.clone());
         }
+    }
+
+    function take_hd(source, custom){
+        var data = getHd(source, custom);
+        $(source).remove();
+        return data;
+    }
+
+    function take_item_outer(source, custom, ckdname){
+        var data = getItemDataOuter(source, custom, ckdname);
+        $(source).remove();
+        return data;
     }
 
     return exports;
@@ -7450,7 +7459,7 @@ define("../cardkit/app", [
             this.viewport.find('.ck-mini-unit').forEach(function(mini){
                 var mini_items = $('.ck-item', mini),
                     mini_item_margin = parseFloat(mini_items.css('margin-left')),
-                    w = this.slideItemWidth = window.innerWidth - mini_item_margin - 15;
+                    w = ck.slideItemWidth = window.innerWidth - mini_item_margin - 15;
                 if (mini_items.length > 1) {
                     mini_items.css('width', w - mini_item_margin - 2 + 'px');
                     $('.ck-list', mini).css('width', w * mini_items.length + mini_item_margin + 'px');

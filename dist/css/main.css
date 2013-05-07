@@ -1014,12 +1014,12 @@ body.no-overflowscroll .ck-card {
   margin: 0 10px;
 }
 .ck-mini-unit[data-style="slide"] .ck-list-wrap.slide {
-  overflow-x: auto;
+  overflow-x: scroll;
   -webkit-overflow-scrolling: touch;
 }
 .ck-mini-unit[data-style="slide"] .ck-list-wrap.slide .ck-list {
   width: 5000px;
-  padding: 0 0 10px 0;
+  padding: 0 0 15px 0;
   overflow: hidden;
 }
 .ck-mini-unit[data-style="slide"] .ck-list-wrap.slide .ck-item {
@@ -1031,7 +1031,7 @@ body.no-overflowscroll .ck-card {
   border: none;
 }
 body.no-overflowscroll .ck-mini-unit[data-style="slide"] .ck-list-wrap.slide {
-  -webkit-overflow-scrolling: auto;
+  -webkit-overflow-scrolling: scroll;
   overflow-x: auto;
 }
 .ck-mini-unit[data-style="slide"] .ck-author-box {
