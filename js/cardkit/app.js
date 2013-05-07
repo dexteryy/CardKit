@@ -510,7 +510,7 @@ define([
                         topbar_holded = true;
                         ck.viewport[0].scrollTop = 0;
                         topbar_tips.open();
-                    }, 200);
+                    }, 510);
                 }).bind('touchmove', function(e){
                     clearTimeout(hold_timer);
                     if (topbar_holded && e.touches[0].clientY < startY) {

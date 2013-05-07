@@ -81,10 +81,11 @@ define('momo/base', [
 
         once: function(ev, handler, node){
             var self = this;
-            this.bind(ev, function fn(){
+            this.bind(ev, fn, node);
+            function fn(){
                 self.unbind(ev, fn, node);
                 handler.apply(this, arguments);
-            }, node);
+            }
         },
 
         // implement

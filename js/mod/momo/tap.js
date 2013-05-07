@@ -4,10 +4,7 @@ define('momo/tap', [
     'momo/base'
 ], function(_, momoBase){
 
-    var MomoTap = _.construct(momoBase.Class, function(){
-        this._pressTrigger = nothing;
-        this.superConstructor.apply(this, arguments);
-    });
+    var MomoTap = _.construct(momoBase.Class);
 
     _.mix(MomoTap.prototype, {
 
@@ -64,7 +61,7 @@ define('momo/tap', [
             if (!self._started) {
                 self._pressTrigger();
             }
-            if (tm - self._startTime > self._config.holdThreshold + self._config.holdThreshold) {
+            if (tm - self._startTime > self._config.holdThreshold + self._config.tapThreshold) {
                 self.trigger(e, self.event.hold);
             } else {
                 if (self._firstTap
