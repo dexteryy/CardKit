@@ -564,7 +564,7 @@ body.no-overflowscroll .ck-card {
   }
 }
 
-.ck-box-unit:not([data-cfg-paper]), .ck-list-unit:not([data-cfg-paper]):not([data-style="split"]), .ck-list-unit[data-style="split"] .ck-item, .ck-mini-unit[data-style="slide"] .ck-item, .ck-form-unit, .ck-blank-unit {
+.ck-box-unit:not([data-cfg-paper]), .ck-list-unit:not([data-cfg-paper]):not([data-style="split"]), .ck-list-unit[data-style="split"] .ck-item, .ck-mini-unit[data-style="slide"] .ck-item:not(.blank), .ck-form-unit, .ck-blank-unit {
   margin: 10px;
   background-color: #fff;
   border: 1px solid white;
@@ -637,12 +637,12 @@ body.no-overflowscroll .ck-card {
   border-top: none;
 }
 
-[data-cfg-plainhd="true"].ck-box-unit:not([data-cfg-paper]) > article > header .ck-hd, [data-cfg-plainhd="true"].ck-list-unit:not([data-cfg-paper]):not([data-style="split"]) > article > header .ck-hd, [data-cfg-plainhd="true"].ck-form-unit > article > header .ck-hd, [data-cfg-plainhd="true"].ck-blank-unit > article > header .ck-hd, .ck-list-unit[data-style="split"] > article > header .ck-hd, .ck-mini-unit[data-style="slide"] > article > header .ck-hd, .ck-box-unit[data-cfg-plain] > article > header .ck-hd, .ck-box-unit:not([data-cfg-paper]) > article > header:last-child .ck-hd {
+[data-cfg-plainhd="true"].ck-box-unit:not([data-cfg-paper]) > article > header .ck-hd, [data-cfg-plainhd="true"].ck-list-unit:not([data-cfg-paper]):not([data-style="split"]) > article > header .ck-hd, [data-cfg-plainhd="true"].ck-form-unit > article > header .ck-hd, [data-cfg-plainhd="true"].ck-blank-unit > article > header .ck-hd, .ck-list-unit[data-style="split"] > article > header .ck-hd, .ck-mini-unit[data-style="slide"] > article > header .ck-hd, .ck-box-unit[data-cfg-plain] > article > header .ck-hd {
   padding: 0 15px 0 5px;
   background-origin: content-box;
   color: #787878;
 }
-[data-cfg-plainhd="true"].ck-box-unit:not([data-cfg-paper]) > article > header .ck-link-mask, [data-cfg-plainhd="true"].ck-list-unit:not([data-cfg-paper]):not([data-style="split"]) > article > header .ck-link-mask, [data-cfg-plainhd="true"].ck-form-unit > article > header .ck-link-mask, [data-cfg-plainhd="true"].ck-blank-unit > article > header .ck-link-mask, .ck-list-unit[data-style="split"] > article > header .ck-link-mask, .ck-mini-unit[data-style="slide"] > article > header .ck-link-mask, .ck-box-unit[data-cfg-plain] > article > header .ck-link-mask, .ck-box-unit:not([data-cfg-paper]) > article > header:last-child .ck-link-mask {
+[data-cfg-plainhd="true"].ck-box-unit:not([data-cfg-paper]) > article > header .ck-link-mask, [data-cfg-plainhd="true"].ck-list-unit:not([data-cfg-paper]):not([data-style="split"]) > article > header .ck-link-mask, [data-cfg-plainhd="true"].ck-form-unit > article > header .ck-link-mask, [data-cfg-plainhd="true"].ck-blank-unit > article > header .ck-link-mask, .ck-list-unit[data-style="split"] > article > header .ck-link-mask, .ck-mini-unit[data-style="slide"] > article > header .ck-link-mask, .ck-box-unit[data-cfg-plain] > article > header .ck-link-mask {
   padding: 0;
   -webkit-transform: translateX(0);
   -moz-transform: translateX(0);
@@ -1013,26 +1013,26 @@ body.no-overflowscroll .ck-card {
 .ck-mini-unit[data-style="slide"] > article > header .ck-hd {
   margin: 0 10px;
 }
-.ck-mini-unit[data-style="slide"] .ck-list-wrap {
+.ck-mini-unit[data-style="slide"] .ck-list-wrap.slide {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }
-body.no-overflowscroll .ck-mini-unit[data-style="slide"] .ck-list-wrap {
-  -webkit-overflow-scrolling: auto;
-  overflow-x: auto;
-}
-.ck-mini-unit[data-style="slide"] .ck-list {
+.ck-mini-unit[data-style="slide"] .ck-list-wrap.slide .ck-list {
   width: 5000px;
   padding: 0 0 10px 0;
   overflow: hidden;
 }
-.ck-mini-unit[data-style="slide"] .ck-item {
+.ck-mini-unit[data-style="slide"] .ck-list-wrap.slide .ck-item {
   padding: 5px 0;
   margin: 0 0 0 10px;
   float: left;
 }
-.ck-mini-unit[data-style="slide"] .ck-initem {
+.ck-mini-unit[data-style="slide"] .ck-list-wrap.slide .ck-initem {
   border: none;
+}
+body.no-overflowscroll .ck-mini-unit[data-style="slide"] .ck-list-wrap.slide {
+  -webkit-overflow-scrolling: auto;
+  overflow-x: auto;
 }
 .ck-mini-unit[data-style="slide"] .ck-author-box {
   padding: 10px 0 0 0;

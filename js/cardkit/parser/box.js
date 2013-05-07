@@ -5,6 +5,10 @@ define([
     './util'
 ], function($, _, util){
     
+    var getCustom = util.getCustom,
+        getHd = util.getHd,
+        getItemDataOuter = util.getItemDataOuter;
+
     function exports(unit, raw){
         unit = $(unit);
         var source = util.getSource(unit, raw),
@@ -13,19 +17,19 @@ define([
                 plain: unit.data('cfgPlain'),
                 plainhd: unit.data('cfgPlainhd')
             },
-            hd = get_hd(source && source.find('.ckd-hd')),
-            hd_link = get_hd(source && source.find('.ckd-hd-link')),
-            hd_opt = get_all_outer(source && source.find('.ckd-hdopt'), 'hdopt'),
-            ft = get_hd(source && source.find('.ckd-ft')),
+            hd = getHd(source && source.find('.ckd-hd')),
+            hd_link = getHd(source && source.find('.ckd-hd-link')),
+            hd_opt = getItemDataOuter(source && source.find('.ckd-hdopt'), 'hdopt'),
+            ft = getHd(source && source.find('.ckd-ft')),
             contents = source && (
                 util.getOuterHTML(source.find('.ckd-content'))
                 || util.getInnerHTML(source)
             ),
-            custom_hd = (util.getCustom('.ckd-hd', unit, raw, get_hd) || [{}])[0],
-            custom_hd_link = (util.getCustom('.ckd-hd-link', unit, raw, get_hd) || [{}])[0],
-            custom_hd_opt = (util.getCustom('.ckd-hdopt', unit, raw, get_all_outer, 'hdopt') || []).join(''),
-            custom_ft = (util.getCustom('.ckd-ft', unit, raw, get_hd) || [{}])[0];
-        util.getCustom('.ckd-content', unit, raw, replace_content);
+            custom_hd = getCustom('.ckd-hd', unit, raw, getHd)[0] || {},
+            custom_hd_link = getCustom('.ckd-hd-link', unit, raw, getHd)[0] || {},
+            custom_hd_opt = getCustom('.ckd-hdopt', unit, raw, getItemDataOuter, 'hdopt').join(''),
+            custom_ft = getCustom('.ckd-ft', unit, raw, getHd)[0] || {};
+        getCustom('.ckd-content', unit, raw, replace_content);
         var data = {
             config: config,
             style: unit.data('style'),
@@ -49,31 +53,6 @@ define([
         if (custom) {
             $(custom).replaceWith(source.clone());
         }
-    }
-
-    function get_hd(source, custom_source){
-        source = $(source);
-        var data = source && {
-            html: util.getInnerHTML(source),
-            href: util.getHref(source)
-        } || {};
-        if (custom_source && typeof custom_source === 'object') {
-            var custom_data = get_hd(custom_source);
-            for (var i in custom_data) {
-                if (custom_data[i]) {
-                    data[i] = custom_data[i];
-                }
-            }
-        }
-        source.remove();
-        return data;
-    }
-
-    function get_all_outer(source, custom, ckdname){
-        source = $(source);
-        var data = util.getOuterHTML(source, ckdname) || '';
-        source.remove();
-        return data;
     }
 
     return exports;

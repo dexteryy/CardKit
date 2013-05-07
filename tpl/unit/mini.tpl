@@ -18,7 +18,7 @@
     </header>
     {% } %}
 
-    <div class="ck-list-wrap">
+    <div class="ck-list-wrap {%= (data.items.length > 1 ? 'slide' : '') %}">
     {% if (data.items.length) { %}
 
         <div class="ck-list">
@@ -43,42 +43,42 @@
 
                             {% if (item.title) { %}
                             <div class="ck-title-line">
-                                {%= item.titlePrefix %}
+                                {%= item.titlePrefix.join('') %}
                                 <span class="ck-title">{%= item.title %}</span>
-                                {%= item.titleSuffix %}
-                                {%= item.titleTag %}
+                                {%= item.titleSuffix.join('') %}
+                                {%= item.titleTag.join('') %}
                             </div>
                             {% } %}
 
-                            {% if (item.info) { %}
+                            {% if (item.info.length) { %}
                             <div class="ck-info-wrap">
-                                {%= item.info %}
+                                {%= item.info.join('') %}
                             </div>
                             {% } %}
 
-                            {% if (item.desc) { %}
+                            {% if (item.desc.length) { %}
                             <div class="ck-desc-wrap">
-                                {%= item.desc %}
+                                {%= item.desc.join('') %}
                             </div>
                             {% } %}
 
                         </div>
 
-                        {% if (item.content) { %}
+                        {% if (item.content.length) { %}
                         <div class="ck-content-wrap">
-                            {%= item.content %}
+                            {%= item.content.join('') %}
                         </div>
                         {% } %}
 
-                        {% if (item.meta) { %}
+                        {% if (item.meta.length) { %}
                         <div class="ck-meta-wrap">
-                            {%= item.meta %}
+                            {%= item.meta.join('') %}
                         </div>
                         {% } %}
 
                     </div>
 
-                    {% if (item.author || item.authorDesc || item.authorMeta) { %}
+                    {% if (item.author || item.authorDesc.length || item.authorMeta.length) { %}
                     <div class="ck-author-box">
 
                         {% if (item.avatar) { %}
@@ -94,24 +94,24 @@
                         {% } %}
 
                         <div class="ck-author-line">
-                            {%= item.authorPrefix %}
+                            {%= item.authorPrefix.join('') %}
                             {% if (item.authorUrl) { %}
                             <a href="{%= item.authorUrl %}" class="ck-author ck-link">{%= item.author %}</a>
                             {% } else { %}
                             <span class="ck-author">{%= item.author %}</span>
                             {% } %}
-                            {%= item.authorSuffix %}
+                            {%= item.authorSuffix.join('') %}
                         </div>
 
-                        {% if (item.authorDesc) { %}
+                        {% if (item.authorDesc.length) { %}
                         <div class="ck-author-desc-wrap">
-                            {%= item.authorDesc %}
+                            {%= item.authorDesc.join('') %}
                         </div>
                         {% } %}
 
-                        {% if (item.authorMeta) { %}
+                        {% if (item.authorMeta.length) { %}
                         <div class="ck-author-meta-wrap">
-                            {%= item.authorMeta %}
+                            {%= item.authorMeta.join('') %}
                         </div>
                         {% } %}
 

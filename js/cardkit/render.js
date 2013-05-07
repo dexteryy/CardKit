@@ -73,7 +73,8 @@ define([
         mini: function(unit, raw){
             var data = miniParser(unit, raw);
             data.items = data.items.filter(function(item){
-                if (!item.content || !item.content.length) {
+                if (!item.title && !item.author 
+                        && (!item.content || !item.content.length)) {
                     return false;
                 }
                 return true;

@@ -52,9 +52,25 @@
 
         <!--demo-->
         <div class="ck-list-unit" 
+                data-style="more" 
+                data-cfg-plainhd="true">
+            <a class="ckd-hd" href="#hdLink">Blank list ("plain" header)</a>
+        </div>
+        <!--demo end-->
+
+        <!--demo-->
+        <div class="ck-list-unit" 
                 data-style="menu" 
                 data-source="ckdListA">
             <div class="ckd-hd">List ("menu" style)</div>
+            <a class="ckd-hd-link" href="#hdLink"></a>
+        </div>
+        <!--demo end-->
+
+        <!--demo-->
+        <div class="ck-list-unit" 
+                data-style="menu">
+            <div class="ckd-hd">Blank list</div>
             <a class="ckd-hd-link" href="#hdLink"></a>
         </div>
         <!--demo end-->
@@ -85,6 +101,14 @@
                 data-source="ckdListA">
             <div class="ckd-hd">List (Plain "post" style)</div>
             <div class="ckd-ft">This is footer</div>
+        </div>
+        <!--demo end-->
+
+        <!--demo-->
+        <div class="ck-list-unit" 
+                data-style="post" 
+                data-cfg-paper="true">
+            <div class="ckd-hd">Blank list (Plain "post" style)</div>
         </div>
         <!--demo end-->
 
@@ -132,59 +156,76 @@
 
         <div class="ckd-source ckdListA">
             <div class="ckd-item ckdItemA">
-                <img class="ckd-icon" src="http://img3.douban.com/lpic/s1959726.jpg">
-                <a class="ckd-title" href="#">This is <code>title</code>.</a>
-                <a class="ckd-title-link" href="#titleLink"></a>
-                <span class="ckd-title-prefix"><code>prefix</code></span>
-                <span class="ckd-title-suffix"><code>Suffix</code></span>
+                <img class="ckd-icon ckdItemAIcon" src="http://img3.douban.com/lpic/s1959726.jpg">
+                <span class="ckd-title ckdItemATitle">This is <code>title</code></span>
+                <a class="ckd-title-link ckdItemATitleLink" href="#titleLink"></a>
                 <span class="ckd-title-tag"><code>tag</code>1</span>
-                <span class="ckd-title-tag"><code>tag</code>2</span>
-                <span class="ckd-info"><code>info</code></span>
-                <span class="ckd-desc">This is <code>desc</code> or <code>subtitle</code>.</span>
-                <span class="ckd-content">This is <code>content</code>. This is content. This is content. This is content. This is content. This is content. This is content. This is content.</span>
-                <span class="ckd-meta">This is <code>meta</code>.</span>
-                <img class="ckd-avatar" src="http://img3.douban.com/icon/ul1137591-9.jpg">
-                <a class="ckd-author" href="#">This is <code>author</code>.</a>
-                <a class="ckd-author-link" href="#authorLink"></a>
+                <span class="ckd-info ckdItemAInfo"><code>info</code></span>
+                <span class="ckd-desc ckdItemADesc">This is <code>desc</code> or <code>subtitle</code></span>
+                <span class="ckd-content ckdItemAContent">This is <code>content</code> A.</span>
+                <span class="ckd-content ckdItemAContent">This is content B.</span> 
+                <span class="ckd-content ckdItemAContent">This is content C.</span> 
+                <span class="ckd-content ckdItemAContent">This is content D.</span> 
+                <span class="ckd-content ckdItemAContent">This is content E.</span>
+                <span class="ckd-content ckdItemAContent">This is content F.</span> 
+                <span class="ckd-content ckdItemAContent">This is content G.</span>
+                <span class="ckd-meta ckdItemAMeta">This is <code>meta</code> A</span>
+                <span class="ckd-meta ckdItemAMeta">This is <code>meta</code> B</span>
+                <img class="ckd-avatar ckdItemAAvatar" src="http://img3.douban.com/icon/ul1137591-9.jpg">
+                <a class="ckd-author ckdItemAAuthor" href="#">This is <code>author</code></a>
+                <a class="ckd-author-link ckdItemAAuthorLink" href="#authorLink"></a>
                 <span class="ckd-author-prefix"><code>author-prefix</code></span>
                 <span class="ckd-author-suffix"><code>author-Suffix</code></span>
-                <span class="ckd-author-desc">This is <code>author-desc</code>.</span>
-                <span class="ckd-author-content">This is <code>author-content</code>.</span>
-                <span class="ckd-author-meta">This is <code>author-meta</code>.</span>
+                <span class="ckd-author-desc ckdItemAAuthorDesc">This is <code>author-desc</code> A</span>
+                <span class="ckd-author-desc ckdItemAAuthorDesc">This is <code>author-desc</code> B</span>
+                <span class="ckd-author-content ckdItemAAuthorContent">This is <code>author-content</code></span>
+                <span class="ckd-author-meta ckdItemAAuthorMeta">This is <code>author-meta</code></span>
             </div>
             <div class="ckd-item ckdItemB">
-                <img class="ckd-icon" src="http://img5.douban.com/lpic/s25812589.jpg">
-                <a class="ckd-title" href="#">This is <code>title</code>. This is title. This is title. This is title. This is title.</a>
-                <a class="ckd-title-link" href="#titleLink"></a>
-                <span class="ckd-info"><code>info</code></span>
+                <img class="ckd-icon ckdItemBIcon" src="http://img5.douban.com/lpic/s25812589.jpg">
+                <a class="ckd-title ckdItemBTitle" href="#titleLink">This is <code>title</code>, abcdefghijklmn, opqrstuvwxyz</a>
+                <span class="ckd-info ckdItemBInfo"><code>info</code></span>
                 <!--<span class="ckd-desc">This is <code>desc</code> or <code>subtitle</code>.</span>-->
-                <span class="ckd-content">This is <code>content</code>. This is content. This is content. This is content. This is content. This is content. This is content. This is content.</span>
-                <span class="ckd-meta">This is <code>meta</code>.</span>
-                <img class="ckd-avatar" src="http://img3.douban.com/icon/ul24955975-13.jpg">
-                <a class="ckd-author" href="#">This is <code>author</code>.</a>
-                <a class="ckd-author-link" href="#authorLink"></a>
+                <span class="ckd-content ckdItemBContent">This is <code>content</code> A.</span>
+                <span class="ckd-content ckdItemBContent">This is content B.</span> 
+                <span class="ckd-content ckdItemBContent">This is content C.</span> 
+                <span class="ckd-content ckdItemBContent">This is content D.</span> 
+                <span class="ckd-content ckdItemBContent">This is content E.</span>
+                <span class="ckd-content ckdItemBContent">This is content F.</span> 
+                <span class="ckd-content ckdItemBContent">This is content G.</span>
+                <span class="ckd-content ckdItemBContent">This is content H.</span> 
+                <span class="ckd-content ckdItemBContent">This is content I.</span>
+                <span class="ckd-content ckdItemBContent">This is content J.</span> 
+                <span class="ckd-content ckdItemBContent">This is content K.</span>
+                <span class="ckd-meta ckdItemBMeta">This is <code>meta</code></span>
+                <img class="ckd-avatar ckdItemBAvatar" src="http://img3.douban.com/icon/ul24955975-13.jpg">
+                <a class="ckd-author ckdItemBAuthor" href="#authorLink">This is <code>author</code></a>
                 <span class="ckd-author-prefix"><code>author-prefix</code></span>
                 <span class="ckd-author-suffix"><code>author-Suffix</code></span>
-                <span class="ckd-author-desc">This is <code>author-desc</code>.</span>
-                <span class="ckd-author-content">This is <code>author-content</code>.</span>
-                <span class="ckd-author-meta">This is <code>author-meta</code>.</span>
+                <span class="ckd-author-desc ckdItemBAuthorDesc">This is <code>author-desc</code></span>
+                <span class="ckd-author-content ckdItemBAuthorContent">This is <code>author-content</code></span>
+                <span class="ckd-author-meta ckdItemBAuthorMeta">This is <code>author-meta</code></span>
             </div>
             <div class="ckd-item">
-                <span class="ckd-title">This is <code>title</code>.</span>
+                <span class="ckd-title">This is <code>title</code></span>
                 <span class="ckd-title-prefix"><code>prefix</code></span>
                 <span class="ckd-title-suffix"><code>Suffix</code></span>
                 <span class="ckd-title-tag"><code>tag</code>1</span>
                 <span class="ckd-title-tag"><code>tag</code>2</span>
                 <span class="ckd-info"><code>info</code></span>
-                <span class="ckd-desc">This is <code>desc</code> or <code>subtitle</code>.</span>
-                <span class="ckd-content">This is <code>content</code>. This is content. This is content. This is content. This is content. This is content. This is content. This is content.</span>
-                <span class="ckd-meta">This is <code>meta</code>.</span>
-                <span class="ckd-author">This is <code>author</code>.</span>
+                <span class="ckd-desc">This is <code>desc</code> or <code>subtitle</code></span>
+                <span class="ckd-content">This is <code>content</code> A.</span>
+                <span class="ckd-content">This is content B.</span> 
+                <span class="ckd-content">This is content C.</span> 
+                <span class="ckd-content">This is content D.</span> 
+                <span class="ckd-meta">This is <code>meta</code> A</span>
+                <span class="ckd-meta">This is <code>meta</code> B</span>
+                <span class="ckd-author">This is <code>author</code></span>
                 <span class="ckd-author-prefix"><code>author-prefix</code></span>
                 <span class="ckd-author-suffix"><code>author-Suffix</code></span>
-                <span class="ckd-author-desc">This is <code>author-desc</code>.</span>
-                <span class="ckd-author-content">This is <code>author-content</code>.</span>
-                <span class="ckd-author-meta">This is <code>author-meta</code>.</span>
+                <span class="ckd-author-desc">This is <code>author-desc</code></span>
+                <span class="ckd-author-content">This is <code>author-content</code></span>
+                <span class="ckd-author-meta">This is <code>author-meta</code></span>
             </div>
         </div>
 

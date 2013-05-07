@@ -5,6 +5,10 @@ define([
     './util'
 ], function($, _, util){
     
+    var getCustom = util.getCustom,
+        getHd = util.getHd,
+        getItemDataOuter = util.getItemDataOuter;
+
     function exports(unit, raw){
         unit = $(unit);
         var source = util.getSource(unit, raw),
@@ -12,16 +16,16 @@ define([
                 blank: unit.data('cfgBlank'),
                 plainhd: unit.data('cfgPlainhd')
             },
-            hd = get_hd(source && source.find('.ckd-hd')),
-            hd_link = get_hd(source && source.find('.ckd-hd-link')),
-            hd_opt = get_all_outer(source && source.find('.ckd-hdopt'), 'hdopt'),
-            ft = get_hd(source && source.find('.ckd-ft')),
-            items = source && source.find('.ckd-item').map(get_item),
-            custom_hd = (util.getCustom('.ckd-hd', unit, raw, get_hd) || [{}])[0],
-            custom_hd_link = (util.getCustom('.ckd-hd-link', unit, raw, get_hd) || [{}])[0],
-            custom_hd_opt = (util.getCustom('.ckd-hdopt', unit, raw, get_all_outer, 'hdopt') || []).join(''),
-            custom_ft = (util.getCustom('.ckd-ft', unit, raw, get_hd) || [{}])[0],
-            custom_items = util.getCustom('.ckd-item', unit, raw, get_item) || $();
+            hd = getHd(source && source.find('.ckd-hd')),
+            hd_link = getHd(source && source.find('.ckd-hd-link')),
+            hd_opt = getItemDataOuter(source && source.find('.ckd-hdopt'), 'hdopt'),
+            ft = getHd(source && source.find('.ckd-ft')),
+            items = source && source.find('.ckd-item').map(getFormItemData),
+            custom_hd = getCustom('.ckd-hd', unit, raw, getHd)[0] || {},
+            custom_hd_link = getCustom('.ckd-hd-link', unit, raw, getHd)[0] || {},
+            custom_hd_opt = getCustom('.ckd-hdopt', unit, raw, getItemDataOuter, 'hdopt').join(''),
+            custom_ft = getCustom('.ckd-ft', unit, raw, getHd)[0] || {},
+            custom_items = getCustom('.ckd-item', unit, raw, getFormItemData);
         var data = {
             config: config,
             style: unit.data('style'),
@@ -37,44 +41,12 @@ define([
         return data;
     }
 
-    function get_item(item, custom){
+    function getFormItemData(item, custom, ckdname, raw){
         item = $(item);
         var data = {
-            content: util.getInnerHTML(item)
+            content: getCustom('.ckd-content', item, raw, getItemDataOuter, 'content'),
         };
-        if (custom && typeof custom === 'object') {
-            custom = get_item(custom);
-            for (var i in custom) {
-                if (custom[i]) {
-                    data[i] = custom[i];
-                }
-            }
-        }
-        return data;
-    }
-
-    function get_hd(source, custom){
-        source = $(source);
-        var data = source && {
-            html: util.getInnerHTML(source),
-            href: util.getHref(source)
-        } || {};
-        if (custom && typeof custom === 'object') {
-            custom = get_hd(custom);
-            for (var i in custom) {
-                if (custom[i]) {
-                    data[i] = custom[i];
-                }
-            }
-        }
-        return data;
-    }
-
-    function get_all_outer(source, custom, ckdname){
-        source = $(source);
-        var data = util.getOuterHTML(source, ckdname) || '';
-        source.remove();
-        return data;
+        return util.mergeSource(data, custom, getFormItemData, raw);
     }
 
     return exports;

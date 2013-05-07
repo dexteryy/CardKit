@@ -232,11 +232,6 @@
 
     & > article > header {
       border-bottom:0;
-
-      &:last-child {
-        @extend %plain-hd;
-      }
-
     }
 
     & > article > footer {
@@ -264,6 +259,15 @@
 
   &[data-cfg-plain] {
     @extend %plain-unit;
+
+    & > article > header {
+
+      &:last-child {
+        @extend %plain-hd;
+      }
+
+    }
+
   }
 
   &[data-cfg-paper] {
@@ -616,33 +620,43 @@
     }
 
     .ck-list-wrap {
-      overflow-x:auto;
-      -webkit-overflow-scrolling: touch;
 
-      body.no-overflowscroll & {
-        -webkit-overflow-scrolling: auto;
+      &.slide {
         overflow-x:auto;
+        -webkit-overflow-scrolling: touch;
+
+        .ck-list {
+          width:5000px;
+          padding:0 0 10px 0;
+          overflow:hidden;
+        }
+
+        .ck-item {
+          padding:5px 0;
+          margin:0 0 0 10px;
+          float:left;
+        }
+
+        .ck-initem {
+          border:none;
+          //padding:$space 0;
+        }
+
+        body.no-overflowscroll & {
+          -webkit-overflow-scrolling: auto;
+          overflow-x:auto;
+        }
+
       }
 
     }
 
-    .ck-list {
-      width:5000px;
-      padding:0 0 10px 0;
-      overflow:hidden;
-    }
-
-    .ck-item {
+    .ck-item:not(.blank) {
       @extend %ck-unit;
-      padding:5px 0;
-      margin:0 0 0 10px;
-      float:left;
     }
 
     .ck-initem {
       @extend %item;
-      border:none;
-      //padding:$space 0;
     }
 
     .ck-author-box {

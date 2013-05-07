@@ -713,12 +713,15 @@ define([
                 }
             }
 
-            var mini = this.viewport.find('.ck-mini-unit'),
-                mini_items = mini.find('.ck-item'),
-                mini_item_margin = parseFloat(mini_items.css('margin-left')),
-                w = this.slideItemWidth = window.innerWidth - mini_item_margin - 15;
-            mini_items.css('width', w - mini_item_margin - 2 + 'px');
-            mini.find('.ck-list').css('width', w * mini_items.length + mini_item_margin + 'px');
+            this.viewport.find('.ck-mini-unit').forEach(function(mini){
+                var mini_items = $('.ck-item', mini),
+                    mini_item_margin = parseFloat(mini_items.css('margin-left')),
+                    w = this.slideItemWidth = window.innerWidth - mini_item_margin - 15;
+                if (mini_items.length > 1) {
+                    mini_items.css('width', w - mini_item_margin - 2 + 'px');
+                    $('.ck-list', mini).css('width', w * mini_items.length + mini_item_margin + 'px');
+                }
+            });
 
             bus.fire('cardkit:updateSize');
         },
