@@ -6,7 +6,7 @@
 
         <span class="ck-hd {%= (data.hd_url && 'clickable' || '') %}">
             {% if (data.hd_url) { %}
-            <a href="{%= data.hd_url %}" class="ck-link ck-link-mask"></a>
+            <a href="{%= data.hd_url %}" class="ck-link ck-link-mask {%= (data.hd_url_extern ? 'ck-link-extern' : '') %}"></a>
             {% } %}
             <span>{%= data.hd %}</span>
         </span>
@@ -32,7 +32,7 @@
                 <div class="ck-initem">
 
                     {% if (item.href) { %}
-                    <a href="{%= item.href %}" class="ck-link ck-link-mask"></a>
+                    <a href="{%= item.href %}" class="ck-link ck-link-mask {%= (item.hrefExtern ? 'ck-link-extern' : '') %}"></a>
                     {% } %}
 
                     <div class="ck-title-box">
@@ -87,7 +87,7 @@
 
                         {% if (item.avatar) { %}
                             {% if (item.authorUrl) { %}
-                            <a href="{%= item.authorUrl %}" class="ck-avatar ck-link">
+                            <a href="{%= item.authorUrl %}" class="ck-avatar ck-link {%= (item.authorUrlExtern ? 'ck-link-extern' : '') %}">
                                 <img src="{%= item.avatar %}"/>
                             </a>
                             {% } else { %}
@@ -100,7 +100,7 @@
                         <div class="ck-author-line">
                             {%= item.authorPrefix.join('') %}
                             {% if (item.authorUrl) { %}
-                            <a href="{%= item.authorUrl %}" class="ck-author ck-link">{%= item.author %}</a>
+                            <a href="{%= item.authorUrl %}" class="ck-author ck-link {%= (item.authorUrlExtern ? 'ck-link-extern' : '') %}">{%= item.author %}</a>
                             {% } else { %}
                             <span class="ck-author">{%= item.author %}</span>
                             {% } %}

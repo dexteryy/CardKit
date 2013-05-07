@@ -122,15 +122,20 @@ define([
         var title = item.find('.ckd-title'),
             title_data = title[0] ? getCustom('.ckd-title', item, raw, getItemDataInner, 'title')[0]
                 : getInnerHTML(item), 
-            title_url = title[0] ? (getCustom('.ckd-title-link', item, raw, getItemDataHref, 'title-link')[0]
+            title_url_extern = getCustom('.ckd-title-link-extern', item, raw, getItemDataHref, 'title-link-extern')[0],
+            title_url = title[0] ? (title_url_extern
+                    || getCustom('.ckd-title-link', item, raw, getItemDataHref, 'title-link')[0]
                     || getCustom('.ckd-title', item, raw, getItemDataHref, 'title')[0])
                 : getHref(item),
             author_data = getCustom('.ckd-author', item, raw, getItemDataInner, 'author')[0],
-            author_url = getCustom('.ckd-author-link', item, raw, getItemDataHref, 'author-link')[0]
+            author_url_extern = getCustom('.ckd-author-link-extern', item, raw, getItemDataHref, 'author-link-extern')[0],
+            author_url = author_url_extern
+                || getCustom('.ckd-author-link', item, raw, getItemDataHref, 'author-link')[0]
                 || getCustom('.ckd-author', item, raw, getItemDataHref, 'author')[0];
         var data = {
             title: title_data,
             href: title_url,
+            hrefExtern: title_url_extern,
             titlePrefix: getCustom('.ckd-title-prefix', item, raw, getItemDataOuter, 'title-prefix'),
             titleSuffix: getCustom('.ckd-title-suffix', item, raw, getItemDataOuter, 'title-suffix'),
             titleTag: getCustom('.ckd-title-tag', item, raw, getItemDataOuter, 'title-tag'),
@@ -142,6 +147,7 @@ define([
             meta: getCustom('.ckd-meta', item, raw, getItemDataOuter, 'meta'),
             author: author_data,
             authorUrl: author_url,
+            authorUrlExtern: author_url_extern,
             authorPrefix: getCustom('.ckd-author-prefix', item, raw, getItemDataOuter, 'author-prefix'),
             authorSuffix: getCustom('.ckd-author-suffix', item, raw, getItemDataOuter, 'author-suffix'),
             avatar: getCustom('.ckd-avatar', item, raw, getItemDataSrc, 'avatar')[0],

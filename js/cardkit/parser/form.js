@@ -17,14 +17,20 @@ define([
                 plainhd: unit.data('cfgPlainhd')
             },
             hd = getHd(source && source.find('.ckd-hd')),
-            hd_link = getHd(source && source.find('.ckd-hd-link')),
+            hd_link_extern = getHd(source && source.find('.ckd-hd-link-extern')),
+            hd_link = hd_link_extern.href 
+                ? hd_link_extern
+                : getHd(source && source.find('.ckd-hd-link')),
             hd_opt = getItemDataOuter(source && source.find('.ckd-hdopt'), 'hdopt'),
             ft = getHd(source && source.find('.ckd-ft')),
             items = source && source.find('.ckd-item').map(function(elm){
                 return getFormItemData(elm, null, null, raw);
             }) || $(),
             custom_hd = getCustom('.ckd-hd', unit, raw, getHd)[0] || {},
-            custom_hd_link = getCustom('.ckd-hd-link', unit, raw, getHd)[0] || {},
+            custom_hd_link_extern = getCustom('.ckd-hd-link-extern', unit, raw, getHd)[0] || {},
+            custom_hd_link = custom_hd_link_extern.href 
+                ? custom_hd_link_extern
+                : (getCustom('.ckd-hd-link', unit, raw, getHd)[0] || {}),
             custom_hd_opt = getCustom('.ckd-hdopt', unit, raw, getItemDataOuter, 'hdopt').join(''),
             custom_ft = getCustom('.ckd-ft', unit, raw, getHd)[0] || {},
             custom_items = getCustom('.ckd-item', unit, raw, getFormItemData);
@@ -37,6 +43,7 @@ define([
                 || custom_hd_link.href !== null && hd_link.href 
                 || custom_hd.href 
                 || custom_hd.href !== null && hd.href,
+            hd_url_extern: custom_hd_link_extern.href || hd_link_extern.href,
             hd_opt: custom_hd_opt + hd_opt,
             ft: custom_ft.html === undefined ? ft.html : custom_ft.html
         };

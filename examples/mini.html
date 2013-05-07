@@ -47,8 +47,8 @@
             <a class="ckd-hd" href="#hdLink">Mini ("slide" style)</a>
             <div class="ckd-item">
                 <img class="ckd-icon" src="#" data-source="ckdItemAIcon">
-                <a class="ckd-title" href="index.html" data-source="ckdItemATitle"></a>
-                <a class="ckd-title-link" href="index.html" data-source="ckdItemATitleLink"></a>
+                <span class="ckd-title">This is custom <code>title</code></span>
+                <a class="ckd-title-link" href="index.html" data-source="ckdItemATitle"></a>
                 <span class="ckd-info" data-source="ckdItemAInfo"></span>
                 <span class="ckd-desc" data-source="ckdItemADesc"></span>
                 <span class="ckd-content ckdItemAContent">This is custom <code>content</code>.</span>
@@ -61,8 +61,8 @@
             </div>
             <div class="ckd-item">
                 <img class="ckd-icon" src="#" data-source="ckdItemBIcon">
-                <span class="ckd-title">This is custom <code>title</code></span>
-                <a class="ckd-title-link" href="index.html" data-source="ckdItemBTitle"></a>
+                <span class="ckd-title" data-source="ckdItemBTitle"></span>
+                <a class="ckd-title-link-extern" href="#" data-source="ckdItemBTitleLink"></a>
                 <span class="ckd-info" data-source="ckdItemBInfo"></span>
                 <span class="ckd-desc" data-source="ckdItemBDesc"></span>
                 <span class="ckd-content ckdItemBContent">This is custom <code>content</code>.</span>
@@ -130,8 +130,7 @@
         <div class="ckd-source ckdListA">
             <div class="ckd-item ckdItemA">
                 <img class="ckd-icon ckdItemAIcon" src="http://img3.douban.com/lpic/s1959726.jpg">
-                <span class="ckd-title ckdItemATitle">This is <code>title</code></span>
-                <a class="ckd-title-link ckdItemATitleLink" href="#titleLink"></a>
+                <a class="ckd-title ckdItemATitle" href="#titleLink">This is <code>title</code></a>
                 <span class="ckd-title-tag"><code>tag</code>2</span>
                 <span class="ckd-info ckdItemAInfo"><code>info</code></span>
                 <span class="ckd-desc ckdItemADesc">This is <code>desc</code> or <code>subtitle</code></span>
@@ -157,9 +156,12 @@
             </div>
             <div class="ckd-item ckdItemB">
                 <img class="ckd-icon ckdItemBIcon" src="http://img5.douban.com/lpic/s25812589.jpg">
-                <a class="ckd-title ckdItemBTitle" href="#titleLink">This is <code>title</code>, abcdefghijklmn, opqrstuvwxyz</a>
+                <span class="ckd-title ckdItemBTitle">This is <code>title</code> (open index.html in a new window)</span>
+                <a class="ckd-title-link-extern ckdItemBTitleLink" href="index.html"></a>
+                <!-- or:
+                <a class="ckd-title-link ckdItemBTitleLink" href="index.html"></a>
+                -->
                 <span class="ckd-info ckdItemBInfo"><code>info</code></span>
-                <!--<span class="ckd-desc">This is <code>desc</code> or <code>subtitle</code>.</span>-->
                 <span class="ckd-content ckdItemBContent">This is <code>content</code> A.</span>
                 <span class="ckd-content ckdItemBContent">This is content B.</span> 
                 <span class="ckd-content ckdItemBContent">This is content C.</span> 

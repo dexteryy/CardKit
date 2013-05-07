@@ -36,6 +36,9 @@ define([
         last_view_for_actions,
         gc_id = 0,
 
+        MINI_ITEM_MARGIN = 10,
+        MINI_LIST_PADDING = 15,
+
         TPL_MASK = '<div class="ck-viewmask"></div>',
         TPL_CARD_MASK = '<div class="ck-cardmask"></div>';
 
@@ -715,11 +718,10 @@ define([
 
             this.viewport.find('.ck-mini-unit').forEach(function(mini){
                 var mini_items = $('.ck-item', mini),
-                    mini_item_margin = parseFloat(mini_items.css('margin-left')),
-                    w = ck.slideItemWidth = window.innerWidth - mini_item_margin - 15;
+                    w = ck.slideItemWidth = window.innerWidth - MINI_ITEM_MARGIN - MINI_LIST_PADDING;
                 if (mini_items.length > 1) {
-                    mini_items.css('width', w - mini_item_margin - 2 + 'px');
-                    $('.ck-list', mini).css('width', w * mini_items.length + mini_item_margin + 'px');
+                    mini_items.css('width', w - MINI_ITEM_MARGIN - 2 + 'px');
+                    $('.ck-list', mini).css('width', w * mini_items.length + MINI_ITEM_MARGIN + 'px');
                 }
             });
 
@@ -901,7 +903,8 @@ define([
             l = $('.ck-item', self).length - 1,
             list = $('.ck-list', self)[0];
         if (n > 0 && n < l) {
-            var d = self.scrollLeft - Math.round(n) * w + (Math.round(n) === l ? 15 : 0);
+            var d = self.scrollLeft - Math.round(n) * w 
+                + (Math.round(n) === l ? MINI_LIST_PADDING : 0);
             if (supports.SAFARI_OVERFLOWSCROLL) {
                 self.style.overflow = 'hidden';
             }
