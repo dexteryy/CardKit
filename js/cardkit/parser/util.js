@@ -119,27 +119,40 @@ define([
 
     function getItemData(item, custom, ckdname, raw){
         item = $(item);
-        var title = item.find('.ckd-title'),
-            title_data = title[0] ? getCustom('.ckd-title', item, raw, getItemDataInner, 'title')[0]
-                : getInnerHTML(item), 
-            title_url_extern = getCustom('.ckd-title-link-extern', item, raw, getItemDataHref, 'title-link-extern')[0],
-            title_url = title[0] ? (title_url_extern
-                    || getCustom('.ckd-title-link', item, raw, getItemDataHref, 'title-link')[0]
-                    || getCustom('.ckd-title', item, raw, getItemDataHref, 'title')[0])
-                : getHref(item),
+        var title_data = getCustom('.ckd-title', item, raw, getItemDataInner, 'title')[0],
             author_data = getCustom('.ckd-author', item, raw, getItemDataInner, 'author')[0],
-            author_url_extern = getCustom('.ckd-author-link-extern', item, raw, getItemDataHref, 'author-link-extern')[0],
+            icon_src = getCustom('.ckd-icon', item, raw, getItemDataSrc, 'icon')[0],
+            title_url_alone,
+            title_url_extern,
+            title_url,
+            author_url_extern,
+            author_url;
+        if (!title_data && !author_data && !icon_src) {
+            title_data = getInnerHTML(item);
+            title_url_alone = item.hasClass('ckd-title-link-alone');
+            title_url_extern = item.hasClass('ckd-title-link-extern');
+            title_url = getHref(item);
+        } else {
+            title_url_alone = getCustom('.ckd-title-link-alone', item, raw, getItemDataHref, 'title-link-alone')[0];
+            title_url_extern = title_url_alone 
+                    || getCustom('.ckd-title-link-extern', item, raw, getItemDataHref, 'title-link-extern')[0];
+            title_url = title_url_extern
+                    || getCustom('.ckd-title-link', item, raw, getItemDataHref, 'title-link')[0]
+                    || getCustom('.ckd-title', item, raw, getItemDataHref, 'title')[0];
+            author_url_extern = getCustom('.ckd-author-link-extern', item, raw, getItemDataHref, 'author-link-extern')[0];
             author_url = author_url_extern
                 || getCustom('.ckd-author-link', item, raw, getItemDataHref, 'author-link')[0]
                 || getCustom('.ckd-author', item, raw, getItemDataHref, 'author')[0];
+        }
         var data = {
             title: title_data,
-            href: title_url,
+            href: !title_url_alone && title_url,
+            hrefAlone: title_url_alone,
             hrefExtern: title_url_extern,
             titlePrefix: getCustom('.ckd-title-prefix', item, raw, getItemDataOuter, 'title-prefix'),
             titleSuffix: getCustom('.ckd-title-suffix', item, raw, getItemDataOuter, 'title-suffix'),
             titleTag: getCustom('.ckd-title-tag', item, raw, getItemDataOuter, 'title-tag'),
-            icon: getCustom('.ckd-icon', item, raw, getItemDataSrc, 'icon')[0],
+            icon: icon_src,
             desc: getCustom('.ckd-desc', item, raw, getItemDataOuter, 'desc')
                 .concat(getCustom('.ckd-subtitle', item, raw, getItemDataOuter, 'subtitle')),
             info: getCustom('.ckd-info', item, raw, getItemDataOuter, 'info'),

@@ -44,7 +44,13 @@
                             {% if (item.title) { %}
                             <div class="ck-title-line">
                                 {%= item.titlePrefix.join('') %}
+
+                                {% if (item.hrefAlone) { %}
+                                <a href="{%= item.hrefAlone %}" class="ck-link {%= (item.hrefExtern ? 'ck-link-extern' : '') %}">{%= item.title %}</a>
+                                {% } else { %}
                                 <span class="ck-title">{%= item.title %}</span>
+                                {% } %}
+
                                 {%= item.titleSuffix.join('') %}
                                 {%= item.titleTag.join('') %}
                             </div>
