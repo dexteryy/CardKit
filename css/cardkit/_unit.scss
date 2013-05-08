@@ -82,6 +82,11 @@
     border:none;
   }
 
+  .ck-hdopt-wrap {
+    top:-2px;
+    background:$view_color;
+  }
+
   .ck-unit-wrap > section {
     border-top:none;
   }
@@ -135,7 +140,7 @@
 
   .ck-unit-wrap > footer {
     padding:$space 0 0 $space/2;
-    margin-top:$text_space;
+    margin-top:$morespace;
     margin-left:0;
     margin-right:0;
     border-color:$view_border_color;
@@ -143,8 +148,8 @@
 
   .ck-unit-wrap > section {
     margin:0;
-    padding-left:$text_space;
-    padding-right:$text_space;
+    padding-left:$morespace;
+    padding-right:$morespace;
     padding-bottom:0;
     border-color:$view_border_color;
 
@@ -251,6 +256,24 @@
 
 }
 
+.ck-hdopt-wrap {
+  display:inline-block;
+  position:absolute;
+  top:$space/2 + 1px;
+  right:0;
+  z-index:$zindex_item + $zindex_step;
+  font-size:$title_size;
+  line-height:$button_height+2px;
+  height:$button_height+2px;
+  background:#fff;
+
+  .ck-hdopt {
+    margin:0 0 0 5px;
+    position:relative;
+  }
+
+}
+
 .ck-box-unit {
 
   &:not([data-cfg-paper]) {
@@ -261,16 +284,12 @@
       border-bottom:0;
     }
 
-    .ck-unit-wrap > footer {
-      margin-top:(28px/2);
-    }
-
   }
 
   .ck-unit-wrap > section {
     border-top:1px solid $border_color;
-    margin:0 $text_space;
-    padding:(28px/2) 0 0 0;
+    margin:0 $morespace;
+    padding:$morespace 0;
     font-size:$title_size;
 
   }
@@ -564,11 +583,8 @@
     @extend %plain-hd-parts;
 
     .ck-hd-wrap {
-
-      .ck-hd {
-        margin: 0 $space;
-      }
-
+      margin-left: $space;
+      margin-right: $space;
     }
 
     .ck-unit-wrap > footer {
@@ -631,11 +647,8 @@
     //margin-bottom:0;
 
     .ck-hd-wrap {
-
-      .ck-hd {
-        margin: 0 $space;
-      }
-
+      margin-left: $space;
+      margin-right: $space;
     }
 
     .ck-list-wrap {
@@ -760,42 +773,6 @@
 
     textarea {
       height:(352px/2);
-    }
-
-  }
-
-}
-
-
-.ck-box-unit,
-.ck-mini-unit,
-.ck-list-unit,
-.ck-form-unit {
-
-  .ck-hdopt-wrap {
-    display:inline-block;
-    position:absolute;
-    top:$space/2 + 1px;
-    right:0;
-    z-index:$zindex_item + $zindex_step;
-    font-size:$title_size;
-    line-height:$button_height+2px;
-    height:$button_height+2px;
-    background:#fff;
-
-    .ck-hdopt {
-      margin:0 0 0 5px;
-      position:relative;
-    }
-
-  }
-
-  &[data-cfg-plain="true"],
-  &[data-cfg-plainhd="true"] {
-
-    .ck-hdopt-wrap {
-      top:-2px;
-      background:$view_color;
     }
 
   }

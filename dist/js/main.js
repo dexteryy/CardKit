@@ -7496,7 +7496,7 @@ define("../cardkit/app", [
 
                 // enable scrollable when height is not enough 
                 var ft = this.viewport.find('.ck-footer'),
-                    last_unit = ft && ft.prev()[0];
+                    last_unit = find_last_unit(ft);
                 if (last_unit) {
                     var d = screen.availHeight - (last_unit.offsetTop + last_unit.offsetHeight + this.viewport[0].scrollTop);
                     if (d > 0) {
@@ -7999,6 +7999,14 @@ define("../cardkit/app", [
         } else {
             $('<a href="' + url + '" target="' + target + '"></a>').trigger('click');
         }
+    }
+
+    function find_last_unit(ft){
+        var last_unit = ft && ft.prev()[0];
+        if (last_unit && !last_unit.offsetHeight) {
+            return find_last_unit($(last_unit));
+        }
+        return last_unit;
     }
 
     function check_gc(controller){
