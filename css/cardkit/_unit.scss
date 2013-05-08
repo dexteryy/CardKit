@@ -82,11 +82,6 @@
     border:none;
   }
 
-  .ck-hdopt-wrap {
-    top:-2px;
-    background:$view_color;
-  }
-
   .ck-unit-wrap > section {
     border-top:none;
   }
@@ -100,6 +95,11 @@
     background-origin: content-box;
     color:$desc_color;
     //font-weight:normal;
+  }
+
+  .ck-hdopt-wrap {
+    top:-2px;
+    background:$view_color;
   }
 
   .ck-link-mask {
@@ -291,6 +291,12 @@
     margin:0 $morespace;
     padding:$morespace 0;
     font-size:$title_size;
+
+    img {
+      max-width:100%;
+      margin:$space/2 auto;
+      display:block;
+    }
 
   }
 

@@ -628,10 +628,6 @@ body.no-overflowscroll .ck-card {
   margin: 10px 0;
   border: none;
 }
-[data-cfg-plainhd="true"].ck-box-unit:not([data-cfg-paper]) .ck-hdopt-wrap, [data-cfg-plainhd="true"].ck-list-unit:not([data-cfg-paper]):not([data-style="split"]) .ck-hdopt-wrap, [data-cfg-plainhd="true"].ck-form-unit .ck-hdopt-wrap, [data-cfg-plainhd="true"].ck-blank-unit .ck-hdopt-wrap, .ck-list-unit[data-style="split"] .ck-hdopt-wrap, .ck-mini-unit[data-style="slide"] .ck-hdopt-wrap {
-  top: -2px;
-  background: #f2f2f2;
-}
 [data-cfg-plainhd="true"].ck-box-unit:not([data-cfg-paper]) .ck-unit-wrap > section, [data-cfg-plainhd="true"].ck-list-unit:not([data-cfg-paper]):not([data-style="split"]) .ck-unit-wrap > section, [data-cfg-plainhd="true"].ck-form-unit .ck-unit-wrap > section, [data-cfg-plainhd="true"].ck-blank-unit .ck-unit-wrap > section, .ck-list-unit[data-style="split"] .ck-unit-wrap > section, .ck-mini-unit[data-style="slide"] .ck-unit-wrap > section {
   border-top: none;
 }
@@ -640,6 +636,10 @@ body.no-overflowscroll .ck-card {
   padding: 0 15px 0 5px;
   background-origin: content-box;
   color: #787878;
+}
+[data-cfg-plainhd="true"].ck-box-unit:not([data-cfg-paper]) .ck-hd-wrap .ck-hdopt-wrap, [data-cfg-plainhd="true"].ck-list-unit:not([data-cfg-paper]):not([data-style="split"]) .ck-hd-wrap .ck-hdopt-wrap, [data-cfg-plainhd="true"].ck-form-unit .ck-hd-wrap .ck-hdopt-wrap, [data-cfg-plainhd="true"].ck-blank-unit .ck-hd-wrap .ck-hdopt-wrap, .ck-list-unit[data-style="split"] .ck-hd-wrap .ck-hdopt-wrap, .ck-mini-unit[data-style="slide"] .ck-hd-wrap .ck-hdopt-wrap, .ck-box-unit[data-cfg-plain] .ck-hd-wrap .ck-hdopt-wrap {
+  top: -2px;
+  background: #f2f2f2;
 }
 [data-cfg-plainhd="true"].ck-box-unit:not([data-cfg-paper]) .ck-hd-wrap .ck-link-mask, [data-cfg-plainhd="true"].ck-list-unit:not([data-cfg-paper]):not([data-style="split"]) .ck-hd-wrap .ck-link-mask, [data-cfg-plainhd="true"].ck-form-unit .ck-hd-wrap .ck-link-mask, [data-cfg-plainhd="true"].ck-blank-unit .ck-hd-wrap .ck-link-mask, .ck-list-unit[data-style="split"] .ck-hd-wrap .ck-link-mask, .ck-mini-unit[data-style="slide"] .ck-hd-wrap .ck-link-mask, .ck-box-unit[data-cfg-plain] .ck-hd-wrap .ck-link-mask {
   padding: 0;
@@ -790,6 +790,11 @@ body.no-overflowscroll .ck-unit-wrap {
   margin: 0 15px;
   padding: 15px 0;
   font-size: 13px;
+}
+.ck-box-unit .ck-unit-wrap > section img {
+  max-width: 100%;
+  margin: 5px auto;
+  display: block;
 }
 
 .ck-list-unit .ck-list-wrap, .ck-mini-unit .ck-list-wrap {
