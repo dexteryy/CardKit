@@ -120,6 +120,31 @@
     @include border-radius(0);
     @include box-shadow(none);
 
+    & > footer {
+      padding:$space 0 0 $space/2;
+      margin-top:$morespace;
+      margin-left:0;
+      margin-right:0;
+      border-color:$view_border_color;
+    }
+
+    & > section {
+      margin:0;
+      padding-left:$morespace;
+      padding-right:$morespace;
+      padding-bottom:0;
+      border-color:$view_border_color;
+
+      &:first-child {
+        border-top:1px solid $view_border_color;
+      }
+
+      &:last-child {
+        padding-bottom:0;
+      }
+
+    }
+
     &:first-child {
 
       & > section {
@@ -136,27 +161,6 @@
     @extend %plain-hd;
     padding:0;
     margin:$space 0;
-  }
-
-  .ck-unit-wrap > footer {
-    padding:$space 0 0 $space/2;
-    margin-top:$morespace;
-    margin-left:0;
-    margin-right:0;
-    border-color:$view_border_color;
-  }
-
-  .ck-unit-wrap > section {
-    margin:0;
-    padding-left:$morespace;
-    padding-right:$morespace;
-    padding-bottom:0;
-    border-color:$view_border_color;
-
-    &:last-child {
-      padding-bottom:0;
-    }
-
   }
 
 }
@@ -178,6 +182,7 @@
     .ck-hd {
       font-size: $headtitle_size;
       line-height:1.4;
+      font-weight:bold;
     }
 
   }
@@ -210,14 +215,23 @@
   }
 
   .ck-item {
-    padding:$morespace 0;
+    padding:$space 0;
     border-bottom:1px solid $view_border_color;
     @include user-select(text);
+
+    &:first-child {
+      //padding-top:0;
+      border-top:1px solid $view_border_color;
+    }
 
     &:last-child {
       margin-bottom:$morespace;
     }
 
+  }
+
+  .ck-initem {
+    padding:0;
   }
 
 }
@@ -230,7 +244,7 @@
   //@include transform(translateX(-($morespace + $space)/2));
   padding:0 (($morespace)/2);
   @include transform(translateX(-($morespace)/2));
-  @include border-radius($radius);
+  @include border-radius($radius/2);
   position:absolute;
   top:0;
   left:0;
@@ -298,6 +312,10 @@
       display:block;
     }
 
+    &:first-child {
+      border-top:0;
+    }
+
   }
 
   &[data-cfg-plain] {
@@ -324,6 +342,8 @@
 
       .ck-initem {
         background:none;
+        padding:$space 0;
+        color:$desc_color;
       }
 
     }
@@ -363,12 +383,14 @@
 
   }
 
+  .ck-author-set,
   .ck-title-set {
     display:block;
     overflow:hidden;
     position:relative;
   }
 
+  .ck-author-info-wrap,
   .ck-info-wrap {
     display:inline;
     @extend %info-text;
@@ -377,6 +399,7 @@
     right:0;
   }
 
+  .ck-author-info,
   .ck-info {
     display:inline;
   }
@@ -630,10 +653,6 @@
       border-bottom:none;
     }
 
-    .ck-initem {
-      padding:0;
-    }
-
     .ck-link-mask {
       padding:$space/2;
       @include transform(translateX(-$space/2) translateY(-$space/2));
@@ -687,7 +706,7 @@
 
     }
 
-    .ck-item:not(.blank) {
+    .ck-item {
       margin:0 $space 3px $space;
       @extend %ck-unit-wrap;
     }
@@ -722,6 +741,7 @@
 
     &.blank {
       text-align:center;
+      color:$desc_color;
     }
 
     p {

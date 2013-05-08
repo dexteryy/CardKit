@@ -109,21 +109,31 @@
                             {% } %}
                         {% } %}
 
-                        <div class="ck-author-line">
-                            {%= item.authorPrefix.join('') %}
-                            {% if (item.authorUrl) { %}
-                            <a href="{%= item.authorUrl %}" class="ck-author ck-link {%= (item.authorUrlExtern ? 'ck-link-extern' : '') %}">{%= item.author %}</a>
-                            {% } else { %}
-                            <span class="ck-author">{%= item.author %}</span>
-                            {% } %}
-                            {%= item.authorSuffix.join('') %}
-                        </div>
+                        <div class="ck-author-set">
 
-                        {% if (item.authorDesc.length) { %}
-                        <div class="ck-author-desc-wrap">
-                            {%= item.authorDesc.join('') %}
+                            <div class="ck-author-line">
+                                {%= item.authorPrefix.join('') %}
+                                {% if (item.authorUrl) { %}
+                                <a href="{%= item.authorUrl %}" class="ck-author ck-link {%= (item.authorUrlExtern ? 'ck-link-extern' : '') %}">{%= item.author %}</a>
+                                {% } else { %}
+                                <span class="ck-author">{%= item.author %}</span>
+                                {% } %}
+                                {%= item.authorSuffix.join('') %}
+                            </div>
+
+                            {% if (item.authorInfo.length) { %}
+                            <div class="ck-author-info-wrap">
+                                {%= item.authorInfo.join('') %}
+                            </div>
+                            {% } %}
+
+                            {% if (item.authorDesc.length) { %}
+                            <div class="ck-author-desc-wrap">
+                                {%= item.authorDesc.join('') %}
+                            </div>
+                            {% } %}
+
                         </div>
-                        {% } %}
 
                         {% if (item.authorMeta.length) { %}
                         <div class="ck-author-meta-wrap">

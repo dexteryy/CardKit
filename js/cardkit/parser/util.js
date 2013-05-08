@@ -165,6 +165,7 @@ define([
             authorSuffix: getCustom('.ckd-author-suffix', item, raw, getItemDataOuter, 'author-suffix'),
             avatar: getCustom('.ckd-avatar', item, raw, getItemDataSrc, 'avatar')[0],
             authorDesc: getCustom('.ckd-author-desc', item, raw, getItemDataOuter, 'author-desc'),
+            authorInfo: getCustom('.ckd-author-info', item, raw, getItemDataOuter, 'author-info'),
             authorMeta: getCustom('.ckd-author-meta', item, raw, getItemDataOuter, 'author-meta')
         };
         return mergeSource(data, custom, getItemData, raw);
