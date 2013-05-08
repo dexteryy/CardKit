@@ -464,7 +464,6 @@ define([
                     ck.scrollMask.show();
                 }).bind('scrollend', function(){
                     ck.scrollMask.hide();
-                    prevent_window_scroll();
                 });
 
                 doc.bind('touchstart', prevent_window_scroll);

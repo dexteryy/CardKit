@@ -233,17 +233,12 @@ a {
 .ck-header .opt, .ck-modalview > header .opt {
   display: block;
   line-height: 1;
-  position: absolute;
-  top: 1px;
-  left: 1px;
+  float: right;
+  margin: 1px 1px 0 0;
+  position: relative;
 }
-.ck-header .ck-top-action, .ck-modalview > header .ck-top-action {
-  left: auto;
-  right: 1px;
-}
-.ck-header .ck-top-create, .ck-modalview > header .ck-top-create {
-  left: auto;
-  right: 43px;
+.ck-header .ck-top-nav, .ck-modalview > header .ck-top-nav {
+  float: left;
 }
 
 .ck-top-title, .ck-modalview > header h1 {
@@ -252,7 +247,10 @@ a {
   line-height: 42.5px;
   text-align: center;
   display: block;
-  margin: 0 60px;
+  position: absolute;
+  left: 60px;
+  right: 60px;
+  top: 0;
 }
 
 .ck-root {

@@ -61,23 +61,19 @@ a {
   .opt {
     display:block;
     line-height:1;
-    position:absolute;
-    top:$top_btn_space;
-    left:$top_btn_space;
+    float:right;
+    margin:$top_btn_space $top_btn_space 0 0;
+    position:relative;
   }
 
   .ck-top-nav {
-
+    float:left;
   }
 
   .ck-top-action {
-    left:auto;
-    right:$top_btn_space;
   }
 
   .ck-top-create {
-    left:auto;
-    right:$top_btn_space*3 + $top_btn_size;
   }
 
 }
@@ -88,7 +84,10 @@ a {
   line-height: $nav_height;
   text-align:center;
   display:block;
-  margin:0 $space*4 + 20px;
+  position:absolute;
+  left: $space*4 + 20px;
+  right: $space*4 + 20px;
+  top:0;
 }
 
 .ck-root {
