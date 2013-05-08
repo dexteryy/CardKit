@@ -52,6 +52,11 @@ define([
             hd_opt: custom_hd_opt + hd_opt,
             ft: custom_ft.html === undefined ? ft.html : custom_ft.html
         };
+        if (config.plain 
+                || config.plainhd 
+                || data.style === 'split') {
+            data.hasSplitHd = true;
+        }
         return data;
     }
 

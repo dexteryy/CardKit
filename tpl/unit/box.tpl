@@ -1,8 +1,7 @@
 
-<article>
-
+{% function hd(){ %}
     {% if (data.hd) { %}
-    <header>
+    <header class="ck-hd-wrap">
 
         <span class="ck-hd {%= (data.hd_url && 'clickable' || '') %}">
             {% if (data.hd_url) { %}
@@ -16,6 +15,17 @@
         {% } %}
 
     </header>
+    {% } %}
+{% } %}
+
+{% if (data.config.plain || data.config.plainhd) { %}
+    {%= hd() %}
+{% } %}
+
+<article class="ck-unit-wrap">
+
+    {% if (!data.config.plain && !data.config.plainhd) { %}
+        {%= hd() %}
     {% } %}
 
     {% if (data.hasContent) { %}

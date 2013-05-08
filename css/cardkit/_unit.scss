@@ -1,24 +1,31 @@
 
 %ck-unit {
-  //overflow:hidden;
   margin:$space;
-  background-color:#fff;
-  border:1px solid rgb(255,255,255);
-  @include border-radius($radius);
-  @include box-shadow(0 1px 2px 0 rgba(0, 0, 0, .2));
   word-wrap: break-word;
   //word-break: break-all;
   //@include user-select(text);
+
+  .ck-unit-wrap {
+    @extend %ck-unit-wrap;
+  }
+
+}
+
+%ck-unit-wrap {
+  background-color:#fff;
+  border:1px solid rgb(255,255,255);
+  @include border-radius($radius);
+  @include box-shadow(0 0px 2px 0 rgba(0, 0, 0, .2));
+  word-wrap: break-word;
 }
 
 %unit-parts {
 
-  & > article > header {
+  .ck-hd-wrap {
     @extend %item;
     position:relative;
 
     .ck-hd {
-      //overflow:hidden;
       padding:($space/2) 0;
       font-size:$maintitle_size;
       font-weight:bold;
@@ -33,7 +40,7 @@
 
   }
 
-  & > article > footer {
+  .ck-unit-wrap > footer {
     @extend %info-text;
     border-top:1px solid $border_color;
     margin:0 $morespace;
@@ -67,22 +74,15 @@
 }
 
 %plain-hd-parts {
-  position:relative;
-  margin-top:($maintitle_size + $space*3);
 
-  & > article > header {
+  .ck-hd-wrap {
     @extend %plain-hd;
-    position:absolute;
-    top:-($maintitle_size + $space*2);
-    left:0;
-    width:100%;
     padding:0;
-    margin-left:0;
-    margin-right:0;
+    margin:$space 0;
     border:none;
   }
 
-  & > article > section {
+  .ck-unit-wrap > section {
     border-top:none;
   }
 
@@ -107,19 +107,33 @@
 }
 
 %plain-unit {
-  padding:0;
-  background:none;
-  border:none;
-  @include border-radius(0);
-  @include box-shadow(none);
 
-  & > article > header {
+  .ck-unit-wrap {
+    padding:0;
+    background:none;
+    border:none;
+    @include border-radius(0);
+    @include box-shadow(none);
+
+    &:first-child {
+
+      & > section {
+        padding-top:0;
+        padding-bottom:0;
+        border-top:0;
+      }
+
+    }
+
+  }
+
+  .ck-hd-wrap {
     @extend %plain-hd;
     padding:0;
     margin:$space 0;
   }
 
-  & > article > footer {
+  .ck-unit-wrap > footer {
     padding:$space 0 0 $space/2;
     margin-top:$text_space;
     margin-left:0;
@@ -127,17 +141,12 @@
     border-color:$view_border_color;
   }
 
-  & > article > section {
+  .ck-unit-wrap > section {
     margin:0;
     padding-left:$text_space;
     padding-right:$text_space;
     padding-bottom:0;
     border-color:$view_border_color;
-
-    &:first-child {
-      padding-top:0;
-      padding-bottom:0;
-    }
 
     &:last-child {
       padding-bottom:0;
@@ -149,10 +158,13 @@
 
 %paper-unit {
   margin:$morespace;
-  padding:0 0 ($space) 0;
-  border-bottom:1px solid $view_border_color;
 
-  & > article > header {
+  .ck-unit-wrap {
+    padding:0 0 ($space) 0;
+    border-bottom:1px solid $view_border_color;
+  }
+
+  .ck-hd-wrap {
     //border-bottom:1px solid $view_border_color;
     //padding:0 0 $space 0;
     line-height:1.6;
@@ -165,16 +177,16 @@
 
   }
 
-  & > article > footer {
+  .ck-unit-wrap > footer {
     border-color:$view_border_color;
   }
 
   .ck-item,
-  & > article > section {
+  .ck-unit-wrap > section {
     margin:0;
   }
 
-  & > article > section {
+  .ck-unit-wrap > section {
     border-color:$view_border_color;
     padding:40px 0 $space 0;
     //line-height:(54px/2);
@@ -183,6 +195,11 @@
 
     p {
       margin:0 0 (50px/2) 0;
+    }
+
+    &:first-child {
+      border-top:0;
+      padding:0;
     }
 
   }
@@ -223,51 +240,43 @@
 
 }
 
+.ck-unit-wrap {
+  -webkit-overflow-scrolling: touch;
+  overflow:auto;
+
+  body.no-overflowscroll & {
+    -webkit-overflow-scrolling: auto;
+    overflow:visible;
+  }
+
+}
+
 .ck-box-unit {
 
   &:not([data-cfg-paper]) {
     @extend %ck-unit;
     @extend %unit-parts;
-    //overflow:visible;
 
-    & > article > header {
+    .ck-hd-wrap {
       border-bottom:0;
     }
 
-    & > article > footer {
+    .ck-unit-wrap > footer {
       margin-top:(28px/2);
     }
 
   }
 
-  & > article > section {
+  .ck-unit-wrap > section {
     border-top:1px solid $border_color;
     margin:0 $text_space;
     padding:(28px/2) 0 0 0;
     font-size:$title_size;
 
-    &:first-child {
-      padding-top:(28px/2);
-      border-top:0;
-    }
-
-    &:last-child {
-      padding-bottom:(28px/2);
-    }
-
   }
 
   &[data-cfg-plain] {
     @extend %plain-unit;
-
-    & > article > header {
-
-      &:last-child {
-        @extend %plain-hd;
-      }
-
-    }
-
   }
 
   &[data-cfg-paper] {
@@ -278,6 +287,10 @@
 
 
 %list-parts {
+
+  .ck-list-wrap {
+    overflow:hidden;
+  }
 
   .ck-item {
 
@@ -550,7 +563,7 @@
     @extend %unit-parts;
     @extend %plain-hd-parts;
 
-    & > article > header {
+    .ck-hd-wrap {
 
       .ck-hd {
         margin: 0 $space;
@@ -558,16 +571,17 @@
 
     }
 
+    .ck-unit-wrap > footer {
+      padding-top:0;
+    }
+
     .ck-item {
-      @extend %ck-unit;
+      margin:$space;
+      @extend %ck-unit-wrap;
       padding:5px 0;
 
       &:first-child {
         margin-top:0;
-      }
-
-      &:last-child {
-        margin-bottom:0;
       }
 
     }
@@ -588,8 +602,11 @@
 
   &[data-cfg-paper] {
     @extend %paper-unit;
-    padding-bottom:0;
-    border-bottom:none;
+
+    .ck-unit-wrap {
+      padding-bottom:0;
+      border-bottom:none;
+    }
 
     .ck-initem {
       padding:0;
@@ -606,12 +623,14 @@
 
 .ck-mini-unit {
   @extend %list-parts;
+  margin: $space 0;
 
   &[data-style="slide"] {
     @extend %unit-parts;
     @extend %plain-hd-parts;
+    //margin-bottom:0;
 
-    & > article > header {
+    .ck-hd-wrap {
 
       .ck-hd {
         margin: 0 $space;
@@ -637,14 +656,12 @@
           float:left;
         }
 
-        .ck-initem {
-          border:none;
-          //padding:$space 0;
+        body.no-overflowscroll & {
+          -webkit-overflow-scrolling: auto;
         }
 
-        body.no-overflowscroll & {
-          -webkit-overflow-scrolling: scroll;
-          overflow-x:auto;
+        &.stop-scroll {
+          overflow:hidden;
         }
 
       }
@@ -652,11 +669,13 @@
     }
 
     .ck-item:not(.blank) {
-      @extend %ck-unit;
+      margin:0 $space 3px $space;
+      @extend %ck-unit-wrap;
     }
 
     .ck-initem {
       @extend %item;
+      border:none;
     }
 
     .ck-author-box {
@@ -797,7 +816,7 @@
   @extend %ck-unit;
   @extend %unit-parts;
 
-  article {
+  .ck-unit-wrap > div {
     @extend %item;
     padding:$space 0;
     display:block;

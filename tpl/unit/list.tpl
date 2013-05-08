@@ -1,8 +1,7 @@
 
-<article>
-
+{% function hd(){ %}
     {% if (data.hd) { %}
-    <header>
+    <header class="ck-hd-wrap">
 
         <span class="ck-hd {%= (data.hd_url && 'clickable' || '') %}">
             {% if (data.hd_url) { %}
@@ -16,6 +15,17 @@
         {% } %}
 
     </header>
+    {% } %}
+{% } %}
+
+{% if (data.hasSplitHd) { %}
+    {%= hd() %}
+{% } %}
+
+<article class="ck-unit-wrap">
+
+    {% if (!data.hasSplitHd) { %}
+        {%= hd() %}
     {% } %}
 
     <div class="ck-list-wrap">
@@ -38,9 +48,15 @@
                     <div class="ck-title-box">
 
                         {% if (item.icon) { %}
-                        <span class="ck-icon">
-                            <img src="{%= item.icon %}"/>
-                        </span>
+                            {% if (item.hrefAlone) { %}
+                            <a href="{%= item.hrefAlone %}" class="ck-icon ck-link {%= (item.hrefExtern ? 'ck-link-extern' : '') %}">
+                                <img src="{%= item.icon %}"/>
+                            </a>
+                            {% } else { %}
+                            <span class="ck-icon">
+                                <img src="{%= item.icon %}"/>
+                            </span>
+                            {% } %}
                         {% } %}
 
                         <div class="ck-title-set">

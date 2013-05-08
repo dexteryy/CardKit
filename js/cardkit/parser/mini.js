@@ -7,6 +7,7 @@ define([
     
     function exports(unit, raw){
         var data = listParser(unit, raw);
+        data.hasSplitHd = true;
         return data;
     }
 

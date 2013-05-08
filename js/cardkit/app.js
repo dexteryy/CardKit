@@ -906,7 +906,7 @@ define([
             var d = self.scrollLeft - Math.round(n) * w 
                 + (Math.round(n) === l ? MINI_LIST_PADDING : 0);
             if (supports.SAFARI_OVERFLOWSCROLL) {
-                self.style.overflow = 'hidden';
+                $(self).addClass('stop-scroll');
             }
             choreo().play().actor(list, {
                 transform: 'translateX(' + d + 'px)'
@@ -915,7 +915,7 @@ define([
                 choreo.transform(list, 'translateX', '0');
                 self.scrollLeft -= d;
                 if (supports.SAFARI_OVERFLOWSCROLL) {
-                    self.style.overflow = '';
+                    $(self).removeClass('stop-scroll');
                 }
             });
         }
