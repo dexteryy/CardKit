@@ -4156,8 +4156,8 @@ define('moui/actionview', [
                     </div>\
                 </div>\
                 <footer>\
-                    <input type="button" class="confirm" data-is-default="true">\
                     <input type="button" class="cancel">\
+                    <input type="button" class="confirm" data-is-default="true">\
                 </footer>\
             </div>',
 
@@ -5579,7 +5579,7 @@ define('momo/tap', [
         DEFAULT_CONFIG: {
             'tapRadius': 10,
             'doubleTimeout': 300,
-            'tapThreshold': 10,
+            'tapThreshold': 0,
             'holdThreshold': 500
         },
 
@@ -7095,6 +7095,7 @@ define("../cardkit/app", [
         ck.disableView = true;
         var current = actionCard._wrapper;
         last_view_for_actions = ck.viewport;
+        current[0].scrollTop = 0;
         ck.changeView(current, {
             preventRender: true,
             isActions: true

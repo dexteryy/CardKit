@@ -303,6 +303,7 @@ define([
         ck.disableView = true;
         var current = actionCard._wrapper;
         last_view_for_actions = ck.viewport;
+        current[0].scrollTop = 0;
         ck.changeView(current, {
             preventRender: true,
             isActions: true

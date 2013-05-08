@@ -1517,32 +1517,35 @@ body.no-overflowscroll .moui-modalview .wrapper > article > .content, body.no-ov
   -moz-transform: translateY(50%);
   -ms-transform: translateY(50%);
   transform: translateY(50%);
-  -webkit-transition: -webkit-transform 0.4s, opacity 0.2s;
+  -webkit-transition: -webkit-transform 0.3s, opacity 0.2s;
   -webkit-transition-delay: 0.1s, 0.1s;
-  -moz-transition: -moz-transform 0.4s 0.1s, opacity 0.2s 0.1s;
-  transition: transform 0.4s 0.1s, opacity 0.2s 0.1s;
+  -moz-transition: -moz-transform 0.3s 0.1s, opacity 0.2s 0.1s;
+  transition: transform 0.3s 0.1s, opacity 0.2s 0.1s;
 }
 .moui-actionview .wrapper .content, .ck-actionview .wrapper .content {
-  padding: 0 25px 25px 25px;
+  padding: 25px 0 25px 0;
   overflow: hidden;
   position: relative;
 }
 .moui-actionview .wrapper .content > header, .ck-actionview .wrapper .content > header {
-  height: 42.5px;
+  padding: 0 25px;
 }
 .moui-actionview .wrapper .content > header h1, .ck-actionview .wrapper .content > header h1 {
+  padding: 0 0 10px 0;
   font-size: 20px;
-  line-height: 42.5px;
+  height: 20px;
+  line-height: 20px;
   display: block;
   color: #fff;
   border-bottom: 1px solid #666;
 }
 .moui-actionview .wrapper .content > header h1:empty, .ck-actionview .wrapper .content > header h1:empty {
   border: none;
+  padding: 0;
 }
 .moui-actionview .wrapper .content > .desc, .ck-actionview .wrapper .content > .desc {
   color: #fff;
-  padding: 25px 0;
+  padding: 25px;
   font-size: 15px;
 }
 .moui-actionview .wrapper .content > article, .ck-actionview .wrapper .content > article {
@@ -1581,7 +1584,7 @@ body.no-overflowscroll .moui-actionview .wrapper, body.no-overflowscroll .ck-act
   -moz-box-shadow: inset 0px 1px 0px #212121;
   box-shadow: inset 0px 1px 0px #212121;
   width: 100%;
-  padding: 20px 0;
+  height: 79px;
   overflow: hidden;
   text-align: center;
   -webkit-transform: translateY(100%);
@@ -1595,7 +1598,12 @@ body.no-overflowscroll .moui-actionview .wrapper, body.no-overflowscroll .ck-act
 .moui-actionview > footer input[type="button"], .ck-actionview > footer input[type="button"] {
   line-height: 39px;
   height: 39px;
-  width: 90%;
+  width: auto;
+  position: absolute;
+  left: 25px;
+  right: 25px;
+  top: 20px;
+  margin: 0;
 }
 .moui-actionview > footer input[type="button"].confirm, .ck-actionview > footer input[type="button"].confirm {
   display: none;
@@ -1614,17 +1622,14 @@ body.no-overflowscroll .moui-actionview .wrapper, body.no-overflowscroll .ck-act
   -moz-box-shadow: none;
   box-shadow: none;
 }
-.moui-actionview > footer.multi input[type="button"], .ck-actionview > footer.multi input[type="button"] {
-  width: 42%;
-}
 .moui-actionview > footer.multi input[type="button"].confirm, .ck-actionview > footer.multi input[type="button"].confirm {
   display: inline-block;
-  float: right;
-  margin-right: 20px;
+  left: 50%;
+  margin: 0 0 0 6.25px;
 }
 .moui-actionview > footer.multi input[type="button"].cancel, .ck-actionview > footer.multi input[type="button"].cancel {
-  float: left;
-  margin-left: 20px;
+  right: 50%;
+  margin: 0 6.25px 0 0;
 }
 .moui-actionview .shd, .ck-actionview .shd {
   position: fixed;
@@ -1667,7 +1672,7 @@ body.no-overflowscroll .moui-actionview .wrapper, body.no-overflowscroll .ck-act
   width: 100%;
   color: #fff;
   background: none;
-  font-size: 13px;
+  font-size: 15px;
   padding: 10px 0;
   margin: 0;
   -webkit-border-radius: 0;

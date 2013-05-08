@@ -17,32 +17,37 @@
     position:relative;
     opacity:0;
     @include transform(translateY(50%));
-    @include transition(transform 0.4s 0.1s, opacity 0.2s 0.1s);
+    @include transition(transform 0.3s 0.1s, opacity 0.2s 0.1s);
 
     .content {
-      padding:0 $space $space $space;
+      padding:$space 0 $space 0;
       overflow:hidden;
       position:relative;
 
       & > header {
-        height: $nav_height;
+        padding:0 $space;
 
         h1 {
+          padding:0 0 10px 0;
           font-size:$headtitle_size;
-          line-height: $nav_height;
+          height:$headtitle_size;
+          line-height:$headtitle_size;
           display:block;
           color:#fff;
           border-bottom:1px solid #666;
+
           &:empty {
             border:none;
+            padding:0;
           }
+
         }
 
       }
 
       & > .desc {
         color:#fff;
-        padding:$space 0;
+        padding:$space;
         font-size:$maintitle_size;
       }
 
@@ -88,8 +93,8 @@
     background:rgba(13,13,13,0.95);
     @include box-shadow(inset 0px 1px 0px #212121);
     width:100%;
-    //height:$bigbutton_height;
-    padding:$myspace 0;
+    height:$bigbutton_height + 2*$myspace;
+    //padding:$myspace 0;
     overflow:hidden;
     text-align:center;
     @include transform(translateY(100%));
@@ -99,7 +104,12 @@
       @extend %button;
       line-height:$bigbutton_height;
       height:$bigbutton_height;
-      width:90%;
+      width:auto;
+      position:absolute;
+      left:$space;
+      right:$space;
+      top:$myspace;
+      margin:0;
 
       &.confirm {
         display:none;
@@ -123,17 +133,16 @@
     &.multi {
     
       input[type="button"] {
-        width:42%;
 
         &.confirm {
           display:inline-block;
-          float:right;
-          margin-right:$myspace;
+          left:50%;
+          margin:0 0 0 ($space/4);
         }
 
         &.cancel {
-          float:left;
-          margin-left:$myspace;
+          right:50%;
+          margin:0 ($space/4) 0 0;
         }
 
       }
@@ -190,7 +199,7 @@
   width:100%;
   color:#fff;
   background:none;
-  font-size:$title_size;
+  font-size:$maintitle_size;
   padding:10px 0;
   margin:0;
   @include border-radius(0);

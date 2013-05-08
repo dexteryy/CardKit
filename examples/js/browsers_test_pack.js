@@ -4796,7 +4796,7 @@ define('momo/tap', [
         DEFAULT_CONFIG: {
             'tapRadius': 10,
             'doubleTimeout': 300,
-            'tapThreshold': 10,
+            'tapThreshold': 0,
             'holdThreshold': 500
         },
 
