@@ -669,14 +669,18 @@
   &[data-style="slide"] {
     @extend %unit-parts;
     @extend %plain-hd-parts;
-    //margin-bottom:0;
 
     .ck-hd-wrap {
       margin-left: $space;
       margin-right: $space;
     }
 
+    .ck-unit-wrap {
+      overflow:hidden;
+    }
+
     .ck-list-wrap {
+      margin-bottom:-8px;
 
       &.slide {
         overflow-x:scroll;
@@ -684,7 +688,7 @@
 
         .ck-list {
           width:5000px;
-          padding:0 0 15px 0;
+          padding:0 0 10px 0;
           overflow:hidden;
         }
 

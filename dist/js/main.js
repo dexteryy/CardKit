@@ -7510,13 +7510,13 @@ define("../cardkit/app", [
             }
 
             this.viewport.find('.ck-mini-unit').forEach(function(mini){
-                var mini_items = $('.ck-item', mini),
+                var mini_items = this('.ck-item', mini),
                     w = ck.slideItemWidth = window.innerWidth - MINI_ITEM_MARGIN - MINI_LIST_PADDING;
                 if (mini_items.length > 1) {
                     mini_items.css('width', w - MINI_ITEM_MARGIN - 2 + 'px');
-                    $('.ck-list', mini).css('width', w * mini_items.length + MINI_ITEM_MARGIN + 'px');
+                    this('.ck-list', mini).css('width', w * mini_items.length + MINI_ITEM_MARGIN + 'px');
                 }
-            });
+            }, $);
 
             bus.fire('cardkit:updateSize');
         },
@@ -7525,14 +7525,16 @@ define("../cardkit/app", [
             this.scrollGesture.watchScroll(card[0]);
             card.find('.ck-mini-unit .ck-list-wrap').forEach(function(wrap){
                 $(wrap).bind('touchstart', function(){
+                    ck.slideStartX = this.scrollLeft;
                     //var d = parseFloat($(this).data('ckScrollOffset'));
                     //if (d) {
                         //choreo.transform($('.ck-list', this)[0], 'translateX', '0');
                         //this.scrollLeft -= d;
                     //}
-                }).bind('scroll', function(){
-                    $(this).bind('touchend', stick_item);
-                });
+                //}).bind('scroll', function(){
+                    //$(this).bind('touchend', stick_item);
+                //});
+                }).bind('touchend', stick_item);
             }, document);
         },
 
@@ -7689,26 +7691,46 @@ define("../cardkit/app", [
     function nothing(){}
 
     function stick_item(){
-        var self = this;
-        $(self).unbind('touchend', stick_item);
+        var self = $(this);
+        //self.unbind('touchend', stick_item);
+        var x = self[0].scrollLeft,
+            is_forward = x - ck.slideStartX;
+        if (is_forward === 0) {
+            return;
+        }
+        is_forward = is_forward > 0;
         var w = ck.slideItemWidth,
-            n = self.scrollLeft / w,
-            l = $('.ck-item', self).length - 1,
-            list = $('.ck-list', self)[0];
+            n = x / w,
+            pos = n - Math.floor(n),
+            list = $('.ck-list', self)[0],
+            l = $('.ck-item', list).length - 1;
         if (n > 0 && n < l) {
-            var d = self.scrollLeft - Math.round(n) * w 
-                + (Math.round(n) === l ? MINI_LIST_PADDING : 0);
+            if (is_forward) {
+                if (pos < 0.1) {
+                    n = Math.floor(n);
+                } else {
+                    n = Math.ceil(n);
+                }
+            } else {
+                if (pos > 0.9) {
+                    n = Math.ceil(n);
+                } else {
+                    n = Math.floor(n);
+                }
+            }
+            var d = x - n * w 
+                + (n === l ? MINI_LIST_PADDING : 0);
             if (supports.SAFARI_OVERFLOWSCROLL) {
-                $(self).addClass('stop-scroll');
+                self.addClass('stop-scroll');
             }
             choreo().play().actor(list, {
                 transform: 'translateX(' + d + 'px)'
             }, 400, 'ease').follow().then(function(){
-                //$(self).data('ckScrollOffset', d);
+                //self.data('ckScrollOffset', d);
                 choreo.transform(list, 'translateX', '0');
-                self.scrollLeft -= d;
+                self[0].scrollLeft -= d;
                 if (supports.SAFARI_OVERFLOWSCROLL) {
-                    $(self).removeClass('stop-scroll');
+                    self.removeClass('stop-scroll');
                 }
             });
         }
