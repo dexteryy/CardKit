@@ -666,8 +666,13 @@ define([
                 // 1. reload from normal card.  alert(1)
                 ck.changeView(restore_state);
                 if (restore_state === 'ckLoading') {
-                    // 9.  alert(9)
-                    history.back();
+                    if (document.referrer === location.href) {
+                        // alert(9.1)
+                        ck.changeView(ck.defaultCard);
+                    } else {
+                        // 9.  alert(9)
+                        history.back();
+                    }
                 } else if (restore_modal && !modalCard.isOpened) {
                     modalCard.set(history.state.opt).open();
                 }
@@ -1103,9 +1108,6 @@ define([
             ck.sessionLocked = false;
             if (prev_id === 'ckLoading') {
                 history.back();
-                if (!document.referrer || document.referrer === location.href) {
-                    location.reload(true);
-                }
             } else {
                 ck.showTopbar();
             }
