@@ -1,4 +1,3 @@
-/*! cardkit - v0.1.0 */
 html, body, div, span, applet, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 a, abbr, acronym, address, big, cite, code,
@@ -358,16 +357,16 @@ body.ck-topbar-enabled .ck-root .ck-header, body.ck-topbar-enabled .ck-root .ck-
   display: none;
 }
 
-body.no-overflowscroll.bg {
+body.no-cardscroll.bg {
   background: #f2f2f2;
 }
-body.no-overflowscroll.modal-view .ck-root {
+body.no-cardscroll.modal-view .ck-root {
   -webkit-transform: scale(1);
   -moz-transform: scale(1);
   -ms-transform: scale(1);
   transform: scale(1);
 }
-body.no-overflowscroll.modal-view .ck-wrapper {
+body.no-cardscroll.modal-view .ck-wrapper {
   display: none;
 }
 
@@ -412,7 +411,7 @@ body.ck-topbar-enabled .ck-card .ck-top-tips {
   left: 0;
   z-index: 200;
 }
-body.no-overflowscroll .ck-card {
+body.no-cardscroll .ck-card {
   -webkit-overflow-scrolling: auto;
   overflow-y: visible;
 }
@@ -1071,11 +1070,9 @@ body.no-overflowscroll .ck-unit-wrap {
 .ck-mini-unit[data-style="slide"] .ck-unit-wrap {
   overflow: hidden;
 }
-.ck-mini-unit[data-style="slide"] .ck-list-wrap {
-  margin-bottom: -8px;
-}
 .ck-mini-unit[data-style="slide"] .ck-list-wrap.slide {
   overflow-x: scroll;
+  margin-bottom: -8px;
   -webkit-overflow-scrolling: touch;
 }
 .ck-mini-unit[data-style="slide"] .ck-list-wrap.slide .ck-list {
@@ -1092,7 +1089,7 @@ body.no-overflowscroll .ck-mini-unit[data-style="slide"] .ck-list-wrap.slide {
   -webkit-overflow-scrolling: auto;
 }
 .ck-mini-unit[data-style="slide"] .ck-list-wrap.slide.stop-scroll {
-  overflow: hidden;
+  -webkit-overflow-scrolling: auto;
 }
 .ck-mini-unit[data-style="slide"] .ck-item {
   margin: 0 10px 3px 10px;
@@ -1477,11 +1474,11 @@ body.no-overflowscroll .ck-mini-unit[data-style="slide"] .ck-list-wrap.slide {
   transform: translateY(0);
 }
 
-body.no-overflowscroll .moui-modalview, body.no-overflowscroll .ck-modalview {
+body.no-cardscroll .moui-modalview, body.no-cardscroll .ck-modalview {
   position: relative;
   overflow: hidden;
 }
-body.no-overflowscroll .moui-modalview .wrapper, body.no-overflowscroll .ck-modalview .wrapper {
+body.no-cardscroll .moui-modalview .wrapper, body.no-cardscroll .ck-modalview .wrapper {
   -webkit-transition: none;
   -moz-transition: none;
   transition: none;
@@ -1490,12 +1487,12 @@ body.no-overflowscroll .moui-modalview .wrapper, body.no-overflowscroll .ck-moda
   -ms-transform: translateY(0);
   transform: translateY(0);
 }
-body.no-overflowscroll .moui-modalview .wrapper > article, body.no-overflowscroll .ck-modalview .wrapper > article {
+body.no-cardscroll .moui-modalview .wrapper > article, body.no-cardscroll .ck-modalview .wrapper > article {
   -webkit-overflow-scrolling: auto;
   overflow-y: visible;
   height: auto;
 }
-body.no-overflowscroll .moui-modalview .wrapper > article > .content, body.no-overflowscroll .ck-modalview .wrapper > article > .content {
+body.no-cardscroll .moui-modalview .wrapper > article > .content, body.no-cardscroll .ck-modalview .wrapper > article > .content {
   min-height: 0;
 }
 
@@ -1575,7 +1572,7 @@ body.no-overflowscroll .moui-modalview .wrapper > article > .content, body.no-ov
   border: none;
   background: none;
 }
-body.no-overflowscroll .moui-actionview .wrapper, body.no-overflowscroll .ck-actionview .wrapper {
+body.no-cardscroll .moui-actionview .wrapper, body.no-cardscroll .ck-actionview .wrapper {
   -webkit-overflow-scrolling: auto;
 }
 .moui-actionview > footer, .ck-actionview > footer {

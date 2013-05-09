@@ -798,7 +798,9 @@ define("choreo", [
             if (opt.easing) {
                 _.mix(timing_values, opt.easing.values);
                 _.mix(timing_functions, opt.easing.functions);
-                mainloop.config({ easing: timing_functions });
+                if (mainloop) {
+                    mainloop.config({ easing: timing_functions });
+                }
             }
             if (/(js|css)/.test(opt.renderMode)) {
                 useCSS = opt.renderMode === 'css';

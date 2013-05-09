@@ -813,7 +813,9 @@ define("../cardkit/supports", [
         document = window.document,
         body = document.body,
         is_android = browsers.os === 'android',
-        is_ios5 = browsers.engine === 'webkit'
+        is_ios = browsers.os === 'iphone' || browsers.os === 'ipad',
+        is_ios5 = is_ios
+            && browsers.engine === 'webkit'
             && parseInt(browsers.engineversion, 10) < 536,
         is_mobilefirefox = browsers.mozilla && is_android,
         is_desktop = browsers.os === 'mac'
@@ -834,13 +836,14 @@ define("../cardkit/supports", [
             && !is_ios5
             && !is_desktop,
 
-        SAFARI_OVERFLOWSCROLL: "webkitOverflowScrolling" in body.style,
-
         PREVENT_WINDOW_SCROLL: !!browsers.mobilesafari,
 
         HIDE_TOPBAR: !!browsers.mobilesafari
 
     };
+
+    exports.SAFARI_OVERFLOWSCROLL = "webkitOverflowScrolling" in body.style
+        && (exports.CARD_SCROLL || is_ios5);
 
     exports.PREVENT_CACHE = browsers.aosp 
         || browsers.mobilesafari && !exports.HISTORY;
@@ -6524,7 +6527,9 @@ define("choreo", [
             if (opt.easing) {
                 _.mix(timing_values, opt.easing.values);
                 _.mix(timing_functions, opt.easing.functions);
-                mainloop.config({ easing: timing_functions });
+                if (mainloop) {
+                    mainloop.config({ easing: timing_functions });
+                }
             }
             if (/(js|css)/.test(opt.renderMode)) {
                 useCSS = opt.renderMode === 'css';
@@ -6788,6 +6793,61 @@ define('soviet', [
 
 });
 
+/* @source mo/easing/timing.js */;
+
+
+define("mo/easing/timing", [
+  "mo/lang/mix",
+  "mo/easing/base"
+], function(_, base){
+
+    // Penner Equations (approximated)
+    // http://matthewlein.com/ceaser/
+    var pos = {
+        'easeInQuad'     :  [0.550, 0.085, 0.680, 0.530],
+        'easeInCubic'    :  [0.550, 0.055, 0.675, 0.190],
+        'easeInQuart'    :  [0.895, 0.030, 0.685, 0.220],
+        'easeInQuint'    :  [0.755, 0.050, 0.855, 0.060],
+        'easeInSine'     :  [0.470, 0.000, 0.745, 0.715],
+        'easeInExpo'     :  [0.950, 0.050, 0.795, 0.035],
+        'easeInCirc'     :  [0.600, 0.040, 0.980, 0.335],
+        'easeInBack'     :  [0.600, -0.280, 0.735, 0.045],
+        'easeOutQuad'    :  [0.250, 0.460, 0.450, 0.940],
+        'easeOutCubic'   :  [0.215, 0.610, 0.355, 1.000],
+        'easeOutQuart'   :  [0.165, 0.840, 0.440, 1.000],
+        'easeOutQuint'   :  [0.230, 1.000, 0.320, 1.000],
+        'easeOutSine'    :  [0.390, 0.575, 0.565, 1.000],
+        'easeOutExpo'    :  [0.190, 1.000, 0.220, 1.000],
+        'easeOutCirc'    :  [0.075, 0.820, 0.165, 1.000],
+        'easeOutBack'    :  [0.175, 0.885, 0.320, 1.275],
+        'easeInOutQuad'  :  [0.455, 0.030, 0.515, 0.955],
+        'easeInOutCubic' :  [0.645, 0.045, 0.355, 1.000],
+        'easeInOutQuart' :  [0.770, 0.000, 0.175, 1.000],
+        'easeInOutQuint' :  [0.860, 0.000, 0.070, 1.000],
+        'easeInOutSine'  :  [0.445, 0.050, 0.550, 0.950],
+        'easeInOutExpo'  :  [1.000, 0.000, 0.000, 1.000],
+        'easeInOutCirc'  :  [0.785, 0.135, 0.150, 0.860],
+        'easeInOutBack'  :  [0.680, -0.550, 0.265, 1.550]
+    };
+
+    function stringify(pos, values){
+        values = values || {};
+        for (var i in pos) {
+            values[i] = 'cubic-bezier(' + pos[i].join(',') + ')';
+        }
+        return values;
+    }
+
+    pos.swing = pos.jswing = base.positions.ease;
+
+    return {
+        positions: _.mix(pos, base.positions),
+        values: _.mix(stringify(pos), base.values),
+        stringify: stringify
+    };
+
+});
+
 /* @source ../cardkit/app.js */;
 
 define("../cardkit/app", [
@@ -6795,6 +6855,7 @@ define("../cardkit/app", [
   "mo/lang",
   "mo/browsers",
   "mo/template",
+  "mo/easing/timing",
   "soviet",
   "choreo",
   "momo/base",
@@ -6813,7 +6874,7 @@ define("../cardkit/app", [
   "../cardkit/supports",
   "cardkit/env",
   "mo/domready"
-], function($, _, browsers, tpl, soviet, choreo, 
+], function($, _, browsers, tpl, easing, soviet, choreo, 
     momoBase, momoTap, momoSwipe, momoDrag, momoScroll, 
     control, picker, stars, modalCard, actionView, growl,
     bus, render, supports, env){
@@ -7161,17 +7222,29 @@ define("../cardkit/app", [
             this.sizeInited = false;
             this.viewportGarbage = {};
             this.sessionLocked = true;
+
             this.initWindow();
 
             if (env.enableConsole) {
-                console.info(supports);
-                console.info(browsers);
+                console.info('Features:', supports);
+                console.info('Platform:', browsers);
             }
+
+            choreo.config({
+                easing: easing
+            });
 
             this.scrollGesture = momoScroll(document);
             momoTap(document);
+            momoSwipe(this.wrapper, {
+                'timeThreshold': 10000,
+                'distanceThreshold': 10 
+            });
 
             if (!supports.CARD_SCROLL) {
+                $(body).addClass('no-cardscroll');
+            }
+            if (!supports.SAFARI_OVERFLOWSCROLL) {
                 $(body).addClass('no-overflowscroll');
             }
             if (supports.HIDE_TOPBAR) {
@@ -7249,6 +7322,37 @@ define("../cardkit/app", [
                 //ck.showTopbar();
             });
             
+            var wrapper_delegate = soviet(this.wrapper, {
+                matchesSelector: true
+            //}).on('touchstart', {
+                //'.ck-mini-unit .ck-list-wrap *': function(){
+                    //var self = $(this).closest('.ck-list-wrap'),
+                        //aid = self.data('ckSlideAnime');
+                    //if (aid) {
+                        //choreo(aid).clear();
+                    //}
+                //}
+            }).on('swipeleft', {
+                '.ck-mini-unit .ck-list-wrap *': function(){
+                    stick_item.call(this, true);
+                }
+            }).on('swiperight', {
+                '.ck-mini-unit .ck-list-wrap *': function(){
+                    stick_item.call(this, false);
+                }
+            });
+
+            if (!supports.SAFARI_OVERFLOWSCROLL) {
+
+                wrapper_delegate.on('touchend', {
+                    '.ck-mini-unit .ck-list-wrap *': function(e){
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                });
+
+            }
+
             if (supports.CARD_SCROLL 
                     && supports.SAFARI_OVERFLOWSCROLL) {
 
@@ -7522,19 +7626,6 @@ define("../cardkit/app", [
 
         watchScroll: function(card){
             this.scrollGesture.watchScroll(card[0]);
-            card.find('.ck-mini-unit .ck-list-wrap').forEach(function(wrap){
-                $(wrap).bind('touchstart', function(){
-                    ck.slideStartX = this.scrollLeft;
-                    //var d = parseFloat($(this).data('ckScrollOffset'));
-                    //if (d) {
-                        //choreo.transform($('.ck-list', this)[0], 'translateX', '0');
-                        //this.scrollLeft -= d;
-                    //}
-                //}).bind('scroll', function(){
-                    //$(this).bind('touchend', stick_item);
-                //});
-                }).bind('touchend', stick_item);
-            }, document);
         },
 
         updateHeader: function(){
@@ -7689,16 +7780,14 @@ define("../cardkit/app", [
 
     function nothing(){}
 
-    function stick_item(){
-        var self = $(this);
-        //self.unbind('touchend', stick_item);
-        var x = self[0].scrollLeft,
-            is_forward = x - ck.slideStartX;
-        if (is_forward === 0) {
-            return;
+    function stick_item(is_forward){
+        var self = $(this).closest('.ck-list-wrap'),
+            aid = self.data('ckSlideAnime');
+        if (!aid) {
+            aid = self.data('ckSlideAnime', +new Date());
         }
-        is_forward = is_forward > 0;
         var w = ck.slideItemWidth,
+            x = self[0].scrollLeft,
             n = x / w,
             pos = n - Math.floor(n),
             list = $('.ck-list', self)[0],
@@ -7719,18 +7808,13 @@ define("../cardkit/app", [
             }
             var d = x - n * w 
                 + (n === l ? MINI_LIST_PADDING : 0);
-            if (supports.SAFARI_OVERFLOWSCROLL) {
-                self.addClass('stop-scroll');
-            }
-            choreo().play().actor(list, {
+            self.addClass('stop-scroll');
+            choreo(aid).clear().play().actor(list, {
                 transform: 'translateX(' + d + 'px)'
-            }, 400, 'ease').follow().then(function(){
-                //self.data('ckScrollOffset', d);
+            }, 200, 'easeOutSine').follow().then(function(){
                 choreo.transform(list, 'translateX', '0');
                 self[0].scrollLeft -= d;
-                if (supports.SAFARI_OVERFLOWSCROLL) {
-                    self.removeClass('stop-scroll');
-                }
+                self.removeClass('stop-scroll');
             });
         }
     }
@@ -8074,16 +8158,29 @@ define('cardkit/pageready', [
 
 require([
     'dollar', 
+    'cardkit/bus',
     'cardkit/app',
     'cardkit/env'
-], function($, app, env){
+], function($, bus, app, env){
 
     if (env.enableConsole) {
-        require(['mo/console'], function(console){
+        require([
+            'mo/console'
+        ], function(console){
+
             console.config({
-                output: $('#console')[0]
+                record: true
             }).enable();
+
             init();
+
+            bus.once('readycardchange', function(){
+                console.config({
+                    record: false, 
+                    output: $('#console')[0]
+                });
+            });
+
         });
     } else {
         init();

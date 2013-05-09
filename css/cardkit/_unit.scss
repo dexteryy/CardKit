@@ -680,10 +680,10 @@
     }
 
     .ck-list-wrap {
-      margin-bottom:-8px;
 
       &.slide {
         overflow-x:scroll;
+        margin-bottom:-8px;
         -webkit-overflow-scrolling: touch;
 
         .ck-list {
@@ -703,7 +703,7 @@
         }
 
         &.stop-scroll {
-          overflow:hidden;
+          -webkit-overflow-scrolling: auto;
         }
 
       }

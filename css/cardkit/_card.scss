@@ -43,7 +43,7 @@
     z-index:$zindex_view;
   }
 
-  body.no-overflowscroll & {
+  body.no-cardscroll & {
     -webkit-overflow-scrolling: auto;
     overflow-y:visible;
   }
