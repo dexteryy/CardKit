@@ -84,11 +84,13 @@ define([
             toggle_control.call(this);
         },
 
-        '.ck-segment .ck-option': function(){
-            var p = picker(this.parentNode, {
-                ignoreRepeat: true
-            });
-            p.select(this);
+        '.ck-segment .ck-option, .ck-segment .ck-option span': function(){
+            var btn = $(this);
+            if (!btn.hasClass('ck-option')) {
+                btn = btn.closest('.ck-option');
+            }
+            var p = picker(btn.parent());
+            p.select(btn);
         },
 
         '.ck-tagselector .ck-option': function(){
@@ -472,14 +474,6 @@ define([
             
             var wrapper_delegate = soviet(this.wrapper, {
                 matchesSelector: true
-            //}).on('touchstart', {
-                //'.ck-mini-unit .ck-list-wrap *': function(){
-                    //var self = $(this).closest('.ck-list-wrap'),
-                        //aid = self.data('ckSlideAnime');
-                    //if (aid) {
-                        //choreo(aid).clear();
-                    //}
-                //}
             }).on('swipeleft', {
                 '.ck-mini-unit .ck-list-wrap *': function(){
                     stick_item.call(this, true);

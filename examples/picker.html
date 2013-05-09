@@ -43,7 +43,8 @@
             <header class="ckd-hd">Segmented selector</header>
             <div class="ckd-item">
                 <!--demo-->
-                <div class="ck-segment picker1">
+                <div class="ck-segment picker1"
+                        data-ignore-repeat="true">
                     <button type="button" class="ck-option" value="1"
                         data-enable-url="data/enable.txt">Option 1</button>
                     <button type="button" class="ck-option enabled" value="2"
@@ -62,6 +63,29 @@
                         <button type="button" class="ck-option" value="3"
                             data-enable-url="data/enable.txt">Option 3</button>
                     </div>
+                    ]]></script>
+                </div>
+            </div>
+            <div class="ckd-item">
+                <!--demo-->
+                <div class="ck-segment updown1" 
+                        data-enable-url="data/enable.txt"
+                        data-disable-url="data/disable.txt"
+                        data-label="false">
+                    <button type="button" class="ck-option" 
+                            data-num-field=".op-num span"
+                            data-enable-url="data/enable.txt">Up
+                        <span class="op-num">(<span>100</span>)</span>
+                    </button>
+                    <button type="button" class="ck-option"
+                            data-num-field=".op-num span"
+                            data-enable-url="data/disable.txt">Down
+                        <span class="op-num">(<span>6</span>)</span>
+                    </button>
+                </div>
+                <!--demo end-->
+                <div class="democode">
+                    <script type="syntaxhighlighter" class="brush: html"><![CDATA[
                     ]]></script>
                 </div>
             </div>

@@ -8,6 +8,8 @@ define('moui/control', [
     var default_config = {
             field: null,
             label: null,
+            numField: null,
+            numStep: 1,
             enableVal: 1,
             disableVal: 0,
             enableLabel: '',
@@ -30,6 +32,7 @@ define('moui/control', [
             if (node.hasClass('enabled')) {
                 this.isEnabled = true;
             }
+            this._numField = [];
             opt = _.mix({
                 field: node,
                 label: node
@@ -37,6 +40,9 @@ define('moui/control', [
             this.setNodes(opt);
             if (this._label[0]) {
                 this._isLabelClose = this._label.isEmpty();
+            }
+            if (this._numField[0]) {
+                this._isNumFieldClose = this._numField.isEmpty();
             }
             if (this.isEnabled) {
                 opt.enableVal = this.val();
@@ -74,6 +80,14 @@ define('moui/control', [
                     this._label = [];
                 }
             }
+            if (opt.numField !== undefined) {
+                if (opt.numField) {
+                    this._numField = $(opt.numField, 
+                        typeof opt.numField === 'string' && this._node);
+                } else {
+                    this._numField = [];
+                }
+            }
             return this;
         },
 
@@ -95,6 +109,19 @@ define('moui/control', [
                 return this._label.val(str);
             } else {
                 return this._label.html(str);
+            }
+        },
+
+        plus: function(n){
+            if (!this._numField[0]) {
+                return;
+            }
+            if (this._isNumFieldClose) {
+                return this._numField
+                    .val(parseFloat(this._numField.val()) + n);
+            } else {
+                return this._numField
+                    .html(parseFloat(this._numField.html()) + n);
             }
         },
 
@@ -129,6 +156,7 @@ define('moui/control', [
             this.isEnabled = true;
             this._node.addClass('enabled');
             this.val(this._config.enableVal);
+            this.plus(this._config.numStep);
             if (this._config.enableLabel) {
                 this.label(this._config.enableLabel);
             }
@@ -144,6 +172,7 @@ define('moui/control', [
             this.isEnabled = false;
             this._node.removeClass('enabled');
             this.val(this._config.disbleVal);
+            this.plus(0 - this._config.numStep);
             if (this._config.disableLabel) {
                 this.label(this._config.disableLabel);
             }
