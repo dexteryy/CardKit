@@ -1068,9 +1068,6 @@ body.no-overflowscroll .ck-unit-wrap {
   margin-left: 10px;
   margin-right: 10px;
 }
-.ck-mini-unit[data-style="slide"] .ck-unit-wrap {
-  overflow: hidden;
-}
 .ck-mini-unit[data-style="slide"] .ck-list-wrap.slide {
   overflow-x: scroll;
   margin-bottom: -8px;
