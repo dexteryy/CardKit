@@ -2,11 +2,13 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>DEMO & DOCS</title>
+<title>CardKit Reference</title>
 <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
 <meta name="format-detection" content="telephone=no">
 
 <link href="dist/css/main.css" rel="stylesheet">
+<link href="css/shCoreDefault.css" rel="stylesheet">
+<link href="css/console.css" rel="stylesheet">
 <link href="css/common.css" rel="stylesheet">
 <style>
 </style>
@@ -19,16 +21,64 @@
     
 <header class="ck-header">
     
-<a class="ck-top-title" href="index.html">DEMO & DOCS</a>
-<span class="opt ck-top-nav"><a class="btn" href="/"></a></span>
-<span class="opt ck-top-action"><button class="btn"></button></span>
+<a class="ck-top-title" href="index.html">CardKit Reference</a>
+<span class="opt ck-top-nav"><a class="btn" href="index.html"></a></span>
+<span class="opt ck-top-action"><button type="button" class="btn"></button></span>
 <span class="opt ck-top-create"></span>
 
 </header>
 
 <div class="ck-wrapper">
 
-    <div class="ck-card" id="ckDefault" data-cfg-blank="Coming soon...">
+    <div class="ck-card" id="ckDefault">
+
+        <div class="ck-banner-unit topbox">
+            <h2>CardKit / Unit</h2>
+        </div>
+
+        <div class="ck-box-unit" data-cfg-paper="true">
+            <header class="ckd-hd">Extra Unit</header>
+        </div>
+
+        <div class="ck-list-unit" data-style="slide" data-cfg-blank="Coming soon...">
+            <header class="ckd-hd">Source code</header>
+        </div>
+
+    </div>
+
+    <div class="ck-card" id="consoleCard">
+
+        <div class="ck-box-unit" data-cfg-paper="true">
+            <header class="ckd-hd">Console</header>
+            <div id="console"></div>
+        </div>
+
+        <script type="text/cardready">
+        require(['mo/console', 'cardkit/app'], function(console, ck){
+            console.config({
+                record: false,
+                output: ck.viewport.find('#console')[0]
+            });
+        });
+        </script>
+
+    </div>
+
+    <div class="ck-card" id="rawCard">
+
+        <div class="ck-box-unit" data-cfg-plainhd="true">
+            <header class="ckd-hd">Raw source</header>
+            <div class="ck-folder enabled"
+                    data-disable-label="Hide the code" 
+                    data-label="header">
+                <header>Hide the code</header>
+                <div class="democode content" gsource="rawData1"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="ck-card" id="optionsCard">
     </div>
 
     <div class="ck-card ck-loading" id="ckLoading">
@@ -48,7 +98,11 @@
 
 <script src="dist/js/main.js"></script>
 <!-- COLLECTED JS -->
-<script>
+<script id="jsdemo1">
 </script>
+<script src="js/shCore.js"></script>
+<script src="js/shBrushXml.js"></script>
+<script src="js/shBrushJScript.js"></script>
+<script src="js/common.js"></script>
 </body>
 </html>

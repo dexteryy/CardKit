@@ -176,10 +176,12 @@ define([
     }
 
     function handle_control(){
-        var controller = control(this);
-        if (!controller.isEnabled) {
+        var controller = control(this),
+            cfg = controller.data();
+        if (cfg.disableUrl || cfg.disableJsonUrl) {
+            controller.toggle();
+        } else if (!controller.isEnabled) {
             controller.enable();
-            mark_gc(controller);
         }
     } 
 
@@ -362,10 +364,10 @@ define([
             }
             this.controlMask = $(TPL_MASK).appendTo(body);
             if (env.showControlMask) {
-                //this.controlMask.css({
-                    //'opacity': '0.2',
-                    //'background': '#0f0'
-                //});
+                this.controlMask.css({
+                    'opacity': '0.2',
+                    'background': '#0f0'
+                });
             }
             this.cardMask = $(TPL_CARD_MASK).appendTo(body);
             this.headerHeight = this.header.height();
@@ -693,6 +695,7 @@ define([
         },
 
         initView: function(card, opt){
+            render.openCard(card, opt);
             if (!card.data('rendered') && !opt.preventRender) {
                 render.initCard(card, this.raw, this.footer, opt);
                 if (!opt.isModal && !opt.isActions) {
@@ -703,16 +706,19 @@ define([
             //clear_active_item_mask(card);
         },
 
-        releaseView: function(){
-            control.gc(check_gc);
-            picker.gc(check_gc);
-            this.viewportGarbage = {};
-            gc_id = 0;
+        releaseView: function(opt){
+            //control.gc(check_gc);
+            //picker.gc(check_gc);
+            //this.viewportGarbage = {};
+            //gc_id = 0;
+            if (this.viewport) {
+                render.closeCard(this.viewport, opt);
+            }
         },
 
         changeView: function(card, opt){
             opt = opt || {};
-            //this.releaseView(); // @TODO release when modal open
+            this.releaseView(opt);
             if (typeof card === 'string') {
                 card = $('#' + card);
             }
@@ -1258,9 +1264,9 @@ define([
         return last_unit;
     }
 
-    function check_gc(controller){
-        return ck.viewportGarbage[controller.parentId];
-    }
+    //function check_gc(controller){
+        //return ck.viewportGarbage[controller.parentId];
+    //}
 
     function enable_control(){}
 

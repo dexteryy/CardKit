@@ -105,7 +105,8 @@ define("dollar/origin", [
                 nodes.prevObject = contexts = this;
             }
             if (/^#[\w_]+$/.test(selector)) {
-                var elm = (contexts[0] || doc).getElementById(selector.substr(1));
+                var elm = ((contexts[0] || doc).getElementById 
+                    || doc.getElementById).call(doc, selector.substr(1));
                 if (elm) {
                     nodes.push(elm);
                 }

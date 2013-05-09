@@ -42,13 +42,6 @@ require([
 
             init();
 
-            bus.once('readycardchange', function(){
-                console.config({
-                    record: false, 
-                    output: $('#console')[0]
-                });
-            });
-
         });
     } else {
         init();

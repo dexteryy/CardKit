@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>demo</title>
+<title>CardKit Reference</title>
 <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
 <meta name="format-detection" content="telephone=no">
 
@@ -20,8 +20,8 @@
     
 <header class="ck-header">
     
-<a class="ck-top-title" href="index.html">DEMO & DOCS</a>
-<span class="opt ck-top-nav"><a class="btn" href="/"></a></span>
+<a class="ck-top-title" href="index.html">CardKit Reference</a>
+<span class="opt ck-top-nav"><a class="btn" href="index.html"></a></span>
 <span class="opt ck-top-action"><button type="button" class="btn"></button></span>
 <span class="opt ck-top-create"></span>
 
@@ -32,136 +32,156 @@
     <div class="ck-card" id="ckDefault">
 
         <div class="ck-banner-unit topbox">
-            <h2>Picker</h2>
-            <ul class="mods">
-                <li><a href="http://code.dapps.douban.com/cardkit/blob/master/js/mod/moui/picker.js" target="_blank">moui/picker</a></li>
-                <li><a href="http://code.dapps.douban.com/cardkit/blob/master/js/cardkit/view/picker.js" target="_blank">cardkit/view/picker</a></li>
-            </ul>
+            <h2>CardKit / Component</h2>
         </div>
 
-        <div class="ck-form-unit">
+        <div class="ck-box-unit" data-cfg-paper="true">
+            <header class="ckd-hd">Picker</header>
+        </div>
+
+        <div class="ck-list-unit" data-style="menu">
+            <header class="ckd-hd">Source code</header>
+            <a href="http://code.dapps.douban.com/cardkit/blob/master/js/mod/moui/picker.js" class="ckd-item ckd-link-extern">moui/picker</a>
+            <a href="http://code.dapps.douban.com/cardkit/blob/master/js/cardkit/view/picker.js" class="ckd-item ckd-link-extern">cardkit/view/picker</a>
+        </div>
+
+        <div class="ck-list-unit" data-style="more" data-cfg-paper="true">
+            <a href="#consoleCard" class="ckd-item">Console</a>
+            <a href="#demoScriptCard" class="ckd-item">Custom script</a>
+            <a href="#optionsCard" class="ckd-item">Configure options</a>
+            <a href="#apiCard" class="ckd-item">API</a>
+        </div>
+
+        <div class="ck-box-unit" data-cfg-paper="true">
+            <header class="ckd-hd">Usages</header>
+        </div>
+
+        <div class="ck-box-unit" data-cfg-plain="true">
             <header class="ckd-hd">Segmented selector</header>
-            <div class="ckd-item">
-                <!--demo-->
-                <div class="ck-segment picker1"
-                        data-ignore-repeat="true">
-                    <button type="button" class="ck-option" value="1"
-                        data-enable-url="data/enable.txt">Option 1</button>
-                    <button type="button" class="ck-option enabled" value="2"
-                        data-enable-url="data/enable.txt">Option 2</button>
-                    <button type="button" class="ck-option" value="3"
-                        data-enable-url="data/enable.txt">Option 3</button>
-                </div>
-                <!--demo end-->
-                <div class="democode">
-                    <script type="syntaxhighlighter" class="brush: html"><![CDATA[
-                    <div class="ck-segment picker1">
-                        <button type="button" class="ck-option" value="1"
-                            data-enable-url="data/enable.txt">Option 1</button>
-                        <button type="button" class="ck-option" value="2"
-                            data-enable-url="data/enable.txt">Option 2</button>
-                        <button type="button" class="ck-option" value="3"
-                            data-enable-url="data/enable.txt">Option 3</button>
-                    </div>
-                    ]]></script>
-                </div>
-            </div>
-            <div class="ckd-item">
-                <!--demo-->
-                <div class="ck-segment updown1" 
-                        data-enable-url="data/enable.txt"
-                        data-disable-url="data/disable.txt"
-                        data-label="false">
-                    <button type="button" class="ck-option" 
-                            data-num-field=".op-num span"
-                            data-enable-url="data/enable.txt">Up
-                        <span class="op-num">(<span>100</span>)</span>
-                    </button>
-                    <button type="button" class="ck-option"
-                            data-num-field=".op-num span"
-                            data-enable-url="data/disable.txt">Down
-                        <span class="op-num">(<span>6</span>)</span>
-                    </button>
-                </div>
-                <!--demo end-->
-                <div class="democode">
-                    <script type="syntaxhighlighter" class="brush: html"><![CDATA[
-                    ]]></script>
-                </div>
-            </div>
         </div>
 
         <div class="ck-form-unit">
+            <header class="ckd-hd">Examples</header>
+            <div class="ckd-item">
+<!--demo-->
+<div class="ck-segment picker1 demo"
+        data-ignore-repeat="true">
+    <button type="button" class="ck-option" value="1"
+        data-enable-url="data/enable.txt">Option 1</button>
+    <button type="button" class="ck-option enabled" value="2"
+        data-enable-url="data/enable.txt">Option 2</button>
+    <button type="button" class="ck-option" value="3"
+        data-enable-url="data/enable.txt">Option 3</button>
+</div>
+<!--demo end-->
+                <p>
+                    <div class="ck-folder"
+                            data-enable-label="Hide the HTML" 
+                            data-label="header">
+                        <header>Show the HTML</header>
+                        <div class="democode content"></div>
+                    </div>
+                </p>
+            </div>
+            <div class="ckd-item">
+<!--demo-->
+<div class="ck-segment demo" 
+        data-label="false">
+    <button type="button" class="ck-option" 
+            data-num-field=".op-num span"
+            data-enable-url="data/enable.txt">Up
+        <span class="op-num">(<span>100</span>)</span>
+    </button>
+    <button type="button" class="ck-option"
+            data-num-field=".op-num span"
+            data-enable-url="data/disable.txt">Down
+        <span class="op-num">(<span>6</span>)</span>
+    </button>
+</div>
+<!--demo end-->
+                <p>
+                    <div class="ck-folder"
+                            data-enable-label="Hide the HTML" 
+                            data-label="header">
+                        <header>Show the HTML</header>
+                        <div class="democode content"></div>
+                    </div>
+                </p>
+            </div>
+        </div>
+
+        <div class="ck-box-unit" data-cfg-plain="true">
             <header class="ckd-hd">Tag selector</header>
+        </div>
+
+        <div class="ck-form-unit">
+            <header class="ckd-hd">Examples</header>
             <div class="ckd-item">
                 <label class="ck-title">Single Select</label>
-                <!--demo-->
-                <div class="ck-tagselector picker2">
-                    <input type="hidden" value="">
-                    <input class="ck-option" type="button" value="linux">
-                    <input class="ck-option" type="button" value="CSS">
-                    <input class="ck-option" type="button" value="奇幻">
-                    <input class="ck-option" type="button" value="史诗">
-                    <input class="ck-option" type="button" value="ajax">
-                    <input class="ck-option" type="button" value="RubyOnRails">
-                    <input class="ck-option" type="button" value="javascript">
-                    <input class="ck-option" type="button" value="OPENGL">
-                </div>
-                <!--demo end-->
-                <div class="democode">
-                    <script type="syntaxhighlighter" class="brush: html"><![CDATA[
-                    <div class="ck-tagselector picker2">
-                        <input type="hidden" value="">
-                        <input class="ck-option" type="button" value="linux">
-                        <input class="ck-option" type="button" value="CSS">
-                        <!-- ... -->
-                        <input class="ck-option" type="button" value="OPENGL">
+<!--demo-->
+<div class="ck-tagselector picker2 demo">
+    <input type="hidden" value="">
+    <input class="ck-option" type="button" value="linux">
+    <input class="ck-option" type="button" value="CSS">
+    <input class="ck-option" type="button" value="奇幻">
+    <input class="ck-option" type="button" value="史诗">
+    <input class="ck-option" type="button" value="ajax">
+    <input class="ck-option" type="button" value="RubyOnRails">
+    <input class="ck-option" type="button" value="javascript">
+    <input class="ck-option" type="button" value="OPENGL">
+</div>
+<!--demo end-->
+                <p>
+                    <div class="ck-folder"
+                            data-enable-label="Hide the HTML" 
+                            data-label="header">
+                        <header>Show the HTML</header>
+                        <div class="democode content"></div>
                     </div>
-                    ]]></script>
-                </div>
+                </p>
             </div>
             <div class="ckd-item">
                 <label class="ck-title">Multiple Select</label>
-                <!--demo-->
-                <div class="ck-tagselector picker3"
-                        data-multiselect="true">
-                    <input type="hidden" value="">
-                    <input class="ck-option" type="button" value="linux">
-                    <input class="ck-option" type="button" value="CSS">
-                    <input class="ck-option" type="button" value="奇幻">
-                    <input class="ck-option" type="button" value="史诗">
-                    <input class="ck-option" type="button" value="ajax">
-                    <input class="ck-option" type="button" value="RubyOnRails">
-                    <input class="ck-option" type="button" value="javascript">
-                    <input class="ck-option" type="button" value="OPENGL">
-                </div>
-                <!--demo end-->
-                <div class="democode">
-                    <script type="syntaxhighlighter" class="brush: html"><![CDATA[
-                    <div class="ck-tagselector picker3"
-                            data-multiselect="true">
-                        <input type="hidden" value="">
-                        <input class="ck-option" type="button" value="linux">
-                        <input class="ck-option" type="button" value="CSS">
-                        <!-- ... -->
-                        <input class="ck-option" type="button" value="OPENGL">
+<!--demo-->
+<div class="ck-tagselector picker3 demo"
+        data-multiselect="true">
+    <input type="hidden" value="">
+    <input class="ck-option" type="button" value="linux">
+    <input class="ck-option" type="button" value="CSS">
+    <input class="ck-option" type="button" value="奇幻">
+    <input class="ck-option" type="button" value="史诗">
+    <input class="ck-option" type="button" value="ajax">
+    <input class="ck-option" type="button" value="RubyOnRails">
+    <input class="ck-option" type="button" value="javascript">
+    <input class="ck-option" type="button" value="OPENGL">
+</div>
+<!--demo end-->
+                <p>
+                    <div class="ck-folder"
+                            data-enable-label="Hide the HTML" 
+                            data-label="header">
+                        <header>Show the HTML</header>
+                        <div class="democode content"></div>
                     </div>
-                    ]]></script>
-                </div>
+                </p>
             </div>
         </div>
 
-        <div class="ck-form-unit">
+        <div class="ck-box-unit" data-cfg-plain="true">
             <header class="ckd-hd">Actions</header>
+        </div>
+
+        <div class="ck-form-unit">
+            <header class="ckd-hd">Examples</header>
             <div class="ckd-item">
-                <!--demo-->
-                <ul class="ck-actions actions1">
-                    <li><a href="#on" class="ck-option">Select All</a></li>
-                    <li><a href="#off" class="ck-option">Unselect All</a></li>
-                    <li><a href="#invert" class="ck-option">Select Invert</a></li>
-                    <li><a href="#undo" class="ck-option">Undo</a></li>
-                </ul>
-                <!--demo end-->
+<!--demo-->
+<ul class="ck-actions actions1 demo">
+    <li><a href="#on" class="ck-option">Select All</a></li>
+    <li><a href="#off" class="ck-option">Unselect All</a></li>
+    <li><a href="#invert" class="ck-option">Select Invert</a></li>
+    <li><a href="#undo" class="ck-option">Undo</a></li>
+</ul>
+<!--demo end-->
                 <p>
                 <div class="ck-tagselector actions1-1"
                         data-multiselect="true">
@@ -176,45 +196,80 @@
                     <input class="ck-option" type="button" value="OPENGL">
                 </div>
                 </p>
-                <div class="democode">
-                    <script type="syntaxhighlighter" class="brush: html"><![CDATA[
-                    <ul class="ck-actions actions1">
-                        <li><a href="#on" class="ck-option">Select All</a></li>
-                        <li><a href="#off" class="ck-option">Unselect All</a></li>
-                        <li><a href="#invert" class="ck-option">Select Invert</a></li>
-                        <li><a href="#undo" class="ck-option">Undo</a></li>
-                    </ul>
-                    ]]></script>
-                </div>
+                <p>
+                    <div class="ck-folder"
+                            data-enable-label="Hide the HTML" 
+                            data-label="header">
+                        <header>Show the HTML</header>
+                        <div class="democode content"></div>
+                    </div>
+                </p>
             </div>
+        </div>
+
+        <div class="ck-box-unit" data-cfg-plain="true">
+            <header class="ckd-hd">Slider</header>
         </div>
 
         <div class="ck-form-unit">
-            <header class="ckd-hd">Slider</header>
+            <header class="ckd-hd">Examples</header>
             <div class="ckd-item">
-                <!--demo-->
-                <div class="ck-stars demo-rating">
-                    <input class="slider-field" id="rating" type="range" min="0" max="5" step="1" value="2"/>
-                    <div class="slider-selected" style="width:50px;display:block;"></div>
-                    <div class="slider-hover"></div>
-                </div>
-                <!--demo end-->
-                <div class="democode">
-                    <script type="syntaxhighlighter" class="brush: html"><![CDATA[
-                    <div class="ck-stars demo-rating">
-                        <input class="slider-field" id="rating" type="range" min="0" max="5" step="1" value="2"/>
-                        <div class="slider-selected" style="width:50px;display:block;"></div>
-                        <div class="slider-hover"></div>
+<!--demo-->
+<div class="ck-stars demo-rating demo">
+    <input class="slider-field" id="rating" type="range" min="0" max="5" step="1" value="2"/>
+    <div class="slider-selected" style="width:50px;display:block;"></div>
+    <div class="slider-hover"></div>
+</div>
+<!--demo end-->
+                <p>
+                    <div class="ck-folder"
+                            data-enable-label="Hide the HTML" 
+                            data-label="header">
+                        <header>Show the HTML</header>
+                        <div class="democode content"></div>
                     </div>
-                    ]]></script>
-                </div>
+                </p>
             </div>
         </div>
 
+    </div>
+
+    <div class="ck-card" id="consoleCard">
+
         <div class="ck-box-unit" data-cfg-paper="true">
-            <div class="ckd-content" id="console"></div>
+            <header class="ckd-hd">Console</header>
+            <div id="console"></div>
         </div>
 
+        <script type="text/cardready">
+        require(['mo/console', 'cardkit/app'], function(console, ck){
+            console.config({
+                record: false,
+                output: ck.viewport.find('#console')[0]
+            });
+        });
+        </script>
+
+    </div>
+
+    <div class="ck-card" id="demoScriptCard">
+
+        <div class="ck-box-unit" data-cfg-plainhd="true">
+            <header class="ckd-hd">Custom script</header>
+            <div class="ck-folder enabled"
+                    data-disable-label="Hide the code" 
+                    data-label="header">
+                <header>Hide the code</header>
+                <div class="democode content" jssource="jsdemo1"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="ck-card" id="optionsCard">
+    </div>
+
+    <div class="ck-card" id="apiCard">
     </div>
 
     <div class="ck-card ck-loading" id="ckLoading">
@@ -233,11 +288,8 @@
 </div>
 
 <script src="dist/js/main.js"></script>
-<script src="js/shCore.js"></script>
-<script src="js/shBrushXml.js"></script>
-<script src="js/shBrushJScript.js"></script>
 <!-- COLLECTED JS -->
-<script>
+<script id="jsdemo1">
 require([
     'dollar',
     'cardkit/app',
@@ -300,19 +352,10 @@ require([
     }
 
 });
-
-SyntaxHighlighter.defaults['toolbar'] = false;
-SyntaxHighlighter.all();
-define('cardkit/env', [], function(){
-    return {
-        showScrollMask: true,
-        showControlMask: true,
-        enableConsole: true
-    };
-});
 </script>
-<script>
-</script>
-<!-- vagrant-->
+<script src="js/shCore.js"></script>
+<script src="js/shBrushXml.js"></script>
+<script src="js/shBrushJScript.js"></script>
+<script src="js/common.js"></script>
 </body>
 </html>

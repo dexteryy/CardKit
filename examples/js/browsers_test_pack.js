@@ -1512,10 +1512,12 @@ define('mo/console', [
             this._ccBuffer.push(newlog);
             var result = this._ccBuffer.join('');
             if (!this._recording) {
-                if (!this._ccOutput) {
-                    this._ccOutput = default_output();
+                //if (!this._ccOutput) {
+                    //this._ccOutput = default_output();
+                //}
+                if (this._ccOutput) {
+                    this._ccOutput.innerHTML = result;
                 }
-                this._ccOutput.innerHTML = result;
             }
             return result;
         }
@@ -1550,12 +1552,12 @@ define('mo/console', [
         };
     }
 
-    function default_output(){
-        var output = document.createElement('DIV');
-        output.setAttribute('id', 'console');
-        document.body.insertBefore(output, document.body.firstChild);
-        return output;
-    }
+    //function default_output(){
+        //var output = document.createElement('DIV');
+        //output.setAttribute('id', 'console');
+        //document.body.insertBefore(output, document.body.firstChild);
+        //return output;
+    //}
 
     function escape_log(text){
         var method = this;
@@ -3663,7 +3665,8 @@ define("dollar/origin", [
                 nodes.prevObject = contexts = this;
             }
             if (/^#[\w_]+$/.test(selector)) {
-                var elm = (contexts[0] || doc).getElementById(selector.substr(1));
+                var elm = ((contexts[0] || doc).getElementById 
+                    || doc.getElementById).call(doc, selector.substr(1));
                 if (elm) {
                     nodes.push(elm);
                 }

@@ -1571,7 +1571,8 @@ define("dollar/origin", [
                 nodes.prevObject = contexts = this;
             }
             if (/^#[\w_]+$/.test(selector)) {
-                var elm = (contexts[0] || doc).getElementById(selector.substr(1));
+                var elm = ((contexts[0] || doc).getElementById 
+                    || doc.getElementById).call(doc, selector.substr(1));
                 if (elm) {
                     nodes.push(elm);
                 }
@@ -2909,6 +2910,10 @@ define("../cardkit/render", [
                     blank: card.data('cfgBlank')
                 };
 
+            if (!opt.isModal) {
+                card.find('script[type="text/cardsource"]').forEach(run_script);
+            }
+
             var has_content = exports.initUnit(units, raw);
 
             if (!has_content && !opt.isModal && config.blank != 'false') {
@@ -2918,11 +2923,27 @@ define("../cardkit/render", [
             }
 
             if (!opt.isModal) {
+
                 card.append(footer.clone())
                     .prepend($('.ck-banner-unit', card))
                     .prepend(TPL_TIPS);
+
+                card.find('script[type="text/cardready"]').forEach(run_script);
+
             }
 
+        },
+
+        openCard: function(card, opt){
+            if (!opt.isModal) {
+                card.find('script[type="text/cardopen"]').forEach(run_script);
+            }
+        },
+
+        closeCard: function(card, opt){
+            if (!opt.isModal) {
+                card.find('script[type="text/cardclose"]').forEach(run_script);
+            }
         },
 
         initUnit: function(units, raw){
@@ -3012,6 +3033,10 @@ define("../cardkit/render", [
         }
     
     };
+
+    function run_script(script){
+        window["eval"].call(window, script.innerHTML);
+    }
 
     return exports;
 
@@ -7057,10 +7082,12 @@ define("../cardkit/app", [
     }
 
     function handle_control(){
-        var controller = control(this);
-        if (!controller.isEnabled) {
+        var controller = control(this),
+            cfg = controller.data();
+        if (cfg.disableUrl || cfg.disableJsonUrl) {
+            controller.toggle();
+        } else if (!controller.isEnabled) {
             controller.enable();
-            mark_gc(controller);
         }
     } 
 
@@ -7243,10 +7270,10 @@ define("../cardkit/app", [
             }
             this.controlMask = $(TPL_MASK).appendTo(body);
             if (env.showControlMask) {
-                //this.controlMask.css({
-                    //'opacity': '0.2',
-                    //'background': '#0f0'
-                //});
+                this.controlMask.css({
+                    'opacity': '0.2',
+                    'background': '#0f0'
+                });
             }
             this.cardMask = $(TPL_CARD_MASK).appendTo(body);
             this.headerHeight = this.header.height();
@@ -7574,6 +7601,7 @@ define("../cardkit/app", [
         },
 
         initView: function(card, opt){
+            render.openCard(card, opt);
             if (!card.data('rendered') && !opt.preventRender) {
                 render.initCard(card, this.raw, this.footer, opt);
                 if (!opt.isModal && !opt.isActions) {
@@ -7584,16 +7612,19 @@ define("../cardkit/app", [
             //clear_active_item_mask(card);
         },
 
-        releaseView: function(){
-            control.gc(check_gc);
-            picker.gc(check_gc);
-            this.viewportGarbage = {};
-            gc_id = 0;
+        releaseView: function(opt){
+            //control.gc(check_gc);
+            //picker.gc(check_gc);
+            //this.viewportGarbage = {};
+            //gc_id = 0;
+            if (this.viewport) {
+                render.closeCard(this.viewport, opt);
+            }
         },
 
         changeView: function(card, opt){
             opt = opt || {};
-            //this.releaseView(); // @TODO release when modal open
+            this.releaseView(opt);
             if (typeof card === 'string') {
                 card = $('#' + card);
             }
@@ -8139,9 +8170,9 @@ define("../cardkit/app", [
         return last_unit;
     }
 
-    function check_gc(controller){
-        return ck.viewportGarbage[controller.parentId];
-    }
+    //function check_gc(controller){
+        //return ck.viewportGarbage[controller.parentId];
+    //}
 
     function enable_control(){}
 
@@ -8196,13 +8227,6 @@ require([
             }).enable();
 
             init();
-
-            bus.once('readycardchange', function(){
-                console.config({
-                    record: false, 
-                    output: $('#console')[0]
-                });
-            });
 
         });
     } else {

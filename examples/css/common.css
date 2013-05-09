@@ -1,7 +1,7 @@
 
 .topbox h2 {
-    font-size:20px;
-    border-bottom:1px solid #dadada;
+    /*font-size:13px;*/
+    /*border-bottom:1px solid #dadada;*/
 }
 .topbox .mods {
     padding:5px 0 0 20px;
@@ -15,8 +15,15 @@
   font-size:14px;
 }
 
+.syntaxhighlighter {
+  /*overflow:hidden!important;*/
+  /*overflow-x:scroll!important;*/
+  /*-webkit-overflow-scrolling: touch;*/
+  padding:10px 0;
+}
+
 #console {
-  height:100px;
+  height:5000px;
   overflow-y:scroll;
   -webkit-overflow-scrolling: touch;
 }

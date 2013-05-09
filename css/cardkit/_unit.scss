@@ -185,6 +185,10 @@
       font-weight:bold;
     }
 
+    &:last-child {
+      margin-bottom:0;
+    }
+
   }
 
   .ck-unit-wrap > footer {
@@ -221,7 +225,6 @@
 
     &:first-child {
       //padding-top:0;
-      border-top:1px solid $view_border_color;
     }
 
     &:last-child {
@@ -538,8 +541,12 @@
       color:$text_color;
     }
 
-    .ck-initem {
-      @extend %more-link;
+    .clickable {
+
+      .ck-initem {
+        @extend %more-link;
+      }
+
     }
 
   }
@@ -739,8 +746,13 @@
     padding:$space 0;
     display:block;
 
+    &:first-child {
+      padding-top:$morespace;
+    }
+
     &:last-child {
       border:none;
+      padding-bottom:$morespace;
     }
 
     &.blank {
@@ -812,6 +824,7 @@
 .ck-banner-unit {
   background:#fff;
   padding: $space/2;
+  margin-bottom:$morespace;
   //margin-top: $nav_height;
   font-size:13px;
   border-bottom:1px solid rgba(0,0,0,.2);

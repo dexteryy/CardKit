@@ -31,6 +31,10 @@ define([
                     blank: card.data('cfgBlank')
                 };
 
+            if (!opt.isModal) {
+                card.find('script[type="text/cardsource"]').forEach(run_script);
+            }
+
             var has_content = exports.initUnit(units, raw);
 
             if (!has_content && !opt.isModal && config.blank != 'false') {
@@ -40,11 +44,27 @@ define([
             }
 
             if (!opt.isModal) {
+
                 card.append(footer.clone())
                     .prepend($('.ck-banner-unit', card))
                     .prepend(TPL_TIPS);
+
+                card.find('script[type="text/cardready"]').forEach(run_script);
+
             }
 
+        },
+
+        openCard: function(card, opt){
+            if (!opt.isModal) {
+                card.find('script[type="text/cardopen"]').forEach(run_script);
+            }
+        },
+
+        closeCard: function(card, opt){
+            if (!opt.isModal) {
+                card.find('script[type="text/cardclose"]').forEach(run_script);
+            }
         },
 
         initUnit: function(units, raw){
@@ -134,6 +154,10 @@ define([
         }
     
     };
+
+    function run_script(script){
+        window["eval"].call(window, script.innerHTML);
+    }
 
     return exports;
 
