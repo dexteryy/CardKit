@@ -628,6 +628,10 @@ body.no-cardscroll .ck-card {
   margin: 10px 0;
   border: none;
 }
+[data-cfg-plainhd="true"].ck-box-unit:not([data-cfg-paper]) .ck-hd-wrap .ck-hd, [data-cfg-plainhd="true"].ck-list-unit:not([data-cfg-paper]):not([data-style="split"]) .ck-hd-wrap .ck-hd, [data-cfg-plainhd="true"].ck-form-unit .ck-hd-wrap .ck-hd, [data-cfg-plainhd="true"].ck-blank-unit .ck-hd-wrap .ck-hd, .ck-list-unit[data-style="split"] .ck-hd-wrap .ck-hd, .ck-mini-unit[data-style="slide"] .ck-hd-wrap .ck-hd {
+  overflow-x: scroll;
+  -webkit-overflow-scrolling: touch;
+}
 [data-cfg-plainhd="true"].ck-box-unit:not([data-cfg-paper]) .ck-unit-wrap > section, [data-cfg-plainhd="true"].ck-list-unit:not([data-cfg-paper]):not([data-style="split"]) .ck-unit-wrap > section, [data-cfg-plainhd="true"].ck-form-unit .ck-unit-wrap > section, [data-cfg-plainhd="true"].ck-blank-unit .ck-unit-wrap > section, .ck-list-unit[data-style="split"] .ck-unit-wrap > section, .ck-mini-unit[data-style="slide"] .ck-unit-wrap > section {
   border-top: none;
 }
@@ -1068,10 +1072,15 @@ body.no-overflowscroll .ck-unit-wrap {
   margin-left: 10px;
   margin-right: 10px;
 }
-.ck-mini-unit[data-style="slide"] .ck-list-wrap.slide {
+.ck-mini-unit[data-style="slide"] .ck-unit-wrap {
+  overflow: hidden;
+}
+.ck-mini-unit[data-style="slide"] .ck-list-wrap {
   overflow-x: scroll;
-  margin-bottom: -8px;
   -webkit-overflow-scrolling: touch;
+}
+.ck-mini-unit[data-style="slide"] .ck-list-wrap.slide {
+  margin-bottom: -8px;
 }
 .ck-mini-unit[data-style="slide"] .ck-list-wrap.slide .ck-list {
   width: 5000px;
@@ -1083,10 +1092,10 @@ body.no-overflowscroll .ck-unit-wrap {
   margin: 0 0 0 10px;
   float: left;
 }
-body.no-overflowscroll .ck-mini-unit[data-style="slide"] .ck-list-wrap.slide {
+body.no-overflowscroll .ck-mini-unit[data-style="slide"] .ck-list-wrap {
   -webkit-overflow-scrolling: auto;
 }
-.ck-mini-unit[data-style="slide"] .ck-list-wrap.slide.stop-scroll {
+.ck-mini-unit[data-style="slide"] .ck-list-wrap.stop-scroll {
   -webkit-overflow-scrolling: auto;
 }
 .ck-mini-unit[data-style="slide"] .ck-item {

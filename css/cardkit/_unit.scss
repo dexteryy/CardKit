@@ -80,6 +80,12 @@
     padding:0;
     margin:$space 0;
     border:none;
+
+    .ck-hd {
+      overflow-x:scroll;
+      -webkit-overflow-scrolling: touch;
+    }
+
   }
 
   .ck-unit-wrap > section {
@@ -683,15 +689,15 @@
     }
 
     .ck-unit-wrap {
-      //overflow:hidden;
+      overflow:hidden;
     }
 
     .ck-list-wrap {
+      overflow-x:scroll;
+      -webkit-overflow-scrolling: touch;
 
       &.slide {
-        overflow-x:scroll;
         margin-bottom:-8px;
-        -webkit-overflow-scrolling: touch;
 
         .ck-list {
           width:5000px;
@@ -705,14 +711,14 @@
           float:left;
         }
 
-        body.no-overflowscroll & {
-          -webkit-overflow-scrolling: auto;
-        }
+      }
 
-        &.stop-scroll {
-          -webkit-overflow-scrolling: auto;
-        }
+      body.no-overflowscroll & {
+        -webkit-overflow-scrolling: auto;
+      }
 
+      &.stop-scroll {
+        -webkit-overflow-scrolling: auto;
       }
 
     }
