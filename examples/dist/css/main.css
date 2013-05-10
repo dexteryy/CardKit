@@ -632,6 +632,10 @@ body.no-cardscroll .ck-card {
   overflow-x: scroll;
   -webkit-overflow-scrolling: touch;
 }
+body.no-overflowscroll [data-cfg-plainhd="true"].ck-box-unit:not([data-cfg-paper]) .ck-hd-wrap .ck-hd, body.no-overflowscroll [data-cfg-plainhd="true"].ck-list-unit:not([data-cfg-paper]):not([data-style="split"]) .ck-hd-wrap .ck-hd, body.no-overflowscroll [data-cfg-plainhd="true"].ck-form-unit .ck-hd-wrap .ck-hd, body.no-overflowscroll [data-cfg-plainhd="true"].ck-blank-unit .ck-hd-wrap .ck-hd, body.no-overflowscroll .ck-list-unit[data-style="split"] .ck-hd-wrap .ck-hd, body.no-overflowscroll .ck-mini-unit[data-style="slide"] .ck-hd-wrap .ck-hd {
+  -webkit-overflow-scrolling: auto;
+  overflow: visible;
+}
 [data-cfg-plainhd="true"].ck-box-unit:not([data-cfg-paper]) .ck-unit-wrap > section, [data-cfg-plainhd="true"].ck-list-unit:not([data-cfg-paper]):not([data-style="split"]) .ck-unit-wrap > section, [data-cfg-plainhd="true"].ck-form-unit .ck-unit-wrap > section, [data-cfg-plainhd="true"].ck-blank-unit .ck-unit-wrap > section, .ck-list-unit[data-style="split"] .ck-unit-wrap > section, .ck-mini-unit[data-style="slide"] .ck-unit-wrap > section {
   border-top: none;
 }

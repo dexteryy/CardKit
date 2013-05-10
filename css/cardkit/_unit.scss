@@ -84,6 +84,12 @@
     .ck-hd {
       overflow-x:scroll;
       -webkit-overflow-scrolling: touch;
+
+      body.no-overflowscroll & {
+        -webkit-overflow-scrolling: auto;
+        overflow:visible;
+      }
+
     }
 
   }

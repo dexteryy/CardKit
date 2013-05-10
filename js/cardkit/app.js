@@ -491,7 +491,6 @@ define([
                 wrapper_delegate.on('touchend', {
                     '.ck-mini-unit .ck-list-wrap *': function(e){
                         e.preventDefault();
-                        e.stopPropagation();
                     }
                 });
 
