@@ -39,7 +39,8 @@ define([
 
         if (opt.source) {
             opt.content = $('.' + opt.source).map(function(elm){
-                if ($(elm).attr('type') === 'text/jscode') {
+                var type = $(elm).attr('type');
+                if (type === 'text/cardscript' || type === 'text/jscode') {
                     return '<script>' + elm.innerHTML + '</script>';
                 } else {
                     return elm.innerHTML;

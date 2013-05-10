@@ -18,7 +18,9 @@ define([
     boxParser, listParser, miniParser, formParser,
     supports){
 
-    var TPL_TIPS = '<div class="ck-top-tips">'
+    var SCRIPT_TAG = 'script[type="text/cardscript"]',
+
+        TPL_TIPS = '<div class="ck-top-tips">'
         + (supports.HIDE_TOPBAR ? '长按顶部导航条，可拖出浏览器地址栏' : '')
         + '</div>';
 
@@ -32,7 +34,7 @@ define([
                 };
 
             if (!opt.isModal) {
-                card.find('script[type="text/cardsource"]').forEach(run_script);
+                card.find(SCRIPT_TAG + '[data-hook="source"]').forEach(run_script);
             }
 
             var has_content = exports.initUnit(units, raw);
@@ -49,7 +51,7 @@ define([
                     .prepend($('.ck-banner-unit', card))
                     .prepend(TPL_TIPS);
 
-                card.find('script[type="text/cardready"]').forEach(run_script);
+                card.find(SCRIPT_TAG + '[data-hook="ready"]').forEach(run_script);
 
             }
 
@@ -57,13 +59,13 @@ define([
 
         openCard: function(card, opt){
             if (!opt.isModal) {
-                card.find('script[type="text/cardopen"]').forEach(run_script);
+                card.find(SCRIPT_TAG + '[data-hook="open"]').forEach(run_script);
             }
         },
 
         closeCard: function(card, opt){
             if (!opt.isModal) {
-                card.find('script[type="text/cardclose"]').forEach(run_script);
+                card.find(SCRIPT_TAG + '[data-hook="close"]').forEach(run_script);
             }
         },
 
