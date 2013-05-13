@@ -121,6 +121,19 @@ define('moui/picker', [
             return elm;
         },
 
+        getOptions: function() {
+            return this._options;
+        },
+
+        getSelected: function() {
+            if (this._config.multiselect) {
+                return this._allSelected || [];
+            } else {
+                return this._lastSelected
+                    ? [this._lastSelected] : [];
+            }
+        },
+
         val: function(){
             if (!this._config) {
                 return;

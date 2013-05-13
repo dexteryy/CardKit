@@ -3690,7 +3690,10 @@ define("../cardkit/view/growl", [
         lib = {};
 
     function exports(elm, opt){
-        var id;
+        var id,
+            defaults = {
+                corner: 'bottom'
+            };
         if (elm.nodeName) {
             elm = $(elm);
             id = elm[0][UID];
@@ -3698,9 +3701,9 @@ define("../cardkit/view/growl", [
                 lib[id].close();
             }
             id = elm[0][UID] = ++uid;
-            opt = _.mix({}, elm.data(), opt);
+            opt = _.mix(defaults, elm.data(), opt);
         } else {
-            opt = elm || {};
+            opt = _.mix(defaults, elm);
         }
         opt.className = 'ck-growl';
         var g = growl(opt);
@@ -3830,16 +3833,16 @@ define('moui/control', [
             }
         },
 
-        plus: function(n){
+        num: function(n) {
             if (!this._numField[0]) {
                 return;
             }
             if (this._isNumFieldClose) {
                 return this._numField
-                    .val(parseFloat(this._numField.val()) + n);
+                    .val(n != null ? (parseFloat(this._numField.val()) + n) : undefined);
             } else {
                 return this._numField
-                    .html(parseFloat(this._numField.html()) + n);
+                    .html(n != null ? (parseFloat(this._numField.html()) + n) : undefined);
             }
         },
 
@@ -3874,7 +3877,7 @@ define('moui/control', [
             this.isEnabled = true;
             this._node.addClass('enabled');
             this.val(this._config.enableVal);
-            this.plus(this._config.numStep);
+            this.num(this._config.numStep);
             if (this._config.enableLabel) {
                 this.label(this._config.enableLabel);
             }
@@ -3890,7 +3893,7 @@ define('moui/control', [
             this.isEnabled = false;
             this._node.removeClass('enabled');
             this.val(this._config.disbleVal);
-            this.plus(0 - this._config.numStep);
+            this.num(0 - this._config.numStep);
             if (this._config.disableLabel) {
                 this.label(this._config.disableLabel);
             }
@@ -4035,6 +4038,19 @@ define('moui/picker', [
                 })[0];
             }
             return elm;
+        },
+
+        getOptions: function() {
+            return this._options;
+        },
+
+        getSelected: function() {
+            if (this._config.multiselect) {
+                return this._allSelected || [];
+            } else {
+                return this._lastSelected
+                    ? [this._lastSelected] : [];
+            }
         },
 
         val: function(){
@@ -5084,8 +5100,14 @@ define("../cardkit/view/picker", [
     function request(cfg, fn){
         var url = cfg.jsonUrl || cfg.url;
         if (url) {
+            var data;
+            url = url.replace(/\?(.+)$/, function($0, $1) {
+                data = $1.replace(/#.*/, '');
+                return '';
+            });
             net.ajax({
                 url: url,
+                data: data,
                 type: cfg.method || 'post',
                 dataType: cfg.jsonUrl ? 'json' : 'text',
                 success: fn
@@ -5196,9 +5218,15 @@ define("../cardkit/view/control", [
             var self = this,
                 url = cfg.jsonUrl || cfg.url;
             if (url) {
+                var data;
+                url = url.replace(/\?(.+)$/, function($0, $1) {
+                    data = $1.replace(/#.*/, '');
+                    return '';
+                });
                 self.showLoading();
                 net.ajax({
                     url: url,
+                    data: data,
                     type: cfg.method || 'post',
                     dataType: cfg.jsonUrl ? 'json' : 'text',
                     success: function(data){
@@ -7819,6 +7847,12 @@ define("../cardkit/app", [
                 cancelText: '取消',
                 multiselect: true
             }, opt)).open().event.once('confirm', cb);
+        },
+
+        notify: function(content, opt) {
+            ck.growl(_.mix({
+                content: content
+            }, opt)).open();
         },
 
         openURL: open_url,

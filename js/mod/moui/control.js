@@ -112,16 +112,16 @@ define('moui/control', [
             }
         },
 
-        plus: function(n){
+        num: function(n) {
             if (!this._numField[0]) {
                 return;
             }
             if (this._isNumFieldClose) {
                 return this._numField
-                    .val(parseFloat(this._numField.val()) + n);
+                    .val(n != null ? (parseFloat(this._numField.val()) + n) : undefined);
             } else {
                 return this._numField
-                    .html(parseFloat(this._numField.html()) + n);
+                    .html(n != null ? (parseFloat(this._numField.html()) + n) : undefined);
             }
         },
 
@@ -156,7 +156,7 @@ define('moui/control', [
             this.isEnabled = true;
             this._node.addClass('enabled');
             this.val(this._config.enableVal);
-            this.plus(this._config.numStep);
+            this.num(this._config.numStep);
             if (this._config.enableLabel) {
                 this.label(this._config.enableLabel);
             }
@@ -172,7 +172,7 @@ define('moui/control', [
             this.isEnabled = false;
             this._node.removeClass('enabled');
             this.val(this._config.disbleVal);
-            this.plus(0 - this._config.numStep);
+            this.num(0 - this._config.numStep);
             if (this._config.disableLabel) {
                 this.label(this._config.disableLabel);
             }

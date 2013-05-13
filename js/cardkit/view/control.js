@@ -40,9 +40,15 @@ define([
             var self = this,
                 url = cfg.jsonUrl || cfg.url;
             if (url) {
+                var data;
+                url = url.replace(/\?(.+)$/, function($0, $1) {
+                    data = $1.replace(/#.*/, '');
+                    return '';
+                });
                 self.showLoading();
                 net.ajax({
                     url: url,
+                    data: data,
                     type: cfg.method || 'post',
                     dataType: cfg.jsonUrl ? 'json' : 'text',
                     success: function(data){

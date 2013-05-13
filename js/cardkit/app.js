@@ -912,6 +912,12 @@ define([
             }, opt)).open().event.once('confirm', cb);
         },
 
+        notify: function(content, opt) {
+            ck.growl(_.mix({
+                content: content
+            }, opt)).open();
+        },
+
         openURL: open_url,
 
         delegate: soviet(document, {
