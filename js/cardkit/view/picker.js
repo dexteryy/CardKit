@@ -13,8 +13,14 @@ define([
     function request(cfg, fn){
         var url = cfg.jsonUrl || cfg.url;
         if (url) {
+            var data;
+            url = url.replace(/\?(.+)$/, function($0, $1) {
+                data = $1.replace(/#.*/, '');
+                return '';
+            });
             net.ajax({
                 url: url,
+                data: data,
                 type: cfg.method || 'post',
                 dataType: cfg.jsonUrl ? 'json' : 'text',
                 success: fn

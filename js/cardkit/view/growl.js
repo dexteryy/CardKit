@@ -10,7 +10,10 @@ define([
         lib = {};
 
     function exports(elm, opt){
-        var id;
+        var id,
+            defaults = {
+                corner: 'bottom'
+            };
         if (elm.nodeName) {
             elm = $(elm);
             id = elm[0][UID];
@@ -18,9 +21,9 @@ define([
                 lib[id].close();
             }
             id = elm[0][UID] = ++uid;
-            opt = _.mix({}, elm.data(), opt);
+            opt = _.mix(defaults, elm.data(), opt);
         } else {
-            opt = elm || {};
+            opt = _.mix(defaults, elm);
         }
         opt.className = 'ck-growl';
         var g = growl(opt);
