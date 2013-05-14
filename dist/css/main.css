@@ -1080,10 +1080,10 @@ body.no-overflowscroll .ck-unit-wrap {
   overflow: hidden;
 }
 .ck-mini-unit[data-style="slide"] .ck-list-wrap {
-  overflow-x: scroll;
   -webkit-overflow-scrolling: touch;
 }
 .ck-mini-unit[data-style="slide"] .ck-list-wrap.slide {
+  overflow-x: scroll;
   margin-bottom: -8px;
 }
 .ck-mini-unit[data-style="slide"] .ck-list-wrap.slide .ck-list {

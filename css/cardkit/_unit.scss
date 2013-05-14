@@ -699,10 +699,10 @@
     }
 
     .ck-list-wrap {
-      overflow-x:scroll;
       -webkit-overflow-scrolling: touch;
 
       &.slide {
+        overflow-x:scroll;
         margin-bottom:-8px;
 
         .ck-list {

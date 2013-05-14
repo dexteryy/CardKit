@@ -7585,16 +7585,20 @@ define("../cardkit/app", [
 
                 //console.info(travel_history, restore_state, current_state)
 
-            } else if (supports.PREVENT_CACHE) {
+            } else {
 
-                $(window).bind("popstate", function(){
-                    ck.hideTopbar();
-                    ck.viewport.hide();
-                    ck.changeView(ck.loadingCard);
-                    setTimeout(function(){
-                        window.location.reload();
-                    }, 100);
-                });
+                if (supports.PREVENT_CACHE) {
+
+                    $(window).bind("popstate", function(){
+                        ck.hideTopbar();
+                        ck.viewport.hide();
+                        ck.changeView(ck.loadingCard);
+                        setTimeout(function(){
+                            window.location.reload();
+                        }, 100);
+                    });
+
+                }
 
             }
 
@@ -7958,6 +7962,7 @@ define("../cardkit/app", [
                 return;
             }
         }
+        ck.disableControl();
         if (!supports.UNIVERSAL_TRANS 
                 && next === ck.loadingCard) {
             if (true_link) {
@@ -7971,7 +7976,6 @@ define("../cardkit/app", [
         if (!is_forward) {
             push_history(current[0].id, next_id, true_link);
         }
-        ck.disableControl();
         if (!supports.UNIVERSAL_TRANS) {
             ck.loadingCard.addClass('moving').show();
             setTimeout(function(){
@@ -8166,12 +8170,14 @@ define("../cardkit/app", [
             open_window(true_link, opt.target);
         } else {
             if (!supports.UNIVERSAL_TRANS) {
-                if (supports.PREVENT_CACHE) {
+                //if (supports.PREVENT_CACHE) {
                     ck.hideTopbar();
                     ck.viewport.hide();
                     ck.changeView(ck.loadingCard);
-                }
-                location.href = true_link;
+                //}
+                setTimeout(function(){
+                    location.href = true_link;
+                }, 0);
                 return;
             }
             ck.hideTopbar();
