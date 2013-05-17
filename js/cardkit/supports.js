@@ -42,11 +42,11 @@ define([
     exports.PREVENT_CACHE = browsers.aosp 
         || browsers.mobilesafari && !exports.HISTORY;
 
-    exports.UNIVERSAL_TRANS = exports.HISTORY
-        && exports.CARD_SCROLL
-        && !browsers.aosp 
-        && !is_ios5
-        && !is_desktop;
+    //exports.UNIVERSAL_TRANS = exports.HISTORY
+        //&& exports.CARD_SCROLL
+        //&& !browsers.aosp 
+        //&& !is_ios5
+        //&& !is_desktop;
 
     exports.WINDOW_SCROLL = !exports.CARD_SCROLL 
         || is_android;

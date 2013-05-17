@@ -18,23 +18,3 @@
   @extend .moui-folder;
 }
 
-.ck-modal-button {
-  @extend .ckbase-btn;
-}
-
-.ck-select,
-.ck-actions-button {
-
-  .ck-option {
-    display:none;
-  }
-
-}
-
-.ck-actions-button {
-  @extend .ckbase-btn;
-}
-
-.ck-growl-button {
-  @extend .ckbase-btn;
-}

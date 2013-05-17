@@ -1,0 +1,26 @@
+@import "moui/picker/select";
+
+.ck-modal-button {
+  @extend .ckbase-btn;
+}
+
+.ck-actions-button {
+  @extend .ckbase-btn;
+}
+
+.ck-select {
+  @extend .moui-select;
+}
+
+.ck-select,
+.ck-actions-button {
+
+  .ck-option {
+    display:none;
+  }
+
+}
+
+.ck-growl-button {
+  @extend .ckbase-btn;
+}

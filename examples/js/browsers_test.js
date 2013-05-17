@@ -140,5 +140,39 @@ require([
         //}
     }
 
+    $('.btn6').bind('click', add_hash);
+
+    $(window).bind("hashchange", function(){
+        console.warn('hashchange', location.hash);
+    });
+
+    //add_hash();
+    //setTimeout(function(){
+        //add_hash();
+        //setTimeout(function(){
+            //add_hash();
+        //}, 1000)
+    //}, 1000)
+
+    function add_hash(){
+        location.href = location.href.replace(/#(.*)|$/, '#$1' + '!/' + 'cardid');
+    }
+
+    $('.btn7').bind('click', function(){
+        alert(history.length)
+        history.back();
+    });
+
+    $('.btn8').bind('click', function(){
+        alert(history.length)
+        history.back();
+        $(window).bind("hashchange", function(){
+            setTimeout(function(){
+                alert(history.length)
+                history.back();
+            }, 500)
+        });
+    });
+
 });
 
