@@ -374,6 +374,7 @@ body.no-cardscroll.modal-view .ck-wrapper {
 .ck-card {
   display: none;
   width: 100%;
+  height: 100%;
   background: #f2f2f2;
   -webkit-box-shadow: 1px 0px 2px rgba(0, 0, 0, 0.1);
   -moz-box-shadow: 1px 0px 2px rgba(0, 0, 0, 0.1);
@@ -1249,14 +1250,10 @@ body.no-overflowscroll .ck-mini-unit[data-style="slide"] .ck-list-wrap {
   margin: 0;
 }
 .moui-folder .content, .ck-folder .content {
-  height: 0;
-  overflow: hidden;
-  -webkit-transition: height 0.3s;
-  -moz-transition: height 0.3s;
-  transition: height 0.3s;
+  display: none;
 }
 .moui-folder.enabled .content, .enabled.ck-folder .content {
-  height: auto;
+  display: block;
 }
 
 .moui-segment, .ck-segment {

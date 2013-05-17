@@ -460,9 +460,17 @@ define("dollar/origin", [
 
         // Event
 
-        bind: event_access('add'),
+        on: event_access('add'),
 
-        unbind: event_access('remove'),
+        off: event_access('remove'),
+
+        once: function(subject, cb){
+            var fn = function(){
+                $(this).unbind(subject, fn);
+                return cb.apply(this, arguments);
+            };
+            $(this).bind(subject, fn);
+        },
 
         trigger: trigger,
 
@@ -483,6 +491,9 @@ define("dollar/origin", [
         }
 
     });
+
+    ext.bind = ext.on;
+    ext.unbind = ext.off;
 
     // private
 

@@ -142,28 +142,41 @@ require([
 
     $('.btn6').bind('click', add_hash);
 
+    $('.btn7').bind('click', replace_hash);
+
     $(window).bind("hashchange", function(){
         console.warn('hashchange', location.hash);
     });
 
     //add_hash();
-    //setTimeout(function(){
+    setTimeout(function(){
+        //location.href = location.href.replace(/#.*/, '') + '?a=1'
         //add_hash();
-        //setTimeout(function(){
-            //add_hash();
-        //}, 1000)
-    //}, 1000)
+    }, 1000);
+
+    //$(window).bind('touchstart', function(){
+        //add_hash();
+        //$(window).unbind('touchstart', arguments.callee)
+    //});
 
     function add_hash(){
+        alert(history.length)
         location.href = location.href.replace(/#(.*)|$/, '#$1' + '!/' + 'cardid');
+        alert(history.length)
     }
 
-    $('.btn7').bind('click', function(){
+    function replace_hash(){
+        alert(history.length + ', ' + location.href)
+        location.replace(location.href.replace(/#(.*)|$/, '#$1' + '*/' + 'cardid'))
+        alert(history.length + ', ' + location.href)
+    }
+
+    $('.btn8').bind('click', function(){
         alert(history.length)
         history.back();
     });
 
-    $('.btn8').bind('click', function(){
+    $('.btn9').bind('click', function(){
         alert(history.length)
         history.back();
         $(window).bind("hashchange", function(){

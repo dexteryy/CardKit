@@ -70,22 +70,11 @@ define([
             //clear_active_item_mask(ck.viewport);
         //},
         
-        '.ck-card .ck-post-link': handle_control,
+        '.ck-post-link': handle_control,
 
-        '.ck-card .ck-post-button': handle_control,
-        '.ck-card .ck-post-button span': function tap_ck_post(){
-            if (!$(this).hasClass('ck-post-button')) {
-                return tap_ck_post.call(this.parentNode);
-            }
-            handle_control.call(this);
-        },
+        '.ck-post-button, .ck-post-button span': tap_ck_post,
 
-        '.ck-card .ck-switch, .ck-card .ck-switch span': function tap_ck_switch(){
-            if (!$(this).hasClass('ck-switch')) {
-                return tap_ck_switch.call(this.parentNode);
-            }
-            toggle_control.call(this);
-        },
+        '.ck-switch, .ck-switch span': tap_ck_switch,
 
         '.ck-segment .ck-option, .ck-segment .ck-option span': function(){
             var btn = $(this);
@@ -192,6 +181,20 @@ define([
         var controller = control(this).toggle();
         mark_gc(controller);
     } 
+
+    function tap_ck_post(){
+        if (!$(this).hasClass('ck-post-button')) {
+            return tap_ck_post.call(this.parentNode);
+        }
+        handle_control.call(this);
+    }
+
+    function tap_ck_switch(){
+        if (!$(this).hasClass('ck-switch')) {
+            return tap_ck_switch.call(this.parentNode);
+        }
+        toggle_control.call(this);
+    }
 
     function show_actions(me){
         var opt = _.mix({
@@ -314,6 +317,7 @@ define([
         current[0].scrollTop = 0;
         ck.changeView(current, {
             preventRender: true,
+            preventScroll: true,
             isActions: true
         });
         if (!supports.CARD_SCROLL) {
@@ -328,6 +332,7 @@ define([
         }
         ck.changeView(last_view_for_actions, {
             preventRender: modalCard.isOpened,
+            preventScroll: true,
             isModal: modalCard.isOpened
         });
     }).bind('actionView:close', function(){
@@ -339,6 +344,7 @@ define([
         }
         ck.changeView(last_view_for_actions, {
             preventRender: modalCard.isOpened,
+            preventScroll: true,
             isModal: modalCard.isOpened
         });
     }).bind('actionView:jump', function(actionCard, href, target){
@@ -405,13 +411,8 @@ define([
             if (supports.HIDE_TOPBAR) {
                 $(body).addClass('mobilesafari-bar');
             }
-            this.initState();
 
-            setTimeout(function(){
-                ck.hideAddressbar();
-                ck.hideLoadingCard();
-                ck.enableControl();
-            }, 0);
+            this.initState();
 
             $(window).bind('resize', function(){
                 var current = ck.isLandscape();
@@ -570,6 +571,12 @@ define([
 
         },
 
+        showView: function(){
+            ck.hideAddressbar();
+            ck.hideLoadingCard();
+            ck.enableControl();
+        },
+
         initWindow: function(){
             this.landscapeMode = this.isLandscape();
             this.windowFullHeight = Infinity;
@@ -577,8 +584,7 @@ define([
 
         initState: function(){
 
-            var prevent_next_hash_event,
-                is_hash_change,
+            var is_hash_change,
                 back_from_otherpage,
                 rewrite_state;
 
@@ -586,14 +592,15 @@ define([
 
             $(window).bind("hashchange", function(e){
                 //alert(location.href + ', \n' 
-                 //+ e.newURL + ', \n' + e.oldURL + '\n' + ck._backFromSameUrl)
+                 //+ e.newURL + ', \n' + e.oldURL + '\n' 
+                 //+ ck._backFromSameUrl + '\n' + ck._preventNextHashEv)
                 if (ck._backFromSameUrl) {
                     return;
                 }
                 is_hash_change = true;
-                if (prevent_next_hash_event 
+                if (ck._preventNextHashEv 
                         || e.newURL.length >= e.oldURL.length) {
-                    prevent_next_hash_event = false;
+                    ck._preventNextHashEv = false;
                     return;
                 }
                 if (ck._sessionLocked) {
@@ -614,10 +621,8 @@ define([
                         //alert(3.1)
                         back_from_otherpage = false;
                         ck.changeView(rewrite_state);
-                        ck.hideLoadingCard();
-                        ck.enableControl();
-                        ck.showTopbar();
                         ck._sessionLocked = false;
+                        ck.showView();
                     } else {
                         //alert(3.2)
                         back_handler(rewrite_state);
@@ -651,12 +656,16 @@ define([
                 }
                 is_hash_change = false;
                 setTimeout(function(){
-                    //alert(10.1 + ': ' + location.href + ', ' + is_hash_change)
+                    //alert(10.1 + ': ' + location.href + ', ' + is_hash_change + ', ' + ck._backFromSameUrl)
                     if (!is_hash_change) {
                         //alert(10 +': ' + location.href + ', ' + ck._backFromSameUrl)
                         ck._sessionLocked = false;
                         back_from_otherpage = true;
-                        history.back();
+                        if (supports.GOBACK_WHEN_POP) {
+                            history.back();
+                        } else {
+                            window.location.reload(true);
+                        }
                     }
                 }, 100);
             });
@@ -681,10 +690,9 @@ define([
                     });
                     last_state = card_states.pop();
                 }
-                valid_states = location.href.replace(/#.*/, '#') + valid_states.join('');
-                if (valid_states !== location.href) {
-                    prevent_next_hash_event = true;
-                    location.replace(valid_states);
+                valid_states = '#' + valid_states.join('');
+                if (valid_states !== location.hash) {
+                    replace_hash(valid_states);
                 }
                 if (last_state === MODAL_CARDID) {
                     last_is_modal = true;
@@ -693,17 +701,19 @@ define([
             }
             //alert(0 + ': ' + last_state + ', ' + location.href)
             if (last_state) {
+                //alert(2);
                 ck.changeView(last_state);
                 if (last_state === LOADING_CARDID || last_is_modal) {
-                    //alert(2 + ': ' + last_state)
+                    //alert(2.1 + ': ' + document.referrer)
                     if (document.referrer) {
                         back_from_otherpage = true;
                         history.back();
                     } else {
-                        prevent_next_hash_event = true;
-                        location.replace(location.href.replace(/#.*/, '#'));
+                        replace_hash('#');
                         ck.initNewPage();
                     }
+                } else {
+                    ck.showView();
                 }
             } else {
                 //alert(1)
@@ -714,7 +724,8 @@ define([
 
         initNewPage: function(){
             ck.changeView(ck.defaultCard);
-            push_history(DEFAULT_CARDID); // @TODO ios chrome
+            push_history(DEFAULT_CARDID);
+            ck.showView();
         },
 
         initView: function(card, opt){
@@ -741,8 +752,8 @@ define([
 
         changeView: function(card, opt){
             opt = opt || {};
-            if (!supports.CARD_SCROLL) {
-                window.scrollTo(0, 0);
+            if (!supports.CARD_SCROLL && !opt.preventScroll) {
+                window.scrollTo(0, -1);
             }
             this.releaseView(opt);
             if (typeof card === 'string') {
@@ -816,8 +827,7 @@ define([
 
         hideLoadingCard: function() {
             ck.loadingCard.hide().css({
-                position: 'static',
-                height: window.innerHeight + 'px'
+                position: 'static'
             });
             ck.showTopbar();
         },
@@ -1110,7 +1120,7 @@ define([
             ck.cardMask.removeClass('moving');
             next.removeClass('moving');
             if (true_link) {
-                location.href = true_link;
+                window.location = true_link;
             } else {
                 ck.enableControl();
                 ck._sessionLocked = false;
@@ -1169,9 +1179,15 @@ define([
 
     function push_history(next_id){
         //location.hash = location.hash + HASH_SEP + next_id;
-        //alert(location.href + ',\n' + history.length)
-        location.href = location.href.replace(/#(.*)|$/, '#$1' + HASH_SEP + next_id);
-        //alert(location.href + ',\n' + history.length)
+        window.location = location.href.replace(/#(.*)|$/, '#$1' + HASH_SEP + next_id);
+    }
+
+    function replace_hash(hash){
+        ck._preventNextHashEv = true;
+        location.replace(location.href.replace(/#.*/, '') + (hash || '#'));
+        if (!supports.REPLACE_HASH) {
+            window.location.reload();
+        }
     }
 
     function prevent_window_scroll(){
@@ -1216,7 +1232,7 @@ define([
             ck.changeView(next);
             setTimeout(function(){
                 current.hide();
-                location.href = true_link;
+                window.location = true_link;
             }, 10);
         }
     }

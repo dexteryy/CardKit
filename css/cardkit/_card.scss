@@ -2,6 +2,7 @@
 .ck-card {
   display:none;
   width:100%;
+  height:100%;
   background:$view_color;
   @include box-shadow(1px 0px 2px rgba(0,0,0,.1));
   @include user-select(none);

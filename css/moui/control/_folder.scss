@@ -18,13 +18,11 @@
     font-size:$maintitle_size;
     padding:0 0 0 (10px + 10px);
     margin:0;
-    //margin:0 0 $space 0;
   }
 
   .content {
-    height:0;
-    overflow:hidden;
-    @include transition(height 0.3s);
+    display:none;
+    //@include transition(height 0.3s);
   }
 
   &.enabled {
@@ -34,7 +32,7 @@
     }
   
     .content {
-      height:auto;
+      display:block;
     }
 
   }

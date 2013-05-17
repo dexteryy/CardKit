@@ -84,7 +84,7 @@ define('momo/base', [
             this.bind(ev, fn, node);
             function fn(){
                 self.unbind(ev, fn, node);
-                handler.apply(this, arguments);
+                return handler.apply(this, arguments);
             }
         },
 
