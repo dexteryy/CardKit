@@ -37,6 +37,7 @@ define([
         gc_id = 0,
 
         HASH_SEP = '!/',
+        CLEARED_HASH = '#' + HASH_SEP + 'i',
         DEFAULT_CARDID = 'ckDefault',
         LOADING_CARDID = 'ckLoading',
         MODAL_CARDID = '_modal_',
@@ -609,10 +610,6 @@ define([
                 }
                 if (rewrite_state) {
                     //alert(3 + ', ' + rewrite_state)
-                    var rewrite_card = rewrite_state && $('#' + rewrite_state) || [];
-                    if (!rewrite_card[0]) {
-                        return;
-                    }
                     window.scrollTo(0, -1);
                     push_history(rewrite_state);
                     if (modalCard.isOpened) {
@@ -631,11 +628,16 @@ define([
                     return;
                 }
                 var state = location.hash.split(HASH_SEP).pop();
-                if (state) {
+                if (state && state !== 'i') {
                     //alert(3)
+                    ck._sessionLocked = false;
                     rewrite_state = state === MODAL_CARDID && DEFAULT_CARDID 
                         || state;
-                    ck._sessionLocked = false;
+                    var card = $('#' + rewrite_state) || [];
+                    if (!card[0]) {
+                        window.location.reload(true);
+                        return;
+                    }
                     history.back();
                 } else {
                     //alert(4)
@@ -678,40 +680,42 @@ define([
             }
             if (card_states) {
                 var valid_states = [];
-                if (card_states[1] === DEFAULT_CARDID) {
-                    card_states = card_states.map(function(next_id){
-                        if (next_id === MODAL_CARDID
-                                || (next_id && $('#' + next_id) || [])[0]) {
-                            valid_states.push(HASH_SEP + next_id);
-                            return next_id;
-                        }
-                    }).filter(function(next_id){
+                card_states = card_states.map(function(next_id){
+                    if (next_id === MODAL_CARDID
+                            || next_id === 'i'
+                            || (next_id && $('#' + next_id) || [])[0]) {
+                        valid_states.push(HASH_SEP + next_id);
                         return next_id;
-                    });
-                    last_state = card_states.pop();
-                }
-                valid_states = '#' + valid_states.join('');
-                if (valid_states !== location.hash) {
-                    replace_hash(valid_states);
+                    }
+                }).filter(function(next_id){
+                    return next_id;
+                });
+                last_state = card_states.pop();
+                valid_states = valid_states.join('');
+                if ('#' + valid_states !== location.hash) {
+                    replace_hash(CLEARED_HASH + valid_states);
+                    if (!supports.REPLACE_HASH) {
+                        return window.location.reload();
+                    }
                 }
                 if (last_state === MODAL_CARDID) {
                     last_is_modal = true;
                     last_state = DEFAULT_CARDID;
+                } else if (last_state === 'i') {
+                    last_state = null;
                 }
             }
-            //alert(0 + ': ' + last_state + ', ' + location.href)
-            if (last_state) {
+            //alert(0 + ': ' + document.referrer + ' , ' + location.href + ', ' + compare_link(document.referrer))
+            if (!compare_link(document.referrer)) {
+                replace_hash(CLEARED_HASH);
+                ck.initNewPage();
+            } else if (last_state) {
                 //alert(2);
                 ck.changeView(last_state);
                 if (last_state === LOADING_CARDID || last_is_modal) {
                     //alert(2.1 + ': ' + document.referrer)
-                    if (document.referrer) {
-                        back_from_otherpage = true;
-                        history.back();
-                    } else {
-                        replace_hash('#');
-                        ck.initNewPage();
-                    }
+                    back_from_otherpage = true;
+                    history.back();
                 } else {
                     ck.showView();
                 }
@@ -1184,10 +1188,7 @@ define([
 
     function replace_hash(hash){
         ck._preventNextHashEv = true;
-        location.replace(location.href.replace(/#.*/, '') + (hash || '#'));
-        if (!supports.REPLACE_HASH) {
-            window.location.reload();
-        }
+        location.replace(location.href.replace(/#.*/, '') + (hash || CLEARED_HASH));
     }
 
     function prevent_window_scroll(){
