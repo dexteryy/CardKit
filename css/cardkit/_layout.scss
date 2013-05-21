@@ -106,7 +106,7 @@ a {
     @include transform(translateY(-$nav_height));
     @include transition(transform 150ms);
 
-    body.ck-inited & {
+    body.no-cardscroll.ck-inited & {
       position:fixed;
     }
 

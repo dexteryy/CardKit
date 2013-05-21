@@ -277,7 +277,7 @@ a {
   -moz-transition: -moz-transform 150ms;
   transition: transform 150ms;
 }
-body.ck-inited .ck-root .ck-header, body.ck-inited .ck-root .ck-modalview > header {
+body.no-cardscroll.ck-inited .ck-root .ck-header, body.no-cardscroll.ck-inited .ck-root .ck-modalview > header {
   position: fixed;
 }
 .ck-root .ck-header .ck-top-title, .ck-root .ck-modalview > header .ck-top-title, .ck-root .ck-header .ck-modalview > header h1, .ck-modalview > header .ck-root .ck-header h1, .ck-root .ck-modalview > header h1 {
@@ -826,11 +826,11 @@ body.no-overflowscroll [data-cfg-plainhd="true"].ck-box-unit:not([data-cfg-paper
   display: block;
   width: 100%;
   height: 100%;
-  padding: 0 12.5px;
-  -webkit-transform: translateX(-12.5px);
-  -moz-transform: translateX(-12.5px);
-  -ms-transform: translateX(-12.5px);
-  transform: translateX(-12.5px);
+  padding: 0 10px;
+  -webkit-transform: translateX(-10px);
+  -moz-transform: translateX(-10px);
+  -ms-transform: translateX(-10px);
+  transform: translateX(-10px);
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   -ms-border-radius: 3px;
@@ -1158,25 +1158,25 @@ body.no-overflowscroll .ck-unit-wrap {
   margin-left: 10px;
   margin-right: 10px;
 }
-.ck-mini-unit[data-style="slide"] .ck-unit-wrap {
+.ck-mini-unit[data-style="slide"] .ck-unit-wrap.slide {
   overflow: hidden;
 }
-.ck-mini-unit[data-style="slide"] .ck-list-wrap {
-  -webkit-overflow-scrolling: touch;
-}
-.ck-mini-unit[data-style="slide"] .ck-list-wrap.slide {
+.ck-mini-unit[data-style="slide"] .ck-unit-wrap.slide .ck-list-wrap {
   overflow-x: scroll;
   margin-bottom: -8px;
 }
-.ck-mini-unit[data-style="slide"] .ck-list-wrap.slide .ck-list {
+.ck-mini-unit[data-style="slide"] .ck-unit-wrap.slide .ck-list-wrap .ck-list {
   width: 5000px;
   padding: 0 0 10px 0;
   overflow: hidden;
 }
-.ck-mini-unit[data-style="slide"] .ck-list-wrap.slide .ck-item {
+.ck-mini-unit[data-style="slide"] .ck-unit-wrap.slide .ck-list-wrap .ck-item {
   padding: 5px 0;
   margin: 0 0 0 10px;
   float: left;
+}
+.ck-mini-unit[data-style="slide"] .ck-list-wrap {
+  -webkit-overflow-scrolling: touch;
 }
 body.no-overflowscroll .ck-mini-unit[data-style="slide"] .ck-list-wrap {
   -webkit-overflow-scrolling: auto;

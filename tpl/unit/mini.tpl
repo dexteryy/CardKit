@@ -22,13 +22,13 @@
     {%= hd() %}
 {% } %}
 
-<article class="ck-unit-wrap">
+<article class="ck-unit-wrap {%= (data.items.length > 1 ? 'slide' : '') %}">
 
     {% if (!data.hasSplitHd) { %}
         {%= hd() %}
     {% } %}
 
-    <div class="ck-list-wrap {%= (data.items.length > 1 ? 'slide' : '') %}">
+    <div class="ck-list-wrap">
     {% if (data.items.length) { %}
 
         <div class="ck-list">

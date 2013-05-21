@@ -255,8 +255,8 @@
   display:block;
   width:100%;
   height:100%;
-  padding:0 (($morespace + $space)/2);
-  @include transform(translateX(-($morespace + $space)/2));
+  padding:0 (($space + $space)/2);
+  @include transform(translateX(-($space + $space)/2));
   //padding:0 (($morespace)/2);
   //@include transform(translateX(-($morespace)/2));
   @include border-radius($radius);
@@ -705,14 +705,10 @@
       margin-right: $space;
     }
 
-    .ck-unit-wrap {
+    .ck-unit-wrap.slide {
       overflow:hidden;
-    }
 
-    .ck-list-wrap {
-      -webkit-overflow-scrolling: touch;
-
-      &.slide {
+      .ck-list-wrap {
         overflow-x:scroll;
         margin-bottom:-8px;
 
@@ -729,6 +725,11 @@
         }
 
       }
+
+    }
+
+    .ck-list-wrap {
+      -webkit-overflow-scrolling: touch;
 
       body.no-overflowscroll & {
         -webkit-overflow-scrolling: auto;
