@@ -1,8 +1,9 @@
 define([
     'dollar',
     'mo/network',
-    'moui/modalview'
-], function($, net, modal) {
+    'moui/modalview',
+    '../supports'
+], function($, net, modal, supports) {
 
     var modalCard = modal({
             className: 'ck-modalview',
@@ -50,10 +51,12 @@ define([
         return origin_set.call(this, opt);
     };
     
-    modalCard.ok = modalCard.done = function(){
-        history.back();
-        return this.event.promise('close');
-    };
+    if (supports.BROWSER_CONTROL) {
+        modalCard.ok = modalCard.done = function(){
+            history.back();
+            return this.event.promise('close');
+        };
+    }
 
     modalCard.event.bind('confirm', function(modal){
         modal.event.fire('confirmOnThis', arguments);

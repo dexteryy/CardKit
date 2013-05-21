@@ -10,7 +10,7 @@ define([
         is_ios5 = is_ios
             && browsers.engine === 'webkit'
             && parseInt(browsers.engineversion, 10) < 536,
-        //is_mobilefirefox = browsers.mozilla && is_android,
+        is_mobilefirefox = browsers.mozilla && is_android,
         is_desktop = browsers.os === 'mac'
             || browsers.os === 'windows'
             || browsers.os === 'linux';
@@ -28,7 +28,11 @@ define([
 
         REPLACE_HASH: !browsers.aosp,
 
-        PUSH_HASH_BUG: browsers.crios,
+        BROWSER_CONTROL: is_desktop
+            || is_mobilefirefox
+            || browsers.mobilesafari
+            || browsers.aosp
+            || is_android && browsers.chrome,
 
         NEW_WIN: !is_ios5 && !browsers.aosp,
 

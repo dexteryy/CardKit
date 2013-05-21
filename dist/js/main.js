@@ -816,7 +816,7 @@ define("../cardkit/supports", [
         is_ios5 = is_ios
             && browsers.engine === 'webkit'
             && parseInt(browsers.engineversion, 10) < 536,
-        //is_mobilefirefox = browsers.mozilla && is_android,
+        is_mobilefirefox = browsers.mozilla && is_android,
         is_desktop = browsers.os === 'mac'
             || browsers.os === 'windows'
             || browsers.os === 'linux';
@@ -834,7 +834,11 @@ define("../cardkit/supports", [
 
         REPLACE_HASH: !browsers.aosp,
 
-        PUSH_HASH_BUG: browsers.crios,
+        BROWSER_CONTROL: is_desktop
+            || is_mobilefirefox
+            || browsers.mobilesafari
+            || browsers.aosp
+            || is_android && browsers.chrome,
 
         NEW_WIN: !is_ios5 && !browsers.aosp,
 
@@ -3422,6 +3426,13 @@ define("../cardkit/bus", [
 
 });
 
+/* @source ../cardkit/tpl/layout/ctlbar.js */;
+
+define("../cardkit/tpl/layout/ctlbar", [], function(){
+
+    return {"template":"<div class=\"ck-ctl-bar\">\n    <input type=\"button\" class=\"ck-ctl-backward\">\n    <input type=\"button\" class=\"ck-ctl-forward disabled\">\n    <input type=\"button\" class=\"ck-ctl-reload\">\n</div>\n"}; 
+
+});
 /* @source moui/overlay.js */;
 
 define('moui/overlay', [
@@ -4887,8 +4898,9 @@ define("mo/network", [
 define("../cardkit/view/modalcard", [
   "dollar",
   "mo/network",
-  "moui/modalview"
-], function($, net, modal) {
+  "moui/modalview",
+  "../cardkit/supports"
+], function($, net, modal, supports) {
 
     var modalCard = modal({
             className: 'ck-modalview',
@@ -4936,10 +4948,12 @@ define("../cardkit/view/modalcard", [
         return origin_set.call(this, opt);
     };
     
-    modalCard.ok = modalCard.done = function(){
-        history.back();
-        return this.event.promise('close');
-    };
+    if (supports.BROWSER_CONTROL) {
+        modalCard.ok = modalCard.done = function(){
+            history.back();
+            return this.event.promise('close');
+        };
+    }
 
     modalCard.event.bind('confirm', function(modal){
         modal.event.fire('confirmOnThis', arguments);
@@ -6959,6 +6973,7 @@ define("../cardkit/app", [
   "../cardkit/view/modalcard",
   "../cardkit/view/actionview",
   "../cardkit/view/growl",
+  "../cardkit/tpl/layout/ctlbar",
   "../cardkit/bus",
   "../cardkit/render",
   "../cardkit/supports",
@@ -6966,8 +6981,8 @@ define("../cardkit/app", [
   "mo/domready"
 ], function($, _, browsers, tpl, easing, soviet, choreo, 
     momoBase, momoTap, momoSwipe, momoDrag, momoScroll, 
-    control, picker, stars, modalCard, actionView, growl,
-    bus, render, supports, env){
+    control, picker, stars, modalCard, actionView, growl, 
+    tpl_ctlbar, bus, render, supports, env){
 
     var window = this,
         history = window.history,
@@ -7090,6 +7105,18 @@ define("../cardkit/app", [
 
         '.ck-modalview .wrapper > header .cancel': function(){
             modalCard.cancel();
+        },
+
+        '.ck-ctl-backward': function(){
+            if (ck.viewport[0].id === DEFAULT_CARDID) {
+                back_handler(LOADING_CARDID);
+            } else {
+                back_handler(ck.viewport.data('prevCard') || DEFAULT_CARDID);
+            }
+        },
+
+        '.ck-ctl-reload': function(){
+            window.location.reload();
         },
 
         '.ck-top-title': function(){
@@ -7303,6 +7330,10 @@ define("../cardkit/app", [
             var doc = $(document);
             this.wrapper = $('.ck-wrapper', root);
             this.header = $('.ck-header', root);
+            if (!supports.BROWSER_CONTROL) {
+                this.ctlbar = $(tpl_ctlbar.template).appendTo(this.wrapper);
+                $(body).addClass('has_ctlbar');
+            }
             this.footer = $('.ck-footer', root);
             this.raw = $('.ck-raw', root);
             this.loadingCard = $('#' + LOADING_CARDID).data('rendered', '1');
@@ -7515,6 +7546,7 @@ define("../cardkit/app", [
         },
 
         showView: function(){
+            $(body).addClass('ck-inited');
             ck.hideAddressbar();
             ck.hideLoadingCard();
             ck.enableControl();
@@ -7525,13 +7557,10 @@ define("../cardkit/app", [
             this.windowFullHeight = Infinity;
         },
 
-        initState: function(){
+        initStateWatcher: function(){
 
             var is_hash_change,
-                back_from_otherpage,
                 rewrite_state;
-
-            ck._sessionLocked = false;
 
             $(window).bind("hashchange", function(e){
                 //alert(location.href + ', \n' 
@@ -7556,9 +7585,9 @@ define("../cardkit/app", [
                     push_history(rewrite_state);
                     if (modalCard.isOpened) {
                         modalCard.close();
-                    } else if (back_from_otherpage) {
+                    } else if (ck._backFromOtherpage) {
                         //alert(3.1)
-                        back_from_otherpage = false;
+                        ck._backFromOtherpage = false;
                         ck.changeView(rewrite_state);
                         ck._sessionLocked = false;
                         ck.showView();
@@ -7571,7 +7600,7 @@ define("../cardkit/app", [
                 }
                 var state = location.hash.split(HASH_SEP).pop();
                 if (state && state !== 'i') {
-                    //alert(3)
+                    //alert(3 + ': ' + state)
                     ck._sessionLocked = false;
                     rewrite_state = state === MODAL_CARDID && DEFAULT_CARDID 
                         || state;
@@ -7601,10 +7630,10 @@ define("../cardkit/app", [
                 is_hash_change = false;
                 setTimeout(function(){
                     //alert(10.1 + ': ' + location.href + ', ' + is_hash_change + ', ' + ck._backFromSameUrl)
-                    if (!is_hash_change) {
+                    if (!is_hash_change && !ck._backFromOtherpage) {
                         //alert(10 +': ' + location.href + ', ' + ck._backFromSameUrl)
                         ck._sessionLocked = false;
-                        back_from_otherpage = true;
+                        ck._backFromOtherpage = true;
                         if (supports.GOBACK_WHEN_POP) {
                             history.back();
                         } else {
@@ -7613,6 +7642,16 @@ define("../cardkit/app", [
                     }
                 }, 100);
             });
+
+        },
+
+        initState: function(){
+
+            ck._sessionLocked = false;
+
+            if (supports.BROWSER_CONTROL) {
+                ck.initStateWatcher();
+            }
 
             var last_state,
                 last_is_modal,
@@ -7640,6 +7679,12 @@ define("../cardkit/app", [
                         return window.location.reload();
                     }
                 }
+                if (!supports.BROWSER_CONTROL) {
+                    if (last_state === LOADING_CARDID
+                            || last_state === MODAL_CARDID) {
+                        last_state = null;
+                    }
+                }
                 if (last_state === MODAL_CARDID) {
                     last_is_modal = true;
                     last_state = DEFAULT_CARDID;
@@ -7648,15 +7693,26 @@ define("../cardkit/app", [
                 }
             }
             //alert(0 + ': ' + document.referrer + ' , ' + location.href + ', ' + compare_link(document.referrer))
-            if (!compare_link(document.referrer)) {
+            if (supports.BROWSER_CONTROL
+                    && supports.REPLACE_HASH
+                    && !compare_link(document.referrer)) {
                 replace_hash(CLEARED_HASH);
-                ck.initNewPage();
-            } else if (last_state) {
+                if (last_state) {
+                    card_states.forEach(function(next_id){
+                        if (next_id !== 'i') {
+                            push_history(next_id);
+                        }
+                    });
+                    push_history(last_state);
+                }
+            }
+
+            if (last_state) {
                 //alert(2);
                 ck.changeView(last_state);
                 if (last_state === LOADING_CARDID || last_is_modal) {
                     //alert(2.1 + ': ' + document.referrer)
-                    back_from_otherpage = true;
+                    ck._backFromOtherpage = true;
                     history.back();
                 } else {
                     ck.showView();
@@ -7706,11 +7762,12 @@ define("../cardkit/app", [
                 card = $('#' + card);
             }
             var is_loading = card === this.loadingCard;
+            if (this.viewport) {
+                card.data('prevCard', this.viewport[0].id);
+            }
             this.initView(card, opt);
             this.viewport = card.show();
-            if (!is_loading) {
-                this.updateSize(opt);
-            }
+            this.updateSize(opt);
             if (!opt.isModal && !opt.isActions) {
                 this.updateHeader();
             }
@@ -8124,8 +8181,9 @@ define("../cardkit/app", [
     }
 
     function push_history(next_id){
-        //location.hash = location.hash + HASH_SEP + next_id;
-        window.location = location.href.replace(/#(.*)|$/, '#$1' + HASH_SEP + next_id);
+        if (supports.BROWSER_CONTROL) {
+            window.location = location.href.replace(/#(.*)|$/, '#$1' + HASH_SEP + next_id);
+        }
     }
 
     function replace_hash(hash){
@@ -8172,9 +8230,11 @@ define("../cardkit/app", [
             var next = ck.loadingCard;
             var current = ck.viewport;
             push_history(LOADING_CARDID);
+            next.addClass('moving');
             ck.changeView(next);
             setTimeout(function(){
                 current.hide();
+                next.removeClass('moving');
                 window.location = true_link;
             }, 10);
         }

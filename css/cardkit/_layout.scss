@@ -96,7 +96,7 @@ a {
   @include transition(transform 0.4s);
   
   .ck-header {
-    position:fixed;
+    position:absolute;
     top:0;
     left:0;
     width:100%;
@@ -105,6 +105,10 @@ a {
 
     @include transform(translateY(-$nav_height));
     @include transition(transform 150ms);
+
+    body.ck-inited & {
+      position:fixed;
+    }
 
     .ck-top-title {
       color:#fff;
@@ -178,6 +182,64 @@ a {
     margin:5px 0;
   }
 
+  body.has_ctlbar & {
+    height:15px + $nav_height;
+  }
+
+}
+
+.ck-ctl-bar {
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  height: $nav_height;
+  background:#454545;
+  border-bottom:1px solid rgba(0,0,0,0.2);
+  z-index: $zindex_overlay;
+  @include transform(translateY($nav_height));
+  @include transition(transform 150ms);
+
+  input {
+    display:inline-block;
+    margin:0;
+    padding:0;
+    width: (110px/2);
+    height: $nav_height;
+    border:none;
+    margin:0;
+    @include appearance(none);
+    @include user-select(none);
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+    background: {
+      repeat: no-repeat;
+      position:center;
+      size:24px;
+      color:transparent;
+    }
+
+    &.disabled,
+    &:active {
+      opacity: .3;
+    }
+
+  }
+
+  .ck-topbar-enabled & {
+    @include transform(translateY(0));
+  }
+
+}
+
+.ck-ctl-backward {
+  background-image: inline-image('arrow_l.png');
+}
+.ck-ctl-forward {
+  background-image: inline-image('arrow_r.png');
+}
+.ck-ctl-reload {
+  background-image: inline-image('refresh.png');
+  float:right;
 }
 
 .ck-viewmask {
