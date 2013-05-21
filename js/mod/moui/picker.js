@@ -53,7 +53,7 @@ define('moui/picker', [
             if (opt.field !== undefined) {
                 if (opt.field) {
                     this._field = $(opt.field, 
-                        typeof opt.field === 'string' && this._node);
+                        typeof opt.field === 'string' && this._node).eq(0);
                 } else {
                     this._field = [];
                 }

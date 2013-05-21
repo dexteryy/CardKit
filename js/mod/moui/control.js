@@ -67,7 +67,7 @@ define('moui/control', [
             if (opt.field !== undefined) {
                 if (opt.field) {
                     this._field = $(opt.field, 
-                        typeof opt.field === 'string' && this._node);
+                        typeof opt.field === 'string' && this._node).eq(0);
                 } else {
                     this._field = [];
                 }
@@ -75,7 +75,7 @@ define('moui/control', [
             if (opt.label !== undefined) {
                 if (opt.label) {
                     this._label = $(opt.label, 
-                        typeof opt.label === 'string' && this._node);
+                        typeof opt.label === 'string' && this._node).eq(0);
                 } else {
                     this._label = [];
                 }
@@ -83,7 +83,7 @@ define('moui/control', [
             if (opt.numField !== undefined) {
                 if (opt.numField) {
                     this._numField = $(opt.numField, 
-                        typeof opt.numField === 'string' && this._node);
+                        typeof opt.numField === 'string' && this._node).eq(0);
                 } else {
                     this._numField = [];
                 }

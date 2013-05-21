@@ -784,8 +784,13 @@
       color:$desc_color;
     }
 
+    .ck-folder,
     p {
-      margin:0 0 $space 0;
+      margin:$space 0;
+
+      &:first-child {
+        margin-top:0;
+      }
 
       &:last-child {
         margin-bottom:0;

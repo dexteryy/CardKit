@@ -2973,7 +2973,10 @@ define("../cardkit/render", [
                 };
 
             if (!opt.isModal) {
-                card.find(SCRIPT_TAG + '[data-hook="source"]').forEach(run_script);
+                card.find(SCRIPT_TAG).forEach(run_script, card[0]);
+                card.trigger('card:loaded', {
+                    card: card
+                });
                 card.prepend($('.ck-banner-unit', card));
             }
 
@@ -2990,7 +2993,9 @@ define("../cardkit/render", [
                 card.append(footer.clone())
                     .prepend(TPL_TIPS);
 
-                card.find(SCRIPT_TAG + '[data-hook="ready"]').forEach(run_script);
+                card.trigger('card:ready', {
+                    card: card
+                });
 
             }
 
@@ -2998,13 +3003,17 @@ define("../cardkit/render", [
 
         openCard: function(card, opt){
             if (!opt.isModal) {
-                card.find(SCRIPT_TAG + '[data-hook="open"]').forEach(run_script);
+                card.trigger('card:open', {
+                    card: card
+                });
             }
         },
 
         closeCard: function(card, opt){
             if (!opt.isModal) {
-                card.find(SCRIPT_TAG + '[data-hook="close"]').forEach(run_script);
+                card.trigger('card:close', {
+                    card: card
+                });
             }
         },
 
@@ -3106,7 +3115,7 @@ define("../cardkit/render", [
     };
 
     function run_script(script){
-        window["eval"].call(window, script.innerHTML);
+        new Function('', script.innerHTML).call(this);
     }
 
     return exports;
@@ -3864,7 +3873,7 @@ define('moui/control', [
             if (opt.field !== undefined) {
                 if (opt.field) {
                     this._field = $(opt.field, 
-                        typeof opt.field === 'string' && this._node);
+                        typeof opt.field === 'string' && this._node).eq(0);
                 } else {
                     this._field = [];
                 }
@@ -3872,7 +3881,7 @@ define('moui/control', [
             if (opt.label !== undefined) {
                 if (opt.label) {
                     this._label = $(opt.label, 
-                        typeof opt.label === 'string' && this._node);
+                        typeof opt.label === 'string' && this._node).eq(0);
                 } else {
                     this._label = [];
                 }
@@ -3880,7 +3889,7 @@ define('moui/control', [
             if (opt.numField !== undefined) {
                 if (opt.numField) {
                     this._numField = $(opt.numField, 
-                        typeof opt.numField === 'string' && this._node);
+                        typeof opt.numField === 'string' && this._node).eq(0);
                 } else {
                     this._numField = [];
                 }
@@ -4048,7 +4057,7 @@ define('moui/picker', [
             if (opt.field !== undefined) {
                 if (opt.field) {
                     this._field = $(opt.field, 
-                        typeof opt.field === 'string' && this._node);
+                        typeof opt.field === 'string' && this._node).eq(0);
                 } else {
                     this._field = [];
                 }

@@ -10,9 +10,12 @@
 }
 
 .moui-folder {
+  display:block;
 
-  header {
+  //& > .hd,
+  & > header {
     @extend %unfold-icon;
+    display:inline-block;
     background-position:left center;
     background-size:10px;
     font-size:$maintitle_size;
@@ -20,18 +23,19 @@
     margin:0;
   }
 
-  .content {
+  & > .content {
     display:none;
     //@include transition(height 0.3s);
   }
 
   &.enabled {
 
-    header {
+    //& > .hd,
+    & > header {
       @extend %fold-icon;
     }
   
-    .content {
+    & > .content {
       display:block;
     }
 

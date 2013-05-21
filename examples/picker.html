@@ -74,14 +74,12 @@
         data-enable-url="data/enable.txt">Option 3</button>
 </div>
 <!--demo end-->
-                <p>
-                    <div class="ck-folder"
-                            data-enable-label="Hide the HTML" 
-                            data-label="header">
-                        <header>Show the HTML</header>
-                        <div class="democode content"></div>
-                    </div>
-                </p>
+                <div class="ck-folder"
+                        data-enable-label="Hide the HTML" 
+                        data-label="header">
+                    <header>Show the HTML</header>
+                    <div class="democode content"></div>
+                </div>
             </div>
             <div class="ckd-item">
 <!--demo-->
@@ -99,14 +97,12 @@
     </button>
 </div>
 <!--demo end-->
-                <p>
-                    <div class="ck-folder"
-                            data-enable-label="Hide the HTML" 
-                            data-label="header">
-                        <header>Show the HTML</header>
-                        <div class="democode content"></div>
-                    </div>
-                </p>
+                <div class="ck-folder"
+                        data-enable-label="Hide the HTML" 
+                        data-label="header">
+                    <header>Show the HTML</header>
+                    <div class="democode content"></div>
+                </div>
             </div>
         </div>
 
@@ -131,14 +127,12 @@
     <input class="ck-option" type="button" value="OPENGL">
 </div>
 <!--demo end-->
-                <p>
-                    <div class="ck-folder"
-                            data-enable-label="Hide the HTML" 
-                            data-label="header">
-                        <header>Show the HTML</header>
-                        <div class="democode content"></div>
-                    </div>
-                </p>
+                <div class="ck-folder"
+                        data-enable-label="Hide the HTML" 
+                        data-label="header">
+                    <header>Show the HTML</header>
+                    <div class="democode content"></div>
+                </div>
             </div>
             <div class="ckd-item">
                 <label class="ck-title">Multiple Select</label>
@@ -156,14 +150,12 @@
     <input class="ck-option" type="button" value="OPENGL">
 </div>
 <!--demo end-->
-                <p>
-                    <div class="ck-folder"
-                            data-enable-label="Hide the HTML" 
-                            data-label="header">
-                        <header>Show the HTML</header>
-                        <div class="democode content"></div>
-                    </div>
-                </p>
+                <div class="ck-folder"
+                        data-enable-label="Hide the HTML" 
+                        data-label="header">
+                    <header>Show the HTML</header>
+                    <div class="democode content"></div>
+                </div>
             </div>
         </div>
 
@@ -196,14 +188,12 @@
                     <input class="ck-option" type="button" value="OPENGL">
                 </div>
                 </p>
-                <p>
-                    <div class="ck-folder"
-                            data-enable-label="Hide the HTML" 
-                            data-label="header">
-                        <header>Show the HTML</header>
-                        <div class="democode content"></div>
-                    </div>
-                </p>
+                <div class="ck-folder"
+                        data-enable-label="Hide the HTML" 
+                        data-label="header">
+                    <header>Show the HTML</header>
+                    <div class="democode content"></div>
+                </div>
             </div>
         </div>
 
@@ -221,14 +211,12 @@
     <div class="slider-hover"></div>
 </div>
 <!--demo end-->
-                <p>
-                    <div class="ck-folder"
-                            data-enable-label="Hide the HTML" 
-                            data-label="header">
-                        <header>Show the HTML</header>
-                        <div class="democode content"></div>
-                    </div>
-                </p>
+                <div class="ck-folder"
+                        data-enable-label="Hide the HTML" 
+                        data-label="header">
+                    <header>Show the HTML</header>
+                    <div class="democode content"></div>
+                </div>
             </div>
         </div>
 
@@ -241,11 +229,13 @@
             <div id="console"></div>
         </div>
 
-        <script type="text/cardscript" data-hook="ready">
-        require(['mo/console', 'cardkit/app'], function(console, ck){
-            console.config({
-                record: false,
-                output: ck.viewport.find('#console')[0]
+        <script type="text/cardscript">
+        this.addEventListener('card:ready', function(e){
+            require(['mo/console'], function(console){
+                console.config({
+                    record: false,
+                    output: e.card.find('#console')[0]
+                });
             });
         });
         </script>

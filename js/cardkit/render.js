@@ -36,7 +36,10 @@ define([
                 };
 
             if (!opt.isModal) {
-                card.find(SCRIPT_TAG + '[data-hook="source"]').forEach(run_script);
+                card.find(SCRIPT_TAG).forEach(run_script, card[0]);
+                card.trigger('card:loaded', {
+                    card: card
+                });
                 card.prepend($('.ck-banner-unit', card));
             }
 
@@ -53,7 +56,9 @@ define([
                 card.append(footer.clone())
                     .prepend(TPL_TIPS);
 
-                card.find(SCRIPT_TAG + '[data-hook="ready"]').forEach(run_script);
+                card.trigger('card:ready', {
+                    card: card
+                });
 
             }
 
@@ -61,13 +66,17 @@ define([
 
         openCard: function(card, opt){
             if (!opt.isModal) {
-                card.find(SCRIPT_TAG + '[data-hook="open"]').forEach(run_script);
+                card.trigger('card:open', {
+                    card: card
+                });
             }
         },
 
         closeCard: function(card, opt){
             if (!opt.isModal) {
-                card.find(SCRIPT_TAG + '[data-hook="close"]').forEach(run_script);
+                card.trigger('card:close', {
+                    card: card
+                });
             }
         },
 
@@ -169,7 +178,7 @@ define([
     };
 
     function run_script(script){
-        window["eval"].call(window, script.innerHTML);
+        new Function('', script.innerHTML).call(this);
     }
 
     return exports;
