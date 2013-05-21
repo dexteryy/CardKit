@@ -2471,6 +2471,34 @@ define("../cardkit/parser/util", [
 
 });
 
+/* @source ../cardkit/parser/banner.js */;
+
+
+define("../cardkit/parser/banner", [
+  "dollar",
+  "mo/lang",
+  "../cardkit/parser/util"
+], function($, _, util){
+    
+    function exports(unit, raw){
+        unit = $(unit);
+        var source = util.getSource(unit, raw),
+            config = {},
+            contents = source && util.getOuterHTML(source);
+        var data = {
+            config: config,
+            content: unit[0].innerHTML + (contents || ''),
+        };
+        if (data.content && /\S/.test(data.content)){
+            data.hasContent = true;
+        }
+        return data;
+    }
+
+    return exports;
+
+});
+
 /* @source ../cardkit/parser/form.js */;
 
 
@@ -2712,6 +2740,13 @@ define("../cardkit/tpl/unit/blank", [], function(){
     return {"template":"\n<div class=\"ck-blank-unit\">\n    <article class=\"ck-unit-wrap\">\n        <div>{%=(data.config.blank || '目前还没有内容')%}</div>\n    </article>\n</div>\n"}; 
 
 });
+/* @source ../cardkit/tpl/unit/banner.js */;
+
+define("../cardkit/tpl/unit/banner", [], function(){
+
+    return {"template":"\n<article class=\"ck-unit-wrap\">\n\n    {% if (data.hasContent) { %}\n    <section>{%= data.content %}</section>\n    {% } %}\n\n</article>\n"}; 
+
+});
 /* @source ../cardkit/tpl/unit/form.js */;
 
 define("../cardkit/tpl/unit/form", [], function(){
@@ -2909,15 +2944,17 @@ define("../cardkit/render", [
   "../cardkit/tpl/unit/list",
   "../cardkit/tpl/unit/mini",
   "../cardkit/tpl/unit/form",
+  "../cardkit/tpl/unit/banner",
   "../cardkit/tpl/unit/blank",
   "../cardkit/parser/box",
   "../cardkit/parser/list",
   "../cardkit/parser/mini",
   "../cardkit/parser/form",
+  "../cardkit/parser/banner",
   "../cardkit/supports"
 ], function($, _, tpl, 
-    tpl_box, tpl_list, tpl_mini, tpl_form, tpl_blank,
-    boxParser, listParser, miniParser, formParser,
+    tpl_box, tpl_list, tpl_mini, tpl_form, tpl_banner, tpl_blank,
+    boxParser, listParser, miniParser, formParser, bannerParser,
     supports){
 
     var SCRIPT_TAG = 'script[type="text/cardscript"]',
@@ -2930,13 +2967,14 @@ define("../cardkit/render", [
 
         initCard: function(card, raw, footer, opt) {
 
-            var units = card.find('.ck-box-unit, .ck-mini-unit, .ck-list-unit, .ck-form-unit'),
+            var units = card.find('.ck-box-unit, .ck-mini-unit, .ck-list-unit, .ck-form-unit, .ck-banner-unit'),
                 config = {
                     blank: card.data('cfgBlank')
                 };
 
             if (!opt.isModal) {
                 card.find(SCRIPT_TAG + '[data-hook="source"]').forEach(run_script);
+                card.prepend($('.ck-banner-unit', card));
             }
 
             var has_content = exports.initUnit(units, raw);
@@ -2950,7 +2988,6 @@ define("../cardkit/render", [
             if (!opt.isModal) {
 
                 card.append(footer.clone())
-                    .prepend($('.ck-banner-unit', card))
                     .prepend(TPL_TIPS);
 
                 card.find(SCRIPT_TAG + '[data-hook="ready"]').forEach(run_script);
@@ -2982,6 +3019,15 @@ define("../cardkit/render", [
                 }
             });
             return has_content;
+        },
+
+        banner: function(unit, raw){
+            var data = bannerParser(unit, raw);
+            if (data.hasContent) {
+                unit.innerHTML = tpl.convertTpl(tpl_banner.template, data, 'data');
+            } else {
+                $(unit).remove();
+            }
         },
 
         box: function(unit, raw){

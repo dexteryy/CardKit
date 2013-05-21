@@ -7,15 +7,17 @@ define([
     './tpl/unit/list',
     './tpl/unit/mini',
     './tpl/unit/form',
+    './tpl/unit/banner',
     './tpl/unit/blank',
     './parser/box',
     './parser/list',
     './parser/mini',
     './parser/form',
+    './parser/banner',
     './supports'
 ], function($, _, tpl, 
-    tpl_box, tpl_list, tpl_mini, tpl_form, tpl_blank,
-    boxParser, listParser, miniParser, formParser,
+    tpl_box, tpl_list, tpl_mini, tpl_form, tpl_banner, tpl_blank,
+    boxParser, listParser, miniParser, formParser, bannerParser,
     supports){
 
     var SCRIPT_TAG = 'script[type="text/cardscript"]',
@@ -28,13 +30,14 @@ define([
 
         initCard: function(card, raw, footer, opt) {
 
-            var units = card.find('.ck-box-unit, .ck-mini-unit, .ck-list-unit, .ck-form-unit'),
+            var units = card.find('.ck-box-unit, .ck-mini-unit, .ck-list-unit, .ck-form-unit, .ck-banner-unit'),
                 config = {
                     blank: card.data('cfgBlank')
                 };
 
             if (!opt.isModal) {
                 card.find(SCRIPT_TAG + '[data-hook="source"]').forEach(run_script);
+                card.prepend($('.ck-banner-unit', card));
             }
 
             var has_content = exports.initUnit(units, raw);
@@ -48,7 +51,6 @@ define([
             if (!opt.isModal) {
 
                 card.append(footer.clone())
-                    .prepend($('.ck-banner-unit', card))
                     .prepend(TPL_TIPS);
 
                 card.find(SCRIPT_TAG + '[data-hook="ready"]').forEach(run_script);
@@ -80,6 +82,15 @@ define([
                 }
             });
             return has_content;
+        },
+
+        banner: function(unit, raw){
+            var data = bannerParser(unit, raw);
+            if (data.hasContent) {
+                unit.innerHTML = tpl.convertTpl(tpl_banner.template, data, 'data');
+            } else {
+                $(unit).remove();
+            }
         },
 
         box: function(unit, raw){
