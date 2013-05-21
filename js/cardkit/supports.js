@@ -40,6 +40,8 @@ define([
             && !browsers.aosp
             && !is_ios5,
 
+        HIDE_ADDRESSBAR: !browsers.crios,
+
         PREVENT_WINDOW_SCROLL: !!browsers.mobilesafari,
 
         HIDE_TOPBAR: !!browsers.mobilesafari

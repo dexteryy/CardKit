@@ -270,7 +270,7 @@ define([
     modalCard.event.bind('prepareOpen', function(){
         ck.disableView = true;
         if (!supports.CARD_SCROLL) {
-            window.scrollTo(0, -1);
+            ck.resetWindowTop();
         } else {
             $(body).addClass('bg').addClass('modal-view');
         }
@@ -539,7 +539,7 @@ define([
                             return;
                         }
                         //ck.hideAddressbar();
-                        window.scrollTo(0, -1);
+                        ck.resetWindowTop();
                         body.scrollTop = 0;
                         if (y > 40) {
                             ck.viewport[0].scrollTop = ck.viewport[0].scrollTop + y - 40;
@@ -594,6 +594,7 @@ define([
             ck.hideAddressbar();
             ck.hideLoadingCard();
             ck.enableControl();
+            bus.resolve('inited');
         },
 
         initWindow: function(){
@@ -625,7 +626,7 @@ define([
                 }
                 if (rewrite_state) {
                     //alert(3 + ', ' + rewrite_state)
-                    window.scrollTo(0, -1);
+                    ck.resetWindowTop();
                     push_history(rewrite_state);
                     if (modalCard.isOpened) {
                         modalCard.close();
@@ -695,6 +696,17 @@ define([
 
             if (supports.BROWSER_CONTROL) {
                 ck.initStateWatcher();
+            } else {
+                bus.once('inited', function(){
+                    $(window).bind("popstate", function(){
+                        ck.hideTopbar();
+                        ck.viewport.hide();
+                        ck.changeView(ck.loadingCard);
+                        setTimeout(function(){
+                            window.location.reload();
+                        }, 20);
+                    });
+                });
             }
 
             var last_state,
@@ -799,7 +811,7 @@ define([
         changeView: function(card, opt){
             opt = opt || {};
             if (!supports.CARD_SCROLL && !opt.preventScroll) {
-                window.scrollTo(0, -1);
+                ck.resetWindowTop();
             }
             this.releaseView(opt);
             if (typeof card === 'string') {
@@ -898,7 +910,7 @@ define([
                 this.loadingCard.find('div')[0].style.visibility = 'hidden';
                 if (supports.HIDE_TOPBAR
                         && (supports.CARD_SCROLL || !this.sizeInited)) {
-                    window.scrollTo(0, -1);
+                    ck.resetWindowTop();
                     body.scrollTop = 0;
                     //if (screen.availHeight - ck.viewport[0].offsetHeight 
                             //> ck.headerHeight + 10) {
@@ -912,6 +924,12 @@ define([
                 this.windowFullHeight = window.innerHeight;
                 ck.updateSize();
                 this.loadingCard.find('div')[0].style.visibility = '';
+            }
+        },
+
+        resetWindowTop: function(){
+            if (supports.HIDE_ADDRESSBAR) {
+                window.scrollTo(0, -1);
             }
         },
 
