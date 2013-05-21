@@ -21,7 +21,7 @@ define([
     var SCRIPT_TAG = 'script[type="text/cardscript"]',
 
         TPL_TIPS = '<div class="ck-top-tips">'
-        + (supports.HIDE_TOPBAR ? '长按顶部导航条，可拖出浏览器地址栏' : '')
+        + (supports.HIDE_TOPBAR ? '按住顶栏，往下拖拽，可拖出浏览器地址栏' : '')
         + '</div>';
 
     var exports = {

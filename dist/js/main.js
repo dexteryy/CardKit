@@ -2923,7 +2923,7 @@ define("../cardkit/render", [
     var SCRIPT_TAG = 'script[type="text/cardscript"]',
 
         TPL_TIPS = '<div class="ck-top-tips">'
-        + (supports.HIDE_TOPBAR ? '长按顶部导航条，可拖出浏览器地址栏' : '')
+        + (supports.HIDE_TOPBAR ? '按住顶栏，往下拖拽，可拖出浏览器地址栏' : '')
         + '</div>';
 
     var exports = {
@@ -7513,35 +7513,34 @@ define("../cardkit/app", [
                 var startY,
                     hold_timer,
                     topbar_holded,
-                    topbar_tips = growl({
-                        corner: 'center',
-                        expires: -1,
-                        keepalive: true,
-                        content: '向下拖动显示地址栏'
-                    }),
                     cancel_hold = function(){
                         clearTimeout(hold_timer);
-                        if (topbar_holded) {
-                            topbar_holded = false;
-                            topbar_tips.close();
+                        topbar_holded = false;
+                    },
+                    scroll_on_header = function(e){
+                        if (this !== e.target) {
+                            return;
                         }
+                        startY = e.touches[0].clientY;
+                        hold_timer = setTimeout(function(){
+                            topbar_holded = true;
+                            ck.viewport[0].scrollTop = 0;
+                        }, 5);
                     };
-                this.header.bind('touchstart', function(e){
-                    startY = e.touches[0].clientY;
-                    hold_timer = setTimeout(function(){
-                        topbar_holded = true;
-                        ck.viewport[0].scrollTop = 0;
-                        topbar_tips.open();
-                    }, 510);
-                }).bind('touchmove', function(e){
-                    clearTimeout(hold_timer);
-                    if (topbar_holded && e.touches[0].clientY < startY) {
-                        cancel_hold();
-                        topbar_holded = true;
-                        ck.windowFullHeight = Infinity;
-                        ck.hideAddressbar();
-                    }
-                }).bind('touchend', cancel_hold).bind('touchcancel', cancel_hold);
+
+                this.header.find('.ck-top-title')
+                    .bind('touchstart', scroll_on_header);
+                this.header.bind('touchstart', scroll_on_header)
+                    .bind('touchmove', function(e){
+                        clearTimeout(hold_timer);
+                        if (topbar_holded && e.touches[0].clientY < startY) {
+                            cancel_hold();
+                            topbar_holded = true;
+                            ck.windowFullHeight = Infinity;
+                            ck.hideAddressbar();
+                        }
+                    }).bind('touchend', cancel_hold)
+                    .bind('touchcancel', cancel_hold);
 
             }
 
