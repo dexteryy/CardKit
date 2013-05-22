@@ -545,6 +545,9 @@ body.no-cardscroll .ck-card {
 .ck-loading .ck-footer, .ck-loading .ck-top-tips {
   display: none;
 }
+body.no-cardscroll .ck-loading div {
+  position: absolute;
+}
 
 .ck-cardmask {
   display: none;

@@ -76,6 +76,11 @@
     position:fixed;
     bottom:50px;
     left:0;
+    //@include display-box;
+    //@include box-orient(vertical);
+    //@include box-pack(center);
+    //@include box-align(center);
+    //@include box-direction(reverse);
   }
 
   span {
@@ -101,6 +106,14 @@
   
   .ck-footer, .ck-top-tips {
     display:none;
+  }
+
+  body.no-cardscroll & {
+    
+    div {
+      position:absolute;
+    }
+
   }
 
 }
