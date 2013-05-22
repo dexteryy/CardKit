@@ -1,6 +1,7 @@
 
 .moui-actionview {
   $space: 50px/2;
+  $myspace: (40px/2);
   display:none;
   position:fixed;
   top:0;
@@ -53,7 +54,7 @@
 
       & > article {
         position:absolute;
-        bottom:$space * 4 + $button_height;
+        bottom:$bigbutton_height + 2*$myspace + 2*$space + $space;
         left:$space;
         right:$space;
         background:#343434;
@@ -85,7 +86,6 @@
   }
 
   & > footer {
-    $myspace: (40px/2);
     position:fixed;
     bottom:0;
     left:0;

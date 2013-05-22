@@ -1616,7 +1616,7 @@ body.no-cardscroll .moui-modalview .wrapper > article > .content, body.no-cardsc
 }
 .moui-actionview .wrapper .content > article, .ck-actionview .wrapper .content > article {
   position: absolute;
-  bottom: 129px;
+  bottom: 154px;
   left: 25px;
   right: 25px;
   background: #343434;
