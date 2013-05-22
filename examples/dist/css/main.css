@@ -280,7 +280,12 @@ a {
 body.no-cardscroll.ck-inited .ck-root .ck-header, body.no-cardscroll.ck-inited .ck-root .ck-modalview > header {
   position: fixed;
 }
-.ck-root .ck-header .ck-top-title, .ck-root .ck-modalview > header .ck-top-title, .ck-root .ck-header .ck-modalview > header h1, .ck-modalview > header .ck-root .ck-header h1, .ck-root .ck-modalview > header h1 {
+.ck-root .ck-header .ck-top-title a, .ck-root .ck-modalview > header .ck-top-title a, .ck-modalview > header .ck-root .ck-header h1 a, .ck-root .ck-modalview > header h1 a,
+.ck-root .ck-header .ck-top-title,
+.ck-root .ck-modalview > header .ck-top-title,
+.ck-root .ck-header .ck-modalview > header h1,
+.ck-modalview > header .ck-root .ck-header h1,
+.ck-root .ck-modalview > header h1 {
   color: #fff;
   text-shadow: 0px 1px 0px black;
 }

@@ -7176,12 +7176,6 @@ define("../cardkit/app", [
             window.location.reload();
         },
 
-        '.ck-top-title': function(){
-            if (this.href) {
-                ck.openURL(this.href);
-            }
-        },
-
         '.ck-top-create .btn': open_modal_card,
 
         '.ck-top-action .btn': function(){
@@ -7427,7 +7421,11 @@ define("../cardkit/app", [
             });
 
             this.scrollGesture = momoScroll(document);
-            momoTap(document);
+            momoTap(document, {
+                tapThreshold: browsers.os !== 'android' 
+                    || !browsers.chrome && 20 
+                    || 0
+            });
             momoSwipe(this.wrapper, {
                 'timeThreshold': 10000,
                 'distanceThreshold': 10 
@@ -8060,7 +8058,7 @@ define("../cardkit/app", [
             pos = n - Math.floor(n),
             list = $('.ck-list', self)[0],
             l = $('.ck-item', list).length - 1;
-        if (n > 0 && n < l) {
+        if (n > 0 && (n < l && l - n > 0.1)) {
             if (is_forward) {
                 if (pos < 0.1) {
                     n = Math.floor(n);
@@ -8106,7 +8104,7 @@ define("../cardkit/app", [
                 current_id = $1 || '';
                 return '';
             });
-        if (next === current) {
+        if (next_id && next === current) {
             next = next_id && $('#' + next_id) || [];
             if (!next[0]) {
                 next_id = DEFAULT_CARDID;
