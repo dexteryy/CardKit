@@ -695,7 +695,13 @@ define([
                 ck.initStateWatcher();
             } else {
                 bus.once('inited', function(){
-                    $(window).bind("popstate", function(){
+                    var BACK_EVENT = !supports.NO_POP_ON_CACHED_PAGE ? "popstate" : "resize";
+                    $(window).bind(BACK_EVENT, function(){
+                        if (supports.RESIZE_WHEN_SCROLL
+                                && !ck._pageCached) {
+                            return;
+                        }
+                        ck._pageCached = false;
                         ck.hideTopbar();
                         ck.viewport.hide();
                         ck.changeView(ck.loadingCard);
@@ -1182,6 +1188,7 @@ define([
             ck.cardMask.removeClass('moving');
             next.removeClass('moving');
             if (true_link) {
+                ck._pageCached = true;
                 window.location = true_link;
             } else {
                 ck.enableControl();
@@ -1294,6 +1301,7 @@ define([
             setTimeout(function(){
                 current.hide();
                 next.removeClass('moving');
+                ck._pageCached = true;
                 window.location = true_link;
             }, 10);
         }

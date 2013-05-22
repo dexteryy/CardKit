@@ -20,8 +20,8 @@ define('moui/actionview', [
                     </div>\
                 </div>\
                 <footer>\
-                    <input type="button" class="cancel">\
-                    <input type="button" class="confirm" data-is-default="true">\
+                    <span class="cancel"></span>\
+                    <span class="confirm" data-is-default="true"></span>\
                 </footer>\
             </div>',
 
@@ -87,11 +87,11 @@ define('moui/actionview', [
             }
 
             if (opt.confirmText) {
-                this._confirmBtn.val(opt.confirmText);
+                this._confirmBtn.html(opt.confirmText);
             }
 
             if (opt.cancelText) {
-                this._cancelBtn.val(opt.cancelText);
+                this._cancelBtn.html(opt.cancelText);
             }
 
             return this;

@@ -835,10 +835,13 @@ define("../cardkit/supports", [
         REPLACE_HASH: !browsers.aosp,
 
         BROWSER_CONTROL: is_desktop
-            || is_mobilefirefox
             || browsers.mobilesafari
             || browsers.aosp
             || is_android && browsers.chrome,
+
+        NO_POP_ON_CACHED_PAGE: is_mobilefirefox, 
+
+        RESIZE_WHEN_SCROLL: is_mobilefirefox,
 
         NEW_WIN: !is_ios5 && !browsers.aosp,
 
@@ -4316,8 +4319,8 @@ define('moui/actionview', [
                     </div>\
                 </div>\
                 <footer>\
-                    <input type="button" class="cancel">\
-                    <input type="button" class="confirm" data-is-default="true">\
+                    <span class="cancel"></span>\
+                    <span class="confirm" data-is-default="true"></span>\
                 </footer>\
             </div>',
 
@@ -4383,11 +4386,11 @@ define('moui/actionview', [
             }
 
             if (opt.confirmText) {
-                this._confirmBtn.val(opt.confirmText);
+                this._confirmBtn.html(opt.confirmText);
             }
 
             if (opt.cancelText) {
-                this._cancelBtn.val(opt.cancelText);
+                this._cancelBtn.html(opt.cancelText);
             }
 
             return this;
@@ -7708,7 +7711,13 @@ define("../cardkit/app", [
                 ck.initStateWatcher();
             } else {
                 bus.once('inited', function(){
-                    $(window).bind("popstate", function(){
+                    var BACK_EVENT = !supports.NO_POP_ON_CACHED_PAGE ? "popstate" : "resize";
+                    $(window).bind(BACK_EVENT, function(){
+                        if (supports.RESIZE_WHEN_SCROLL
+                                && !ck._pageCached) {
+                            return;
+                        }
+                        ck._pageCached = false;
                         ck.hideTopbar();
                         ck.viewport.hide();
                         ck.changeView(ck.loadingCard);
@@ -8195,6 +8204,7 @@ define("../cardkit/app", [
             ck.cardMask.removeClass('moving');
             next.removeClass('moving');
             if (true_link) {
+                ck._pageCached = true;
                 window.location = true_link;
             } else {
                 ck.enableControl();
@@ -8307,6 +8317,7 @@ define("../cardkit/app", [
             setTimeout(function(){
                 current.hide();
                 next.removeClass('moving');
+                ck._pageCached = true;
                 window.location = true_link;
             }, 10);
         }

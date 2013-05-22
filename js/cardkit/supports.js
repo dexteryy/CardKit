@@ -29,10 +29,13 @@ define([
         REPLACE_HASH: !browsers.aosp,
 
         BROWSER_CONTROL: is_desktop
-            || is_mobilefirefox
             || browsers.mobilesafari
             || browsers.aosp
             || is_android && browsers.chrome,
+
+        NO_POP_ON_CACHED_PAGE: is_mobilefirefox, 
+
+        RESIZE_WHEN_SCROLL: is_mobilefirefox,
 
         NEW_WIN: !is_ios5 && !browsers.aosp,
 

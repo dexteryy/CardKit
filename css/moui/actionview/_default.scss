@@ -100,7 +100,8 @@
     @include transform(translateY(100%));
     @include transition(transform 0.3s);
 
-    input[type="button"] {
+    .cancel,
+    .confirm {
       @extend %button;
       line-height:$bigbutton_height;
       height:$bigbutton_height;
@@ -110,41 +111,36 @@
       right:$space;
       top:$myspace;
       margin:0;
+    }
 
-      &.confirm {
-        display:none;
-      }
+    .confirm {
+      display:none;
+    }
 
-      &.cancel {
-        border-color:#101010;
-        background:#343434;
-        @include box-shadow(inset 0 1px 0px #494949);
-        color:#fff;
-        @include text-shadow(0 1px 1px #000);
+    .cancel {
+      border-color:#101010;
+      background:#343434;
+      @include box-shadow(inset 0 1px 0px #494949);
+      color:#fff;
+      @include text-shadow(0 1px 1px #000);
 
-        &:active {
-          @include box-shadow(none);
-        }
-
+      &:active {
+        @include box-shadow(none);
       }
 
     }
 
     &.multi {
     
-      input[type="button"] {
+      .confirm {
+        display:inline-block;
+        left:50%;
+        margin:0 0 0 ($space/4);
+      }
 
-        &.confirm {
-          display:inline-block;
-          left:50%;
-          margin:0 0 0 ($space/4);
-        }
-
-        &.cancel {
-          right:50%;
-          margin:0 ($space/4) 0 0;
-        }
-
+      .cancel {
+        right:50%;
+        margin:0 ($space/4) 0 0;
       }
 
     }

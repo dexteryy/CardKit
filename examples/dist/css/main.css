@@ -55,7 +55,9 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   display: block;
 }
 
-.ckbase-btn, .ck-post-button, .ck-modal-button, .ck-actions-button, .ck-growl-button, .moui-segment .option, .ck-segment .option, .ck-segment .ck-option, .moui-modalview .wrapper > header button.confirm, .ck-modalview .wrapper > header button.confirm, .moui-modalview .wrapper > header button.cancel, .ck-modalview .wrapper > header button.cancel, .moui-actionview > footer input[type="button"], .ck-actionview > footer input[type="button"], .moui-switch, .ck-switch, .moui-switch .block, .ck-switch .block, .moui-switch .enable-text, .ck-switch .enable-text,
+.ckbase-btn, .ck-post-button, .ck-modal-button, .ck-actions-button, .ck-growl-button, .moui-segment .option, .ck-segment .option, .ck-segment .ck-option, .moui-modalview .wrapper > header button.confirm, .ck-modalview .wrapper > header button.confirm, .moui-modalview .wrapper > header button.cancel, .ck-modalview .wrapper > header button.cancel, .moui-actionview > footer .cancel, .ck-actionview > footer .cancel,
+.moui-actionview > footer .confirm,
+.ck-actionview > footer .confirm, .moui-switch, .ck-switch, .moui-switch .block, .ck-switch .block, .moui-switch .enable-text, .ck-switch .enable-text,
 .moui-switch .disable-text,
 .ck-switch .disable-text, .moui-select, .ck-select {
   display: inline-block;
@@ -91,7 +93,9 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   text-shadow: 0 1px 1px white;
 }
 
-.ckbase-btn:active, .ck-post-button:active, .ck-modal-button:active, .ck-actions-button:active, .ck-growl-button:active, .moui-segment .option:active, .ck-segment .option:active, .ck-segment .ck-option:active, .moui-modalview .wrapper > header button.confirm:active, .ck-modalview .wrapper > header button.confirm:active, .moui-modalview .wrapper > header button.cancel:active, .ck-modalview .wrapper > header button.cancel:active, .moui-actionview > footer input[type="button"]:active, .ck-actionview > footer input[type="button"]:active, .moui-switch .enable-text, .ck-switch .enable-text,
+.ckbase-btn:active, .ck-post-button:active, .ck-modal-button:active, .ck-actions-button:active, .ck-growl-button:active, .moui-segment .option:active, .ck-segment .option:active, .ck-segment .ck-option:active, .moui-modalview .wrapper > header button.confirm:active, .ck-modalview .wrapper > header button.confirm:active, .moui-modalview .wrapper > header button.cancel:active, .ck-modalview .wrapper > header button.cancel:active, .moui-actionview > footer .cancel:active, .ck-actionview > footer .cancel:active,
+.moui-actionview > footer .confirm:active,
+.ck-actionview > footer .confirm:active, .moui-switch .enable-text, .ck-switch .enable-text,
 .moui-switch .disable-text,
 .ck-switch .disable-text, .ck-post-button.enabled, .moui-segment .enabled.option, .ck-segment .enabled.option, .ck-segment .enabled.ck-option, .moui-select:active, .ck-select:active {
   border-color: #b2b2b2;
@@ -104,7 +108,9 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   background-image: linear-gradient(bottom, #dbdbdb, #cdcdcd);
 }
 
-[data-is-default="true"].ckbase-btn, [data-is-default="true"].ck-post-button, [data-is-default="true"].ck-modal-button, [data-is-default="true"].ck-actions-button, [data-is-default="true"].ck-growl-button, .moui-segment [data-is-default="true"].option, .ck-segment [data-is-default="true"].option, .ck-segment [data-is-default="true"].ck-option, .moui-modalview .wrapper > header button[data-is-default="true"].confirm, .ck-modalview .wrapper > header button[data-is-default="true"].confirm, .moui-modalview .wrapper > header button[data-is-default="true"].cancel, .ck-modalview .wrapper > header button[data-is-default="true"].cancel, .moui-actionview > footer input[data-is-default="true"][type="button"], .ck-actionview > footer input[data-is-default="true"][type="button"], .ckbase-mainbtn, .moui-switch .enable-text, .ck-switch .enable-text {
+[data-is-default="true"].ckbase-btn, [data-is-default="true"].ck-post-button, [data-is-default="true"].ck-modal-button, [data-is-default="true"].ck-actions-button, [data-is-default="true"].ck-growl-button, .moui-segment [data-is-default="true"].option, .ck-segment [data-is-default="true"].option, .ck-segment [data-is-default="true"].ck-option, .moui-modalview .wrapper > header button[data-is-default="true"].confirm, .ck-modalview .wrapper > header button[data-is-default="true"].confirm, .moui-modalview .wrapper > header button[data-is-default="true"].cancel, .ck-modalview .wrapper > header button[data-is-default="true"].cancel, .moui-actionview > footer [data-is-default="true"].cancel, .ck-actionview > footer [data-is-default="true"].cancel,
+.moui-actionview > footer [data-is-default="true"].confirm,
+.ck-actionview > footer [data-is-default="true"].confirm, .ckbase-mainbtn, .moui-switch .enable-text, .ck-switch .enable-text {
   border-color: rgba(0, 19, 79, 0.85);
   -webkit-box-shadow: inset 0 1px 0px #429bff;
   -moz-box-shadow: inset 0 1px 0px #429bff;
@@ -117,7 +123,9 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   text-shadow: 0 1px 1px black;
 }
 
-[data-is-default="true"].ckbase-btn:active, [data-is-default="true"].ck-post-button:active, [data-is-default="true"].ck-modal-button:active, [data-is-default="true"].ck-actions-button:active, [data-is-default="true"].ck-growl-button:active, .moui-segment [data-is-default="true"].option:active, .ck-segment [data-is-default="true"].option:active, .ck-segment [data-is-default="true"].ck-option:active, .moui-modalview .wrapper > header button[data-is-default="true"].confirm:active, .ck-modalview .wrapper > header button[data-is-default="true"].confirm:active, .moui-modalview .wrapper > header button[data-is-default="true"].cancel:active, .ck-modalview .wrapper > header button[data-is-default="true"].cancel:active, .moui-actionview > footer input[data-is-default="true"][type="button"]:active, .ck-actionview > footer input[data-is-default="true"][type="button"]:active, .ckbase-mainbtn:active, .moui-switch .enable-text, .ck-switch .enable-text {
+[data-is-default="true"].ckbase-btn:active, [data-is-default="true"].ck-post-button:active, [data-is-default="true"].ck-modal-button:active, [data-is-default="true"].ck-actions-button:active, [data-is-default="true"].ck-growl-button:active, .moui-segment [data-is-default="true"].option:active, .ck-segment [data-is-default="true"].option:active, .ck-segment [data-is-default="true"].ck-option:active, .moui-modalview .wrapper > header button[data-is-default="true"].confirm:active, .ck-modalview .wrapper > header button[data-is-default="true"].confirm:active, .moui-modalview .wrapper > header button[data-is-default="true"].cancel:active, .ck-modalview .wrapper > header button[data-is-default="true"].cancel:active, .moui-actionview > footer [data-is-default="true"].cancel:active, .ck-actionview > footer [data-is-default="true"].cancel:active,
+.moui-actionview > footer [data-is-default="true"].confirm:active,
+.ck-actionview > footer [data-is-default="true"].confirm:active, .ckbase-mainbtn:active, .moui-switch .enable-text, .ck-switch .enable-text {
   -webkit-box-shadow: inset 0 1px 1px #024879;
   -moz-box-shadow: inset 0 1px 1px #024879;
   box-shadow: inset 0 1px 1px #024879;
@@ -127,7 +135,9 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   background-image: linear-gradient(bottom, #0077d6, #0068d6);
 }
 
-[data-is-danger="true"].ckbase-btn, [data-is-danger="true"].ck-post-button, [data-is-danger="true"].ck-modal-button, [data-is-danger="true"].ck-actions-button, [data-is-danger="true"].ck-growl-button, .moui-segment [data-is-danger="true"].option, .ck-segment [data-is-danger="true"].option, .ck-segment [data-is-danger="true"].ck-option, .moui-modalview .wrapper > header button[data-is-danger="true"].confirm, .ck-modalview .wrapper > header button[data-is-danger="true"].confirm, .moui-modalview .wrapper > header button[data-is-danger="true"].cancel, .ck-modalview .wrapper > header button[data-is-danger="true"].cancel, .moui-actionview > footer input[data-is-danger="true"][type="button"], .ck-actionview > footer input[data-is-danger="true"][type="button"] {
+[data-is-danger="true"].ckbase-btn, [data-is-danger="true"].ck-post-button, [data-is-danger="true"].ck-modal-button, [data-is-danger="true"].ck-actions-button, [data-is-danger="true"].ck-growl-button, .moui-segment [data-is-danger="true"].option, .ck-segment [data-is-danger="true"].option, .ck-segment [data-is-danger="true"].ck-option, .moui-modalview .wrapper > header button[data-is-danger="true"].confirm, .ck-modalview .wrapper > header button[data-is-danger="true"].confirm, .moui-modalview .wrapper > header button[data-is-danger="true"].cancel, .ck-modalview .wrapper > header button[data-is-danger="true"].cancel, .moui-actionview > footer [data-is-danger="true"].cancel, .ck-actionview > footer [data-is-danger="true"].cancel,
+.moui-actionview > footer [data-is-danger="true"].confirm,
+.ck-actionview > footer [data-is-danger="true"].confirm {
   border-color: rgba(60, 0, 0, 0.85);
   -webkit-box-shadow: inset 0 1px 0px #ff5c5c;
   -moz-box-shadow: inset 0 1px 0px #ff5c5c;
@@ -140,7 +150,9 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   text-shadow: 0 1px 1px black;
 }
 
-[data-is-danger="true"].ckbase-btn:active, [data-is-danger="true"].ck-post-button:active, [data-is-danger="true"].ck-modal-button:active, [data-is-danger="true"].ck-actions-button:active, [data-is-danger="true"].ck-growl-button:active, .moui-segment [data-is-danger="true"].option:active, .ck-segment [data-is-danger="true"].option:active, .ck-segment [data-is-danger="true"].ck-option:active, .moui-modalview .wrapper > header button[data-is-danger="true"].confirm:active, .ck-modalview .wrapper > header button[data-is-danger="true"].confirm:active, .moui-modalview .wrapper > header button[data-is-danger="true"].cancel:active, .ck-modalview .wrapper > header button[data-is-danger="true"].cancel:active, .moui-actionview > footer input[data-is-danger="true"][type="button"]:active, .ck-actionview > footer input[data-is-danger="true"][type="button"]:active {
+[data-is-danger="true"].ckbase-btn:active, [data-is-danger="true"].ck-post-button:active, [data-is-danger="true"].ck-modal-button:active, [data-is-danger="true"].ck-actions-button:active, [data-is-danger="true"].ck-growl-button:active, .moui-segment [data-is-danger="true"].option:active, .ck-segment [data-is-danger="true"].option:active, .ck-segment [data-is-danger="true"].ck-option:active, .moui-modalview .wrapper > header button[data-is-danger="true"].confirm:active, .ck-modalview .wrapper > header button[data-is-danger="true"].confirm:active, .moui-modalview .wrapper > header button[data-is-danger="true"].cancel:active, .ck-modalview .wrapper > header button[data-is-danger="true"].cancel:active, .moui-actionview > footer [data-is-danger="true"].cancel:active, .ck-actionview > footer [data-is-danger="true"].cancel:active,
+.moui-actionview > footer [data-is-danger="true"].confirm:active,
+.ck-actionview > footer [data-is-danger="true"].confirm:active {
   -webkit-box-shadow: inset 0 1px 1px #024879;
   -moz-box-shadow: inset 0 1px 1px #024879;
   box-shadow: inset 0 1px 1px #024879;
@@ -150,24 +162,36 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   background-image: linear-gradient(bottom, #c50800, #b20600);
 }
 
-.ckbase-btn, .ck-post-button, .ck-modal-button, .ck-actions-button, .ck-growl-button, .moui-segment .option, .ck-segment .option, .ck-segment .ck-option, .moui-modalview .wrapper > header button.confirm, .ck-modalview .wrapper > header button.confirm, .moui-modalview .wrapper > header button.cancel, .ck-modalview .wrapper > header button.cancel, .moui-actionview > footer input[type="button"], .ck-actionview > footer input[type="button"] {
+.ckbase-btn, .ck-post-button, .ck-modal-button, .ck-actions-button, .ck-growl-button, .moui-segment .option, .ck-segment .option, .ck-segment .ck-option, .moui-modalview .wrapper > header button.confirm, .ck-modalview .wrapper > header button.confirm, .moui-modalview .wrapper > header button.cancel, .ck-modalview .wrapper > header button.cancel, .moui-actionview > footer .cancel, .ck-actionview > footer .cancel,
+.moui-actionview > footer .confirm,
+.ck-actionview > footer .confirm {
   margin: 0 7px 0 0;
 }
-.ckbase-btn:last-child, .ck-post-button:last-child, .ck-modal-button:last-child, .ck-actions-button:last-child, .ck-growl-button:last-child, .moui-segment .option:last-child, .ck-segment .option:last-child, .ck-segment .ck-option:last-child, .moui-modalview .wrapper > header button.confirm:last-child, .ck-modalview .wrapper > header button.confirm:last-child, .moui-modalview .wrapper > header button.cancel:last-child, .ck-modalview .wrapper > header button.cancel:last-child, .moui-actionview > footer input[type="button"]:last-child, .ck-actionview > footer input[type="button"]:last-child {
+.ckbase-btn:last-child, .ck-post-button:last-child, .ck-modal-button:last-child, .ck-actions-button:last-child, .ck-growl-button:last-child, .moui-segment .option:last-child, .ck-segment .option:last-child, .ck-segment .ck-option:last-child, .moui-modalview .wrapper > header button.confirm:last-child, .ck-modalview .wrapper > header button.confirm:last-child, .moui-modalview .wrapper > header button.cancel:last-child, .ck-modalview .wrapper > header button.cancel:last-child, .moui-actionview > footer .cancel:last-child, .ck-actionview > footer .cancel:last-child,
+.moui-actionview > footer .confirm:last-child,
+.ck-actionview > footer .confirm:last-child {
   margin-right: 0;
 }
-[data-fluid="true"].ckbase-btn, [data-fluid="true"].ck-post-button, [data-fluid="true"].ck-modal-button, [data-fluid="true"].ck-actions-button, [data-fluid="true"].ck-growl-button, .moui-segment [data-fluid="true"].option, .ck-segment [data-fluid="true"].option, .ck-segment [data-fluid="true"].ck-option, .moui-modalview .wrapper > header button[data-fluid="true"].confirm, .ck-modalview .wrapper > header button[data-fluid="true"].confirm, .moui-modalview .wrapper > header button[data-fluid="true"].cancel, .ck-modalview .wrapper > header button[data-fluid="true"].cancel, .moui-actionview > footer input[data-fluid="true"][type="button"], .ck-actionview > footer input[data-fluid="true"][type="button"] {
+[data-fluid="true"].ckbase-btn, [data-fluid="true"].ck-post-button, [data-fluid="true"].ck-modal-button, [data-fluid="true"].ck-actions-button, [data-fluid="true"].ck-growl-button, .moui-segment [data-fluid="true"].option, .ck-segment [data-fluid="true"].option, .ck-segment [data-fluid="true"].ck-option, .moui-modalview .wrapper > header button[data-fluid="true"].confirm, .ck-modalview .wrapper > header button[data-fluid="true"].confirm, .moui-modalview .wrapper > header button[data-fluid="true"].cancel, .ck-modalview .wrapper > header button[data-fluid="true"].cancel, .moui-actionview > footer [data-fluid="true"].cancel, .ck-actionview > footer [data-fluid="true"].cancel,
+.moui-actionview > footer [data-fluid="true"].confirm,
+.ck-actionview > footer [data-fluid="true"].confirm {
   width: auto;
   padding: 0 10px;
 }
-[data-style="big"].ckbase-btn, [data-style="big"].ck-post-button, [data-style="big"].ck-modal-button, [data-style="big"].ck-actions-button, [data-style="big"].ck-growl-button, .moui-segment [data-style="big"].option, .ck-segment [data-style="big"].option, .ck-segment [data-style="big"].ck-option, .moui-modalview .wrapper > header button[data-style="big"].confirm, .ck-modalview .wrapper > header button[data-style="big"].confirm, .moui-modalview .wrapper > header button[data-style="big"].cancel, .ck-modalview .wrapper > header button[data-style="big"].cancel, .moui-actionview > footer input[data-style="big"][type="button"], .ck-actionview > footer input[data-style="big"][type="button"] {
+[data-style="big"].ckbase-btn, [data-style="big"].ck-post-button, [data-style="big"].ck-modal-button, [data-style="big"].ck-actions-button, [data-style="big"].ck-growl-button, .moui-segment [data-style="big"].option, .ck-segment [data-style="big"].option, .ck-segment [data-style="big"].ck-option, .moui-modalview .wrapper > header button[data-style="big"].confirm, .ck-modalview .wrapper > header button[data-style="big"].confirm, .moui-modalview .wrapper > header button[data-style="big"].cancel, .ck-modalview .wrapper > header button[data-style="big"].cancel, .moui-actionview > footer [data-style="big"].cancel, .ck-actionview > footer [data-style="big"].cancel,
+.moui-actionview > footer [data-style="big"].confirm,
+.ck-actionview > footer [data-style="big"].confirm {
   height: 39px;
   line-height: 39px;
 }
-[disabled].ckbase-btn, [disabled].ck-post-button, [disabled].ck-modal-button, [disabled].ck-actions-button, [disabled].ck-growl-button, .moui-segment [disabled].option, .ck-segment [disabled].option, .ck-segment [disabled].ck-option, .moui-modalview .wrapper > header button[disabled].confirm, .ck-modalview .wrapper > header button[disabled].confirm, .moui-modalview .wrapper > header button[disabled].cancel, .ck-modalview .wrapper > header button[disabled].cancel, .moui-actionview > footer input[disabled][type="button"], .ck-actionview > footer input[disabled][type="button"] {
+[disabled].ckbase-btn, [disabled].ck-post-button, [disabled].ck-modal-button, [disabled].ck-actions-button, [disabled].ck-growl-button, .moui-segment [disabled].option, .ck-segment [disabled].option, .ck-segment [disabled].ck-option, .moui-modalview .wrapper > header button[disabled].confirm, .ck-modalview .wrapper > header button[disabled].confirm, .moui-modalview .wrapper > header button[disabled].cancel, .ck-modalview .wrapper > header button[disabled].cancel, .moui-actionview > footer [disabled].cancel, .ck-actionview > footer [disabled].cancel,
+.moui-actionview > footer [disabled].confirm,
+.ck-actionview > footer [disabled].confirm {
   color: #a1a1a1;
 }
-.ckbase-btn:active span, .ck-post-button:active span, .ck-modal-button:active span, .ck-actions-button:active span, .ck-growl-button:active span, .moui-segment .option:active span, .ck-segment .option:active span, .ck-segment .ck-option:active span, .moui-modalview .wrapper > header button.confirm:active span, .ck-modalview .wrapper > header button.confirm:active span, .moui-modalview .wrapper > header button.cancel:active span, .ck-modalview .wrapper > header button.cancel:active span, .moui-actionview > footer input[type="button"]:active span, .ck-actionview > footer input[type="button"]:active span {
+.ckbase-btn:active span, .ck-post-button:active span, .ck-modal-button:active span, .ck-actions-button:active span, .ck-growl-button:active span, .moui-segment .option:active span, .ck-segment .option:active span, .ck-segment .ck-option:active span, .moui-modalview .wrapper > header button.confirm:active span, .ck-modalview .wrapper > header button.confirm:active span, .moui-modalview .wrapper > header button.cancel:active span, .ck-modalview .wrapper > header button.cancel:active span, .moui-actionview > footer .cancel:active span, .ck-actionview > footer .cancel:active span,
+.moui-actionview > footer .confirm:active span,
+.ck-actionview > footer .confirm:active span {
   position: relative;
   top: 1px;
 }
@@ -509,6 +533,7 @@ body.no-cardscroll .ck-card {
   position: fixed;
   bottom: 50px;
   left: 0;
+  padding: 5px 0;
 }
 .ck-loading span {
   width: 20px;
@@ -1669,7 +1694,9 @@ body.no-cardscroll .moui-actionview .wrapper, body.no-cardscroll .ck-actionview 
   -moz-transition: -moz-transform 0.3s;
   transition: transform 0.3s;
 }
-.moui-actionview > footer input[type="button"], .ck-actionview > footer input[type="button"] {
+.moui-actionview > footer .cancel, .ck-actionview > footer .cancel,
+.moui-actionview > footer .confirm,
+.ck-actionview > footer .confirm {
   line-height: 39px;
   height: 39px;
   width: auto;
@@ -1679,10 +1706,10 @@ body.no-cardscroll .moui-actionview .wrapper, body.no-cardscroll .ck-actionview 
   top: 20px;
   margin: 0;
 }
-.moui-actionview > footer input[type="button"].confirm, .ck-actionview > footer input[type="button"].confirm {
+.moui-actionview > footer .confirm, .ck-actionview > footer .confirm {
   display: none;
 }
-.moui-actionview > footer input[type="button"].cancel, .ck-actionview > footer input[type="button"].cancel {
+.moui-actionview > footer .cancel, .ck-actionview > footer .cancel {
   border-color: #101010;
   background: #343434;
   -webkit-box-shadow: inset 0 1px 0px #494949;
@@ -1691,17 +1718,17 @@ body.no-cardscroll .moui-actionview .wrapper, body.no-cardscroll .ck-actionview 
   color: #fff;
   text-shadow: 0 1px 1px black;
 }
-.moui-actionview > footer input[type="button"].cancel:active, .ck-actionview > footer input[type="button"].cancel:active {
+.moui-actionview > footer .cancel:active, .ck-actionview > footer .cancel:active {
   -webkit-box-shadow: none;
   -moz-box-shadow: none;
   box-shadow: none;
 }
-.moui-actionview > footer.multi input[type="button"].confirm, .ck-actionview > footer.multi input[type="button"].confirm {
+.moui-actionview > footer.multi .confirm, .ck-actionview > footer.multi .confirm {
   display: inline-block;
   left: 50%;
   margin: 0 0 0 6.25px;
 }
-.moui-actionview > footer.multi input[type="button"].cancel, .ck-actionview > footer.multi input[type="button"].cancel {
+.moui-actionview > footer.multi .cancel, .ck-actionview > footer.multi .cancel {
   right: 50%;
   margin: 0 6.25px 0 0;
 }
