@@ -364,8 +364,8 @@ define([
     var ck = {
 
         init: function(opt){
-            var root = this.root = opt.root;
             var doc = $(document);
+            var root = this.root = opt.root;
             this.wrapper = $('.ck-wrapper', root);
             this.header = $('.ck-header', root);
             if (!supports.BROWSER_CONTROL) {
@@ -550,38 +550,41 @@ define([
 
             }
 
-            var startY,
-                topbar_holded,
-                cancel_hold = function(){
-                    topbar_holded = false;
-                },
-                scroll_on_header = function(e){
-                    if (this !== e.target) {
-                        return;
-                    }
-                    startY = e.touches[0].clientY;
-                    setTimeout(function(){
-                        topbar_holded = true;
-                        ck.viewport[0].scrollTop = 0;
-                    }, 0);
-                };
+            if (supports.CARD_SCROLL) {
 
-            this.header.find('.ck-top-title')
-                .bind('touchstart', scroll_on_header);
-            this.header.bind('touchstart', scroll_on_header);
+                var startY,
+                    topbar_holded,
+                    cancel_hold = function(){
+                        topbar_holded = false;
+                    },
+                    scroll_on_header = function(e){
+                        if (this !== e.target) {
+                            return;
+                        }
+                        startY = e.touches[0].clientY;
+                        setTimeout(function(){
+                            topbar_holded = true;
+                            ck.viewport[0].scrollTop = 0;
+                        }, 0);
+                    };
 
-            if (supports.HIDE_TOPBAR
-                    && supports.CARD_SCROLL) {
+                this.header.find('.ck-top-title')
+                    .bind('touchstart', scroll_on_header);
+                this.header.bind('touchstart', scroll_on_header);
 
-                this.header.bind('touchmove', function(e){
-                    if (topbar_holded && e.touches[0].clientY < startY) {
-                        cancel_hold();
-                        topbar_holded = true;
-                        ck.windowFullHeight = Infinity;
-                        ck.hideAddressbar();
-                    }
-                }).bind('touchend', cancel_hold)
-                    .bind('touchcancel', cancel_hold);
+                if (supports.HIDE_TOPBAR) {
+
+                    this.header.bind('touchmove', function(e){
+                        if (topbar_holded && e.touches[0].clientY < startY) {
+                            cancel_hold();
+                            topbar_holded = true;
+                            ck.windowFullHeight = Infinity;
+                            ck.hideAddressbar();
+                        }
+                    }).bind('touchend', cancel_hold)
+                        .bind('touchcancel', cancel_hold);
+
+                }
 
             }
 

@@ -208,6 +208,8 @@ body {
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
+  width: 100%;
+  overflow: hidden;
 }
 body.bg {
   background: #666;
@@ -243,7 +245,7 @@ a {
 }
 
 .ck-header, .ck-modalview > header {
-  height: 42.5px;
+  height: 41.5px;
   -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
   -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
@@ -489,22 +491,6 @@ body.no-cardscroll.modal-view .ck-wrapper {
 .ck-card .ck-footer {
   display: block;
 }
-.ck-card .ck-top-tips {
-  text-align: center;
-  font-size: 13px;
-  color: #999;
-  height: 44.5px;
-  line-height: 44.5px;
-  width: 100%;
-  opacity: 0;
-  -webkit-transition: opacity 0.1s ease;
-  -webkit-transition-delay: 0.3s;
-  -moz-transition: opacity 0.1s ease 0.3s;
-  transition: opacity 0.1s ease 0.3s;
-}
-body.ck-topbar-enabled .ck-card .ck-top-tips {
-  opacity: 1;
-}
 .ck-card .ckd-top-create {
   display: none;
 }
@@ -573,7 +559,7 @@ body.no-cardscroll .ck-card {
   -ms-animation: loading-dot 1.5s steps(1, start) 1s infinite 1s ease 0.2s 1 normal;
   animation: loading-dot 1.5s steps(1, start) 1s infinite 1s ease 0.2s 1 normal;
 }
-.ck-loading .ck-footer, .ck-loading .ck-top-tips {
+.ck-loading .ck-footer {
   display: none;
 }
 body.no-cardscroll .ck-loading div {
@@ -1307,15 +1293,65 @@ body.no-overflowscroll .ck-mini-unit[data-style="slide"] .ck-list-wrap {
   height: 176px;
 }
 
-.ck-banner-unit {
+.ck-top-tips {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 10px;
+  color: #999;
+  height: 40.5px;
+  line-height: 40.5px;
+  border-bottom: 1px solid #efefef;
+}
+.ck-top-tips span {
+  opacity: 0;
+  -webkit-transition: opacity 0.1s ease;
+  -webkit-transition-delay: 0.3s;
+  -moz-transition: opacity 0.1s ease 0.3s;
+  transition: opacity 0.1s ease 0.3s;
+}
+body.ck-topbar-enabled.mobilesafari-bar .ck-top-tips span {
+  opacity: 1;
+}
+body.no-overflowscroll .ck-top-tips, body.no-cardscroll .ck-top-tips {
+  display: none;
+}
+
+.ck-banner-unit .ck-unit-wrap {
+  font-size: 13px;
   background: #fff;
   padding: 5px;
-  margin-bottom: 15px;
-  font-size: 13px;
+  padding-top: 47.5px;
+  position: relative;
+  bottom: -3px;
+}
+.ck-banner-unit .ck-unit-wrap.empty {
+  padding: 42.5px 0 0 0;
+  background: #f2f2f2;
+}
+body:not(.no-cardscroll):not(.no-overflowscroll) .ck-banner-unit {
+  position: relative;
+  background: #666666;
+  padding-top: 209.5px;
+  -webkit-transform: translateY(-212.5px);
+  -moz-transform: translateY(-212.5px);
+  -ms-transform: translateY(-212.5px);
+  transform: translateY(-212.5px);
+  margin-bottom: -212.5px;
+  -webkit-box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.35);
+  -moz-box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.35);
+}
+body:not(.no-cardscroll):not(.no-overflowscroll) .ck-banner-unit .ck-unit-wrap:not(.empty) {
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+body:not(.no-cardscroll):not(.no-overflowscroll) .ck-banner-unit .ck-top-tips {
+  top: 212.5px;
 }
 
 .ck-blank-unit .ck-unit-wrap > div {

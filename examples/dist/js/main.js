@@ -2749,7 +2749,7 @@ define("../cardkit/tpl/unit/blank", [], function(){
 
 define("../cardkit/tpl/unit/banner", [], function(){
 
-    return {"template":"\n<article class=\"ck-unit-wrap\">\n\n    {% if (data.hasContent) { %}\n    <section>{%= data.content %}</section>\n    {% } %}\n\n</article>\n"}; 
+    return {"template":"\n<article class=\"ck-unit-wrap {%=(!data.hasContent && 'empty' || '')%}\">\n\n    {% if (data.hasContent) { %}\n    <section>{%= data.content %}</section>\n    {% } %}\n\n</article>\n\n<div class=\"ck-top-tips\"><span>tips: 点击顶栏可返回顶部，向下拖拽顶栏可显示网址</span></div>\n\n"}; 
 
 });
 /* @source ../cardkit/tpl/unit/form.js */;
@@ -2955,38 +2955,38 @@ define("../cardkit/render", [
   "../cardkit/parser/list",
   "../cardkit/parser/mini",
   "../cardkit/parser/form",
-  "../cardkit/parser/banner",
-  "../cardkit/supports"
+  "../cardkit/parser/banner"
 ], function($, _, tpl, 
     tpl_box, tpl_list, tpl_mini, tpl_form, tpl_banner, tpl_blank,
-    boxParser, listParser, miniParser, formParser, bannerParser,
-    supports){
+    boxParser, listParser, miniParser, formParser, bannerParser){
 
     var SCRIPT_TAG = 'script[type="text/cardscript"]',
 
-        TPL_TIPS = '<div class="ck-top-tips">'
-        + (supports.HIDE_TOPBAR
-                && supports.CARD_SCROLL 
-            ? '点击顶栏可返回顶部，向下拖拽顶栏可显示网址' 
-            : '')
-        + '</div>';
+        TPL_BLANK_BANNER = '<div class="ck-banner-unit"></div>';
 
     var exports = {
 
         initCard: function(card, raw, footer, opt) {
 
-            var units = card.find('.ck-box-unit, .ck-mini-unit, .ck-list-unit, .ck-form-unit, .ck-banner-unit'),
-                config = {
-                    blank: card.data('cfgBlank')
-                };
-
             if (!opt.isModal) {
+
                 card.find(SCRIPT_TAG).forEach(run_script, card[0]);
                 card.trigger('card:loaded', {
                     card: card
                 });
-                card.prepend($('.ck-banner-unit', card));
+
+                var banner_cfg = card.find('.ck-banner-unit');
+                if (!banner_cfg[0]) {
+                    banner_cfg = $(TPL_BLANK_BANNER);
+                }
+                card.prepend(banner_cfg);
+
             }
+
+            var units = card.find('.ck-box-unit, .ck-mini-unit, .ck-list-unit, .ck-form-unit, .ck-banner-unit'),
+                config = {
+                    blank: card.data('cfgBlank')
+                };
 
             var has_content = exports.initUnit(units, raw);
 
@@ -2998,8 +2998,7 @@ define("../cardkit/render", [
 
             if (!opt.isModal) {
 
-                card.append(footer.clone())
-                    .prepend(TPL_TIPS);
+                card.append(footer.clone());
 
                 card.trigger('card:ready', {
                     card: card
@@ -3040,11 +3039,7 @@ define("../cardkit/render", [
 
         banner: function(unit, raw){
             var data = bannerParser(unit, raw);
-            if (data.hasContent) {
-                unit.innerHTML = tpl.convertTpl(tpl_banner.template, data, 'data');
-            } else {
-                $(unit).remove();
-            }
+            unit.innerHTML = tpl.convertTpl(tpl_banner.template, data, 'data');
         },
 
         box: function(unit, raw){
@@ -7385,8 +7380,8 @@ define("../cardkit/app", [
     var ck = {
 
         init: function(opt){
-            var root = this.root = opt.root;
             var doc = $(document);
+            var root = this.root = opt.root;
             this.wrapper = $('.ck-wrapper', root);
             this.header = $('.ck-header', root);
             if (!supports.BROWSER_CONTROL) {
@@ -7571,38 +7566,41 @@ define("../cardkit/app", [
 
             }
 
-            var startY,
-                topbar_holded,
-                cancel_hold = function(){
-                    topbar_holded = false;
-                },
-                scroll_on_header = function(e){
-                    if (this !== e.target) {
-                        return;
-                    }
-                    startY = e.touches[0].clientY;
-                    setTimeout(function(){
-                        topbar_holded = true;
-                        ck.viewport[0].scrollTop = 0;
-                    }, 0);
-                };
+            if (supports.CARD_SCROLL) {
 
-            this.header.find('.ck-top-title')
-                .bind('touchstart', scroll_on_header);
-            this.header.bind('touchstart', scroll_on_header);
+                var startY,
+                    topbar_holded,
+                    cancel_hold = function(){
+                        topbar_holded = false;
+                    },
+                    scroll_on_header = function(e){
+                        if (this !== e.target) {
+                            return;
+                        }
+                        startY = e.touches[0].clientY;
+                        setTimeout(function(){
+                            topbar_holded = true;
+                            ck.viewport[0].scrollTop = 0;
+                        }, 0);
+                    };
 
-            if (supports.HIDE_TOPBAR
-                    && supports.CARD_SCROLL) {
+                this.header.find('.ck-top-title')
+                    .bind('touchstart', scroll_on_header);
+                this.header.bind('touchstart', scroll_on_header);
 
-                this.header.bind('touchmove', function(e){
-                    if (topbar_holded && e.touches[0].clientY < startY) {
-                        cancel_hold();
-                        topbar_holded = true;
-                        ck.windowFullHeight = Infinity;
-                        ck.hideAddressbar();
-                    }
-                }).bind('touchend', cancel_hold)
-                    .bind('touchcancel', cancel_hold);
+                if (supports.HIDE_TOPBAR) {
+
+                    this.header.bind('touchmove', function(e){
+                        if (topbar_holded && e.touches[0].clientY < startY) {
+                            cancel_hold();
+                            topbar_holded = true;
+                            ck.windowFullHeight = Infinity;
+                            ck.hideAddressbar();
+                        }
+                    }).bind('touchend', cancel_hold)
+                        .bind('touchcancel', cancel_hold);
+
+                }
 
             }
 

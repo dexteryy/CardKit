@@ -17,22 +17,6 @@
     display:block;
   }
 
-  .ck-top-tips {
-    text-align:center;
-    font-size:$title_size;
-    color:#999;
-    height:$nav_height + 2px;
-    line-height:$nav_height + 2px;
-    width:100%;
-    opacity:0;
-    @include transition(opacity 0.1s ease 0.3s);
-
-    body.ck-topbar-enabled & {
-      opacity:1;
-    }
-
-  }
-
   .ckd-top-create {
     display:none;
   }
@@ -105,7 +89,7 @@
 
   }
   
-  .ck-footer, .ck-top-tips {
+  .ck-footer {
     display:none;
   }
 
