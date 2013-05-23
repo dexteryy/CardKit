@@ -843,6 +843,8 @@ define("../cardkit/supports", [
 
         RESIZE_WHEN_SCROLL: is_mobilefirefox,
 
+        FIXED_BOTTOM_BUGGY: browsers.crios,
+
         NEW_WIN: !is_ios5 && !browsers.aosp,
 
         CARD_SCROLL: !is_desktop
@@ -2963,7 +2965,10 @@ define("../cardkit/render", [
     var SCRIPT_TAG = 'script[type="text/cardscript"]',
 
         TPL_TIPS = '<div class="ck-top-tips">'
-        + (supports.HIDE_TOPBAR ? '按住顶栏，往下拖拽，可拖出浏览器地址栏' : '')
+        + (supports.HIDE_TOPBAR
+                && supports.CARD_SCROLL 
+            ? '点击顶栏可返回顶部，向下拖拽顶栏可显示网址' 
+            : '')
         + '</div>';
 
     var exports = {
@@ -7443,6 +7448,9 @@ define("../cardkit/app", [
             if (supports.HIDE_TOPBAR) {
                 $(body).addClass('mobilesafari-bar');
             }
+            if (supports.FIXED_BOTTOM_BUGGY) {
+                $(body).addClass('fixed-bottom-buggy');
+            }
 
             this.initState();
 
@@ -7563,39 +7571,37 @@ define("../cardkit/app", [
 
             }
 
+            var startY,
+                topbar_holded,
+                cancel_hold = function(){
+                    topbar_holded = false;
+                },
+                scroll_on_header = function(e){
+                    if (this !== e.target) {
+                        return;
+                    }
+                    startY = e.touches[0].clientY;
+                    setTimeout(function(){
+                        topbar_holded = true;
+                        ck.viewport[0].scrollTop = 0;
+                    }, 0);
+                };
+
+            this.header.find('.ck-top-title')
+                .bind('touchstart', scroll_on_header);
+            this.header.bind('touchstart', scroll_on_header);
+
             if (supports.HIDE_TOPBAR
                     && supports.CARD_SCROLL) {
 
-                var startY,
-                    hold_timer,
-                    topbar_holded,
-                    cancel_hold = function(){
-                        clearTimeout(hold_timer);
-                        topbar_holded = false;
-                    },
-                    scroll_on_header = function(e){
-                        if (this !== e.target) {
-                            return;
-                        }
-                        startY = e.touches[0].clientY;
-                        hold_timer = setTimeout(function(){
-                            topbar_holded = true;
-                            ck.viewport[0].scrollTop = 0;
-                        }, 5);
-                    };
-
-                this.header.find('.ck-top-title')
-                    .bind('touchstart', scroll_on_header);
-                this.header.bind('touchstart', scroll_on_header)
-                    .bind('touchmove', function(e){
-                        clearTimeout(hold_timer);
-                        if (topbar_holded && e.touches[0].clientY < startY) {
-                            cancel_hold();
-                            topbar_holded = true;
-                            ck.windowFullHeight = Infinity;
-                            ck.hideAddressbar();
-                        }
-                    }).bind('touchend', cancel_hold)
+                this.header.bind('touchmove', function(e){
+                    if (topbar_holded && e.touches[0].clientY < startY) {
+                        cancel_hold();
+                        topbar_holded = true;
+                        ck.windowFullHeight = Infinity;
+                        ck.hideAddressbar();
+                    }
+                }).bind('touchend', cancel_hold)
                     .bind('touchcancel', cancel_hold);
 
             }

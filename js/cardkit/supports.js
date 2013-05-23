@@ -37,6 +37,8 @@ define([
 
         RESIZE_WHEN_SCROLL: is_mobilefirefox,
 
+        FIXED_BOTTOM_BUGGY: browsers.crios,
+
         NEW_WIN: !is_ios5 && !browsers.aosp,
 
         CARD_SCROLL: !is_desktop

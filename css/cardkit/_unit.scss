@@ -233,7 +233,6 @@
   .ck-item {
     padding:$space 0;
     border-bottom:1px solid $view_border_color;
-    @include user-select(text);
 
     &:first-child {
       //padding-top:0;
@@ -486,6 +485,7 @@
     display:block;
     line-height: 1.4;
     margin:0 0 4px 0;
+    @include user-select(text);
 
     img {
       max-width:100%;

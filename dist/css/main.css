@@ -221,6 +221,9 @@ body.modal-view .ck-root {
   -ms-transform: scale(0.8);
   transform: scale(0.8);
 }
+body.fixed-bottom-buggy {
+  position: relative;
+}
 
 pre {
   word-wrap: break-word;
@@ -378,7 +381,7 @@ body.has_ctlbar .ck-footer {
 }
 
 .ck-ctl-bar {
-  position: fixed;
+  position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
@@ -422,6 +425,9 @@ body.has_ctlbar .ck-footer {
   -moz-transform: translateY(0);
   -ms-transform: translateY(0);
   transform: translateY(0);
+}
+body.no-cardscroll .ck-ctl-bar {
+  position: fixed;
 }
 
 .ck-ctl-backward {
@@ -844,9 +850,6 @@ body.no-overflowscroll [data-cfg-plainhd="true"].ck-box-unit:not([data-cfg-paper
 .ck-box-unit[data-cfg-paper] .ck-item, .ck-list-unit[data-cfg-paper] .ck-item {
   padding: 10px 0;
   border-bottom: 1px solid #e6e6e6;
-  -webkit-user-select: text;
-  -moz-user-select: text;
-  user-select: text;
 }
 .ck-box-unit[data-cfg-paper] .ck-item:last-child, .ck-list-unit[data-cfg-paper] .ck-item:last-child {
   margin-bottom: 15px;
@@ -1055,6 +1058,9 @@ body.no-overflowscroll .ck-unit-wrap {
   display: block;
   line-height: 1.4;
   margin: 0 0 4px 0;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  user-select: text;
 }
 .ck-list-unit .ck-content-wrap img, .ck-mini-unit .ck-content-wrap img,
 .ck-list-unit .ck-author-content-wrap img,
