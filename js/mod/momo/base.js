@@ -44,10 +44,19 @@ define('momo/base', [
         //CANCEL: 'touchcancel',
 
         EVENTS: [],
-        DEFAULT_CONFIG: {},
+        DEFAULT_CONFIG: {
+            namespace: ''
+        },
 
         config: function(opt){
+            var old_ns = this._config.namespace;
             _.merge(_.mix(this._config, opt), this.DEFAULT_CONFIG);
+
+            var ns = this._config.namespace || '';
+            this.EVENTS.forEach(function(ev){
+                this[ev] = this[ev].replace(old_ns || /^/, ns);
+            }, this.event);
+
             return this;
         },
 

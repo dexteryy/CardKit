@@ -36,6 +36,7 @@ define([
         last_view_for_modal,
         last_view_for_actions,
         gc_id = 0,
+        soviet_aliases = {},
 
         HASH_SEP = '!/',
         CLEARED_HASH = '#' + HASH_SEP + 'i',
@@ -407,16 +408,23 @@ define([
                 easing: easing
             });
 
-            this.scrollGesture = momoScroll(document);
-            momoTap(document, {
+            this.scrollGesture = momoScroll(document, {
+                namespace: 'ck_',
+            });
+            set_alias_events(this.scrollGesture.event);
+            var tapGesture = momoTap(document, {
+                namespace: 'ck_',
                 tapThreshold: browsers.os !== 'android' 
                     || !browsers.chrome && 20 
                     || 0
             });
-            momoSwipe(this.wrapper, {
-                'timeThreshold': 10000,
-                'distanceThreshold': 10 
+            set_alias_events(tapGesture.event);
+            var swipeGesture = momoSwipe(this.wrapper, {
+                namespace: 'ck_',
+                timeThreshold: 10000,
+                distanceThreshold: 10 
             });
+            set_alias_events(swipeGesture.event);
 
             if (!supports.CARD_SCROLL) {
                 $(body).addClass('no-cardscroll');
@@ -450,6 +458,7 @@ define([
             });
 
             soviet(document, {
+                aliasEvents: soviet_aliases,
                 matchesSelector: true,
                 preventDefault: true
             }).on('click', {
@@ -497,6 +506,7 @@ define([
             });
             
             var wrapper_delegate = soviet(this.wrapper, {
+                aliasEvents: soviet_aliases,
                 matchesSelector: true
             }).on('swipeleft', {
                 '.ck-mini-unit .ck-list-wrap *': function(){
@@ -1026,6 +1036,7 @@ define([
         openURL: open_url,
 
         delegate: soviet(document, {
+            aliasEvents: soviet_aliases,
             autoOverride: true,
             matchesSelector: true,
             preventDefault: true
@@ -1325,6 +1336,12 @@ define([
             return find_last_unit($(last_unit));
         }
         return last_unit;
+    }
+
+    function set_alias_events(events) {
+        for (var ev in events) {
+            $.Event.aliases[ev] = soviet_aliases[ev] = events[ev];
+        }
     }
 
     //function check_gc(controller){

@@ -25,9 +25,10 @@ require([
     'dollar', 
     'mo/browsers',
     'momo',
+    'soviet',
     'history',
     'mo/console'
-], function(_, $, browsers, momo, History, console){
+], function(_, $, browsers, momo, soviet, History, console){
 
     console.config({
         output: $('#console')[0]
@@ -36,6 +37,17 @@ require([
     console.info('init', 3, navigator.userAgent, location, document);
 
     console.info('browsers', browsers);
+
+    var soviet_aliases = {};
+    var momoTapEvents = momo.tap(document, {
+        namespace: 'ck_'
+    }).event;
+    set_aliases_for_momo(momoTapEvents);
+    function set_aliases_for_momo(momoEvents) {
+        for (var ev in momoEvents) {
+            $.Event.aliases[ev] = soviet_aliases[ev] = momoEvents[ev];
+        }
+    }
 
     console.run(function(){
         return $('.btn1')[0];
@@ -76,8 +88,6 @@ require([
     console.run(function(){
         return typeof function(){}.bind;
     });
-
-    momo.init(document);
 
     //$(document).bind('tap', function(e){
         //console.info(e)
@@ -185,6 +195,16 @@ require([
                 history.back();
             }, 500)
         });
+    });
+
+    soviet(document, {
+        aliasEvents: soviet_aliases,
+        matchesSelector: true,
+        preventDefault: true
+    }).on('tap', {
+        '.btn10': function(e){
+            alert('tap: ' + e.type)
+        }
     });
 
 });

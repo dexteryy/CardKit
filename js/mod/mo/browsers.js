@@ -41,6 +41,7 @@ define("mo/browsers", [], function(){
             rtheworld = /(theworld)/,
             rmaxthon3 = /(maxthon\/3)/,
             rmaxthon = /(maxthon)/,
+            rwechat = /(micromessenger)/,
             rtt = /(tencenttraveler)/,
             rqq = /(qqbrowser)/,
             rbaidu = /(baidubrowser)/,
@@ -84,6 +85,7 @@ define("mo/browsers", [], function(){
             || rtheworld.exec(ua) 
             || rmaxthon3.exec(ua) 
             || rmaxthon.exec(ua) 
+            || rwechat.exec(ua)
             || rtt.exec(ua) 
             || rqq.exec(ua) 
             || rbaidu.exec(ua) 

@@ -466,10 +466,10 @@ define("dollar/origin", [
 
         once: function(subject, cb){
             var fn = function(){
-                $(this).unbind(subject, fn);
+                $(this).off(subject, fn);
                 return cb.apply(this, arguments);
             };
-            $(this).bind(subject, fn);
+            $(this).on(subject, fn);
         },
 
         trigger: trigger,
@@ -601,6 +601,7 @@ define("dollar/origin", [
                     access.call(this, [i, subject[i]]);
                 }
             } else if (cb) {
+                subject = Event.aliases[subject] || subject;
                 this.forEach(function(node){
                     node[action + 'EventListener'](subject, this, false);
                 }, cb);
@@ -623,10 +624,13 @@ define("dollar/origin", [
             }
             _.mix(event, props);
         }
+        type = Event.aliases[type] || type;
         event[is_touch && 'initTouchEvent' 
             || 'initEvent'](type, bubbles, true);
         return event;
     }
+
+    Event.aliases = {};
 
     function trigger(me, event, data){
         if (this === $) {

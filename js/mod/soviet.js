@@ -24,6 +24,7 @@ define('soviet', [
             preventDefault: false,
             matchesSelector: false,
             autoOverride: false,
+            aliasEvents: {}, 
             trace: false,
             traceStack: null
         };
@@ -50,6 +51,7 @@ define('soviet', [
                     this.on(event, i, selector[i]);
                 }
             } else {
+                event = this.aliasEvents[event] || event;
                 var table = this.events[event];
                 if (!table) {
                     this.target.bind(event, this.trigger.bind(this));
@@ -67,6 +69,7 @@ define('soviet', [
                 handler = selector;
                 selector = undefined;
             }
+            event = this.aliasEvents[event] || event;
             var table = this.events[event];
             if (table) {
                 _accessor.call(this, table, selector,
@@ -76,6 +79,7 @@ define('soviet', [
         },
 
         matches: function(event, selector){
+            event = this.aliasEvents[event] || event;
             var table = this.events[event];
             return _accessor.call(this, table, selector,
                 null, _get_handler);
@@ -83,6 +87,7 @@ define('soviet', [
 
         reset: function(event){
             if (event) {
+                event = this.aliasEvents[event] || event;
                 this.events[event] = this.matchesSelector ? {}
                     : { '.': {}, '#': {}, '&': {} };
                 _set_lock.call(this, event);
@@ -96,6 +101,7 @@ define('soviet', [
         disable: function(event, selector){
             var locks = this.locks;
             if (event) {
+                event = this.aliasEvents[event] || event;
                 var lock = locks[event];
                 if (!lock) {
                     lock = _set_lock.call(this, event);
@@ -115,6 +121,7 @@ define('soviet', [
         enable: function(event, selector){
             var locks = this.locks;
             if (event) {
+                event = this.aliasEvents[event] || event;
                 var lock = locks[event];
                 if (lock) {
                     if (selector) {
@@ -131,6 +138,10 @@ define('soviet', [
         },
 
         trigger: function(e){
+            var event = this.aliasEvents[e.type];
+            if (event) {
+                e.type = event;
+            }
             var self = this,
                 result,
                 t = e.target, 

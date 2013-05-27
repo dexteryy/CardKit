@@ -718,6 +718,7 @@ define("mo/browsers", [], function(){
             rtheworld = /(theworld)/,
             rmaxthon3 = /(maxthon\/3)/,
             rmaxthon = /(maxthon)/,
+            rwechat = /(micromessenger)/,
             rtt = /(tencenttraveler)/,
             rqq = /(qqbrowser)/,
             rbaidu = /(baidubrowser)/,
@@ -761,6 +762,7 @@ define("mo/browsers", [], function(){
             || rtheworld.exec(ua) 
             || rmaxthon3.exec(ua) 
             || rmaxthon.exec(ua) 
+            || rwechat.exec(ua)
             || rtt.exec(ua) 
             || rqq.exec(ua) 
             || rbaidu.exec(ua) 
@@ -1949,10 +1951,10 @@ define("dollar/origin", [
 
         once: function(subject, cb){
             var fn = function(){
-                $(this).unbind(subject, fn);
+                $(this).off(subject, fn);
                 return cb.apply(this, arguments);
             };
-            $(this).bind(subject, fn);
+            $(this).on(subject, fn);
         },
 
         trigger: trigger,
@@ -2084,6 +2086,7 @@ define("dollar/origin", [
                     access.call(this, [i, subject[i]]);
                 }
             } else if (cb) {
+                subject = Event.aliases[subject] || subject;
                 this.forEach(function(node){
                     node[action + 'EventListener'](subject, this, false);
                 }, cb);
@@ -2106,10 +2109,13 @@ define("dollar/origin", [
             }
             _.mix(event, props);
         }
+        type = Event.aliases[type] || type;
         event[is_touch && 'initTouchEvent' 
             || 'initEvent'](type, bubbles, true);
         return event;
     }
+
+    Event.aliases = {};
 
     function trigger(me, event, data){
         if (this === $) {
@@ -5404,10 +5410,19 @@ define('momo/base', [
         //CANCEL: 'touchcancel',
 
         EVENTS: [],
-        DEFAULT_CONFIG: {},
+        DEFAULT_CONFIG: {
+            namespace: ''
+        },
 
         config: function(opt){
+            var old_ns = this._config.namespace;
             _.merge(_.mix(this._config, opt), this.DEFAULT_CONFIG);
+
+            var ns = this._config.namespace || '';
+            this.EVENTS.forEach(function(ev){
+                this[ev] = this[ev].replace(old_ns || /^/, ns);
+            }, this.event);
+
             return this;
         },
 
@@ -6737,6 +6752,7 @@ define('soviet', [
             preventDefault: false,
             matchesSelector: false,
             autoOverride: false,
+            aliasEvents: {}, 
             trace: false,
             traceStack: null
         };
@@ -6763,6 +6779,7 @@ define('soviet', [
                     this.on(event, i, selector[i]);
                 }
             } else {
+                event = this.aliasEvents[event] || event;
                 var table = this.events[event];
                 if (!table) {
                     this.target.bind(event, this.trigger.bind(this));
@@ -6780,6 +6797,7 @@ define('soviet', [
                 handler = selector;
                 selector = undefined;
             }
+            event = this.aliasEvents[event] || event;
             var table = this.events[event];
             if (table) {
                 _accessor.call(this, table, selector,
@@ -6789,6 +6807,7 @@ define('soviet', [
         },
 
         matches: function(event, selector){
+            event = this.aliasEvents[event] || event;
             var table = this.events[event];
             return _accessor.call(this, table, selector,
                 null, _get_handler);
@@ -6796,6 +6815,7 @@ define('soviet', [
 
         reset: function(event){
             if (event) {
+                event = this.aliasEvents[event] || event;
                 this.events[event] = this.matchesSelector ? {}
                     : { '.': {}, '#': {}, '&': {} };
                 _set_lock.call(this, event);
@@ -6809,6 +6829,7 @@ define('soviet', [
         disable: function(event, selector){
             var locks = this.locks;
             if (event) {
+                event = this.aliasEvents[event] || event;
                 var lock = locks[event];
                 if (!lock) {
                     lock = _set_lock.call(this, event);
@@ -6828,6 +6849,7 @@ define('soviet', [
         enable: function(event, selector){
             var locks = this.locks;
             if (event) {
+                event = this.aliasEvents[event] || event;
                 var lock = locks[event];
                 if (lock) {
                     if (selector) {
@@ -6844,6 +6866,10 @@ define('soviet', [
         },
 
         trigger: function(e){
+            var event = this.aliasEvents[e.type];
+            if (event) {
+                e.type = event;
+            }
             var self = this,
                 result,
                 t = e.target, 
@@ -7052,6 +7078,7 @@ define("../cardkit/app", [
         last_view_for_modal,
         last_view_for_actions,
         gc_id = 0,
+        soviet_aliases = {},
 
         HASH_SEP = '!/',
         CLEARED_HASH = '#' + HASH_SEP + 'i',
@@ -7423,16 +7450,23 @@ define("../cardkit/app", [
                 easing: easing
             });
 
-            this.scrollGesture = momoScroll(document);
-            momoTap(document, {
+            this.scrollGesture = momoScroll(document, {
+                namespace: 'ck_',
+            });
+            set_alias_events(this.scrollGesture.event);
+            var tapGesture = momoTap(document, {
+                namespace: 'ck_',
                 tapThreshold: browsers.os !== 'android' 
                     || !browsers.chrome && 20 
                     || 0
             });
-            momoSwipe(this.wrapper, {
-                'timeThreshold': 10000,
-                'distanceThreshold': 10 
+            set_alias_events(tapGesture.event);
+            var swipeGesture = momoSwipe(this.wrapper, {
+                namespace: 'ck_',
+                timeThreshold: 10000,
+                distanceThreshold: 10 
             });
+            set_alias_events(swipeGesture.event);
 
             if (!supports.CARD_SCROLL) {
                 $(body).addClass('no-cardscroll');
@@ -7466,6 +7500,7 @@ define("../cardkit/app", [
             });
 
             soviet(document, {
+                aliasEvents: soviet_aliases,
                 matchesSelector: true,
                 preventDefault: true
             }).on('click', {
@@ -7513,6 +7548,7 @@ define("../cardkit/app", [
             });
             
             var wrapper_delegate = soviet(this.wrapper, {
+                aliasEvents: soviet_aliases,
                 matchesSelector: true
             }).on('swipeleft', {
                 '.ck-mini-unit .ck-list-wrap *': function(){
@@ -8042,6 +8078,7 @@ define("../cardkit/app", [
         openURL: open_url,
 
         delegate: soviet(document, {
+            aliasEvents: soviet_aliases,
             autoOverride: true,
             matchesSelector: true,
             preventDefault: true
@@ -8341,6 +8378,12 @@ define("../cardkit/app", [
             return find_last_unit($(last_unit));
         }
         return last_unit;
+    }
+
+    function set_alias_events(events) {
+        for (var ev in events) {
+            $.Event.aliases[ev] = soviet_aliases[ev] = events[ev];
+        }
     }
 
     //function check_gc(controller){
