@@ -30,7 +30,7 @@ define([
 
         BROWSER_CONTROL: is_desktop
             || browsers.mobilesafari
-            || browsers.aosp
+            //|| browsers.aosp
             || is_android && browsers.chrome,
 
         NO_POP_ON_CACHED_PAGE: is_mobilefirefox, 

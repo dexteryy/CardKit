@@ -76,7 +76,7 @@ define("choreo", [
             break;
         }
     }
-    fix_prop_name(vendor_prop, '');
+    //fix_prop_name(vendor_prop, '');
 
     var TRANSFORM = vendor_prop['transform'],
         TRANSITION = vendor_prop['transition'],

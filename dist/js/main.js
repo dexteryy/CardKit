@@ -836,7 +836,7 @@ define("../cardkit/supports", [
 
         BROWSER_CONTROL: is_desktop
             || browsers.mobilesafari
-            || browsers.aosp
+            //|| browsers.aosp
             || is_android && browsers.chrome,
 
         NO_POP_ON_CACHED_PAGE: is_mobilefirefox, 
@@ -5969,7 +5969,7 @@ define("choreo", [
             break;
         }
     }
-    fix_prop_name(vendor_prop, '');
+    //fix_prop_name(vendor_prop, '');
 
     var TRANSFORM = vendor_prop['transform'],
         TRANSITION = vendor_prop['transition'],
