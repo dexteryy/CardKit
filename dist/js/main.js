@@ -7900,7 +7900,8 @@ define("../cardkit/app", [
         updateSize: function(opt){
             opt = opt || {};
 
-            if (supports.CARD_SCROLL || opt.isActions) {
+            if ((supports.CARD_SCROLL || opt.isActions)
+                    && this.viewport[0].id !== LOADING_CARDID) {
 
                 this.viewport[0].style.height = (this.sizeInited ? 
                     window.innerHeight : (screen.availHeight + 60)) + 2 + 'px';
@@ -7948,6 +7949,7 @@ define("../cardkit/app", [
 
         hideLoadingCard: function() {
             ck.loadingCard.hide().css({
+                height: window.innerHeight + 60 + 'px',
                 position: 'static'
             });
             ck.showTopbar();
