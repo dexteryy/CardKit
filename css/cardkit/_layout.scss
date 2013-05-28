@@ -10,7 +10,7 @@ body {
   line-height:1.6;
   @include user-select(none);
   width:100%;
-  overflow:hidden;
+  overflow-x:hidden;
 
   &.bg {
     background: #666;
