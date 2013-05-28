@@ -162,6 +162,10 @@ a {
         @include transform(translateY(0));
     }
 
+    body.hide-toolbars & {
+      display:none;
+    }
+
   }
 
 }

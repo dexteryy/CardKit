@@ -896,6 +896,7 @@
     opacity:1;
   }
 
+  body.hide-toolbars &,
   body.no-overflowscroll &,
   body.no-cardscroll & {
     display:none;
@@ -916,6 +917,10 @@
     &.empty {
       padding:$nav_height 0 0 0;
       background:$view_color;
+    }
+
+    body.hide-toolbars & {
+      padding-top:$space/2;
     }
 
   }

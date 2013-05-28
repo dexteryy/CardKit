@@ -838,6 +838,7 @@ define("../cardkit/supports", [
 
         BROWSER_CONTROL: is_desktop
             || browsers.mobilesafari
+            || browsers.shell === 'micromessenger'
             //|| browsers.aosp
             || is_android && browsers.chrome,
 
@@ -7477,6 +7478,9 @@ define("../cardkit/app", [
             }
             if (supports.FIXED_BOTTOM_BUGGY) {
                 $(body).addClass('fixed-bottom-buggy');
+            }
+            if (env.hideToolbars) {
+                $(body).addClass('hide-toolbars');
             }
 
             this.initState();

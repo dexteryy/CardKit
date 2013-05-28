@@ -435,6 +435,9 @@ define([
             if (supports.FIXED_BOTTOM_BUGGY) {
                 $(body).addClass('fixed-bottom-buggy');
             }
+            if (env.hideToolbars) {
+                $(body).addClass('hide-toolbars');
+            }
 
             this.initState();
 

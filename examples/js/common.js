@@ -3,6 +3,7 @@ define('cardkit/env', [], function(){
     return {
         //showScrollMask: true,
         //showControlMask: true,
+        //hideToolbars: true,
         enableConsole: true
     };
 });

@@ -360,6 +360,9 @@ body.ck-topbar-enabled .ck-root .ck-header, body.ck-topbar-enabled .ck-root .ck-
   -ms-transform: translateY(0);
   transform: translateY(0);
 }
+body.hide-toolbars .ck-root .ck-header, body.hide-toolbars .ck-root .ck-modalview > header {
+  display: none;
+}
 
 .ck-wrapper {
   width: 100%;
@@ -1301,7 +1304,7 @@ body.no-overflowscroll .ck-mini-unit[data-style="slide"] .ck-list-wrap {
 body.ck-topbar-enabled.mobilesafari-bar .ck-top-tips span {
   opacity: 1;
 }
-body.no-overflowscroll .ck-top-tips, body.no-cardscroll .ck-top-tips {
+body.hide-toolbars .ck-top-tips, body.no-overflowscroll .ck-top-tips, body.no-cardscroll .ck-top-tips {
   display: none;
 }
 
@@ -1316,6 +1319,9 @@ body.no-overflowscroll .ck-top-tips, body.no-cardscroll .ck-top-tips {
 .ck-banner-unit .ck-unit-wrap.empty {
   padding: 42.5px 0 0 0;
   background: #f2f2f2;
+}
+body.hide-toolbars .ck-banner-unit .ck-unit-wrap {
+  padding-top: 5px;
 }
 body:not(.no-cardscroll):not(.no-overflowscroll) .ck-banner-unit {
   position: relative;
