@@ -22,7 +22,7 @@ require([
     'mo/network', 
     'cardkit/app'
 ], function($, net, ck){
-    ck.modalCard.event.once('confirm', function(modal){
+    ck.modalCard.event.bind('confirmOnThis', function(modal){
         modal.showLoading();
         net.ajax({
             url: 'post_result.html',

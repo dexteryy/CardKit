@@ -47,6 +47,8 @@
 
                     <div class="ck-title-box">
 
+                        {%= item.opt.join('') %}
+
                         {% if (item.icon) { %}
                             {% if (item.hrefAlone) { %}
                             <a href="{%= item.hrefAlone %}" class="ck-icon ck-link {%= (item.hrefExtern ? 'ck-link-extern' : '') %}">

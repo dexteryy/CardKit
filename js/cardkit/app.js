@@ -396,6 +396,7 @@ define([
             this.sizeInited = false;
             this.viewportGarbage = {};
             this._sessionLocked = true;
+            this._unexpectStateWhenGoback = true;
 
             this.initWindow();
 
@@ -408,19 +409,15 @@ define([
                 easing: easing
             });
 
-            this.scrollGesture = momoScroll(document, {
-                namespace: 'ck_',
-            });
+            this.scrollGesture = momoScroll(document, {});
             set_alias_events(this.scrollGesture.event);
             var tapGesture = momoTap(document, {
-                namespace: 'ck_',
                 tapThreshold: browsers.os !== 'android' 
                     || !browsers.chrome && 20 
                     || 0
             });
             set_alias_events(tapGesture.event);
             var swipeGesture = momoSwipe(this.wrapper, {
-                namespace: 'ck_',
                 timeThreshold: 10000,
                 distanceThreshold: 10 
             });
@@ -690,7 +687,8 @@ define([
                         //alert(10 +': ' + location.href + ', ' + ck._backFromSameUrl)
                         ck._sessionLocked = false;
                         ck._backFromOtherpage = true;
-                        if (supports.GOBACK_WHEN_POP) {
+                        if (supports.GOBACK_WHEN_POP
+                                && !ck._unexpectStateWhenGoback) {
                             history.back();
                         } else {
                             window.location.reload(true);
@@ -1203,6 +1201,7 @@ define([
             ck.cardMask.removeClass('moving');
             next.removeClass('moving');
             if (true_link) {
+                ck._unexpectStateWhenGoback = false;
                 ck._pageCached = true;
                 window.location = true_link;
             } else {
@@ -1316,6 +1315,7 @@ define([
             setTimeout(function(){
                 current.hide();
                 next.removeClass('moving');
+                ck._unexpectStateWhenGoback = false;
                 ck._pageCached = true;
                 window.location = true_link;
             }, 10);
@@ -1340,7 +1340,7 @@ define([
 
     function set_alias_events(events) {
         for (var ev in events) {
-            $.Event.aliases[ev] = soviet_aliases[ev] = events[ev];
+            $.Event.aliases[ev] = soviet_aliases[ev] = 'ck_' + events[ev];
         }
     }
 

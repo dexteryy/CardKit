@@ -81,7 +81,7 @@
                 <img class="ckd-icon" src="#" data-source="ckdItemBIcon">
                 <span class="ckd-title" data-source="ckdItemBTitle"></span>
                 <a class="ckd-title-link-extern" href="#" data-source="ckdItemBTitleLink"></a>
-                <span class="ckd-info" data-source="ckdItemBInfo"></span>
+                <span class="ckd-opt" data-source="ckdItemBOpt"></span>
                 <span class="ckd-desc" data-source="ckdItemBDesc"></span>
                 <span class="ckd-content ckdItemBContent">This is custom <code>content</code>.</span>
                 <span class="ckd-meta" data-source="ckdItemBMeta"></span>
@@ -213,7 +213,7 @@
             <!-- or:
             <a class="ckd-title-link ckdItemBTitleLink" href="index.html"></a>
             -->
-            <span class="ckd-info ckdItemBInfo"><code>info</code></span>
+            <button type="button" class="ckd-opt ckdItemBOpt ck-modal-button" data-url="formcontent.html">i</button>
             <span class="ckd-content ckdItemBContent">This is <code>content</code> A.</span>
             <span class="ckd-content ckdItemBContent">This is content B.</span> 
             <span class="ckd-content ckdItemBContent">This is content C.</span> 
@@ -271,7 +271,9 @@
         </div>
     </div>
 
-    <button type="button" class="ck-select ckdSelectA"
+    <a href="#" class="ckdSelectA ckd-hdopt ck-modal-link" data-url="formcontent.html">Edit</a>
+
+    <button type="button" class="ck-select ckdSelectA ckd-hdopt"
             data-fluid="true"
             data-title="Choose the page">
         <span>Filter</span>

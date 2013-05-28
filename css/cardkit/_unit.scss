@@ -110,7 +110,7 @@
   }
 
   .ck-hdopt-wrap {
-    top:-2px;
+    bottom:-5px;
     background:$view_color;
   }
 
@@ -190,6 +190,7 @@
     //padding:0 0 $space 0;
     line-height:1.6;
     margin-bottom:$space;
+    position:relative;
 
     .ck-hd {
       font-size: $headtitle_size;
@@ -201,6 +202,11 @@
       margin-bottom:0;
     }
 
+  }
+
+  .ck-hdopt-wrap {
+    bottom:-4px;
+    background:$view_color;
   }
 
   .ck-unit-wrap > footer {
@@ -289,7 +295,7 @@
 .ck-hdopt-wrap {
   display:inline-block;
   position:absolute;
-  top:$space/2 + 1px;
+  bottom:$space/2 - 1px;
   right:0;
   z-index:$zindex_item + $zindex_step;
   font-size:$title_size;
@@ -404,6 +410,14 @@
     display:block;
     overflow:hidden;
     position:relative;
+  }
+
+  .ck-opt {
+    float:right;
+    width:40px;
+    margin:2px 0 0 $space;
+    position:relative;
+    z-index:$zindex_item + $zindex_step;
   }
 
   .ck-author-info-wrap,
@@ -541,6 +555,7 @@
 
     .ck-icon,
     .ck-desc-wrap,
+    .ck-opt,
     .ck-info-wrap {
       display:none;
     } 
@@ -572,6 +587,7 @@
   &[data-style="grid"] {
 
     .ck-author-box, 
+    .ck-opt,
     .ck-info-wrap, 
     .ck-meta-wrap, 
     .ck-content-wrap {

@@ -43,6 +43,8 @@
 
                     <div class="ck-title-box">
 
+                        {%= item.opt.join('') %}
+
                         {% if (item.icon) { %}
                         <span class="ck-icon">
                             <img src="{%= item.icon %}"/>

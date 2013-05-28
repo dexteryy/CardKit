@@ -156,6 +156,7 @@ define([
             desc: getCustom('.ckd-desc', item, raw, getItemDataOuter, 'desc')
                 .concat(getCustom('.ckd-subtitle', item, raw, getItemDataOuter, 'subtitle')),
             info: getCustom('.ckd-info', item, raw, getItemDataOuter, 'info'),
+            opt: getCustom('.ckd-opt', item, raw, getItemDataOuter, 'opt'),
             content: getCustom('.ckd-content', item, raw, getItemDataOuter, 'content'),
             meta: getCustom('.ckd-meta', item, raw, getItemDataOuter, 'meta'),
             author: author_data,

@@ -119,7 +119,8 @@
                 data-style="post" 
                 data-cfg-paper="true" 
                 data-source="ckdListA">
-            <div class="ckd-hd">List (Paper "post" style)</div>
+            <div class="ckd-hd">List (Paper "post" style) ... ... ... ... ... ...</div>
+            <span class="ckd-hdopt" data-source="ckdSelectA"></span>
             <div class="ckd-ft">This is footer</div>
         </div>
         <!--demo end-->
@@ -241,7 +242,7 @@
             <!-- or:
             <a class="ckd-title-link ckdItemBTitleLink" href="index.html"></a>
             -->
-            <span class="ckd-info ckdItemBInfo"><code>info</code></span>
+            <button type="button" class="ckd-opt ckdItemBOpt ck-modal-button" data-url="formcontent.html">i</button>
             <span class="ckd-content ckdItemBContent">This is <code>content</code> A.</span>
             <span class="ckd-content ckdItemBContent">This is content B.</span> 
             <span class="ckd-content ckdItemBContent">This is content C.</span> 
@@ -299,7 +300,9 @@
         </div>
     </div>
 
-    <button type="button" class="ck-select ckdSelectA"
+    <a href="#" class="ckdSelectA ckd-hdopt ck-modal-link" data-url="formcontent.html">Edit</a>
+
+    <button type="button" class="ck-select ckdSelectA ckd-hdopt"
             data-fluid="true"
             data-title="Choose the page">
         <span>Filter</span>
