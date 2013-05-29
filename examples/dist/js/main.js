@@ -3862,11 +3862,16 @@ define('moui/control', [
             if (this._numField[0]) {
                 this._isNumFieldClose = this._numField.isEmpty();
             }
-            if (this.isEnabled) {
+            if (opt.enableVal === undefined) {
                 opt.enableVal = this.val();
+            }
+            if (opt.enableLabel === undefined) {
                 opt.enableLabel = this.label();
-            } else {
+            }
+            if (opt.disableVal === undefined) {
                 opt.disableVal = this.val();
+            }
+            if (opt.disableLabel === undefined) {
                 opt.disableLabel = this.label();
             }
             this._config = _.config({}, opt, this._defaults);
@@ -5226,13 +5231,13 @@ define("../cardkit/view/picker", [
             p.showLoading();
             if (controller.isEnabled) {
                 req_opt = {
-                    method: cfg.requestMethod,
+                    method: cfg.enableMethod,
                     url: cfg.enableUrl,
                     jsonUrl: cfg.enableJsonUrl
                 };
             } else {
                 req_opt = {
-                    method: cfg.requestMethod,
+                    method: cfg.disableMethod,
                     url: cfg.disableUrl,
                     jsonUrl: cfg.disableJsonUrl
                 };
@@ -5283,7 +5288,7 @@ define("../cardkit/view/control", [
         enable: function(){
             var cfg = this.data();
             return this.request({
-                method: cfg.requestMethod,
+                method: cfg.enableMethod,
                 url: cfg.enableUrl,
                 jsonUrl: cfg.enableJsonUrl
             }, function(){
@@ -5294,7 +5299,7 @@ define("../cardkit/view/control", [
         disable: function(){
             var cfg = this.data();
             return this.request({
-                method: cfg.requestMethod,
+                method: cfg.disableMethod,
                 url: cfg.disableUrl,
                 jsonUrl: cfg.disableJsonUrl
             }, function(){

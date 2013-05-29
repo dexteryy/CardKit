@@ -17,7 +17,7 @@ define([
         enable: function(){
             var cfg = this.data();
             return this.request({
-                method: cfg.requestMethod,
+                method: cfg.enableMethod,
                 url: cfg.enableUrl,
                 jsonUrl: cfg.enableJsonUrl
             }, function(){
@@ -28,7 +28,7 @@ define([
         disable: function(){
             var cfg = this.data();
             return this.request({
-                method: cfg.requestMethod,
+                method: cfg.disableMethod,
                 url: cfg.disableUrl,
                 jsonUrl: cfg.disableJsonUrl
             }, function(){

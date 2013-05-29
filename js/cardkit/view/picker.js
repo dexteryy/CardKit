@@ -51,13 +51,13 @@ define([
             p.showLoading();
             if (controller.isEnabled) {
                 req_opt = {
-                    method: cfg.requestMethod,
+                    method: cfg.enableMethod,
                     url: cfg.enableUrl,
                     jsonUrl: cfg.enableJsonUrl
                 };
             } else {
                 req_opt = {
-                    method: cfg.requestMethod,
+                    method: cfg.disableMethod,
                     url: cfg.disableUrl,
                     jsonUrl: cfg.disableJsonUrl
                 };

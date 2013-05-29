@@ -44,11 +44,16 @@ define('moui/control', [
             if (this._numField[0]) {
                 this._isNumFieldClose = this._numField.isEmpty();
             }
-            if (this.isEnabled) {
+            if (opt.enableVal === undefined) {
                 opt.enableVal = this.val();
+            }
+            if (opt.enableLabel === undefined) {
                 opt.enableLabel = this.label();
-            } else {
+            }
+            if (opt.disableVal === undefined) {
                 opt.disableVal = this.val();
+            }
+            if (opt.disableLabel === undefined) {
                 opt.disableLabel = this.label();
             }
             this._config = _.config({}, opt, this._defaults);
