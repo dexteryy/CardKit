@@ -26,7 +26,8 @@ define([
         GOBACK_WHEN_POP: !is_ios5
             && !browsers.aosp,
 
-        REPLACE_HASH: !browsers.aosp,
+        REPLACE_HASH: !is_ios5
+            && !browsers.aosp,
 
         BROWSER_CONTROL: is_desktop
             || browsers.mobilesafari
@@ -40,11 +41,11 @@ define([
 
         FIXED_BOTTOM_BUGGY: browsers.crios,
 
-        NEW_WIN: !is_ios5 && !browsers.aosp,
+        NEW_WIN: !is_ios5 
+            && !browsers.aosp,
 
         CARD_SCROLL: !is_desktop
-            && !browsers.aosp
-            && !is_ios5,
+            && !browsers.aosp,
 
         HIDE_ADDRESSBAR: !browsers.crios,
 

@@ -660,8 +660,7 @@ define([
                     ck._sessionLocked = false;
                     rewrite_state = state === MODAL_CARDID && DEFAULT_CARDID 
                         || state;
-                    var card = $('#' + rewrite_state) || [];
-                    if (!card[0]) {
+                    if (!$('#' + rewrite_state).hasClass('ck-card')) {
                         window.location.reload(true);
                         return;
                     }
@@ -738,7 +737,7 @@ define([
                 card_states = card_states.map(function(next_id){
                     if (next_id === MODAL_CARDID
                             || next_id === 'i'
-                            || (next_id && $('#' + next_id) || [])[0]) {
+                            || next_id && $('#' + next_id).hasClass('ck-card')) {
                         valid_states.push(HASH_SEP + next_id);
                         return next_id;
                     }
@@ -1116,8 +1115,7 @@ define([
                 return '';
             });
         if (next_id && next === current) {
-            next = next_id && $('#' + next_id) || [];
-            if (!next[0]) {
+            if (!next_id || !$('#' + next_id).hasClass('ck-card')) {
                 next_id = DEFAULT_CARDID;
                 if (current_id.split(HASH_SEP).pop() === next_id) {
                     return false;
@@ -1171,9 +1169,10 @@ define([
         }
         ck._sessionLocked = true;
         var next = next_id && $('#' + next_id);
-        if (!next) {
+        if (!next.hasClass('ck-card')) {
             ck.enableControl();
             ck._sessionLocked = false;
+            return;
         }
         ck.hideTopbar();
         var current = ck.viewport;
