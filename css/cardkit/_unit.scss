@@ -1,9 +1,6 @@
 
 %ck-unit {
   margin:$space;
-  word-wrap: break-word;
-  //word-break: break-all;
-  //@include user-select(text);
 
   .ck-unit-wrap {
     @extend %ck-unit-wrap;
@@ -20,6 +17,7 @@
 }
 
 %unit-parts {
+  word-wrap: break-word;
 
   .ck-hd-wrap {
     @extend %item;
@@ -179,6 +177,7 @@
 
 %paper-unit {
   margin:$morespace;
+  word-wrap: break-word;
 
   .ck-unit-wrap {
     padding:0 0 ($space) 0;
@@ -645,6 +644,7 @@
   }
 
   &[data-style="split"] {
+    margin:$space 0;
     @extend %unit-parts;
     @extend %plain-hd-parts;
 

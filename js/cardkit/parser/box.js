@@ -56,6 +56,11 @@ define([
     function replace_content(source, custom){
         if (custom) {
             $(custom).replaceWith(source.clone());
+        } else {
+            source = $(source);
+            if (!/\S/.test(source.html() || '')) {
+                source.remove();
+            }
         }
     }
 
