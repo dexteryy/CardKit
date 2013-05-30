@@ -1563,16 +1563,15 @@ define("dollar/origin", [
         };
     }, ext);
 
-    ['splice', 'concat'].forEach(function(method){
-        var origin = this['_' + method] = this[method];
-        this[method] = function(){
-            return $(origin.apply(this._slice(), _array_map.call(
-                arguments, function(i){
-                    return i._slice();
-                })
-            ));
-        };
-    }, ext);
+    var origin_concat = ext._concat = ext.concat;
+    ext.concat = function(){
+        return $(origin_concat.apply(this._slice(), check_array_argument(arguments)));
+    };
+
+    var origin_splice = ext._splice = ext.splice;
+    ext.splice = function(){
+        return $(origin_splice.apply(this, check_array_argument(arguments)));
+    };
 
     _.mix(ext, {
 
@@ -2247,6 +2246,16 @@ define("dollar/origin", [
         return insert_nodes(action);
     }
 
+    function check_array_argument(args){
+        return _array_map.call(args, function(i){
+            if (typeof i === 'object') {
+                return i._slice();
+            } else {
+                return i;
+            }
+        });
+    }
+
     // public static API
 
     $.find = $;
@@ -2479,6 +2488,58 @@ define("../cardkit/parser/util", [
     function getItemDataOuter(source, custom, ckdname){
         source = $(source);
         return getOuterHTML(source, ckdname);
+    }
+
+    return exports;
+
+});
+
+/* @source ../cardkit/parser/navdrawer.js */;
+
+
+define("../cardkit/parser/navdrawer", [
+  "dollar",
+  "mo/lang",
+  "../cardkit/parser/util"
+], function($, _, util){
+    
+    function exports(unit, raw){
+        if (util == raw) {}
+        var data = {
+        
+        };
+        return data;
+    }
+
+    return exports;
+
+});
+
+/* @source ../cardkit/parser/actionbar.js */;
+
+
+define("../cardkit/parser/actionbar", [
+  "dollar",
+  "mo/lang",
+  "../cardkit/parser/util"
+], function($, _, util){
+    
+    function exports(cfg, raw){
+        cfg = $(cfg);
+        var source = util.getSource(cfg, raw),
+            config = {
+                limit: cfg.data('cfgLimit') || 1
+            },
+            items = source && source.find('.ckd-item').map(function(elm){
+                return util.getItemDataOuter(elm, null, 'item');
+            }) || $(),
+            custom_items = util.getCustom('.ckd-item', cfg, raw, util.getItemDataOuter, 'item');
+        var data = {
+            config: config,
+            items: custom_items.concat(items || $())
+        };
+        data.overflowItems = data.items.splice(config.limit);
+        return data;
     }
 
     return exports;
@@ -2752,6 +2813,20 @@ define("../cardkit/parser/box", [
 
 });
 
+/* @source ../cardkit/tpl/layout/actionbar.js */;
+
+define("../cardkit/tpl/layout/actionbar", [], function(){
+
+    return {"template":"\n{% if (actionbar.overflowItems.length) { %}\n<button type=\"button\" class=\"ck-top-overflow ck-item\"></button>\n{% } %}\n\n{% actionbar.items.reverse().forEach(function(item){ %}\n\n    {%=(item)%}\n\n{% }); %}\n\n<span class=\"ck-top-overflow-items\">\n{% actionbar.overflowItems.forEach(function(item){ %}\n\n    {%=(item)%}\n\n{% }); %}\n</span>\n"}; 
+
+});
+/* @source ../cardkit/tpl/layout/navdrawer.js */;
+
+define("../cardkit/tpl/layout/navdrawer", [], function(){
+
+    return {"template":""}; 
+
+});
 /* @source ../cardkit/tpl/unit/blank.js */;
 
 define("../cardkit/tpl/unit/blank", [], function(){
@@ -2965,16 +3040,27 @@ define("../cardkit/render", [
   "../cardkit/tpl/unit/form",
   "../cardkit/tpl/unit/banner",
   "../cardkit/tpl/unit/blank",
+  "../cardkit/tpl/layout/navdrawer",
+  "../cardkit/tpl/layout/actionbar",
   "../cardkit/parser/box",
   "../cardkit/parser/list",
   "../cardkit/parser/mini",
   "../cardkit/parser/form",
-  "../cardkit/parser/banner"
+  "../cardkit/parser/banner",
+  "../cardkit/parser/actionbar",
+  "../cardkit/parser/navdrawer"
 ], function($, _, tpl, 
-    tpl_box, tpl_list, tpl_mini, tpl_form, tpl_banner, tpl_blank,
-    boxParser, listParser, miniParser, formParser, bannerParser){
+    tpl_box, tpl_list, tpl_mini, tpl_form, tpl_banner, tpl_blank, 
+    tpl_navdrawer, tpl_actionbar,
+    boxParser, listParser, miniParser, formParser, 
+    bannerParser, actionbarParser, navdrawerParser){
 
-    var SCRIPT_TAG = 'script[type="text/cardscript"]',
+    var frame_parts = {
+            'navdrawer': navdrawerParser, 
+            'actionbar': actionbarParser
+        },
+
+        SCRIPT_TAG = 'script[type="text/cardscript"]',
 
         TPL_BLANK_BANNER = '<div class="ck-banner-unit"></div>';
 
@@ -3126,6 +3212,38 @@ define("../cardkit/render", [
             } else {
                 unit.innerHTML = tpl.convertTpl(tpl_form.template, data, 'data');
                 return true;
+            }
+        },
+
+        _frameConfig: {},
+        _frameCustomized: {},
+
+        setFrame: function(card, header, raw){
+            var cfg = this._frameConfig,
+                customized = this._frameCustomized,
+                global_cfg,
+                cfg_node,
+                changed = {};
+            for (var part in frame_parts) {
+                if (!cfg[part] || customized[part]) {
+                    global_cfg = header.find('.ckcfg-' + part);
+                    if (global_cfg[0]) {
+                        cfg[part] = frame_parts[part](global_cfg, raw);
+                        changed[part] = true;
+                    }
+                }
+                cfg_node = card.find('.ckcfg-' + part);
+                customized[part] = !!cfg_node[0];
+                if (customized[part]) {
+                    cfg[part] = frame_parts[part](cfg_node, raw);
+                    changed[part] = true;
+                }
+            }
+            if (changed['actionbar']) {
+                $('.ck-top-actions').html(tpl.convertTpl(tpl_actionbar.template, cfg));
+            }
+            if (changed['navdrawer']) {
+                $('.ck-nav-navdrawer').html(tpl.convertTpl(tpl_navdrawer.template, cfg));
             }
         }
     
@@ -3505,6 +3623,13 @@ define("../cardkit/bus", [
 define("../cardkit/tpl/layout/ctlbar", [], function(){
 
     return {"template":"<div class=\"ck-ctl-bar\">\n    <input type=\"button\" class=\"ck-ctl-backward\">\n    <input type=\"button\" class=\"ck-ctl-forward disabled\">\n    <input type=\"button\" class=\"ck-ctl-reload\">\n</div>\n"}; 
+
+});
+/* @source ../cardkit/tpl/layout/overflowmenu.js */;
+
+define("../cardkit/tpl/layout/overflowmenu", [], function(){
+
+    return {"template":"\n<button type=\"button\" class=\"ck-option\" value=\"{%=item.i%}\">{%=item.text%}</button>\n"}; 
 
 });
 /* @source moui/overlay.js */;
@@ -4542,8 +4667,6 @@ define("../cardkit/view/actionview", [
                 }
             }
         });
-        if (elm) {
-        }
         return view;
     }
 
@@ -7072,6 +7195,7 @@ define("../cardkit/app", [
   "../cardkit/view/modalcard",
   "../cardkit/view/actionview",
   "../cardkit/view/growl",
+  "../cardkit/tpl/layout/overflowmenu",
   "../cardkit/tpl/layout/ctlbar",
   "../cardkit/bus",
   "../cardkit/render",
@@ -7081,7 +7205,8 @@ define("../cardkit/app", [
 ], function($, _, browsers, tpl, easing, soviet, choreo, 
     momoBase, momoTap, momoSwipe, momoDrag, momoScroll, 
     control, picker, stars, modalCard, actionView, growl, 
-    tpl_ctlbar, bus, render, supports, env){
+    tpl_overflowmenu, tpl_ctlbar, 
+    bus, render, supports, env){
 
     var window = this,
         history = window.history,
@@ -7219,10 +7344,29 @@ define("../cardkit/app", [
             window.location.reload();
         },
 
-        '.ck-top-create .btn': open_modal_card,
+        '.ck-top-overflow': function(){
+            var options = $('.ck-top-overflow-items .ck-item').map(function(item, i){
+                return $(tpl.convertTpl(this, {
+                    i: i,
+                    text: $(item).html()
+                }, 'item'))[0];
+            }, tpl_overflowmenu.template);
+            actionView(this, {
+                options: options
+            }).open();
+            bus.bind('actionView:confirmOnThis', function(actionCard){
+                var i = actionCard.val();
+                bus.once('actionView:close', function(){
+                    $('.ck-top-overflow-items .ck-item').eq(i).trigger('tap');
+                });
+            });
+        },
 
-        '.ck-top-action .btn': function(){
-            actionView(this).open();
+        '.ck-top-nav, .ck-top-nav a': function(){
+            if (this.href) {
+                open_url(this.href, this);
+                return;
+            }
         }
     
     };
@@ -7897,9 +8041,8 @@ define("../cardkit/app", [
             this.viewport = card.show();
             this.updateSize(opt);
             if (!opt.isModal && !opt.isActions) {
-                this.updateHeader();
+                this.updateFrame();
             }
-            sessionStorage['ck_lasturl'] = location.href;
             if (!is_loading) {
                 setTimeout(function(){
                     bus.fire('readycardchange', [card]);
@@ -7945,12 +8088,8 @@ define("../cardkit/app", [
             this.scrollGesture.watchScroll(card[0]);
         },
 
-        updateHeader: function(){
-            var top_submit = this.header.find('.ck-top-create').empty();
-            var create_btn = this.viewport.find('.ckd-top-create').html();
-            if (create_btn) {
-                top_submit.append(create_btn);
-            }
+        updateFrame: function(){
+            render.setFrame(this.viewport, this.header, this.raw);
         },
 
         renderUnit: function(node){
@@ -8195,6 +8334,13 @@ define("../cardkit/app", [
             open_url(me.href, {
                 target: '_blank'
             });
+            return;
+        } else if ($(me).hasClass('ck-link-direct')) {
+            if (next_id) {
+                forward_handler(next_id, null, true);
+            } else {
+                open_url(me.href);
+            }
             return;
         } else if ($(me).hasClass('ck-link')) {
         } else if (/(^|\s)ck-\w+/.test(me.className)) {

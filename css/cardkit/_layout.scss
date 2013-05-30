@@ -64,24 +64,6 @@ a {
 
   $top_btn_space: 1px;
 
-  .opt {
-    display:block;
-    line-height:1;
-    float:right;
-    margin:$top_btn_space $top_btn_space 0 0;
-    position:relative;
-  }
-
-  .ck-top-nav {
-    float:left;
-  }
-
-  .ck-top-action {
-  }
-
-  .ck-top-create {
-  }
-
 }
 
 .ck-top-title {
@@ -91,7 +73,7 @@ a {
   text-align:center;
   display:block;
   position:absolute;
-  left: $space*4 + 20px;
+  left: $space*4 + 0px;
   right: $space*4 + 20px;
   top:0;
 }
@@ -116,17 +98,20 @@ a {
       position:fixed;
     }
 
-    .ck-top-title a,
     .ck-top-title {
       color:#fff;
       @include text-shadow(0px 1px 0px rgba(0,0,0,1));
     }
 
-    .btn {
+    .ck-top-actions .ck-item,
+    .ck-top-nav {
+      float:right;
       display:inline-block;
       margin:0;
       padding:0;
       text-decoration:none;
+      text-indent:-200px;
+      @include box-shadow(none);
       @include user-select(none);
 
       width:$top_btn_size;
@@ -142,20 +127,19 @@ a {
       }
     }
 
-    .ck-top-nav .btn {
+    .ck-top-nav {
+      float:left;
       background-image:inline-image('menu.png');
     }
 
-    .ck-top-action .btn {
+    .ck-top-actions .ck-top-overflow {
       background-image:inline-image('more.png');
     }
 
-    .ck-top-create .btn {
-      background-image:inline-image('compose.png');
-    }
-
-    .ck-top-create .btn.reply {
-      background-image:inline-image('reply.png');
+    .ck-top-action, // deprecated
+    .ck-top-create, // deprecated
+    .ck-top-overflow-items {
+      display:none;
     }
 
     body.ck-topbar-enabled & {
@@ -197,6 +181,11 @@ a {
     height:15px + $nav_height;
   }
 
+}
+
+.ckcfg-navdrawer,
+.ckcfg-actionbar {
+  display:none;
 }
 
 .ck-ctl-bar {

@@ -23,19 +23,20 @@
 <header class="ck-header">
     
 <span class="ck-top-title">CardKit Reference</span>
-<span class="opt ck-top-nav"><a class="btn" href="index.html" target="_self"></a></span>
-<span class="opt ck-top-action"><button type="button" class="btn"></button></span>
-<span class="opt ck-top-create"></span>
+<a class="ck-top-nav" class="btn" href="index.html" target="_self"></a>
+<span class="ck-top-actions"></span>
+
+<div class="ckcfg-actionbar" data-source="ckdActionbar">
+</div>
+
+<div class="ckcfg-navdrawer">
+</div>
 
 </header>
 
 <div class="ck-wrapper">
     
     <div class="ck-card" id="ckDefault">
-
-        <div class="ckd-top-create">
-            <button type="button" class="btn reply" data-iframe-url="formpage.html" data-title="发表"></button>
-        </div>
 
         <div class="ck-banner-unit topbox">
             <h2>CardKit / Component</h2>
@@ -68,6 +69,14 @@
 
         <div class="ck-box-unit" data-cfg-plain="true">
             <header class="ckd-hd">Modal View</header>
+        </div>
+
+        <div class="ckcfg-actionbar">
+            <div class="ckd-item" data-source="ckdActionbarItem1"></div>
+            <button type="button" class="ckd-item ck-modal-button" 
+                data-title="动作3"
+                data-url="formcontent.html">动作3</button>
+            <a href="index.html" target="_self" class="ckd-item ck-link-direct">index.html</a>
         </div>
 
         <div class="ck-form-unit">
@@ -346,6 +355,11 @@
 </div>
 
 <div class="ck-raw">
+
+    <div class="ckdActionbar">
+        <button type="button" class="ckd-item ck-modal-button ckdActionbarItem1" data-url="formcontent.html" data-title="动作1">动作1</button>
+        <button type="button" class="ckd-item ck-modal-button" data-url="formcontent.html" data-title="动作2">动作2</button>
+    </div>
 
 <script type="text/template" class="formBox">
 <form action="data/post_result.json" id="inlineForm1">

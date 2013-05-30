@@ -9,16 +9,27 @@ define([
     './tpl/unit/form',
     './tpl/unit/banner',
     './tpl/unit/blank',
+    './tpl/layout/navdrawer',
+    './tpl/layout/actionbar',
     './parser/box',
     './parser/list',
     './parser/mini',
     './parser/form',
-    './parser/banner'
+    './parser/banner',
+    './parser/actionbar',
+    './parser/navdrawer'
 ], function($, _, tpl, 
-    tpl_box, tpl_list, tpl_mini, tpl_form, tpl_banner, tpl_blank,
-    boxParser, listParser, miniParser, formParser, bannerParser){
+    tpl_box, tpl_list, tpl_mini, tpl_form, tpl_banner, tpl_blank, 
+    tpl_navdrawer, tpl_actionbar,
+    boxParser, listParser, miniParser, formParser, 
+    bannerParser, actionbarParser, navdrawerParser){
 
-    var SCRIPT_TAG = 'script[type="text/cardscript"]',
+    var frame_parts = {
+            'navdrawer': navdrawerParser, 
+            'actionbar': actionbarParser
+        },
+
+        SCRIPT_TAG = 'script[type="text/cardscript"]',
 
         TPL_BLANK_BANNER = '<div class="ck-banner-unit"></div>';
 
@@ -170,6 +181,38 @@ define([
             } else {
                 unit.innerHTML = tpl.convertTpl(tpl_form.template, data, 'data');
                 return true;
+            }
+        },
+
+        _frameConfig: {},
+        _frameCustomized: {},
+
+        setFrame: function(card, header, raw){
+            var cfg = this._frameConfig,
+                customized = this._frameCustomized,
+                global_cfg,
+                cfg_node,
+                changed = {};
+            for (var part in frame_parts) {
+                if (!cfg[part] || customized[part]) {
+                    global_cfg = header.find('.ckcfg-' + part);
+                    if (global_cfg[0]) {
+                        cfg[part] = frame_parts[part](global_cfg, raw);
+                        changed[part] = true;
+                    }
+                }
+                cfg_node = card.find('.ckcfg-' + part);
+                customized[part] = !!cfg_node[0];
+                if (customized[part]) {
+                    cfg[part] = frame_parts[part](cfg_node, raw);
+                    changed[part] = true;
+                }
+            }
+            if (changed['actionbar']) {
+                $('.ck-top-actions').html(tpl.convertTpl(tpl_actionbar.template, cfg));
+            }
+            if (changed['navdrawer']) {
+                $('.ck-nav-navdrawer').html(tpl.convertTpl(tpl_navdrawer.template, cfg));
             }
         }
     

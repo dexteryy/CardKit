@@ -17,6 +17,7 @@ define([
     './view/modalcard',
     './view/actionview',
     './view/growl',
+    './tpl/layout/overflowmenu',
     './tpl/layout/ctlbar',
     './bus',
     './render',
@@ -26,7 +27,8 @@ define([
 ], function($, _, browsers, tpl, easing, soviet, choreo, 
     momoBase, momoTap, momoSwipe, momoDrag, momoScroll, 
     control, picker, stars, modalCard, actionView, growl, 
-    tpl_ctlbar, bus, render, supports, env){
+    tpl_overflowmenu, tpl_ctlbar, 
+    bus, render, supports, env){
 
     var window = this,
         history = window.history,
@@ -164,10 +166,29 @@ define([
             window.location.reload();
         },
 
-        '.ck-top-create .btn': open_modal_card,
+        '.ck-top-overflow': function(){
+            var options = $('.ck-top-overflow-items .ck-item').map(function(item, i){
+                return $(tpl.convertTpl(this, {
+                    i: i,
+                    text: $(item).html()
+                }, 'item'))[0];
+            }, tpl_overflowmenu.template);
+            actionView(this, {
+                options: options
+            }).open();
+            bus.bind('actionView:confirmOnThis', function(actionCard){
+                var i = actionCard.val();
+                bus.once('actionView:close', function(){
+                    $('.ck-top-overflow-items .ck-item').eq(i).trigger('tap');
+                });
+            });
+        },
 
-        '.ck-top-action .btn': function(){
-            actionView(this).open();
+        '.ck-top-nav, .ck-top-nav a': function(){
+            if (this.href) {
+                open_url(this.href, this);
+                return;
+            }
         }
     
     };
@@ -842,9 +863,8 @@ define([
             this.viewport = card.show();
             this.updateSize(opt);
             if (!opt.isModal && !opt.isActions) {
-                this.updateHeader();
+                this.updateFrame();
             }
-            sessionStorage['ck_lasturl'] = location.href;
             if (!is_loading) {
                 setTimeout(function(){
                     bus.fire('readycardchange', [card]);
@@ -890,12 +910,8 @@ define([
             this.scrollGesture.watchScroll(card[0]);
         },
 
-        updateHeader: function(){
-            var top_submit = this.header.find('.ck-top-create').empty();
-            var create_btn = this.viewport.find('.ckd-top-create').html();
-            if (create_btn) {
-                top_submit.append(create_btn);
-            }
+        updateFrame: function(){
+            render.setFrame(this.viewport, this.header, this.raw);
         },
 
         renderUnit: function(node){
@@ -1140,6 +1156,13 @@ define([
             open_url(me.href, {
                 target: '_blank'
             });
+            return;
+        } else if ($(me).hasClass('ck-link-direct')) {
+            if (next_id) {
+                forward_handler(next_id, null, true);
+            } else {
+                open_url(me.href);
+            }
             return;
         } else if ($(me).hasClass('ck-link')) {
         } else if (/(^|\s)ck-\w+/.test(me.className)) {

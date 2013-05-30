@@ -196,6 +196,7 @@
   color:#fff;
   background:none;
   font-size:$maintitle_size;
+  font-weight:normal;
   padding:10px 0;
   margin:0;
   @include border-radius(0);
@@ -203,6 +204,8 @@
   border-top:solid 1px #3e3e3e;
   border-bottom:solid 1px #282828;
   text-align:center;
+  @include box-shadow(none);
+  @include text-shadow(none);
   @include appearance(none);
   @include user-select(none);
   -webkit-touch-callout: none;

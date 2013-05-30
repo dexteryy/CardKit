@@ -3638,16 +3638,15 @@ define("dollar/origin", [
         };
     }, ext);
 
-    ['splice', 'concat'].forEach(function(method){
-        var origin = this['_' + method] = this[method];
-        this[method] = function(){
-            return $(origin.apply(this._slice(), _array_map.call(
-                arguments, function(i){
-                    return i._slice();
-                })
-            ));
-        };
-    }, ext);
+    var origin_concat = ext._concat = ext.concat;
+    ext.concat = function(){
+        return $(origin_concat.apply(this._slice(), check_array_argument(arguments)));
+    };
+
+    var origin_splice = ext._splice = ext.splice;
+    ext.splice = function(){
+        return $(origin_splice.apply(this, check_array_argument(arguments)));
+    };
 
     _.mix(ext, {
 
@@ -4320,6 +4319,16 @@ define("dollar/origin", [
 
     function operator_insert(action){
         return insert_nodes(action);
+    }
+
+    function check_array_argument(args){
+        return _array_map.call(args, function(i){
+            if (typeof i === 'object') {
+                return i._slice();
+            } else {
+                return i;
+            }
+        });
     }
 
     // public static API

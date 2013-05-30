@@ -259,16 +259,6 @@ a {
   -webkit-touch-callout: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
-.ck-header .opt, .ck-modalview > header .opt {
-  display: block;
-  line-height: 1;
-  float: right;
-  margin: 1px 1px 0 0;
-  position: relative;
-}
-.ck-header .ck-top-nav, .ck-modalview > header .ck-top-nav {
-  float: left;
-}
 
 .ck-top-title, .ck-modalview > header h1 {
   font-size: 20px;
@@ -277,7 +267,7 @@ a {
   text-align: center;
   display: block;
   position: absolute;
-  left: 60px;
+  left: 40px;
   right: 60px;
   top: 0;
 }
@@ -309,20 +299,22 @@ a {
 body.no-cardscroll.ck-inited .ck-root .ck-header, body.no-cardscroll.ck-inited .ck-root .ck-modalview > header {
   position: fixed;
 }
-.ck-root .ck-header .ck-top-title a, .ck-root .ck-modalview > header .ck-top-title a, .ck-modalview > header .ck-root .ck-header h1 a, .ck-root .ck-modalview > header h1 a,
-.ck-root .ck-header .ck-top-title,
-.ck-root .ck-modalview > header .ck-top-title,
-.ck-root .ck-header .ck-modalview > header h1,
-.ck-modalview > header .ck-root .ck-header h1,
-.ck-root .ck-modalview > header h1 {
+.ck-root .ck-header .ck-top-title, .ck-root .ck-modalview > header .ck-top-title, .ck-root .ck-header .ck-modalview > header h1, .ck-modalview > header .ck-root .ck-header h1, .ck-root .ck-modalview > header h1 {
   color: #fff;
   text-shadow: 0px 1px 0px black;
 }
-.ck-root .ck-header .btn, .ck-root .ck-modalview > header .btn {
+.ck-root .ck-header .ck-top-actions .ck-item, .ck-root .ck-modalview > header .ck-top-actions .ck-item,
+.ck-root .ck-header .ck-top-nav,
+.ck-root .ck-modalview > header .ck-top-nav {
+  float: right;
   display: inline-block;
   margin: 0;
   padding: 0;
   text-decoration: none;
+  text-indent: -200px;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
   -webkit-user-select: none;
   -moz-user-select: none;
   user-select: none;
@@ -337,22 +329,26 @@ body.no-cardscroll.ck-inited .ck-root .ck-header, body.no-cardscroll.ck-inited .
   background-position: 7px 7px;
   border: 1px solid transparent;
 }
-.ck-root .ck-header .btn:active, .ck-root .ck-modalview > header .btn:active {
+.ck-root .ck-header .ck-top-actions .ck-item:active, .ck-root .ck-modalview > header .ck-top-actions .ck-item:active,
+.ck-root .ck-header .ck-top-nav:active,
+.ck-root .ck-modalview > header .ck-top-nav:active {
   -webkit-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 1px 0 rgba(255, 255, 255, 0.1);
   -moz-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 1px 0 rgba(255, 255, 255, 0.1);
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1), 0 1px 0 rgba(255, 255, 255, 0.1);
 }
-.ck-root .ck-header .ck-top-nav .btn, .ck-root .ck-modalview > header .ck-top-nav .btn {
+.ck-root .ck-header .ck-top-nav, .ck-root .ck-modalview > header .ck-top-nav {
+  float: left;
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAADFBMVEUAAAD///8AAAD////IZVEZAAAABHRSTlMAAFqzoa8xcgAAAClJREFUKM9jCEUCDFTm1P+Hgr9U52StgoKVSJY6MJLJGXUoDodSPVEAAN65RTMMRcUhAAAAAElFTkSuQmCC');
 }
-.ck-root .ck-header .ck-top-action .btn, .ck-root .ck-modalview > header .ck-top-action .btn {
+.ck-root .ck-header .ck-top-actions .ck-top-overflow, .ck-root .ck-modalview > header .ck-top-actions .ck-top-overflow {
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAAA5FBMVEUAAAD///8AAAD///+qqqr///8AAACZmZn///+ioqIAAAAAAAAAAAAAAAAAAAAAAAAFBQUAAAAAAAAAAAD///8AAAD///////////////////////8AAAD8/PwAAAAAAAAAAAACAgIEBAT///+Kior///+RkZGVlZX///+ZmZl5eXl7e3uCgoKJiYmzs7O0tLT///+5ubny8vL///+5ubn////CwsLz8/P09PT19fXb29ve3t7h4eHi4uLi4uLj4+Pm5ub6+vr7+/v5+fn5+fn////////8/Pz8/Pz9/f3+/v7///9iqQ7iAAAATHRSTlMAAAEBAgIDBAUIGxwdHyAhIzAxMzY3Nzg5PkBBRUVHSFhYWWBlZm1ubnJ2dnl7ioqKjIyMjY6RlZWam5+goKGhpK2trq+vsLGysrKzSXkzoAAAARZJREFUSMft08lOAkEQBmDsUQR0BEHUkX0VFBRBUBYRl5Zl3v99jFX1tx2MBy+eug8k9ae+kErVRHb++CIOOODAD+D93sHPo18BZz39McxZTcFA60FggdxQ6945QC2k1zL/0uCgAeC1OKgxOAnlFaT/AkEgoIDglEAf5VjAA4JHAWMEfQIvKMMYz79BvdkjEDMNrwTeTB0nsPsN9gnETcM7gQnKRZSAekLwrAhEFwgmBOoo2zLDJYKmzNBGUCeQuOVqlBJwdM/BnS8gNeLgJsF7SF9Nl+t5N6uwh0xntlrNOhnsQWW78/Vyen2MTR/ky9VS0tq0X6xUir616WSpWs4fmtP4mnTrgpTauiVl35L7RB1w4J/AJ0RAUE3lLcFnAAAAAElFTkSuQmCC');
 }
-.ck-root .ck-header .ck-top-create .btn, .ck-root .ck-modalview > header .ck-top-create .btn {
-  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAABAlBMVEUAAAD///8AAAD///////////////8AAAAAAAD///8AAAD///8AAADs7Oz///8AAAAAAAD///8AAAAAAAAAAAAAAAD///+Pj48MDAzr6+sAAAAAAAD////4+PgKCgoAAAD////29vb///8AAAAJCQn////x8fH///////////8AAAAAAAAICAj////39/f///8sLCwyMjJjY2NpaWnq6uqRkZGIiIiJiYmKiorp6emPj4/s7Ozy8vL///+vr6+zs7P8/Py/v7/Hx8fIyMjJycnNzc3j4+Pm5ub4+Pj6+vr8/Pz39/f7+/v+/v79/f3+/v7+/v7////9/f3////+/v7///8SkEHcAAAAVnRSTlMAAAEBAgQGCAkJCgoMExQWFx0gISIjIyktLS8wMTQ3Ojo7Ozw8PkFDREVISlZYWWFiZHBxdnd5eXl8fYOFhomKi46Tk5SWoqSoq6uurq6vr7CwsrKzs6bSQcEAAAEtSURBVEjH5dZZU8IwFIbhtq7gioj7AnFBFHfFfaWuqCCQ//9XpOkUIjnfSbnVc/0+M00mM6eO2+M4/wKkdvdnHDXxQLYq5Xc+PsjWZGsaW3FB2LdEIR6I+lDYwfinbE9jww76kuf1jnhP2IC4SaTPNDFvAaIm73XRnOWBCM6ri4dRFojwfjrCX2EPLaL7jIS/7nGg3StRqqueAVofiKnSY9Bj8KtXYtXj3lJXL+Wewz5vo/fnWGD26vshoHqXAWTPALrHAPQQoB4B2AOwBHsArmFPg5Ev2NNgE/c0uMI9CQY/cE+CHNOT4ELry109BQbemJ4Cy1H9cnds9BQ4CeLK0+XhzuKk59pB/2vz+faouJZJ0nvNAGOnB9sLEx5chAYYnh5iN2cvS/Ev/jr8AOpWqsbCr5JSAAAAAElFTkSuQmCC');
-}
-.ck-root .ck-header .ck-top-create .btn.reply, .ck-root .ck-modalview > header .ck-top-create .btn.reply {
-  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAABcVBMVEUAAAD///8AAAD///8AAAAAAAAAAAD///8AAAD///8AAAAAAAD///8AAAD///8AAAAAAAD///////8AAAAAAAAAAAD///////////8fHx8AAAAAAAATExP///////8AAAAAAAD///8AAAD///8AAAAAAAD///////8DAwOysrIAAAAAAAAqKir///////8bGxsQEBANDQ3///8XFxcNDQ0dHR3///9EREQICAgPDw8qKiqMjIz///8AAAAAAAAAAAAICAj////////9/f06Ojr9/f1MTExPT0/09PRnZ2doaGiPj496enr///+YmJiRkZGTk5P///////+lpaWmpqb+/v6vr6+3t7f///+8vLzJycn+/v7Ly8vQ0NDR0dHT09PX19f+/v7a2tr////h4eH7+/v////j4+Pn5+f+/v7r6+vt7e3////t7e36+vr+/v719fX39/f5+fn+/v76+vr7+/v8/Pz8/Pz////+/v7////zRNODAAAAe3RSTlMAAAEBAgMEBAUFBgcHCw4PEBIUFhccHCAiIyQlJycpKywuLzAzNTc7PDw+P0BBQkNERUVNUFBSVFZWVlZWV1laW2JjZGVlZmZub3BxdXd7fX5/g4WFh4iMjI6RkZWXmJmbnJ2eoaGhoqSkpqenqKqrrK6vr7CxsbKys7NllTCSAAABQ0lEQVRIx+3VVVPDQBQF4Jw0NLi7u7trF3f34lqsFFq0+fU8QDpNmt3uHd4YzlNmbr5MZnN2o4AY5R9IAn3Cb8SPf1I3wZQhlxkTBCRBwASGbMSA3RABeo6IwN24HSYBqJXLIRIA8uYeJUHwdBcAkDl8IQGe9xYHW6q/m5DS5Y0HHtaGanPVSHe0uvUPEXjd6i1OsNatZEEAbmcrtJiC5kxzwVlfhkOj9XkeOOlMdLg/fYf3SlcdmsP9Bee8VQoOuCMPLaxp+Lmsf+Iu62oaACC/f8NnTuEa/eR+uPtSAElt+9HT1BVBl5ZUuNovLdPsQ1Fbi5C1aZ2W34n2g1crs027X4QbaKTKNvWJ9/R7E/UQuP71qRGbEBUc0ED4uNUGmDie5mQLCDP+CW8mGrx5QANjoAEGGmCggXHQAFMVufyVH/sXwVDn+GGtH9cAAAAASUVORK5CYII=');
+.ck-root .ck-header .ck-top-action, .ck-root .ck-modalview > header .ck-top-action,
+.ck-root .ck-header .ck-top-create,
+.ck-root .ck-modalview > header .ck-top-create,
+.ck-root .ck-header .ck-top-overflow-items,
+.ck-root .ck-modalview > header .ck-top-overflow-items {
+  display: none;
 }
 body.ck-topbar-enabled .ck-root .ck-header, body.ck-topbar-enabled .ck-root .ck-modalview > header {
   -webkit-transform: translateY(0);
@@ -383,6 +379,11 @@ body.hide-toolbars .ck-root .ck-header, body.hide-toolbars .ck-root .ck-modalvie
 }
 body.has_ctlbar .ck-footer {
   height: 57.5px;
+}
+
+.ckcfg-navdrawer,
+.ckcfg-actionbar {
+  display: none;
 }
 
 .ck-ctl-bar {
@@ -1489,6 +1490,9 @@ body:not(.no-cardscroll):not(.no-overflowscroll) .ck-banner-unit .ck-top-tips {
   box-shadow: 0px 1px 0px 0px white;
   color: #fff;
 }
+.moui-tagselector .enabled.option a, .ck-tagselector .enabled.option a, .ck-tagselector .enabled.ck-option a {
+  color: #fff;
+}
 
 .moui-actions, .ck-actions {
   -webkit-user-select: none;
@@ -1839,6 +1843,7 @@ body.no-cardscroll .moui-actionview .wrapper, body.no-cardscroll .ck-actionview 
   color: #fff;
   background: none;
   font-size: 15px;
+  font-weight: normal;
   padding: 10px 0;
   margin: 0;
   -webkit-border-radius: 0;
@@ -1849,6 +1854,10 @@ body.no-cardscroll .moui-actionview .wrapper, body.no-cardscroll .ck-actionview 
   border-top: solid 1px #3e3e3e;
   border-bottom: solid 1px #282828;
   text-align: center;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  text-shadow: none;
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;

@@ -64,8 +64,6 @@ define([
                 }
             }
         });
-        if (elm) {
-        }
         return view;
     }
 
