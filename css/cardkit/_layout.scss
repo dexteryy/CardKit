@@ -253,6 +253,10 @@ a {
   body.no-cardscroll & {
     position:absolute;
 
+    & > header {
+      z-index:inherit;
+    }
+
     & > article {
       overflow-y:visible;
       -webkit-overflow-scrolling: auto;
@@ -367,6 +371,7 @@ body.no-cardscroll {
   }
 
   &.nav-view {
+    background:#242424;
 
     .ck-main {
       @include transform(translateX(0));

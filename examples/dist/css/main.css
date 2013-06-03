@@ -444,6 +444,9 @@ body.has_ctlbar .ck-footer {
 body.no-cardscroll .ck-navdrawer {
   position: absolute;
 }
+body.no-cardscroll .ck-navdrawer > header {
+  z-index: inherit;
+}
 body.no-cardscroll .ck-navdrawer > article {
   overflow-y: visible;
   -webkit-overflow-scrolling: auto;
@@ -545,6 +548,9 @@ body.no-cardscroll.modal-view .ck-main {
 }
 body.no-cardscroll.modal-view .ck-wrapper {
   display: none;
+}
+body.no-cardscroll.nav-view {
+  background: #242424;
 }
 body.no-cardscroll.nav-view .ck-main {
   -webkit-transform: translateX(0);
