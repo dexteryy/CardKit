@@ -48,6 +48,7 @@ define([
         MINI_ITEM_MARGIN = 10,
         MINI_LIST_PADDING = 15,
 
+        TPL_NAVDRAWER = '<div class="ck-navdrawer"></div>',
         TPL_MASK = '<div class="ck-viewmask"></div>',
         TPL_CARD_MASK = '<div class="ck-cardmask"></div>';
 
@@ -189,8 +190,9 @@ define([
                 open_url(this.href, this);
                 return;
             }
+            ck.openNavDrawer();
         }
-    
+
     };
 
     function open_modal_card(){
@@ -334,7 +336,11 @@ define([
         ck.disableView = true;
         $(body).addClass('modal-view');
     }).bind('close', function(){
-        ck.changeView(last_view_for_modal);
+        ck.changeView(last_view_for_modal, {
+            preventRender: ck._navDrawerLastView,
+            isModal: ck._navDrawerLastView,
+            isNotPrev: true
+        });
         $(body).removeClass('bg');
     //}).bind('needclose', function(){
         //ck.closeModal();
@@ -361,9 +367,10 @@ define([
             $(body).removeClass('bg');
         }
         ck.changeView(last_view_for_actions, {
-            preventRender: modalCard.isOpened,
+            isNotPrev: true,
+            preventRender: modalCard.isOpened || ck._navDrawerLastView,
             preventScroll: true,
-            isModal: modalCard.isOpened
+            isModal: modalCard.isOpened || ck._navDrawerLastView
         });
     }).bind('actionView:close', function(){
         if (!modalCard.isOpened) {
@@ -373,9 +380,10 @@ define([
             $(body).removeClass('bg');
         }
         ck.changeView(last_view_for_actions, {
-            preventRender: modalCard.isOpened,
+            isNotPrev: true,
+            preventRender: modalCard.isOpened || ck._navDrawerLastView,
             preventScroll: true,
-            isModal: modalCard.isOpened
+            isModal: modalCard.isOpened || ck._navDrawerLastView
         });
     }).bind('actionView:jump', function(actionCard, href, target){
         actionCard.event.once('close', function(){
@@ -388,6 +396,7 @@ define([
         init: function(opt){
             var doc = $(document);
             var root = this.root = opt.root;
+            this.mainview = $('.ck-main', root);
             this.wrapper = $('.ck-wrapper', root);
             this.header = $('.ck-header', root);
             if (!supports.BROWSER_CONTROL) {
@@ -412,7 +421,8 @@ define([
                     'background': '#0f0'
                 });
             }
-            this.cardMask = $(TPL_CARD_MASK).appendTo(body);
+            this.cardMask = $(TPL_CARD_MASK).appendTo(this.mainview);
+            this.navDrawer = $(TPL_NAVDRAWER).prependTo(root);
             this.headerHeight = this.header.height();
             this.sizeInited = false;
             this.viewportGarbage = {};
@@ -472,6 +482,11 @@ define([
                         ck.viewport[0].innerHTML = ck.viewport[0].innerHTML;
                     }
                 }
+            });
+
+            this.cardMask.bind('touchstart', function(e){
+                e.preventDefault();
+                ck.closeNavDrawer();
             });
 
             this.loadingCard.bind('touchstart', function(e){
@@ -856,7 +871,7 @@ define([
                 card = $('#' + card);
             }
             var is_loading = card === this.loadingCard;
-            if (this.viewport) {
+            if (this.viewport && !opt.isNotPrev) {
                 card.data('prevCard', this.viewport[0].id);
             }
             this.initView(card, opt);
@@ -911,7 +926,8 @@ define([
         },
 
         updateFrame: function(){
-            render.setFrame(this.viewport, this.header, this.raw);
+            render.setFrame(this.viewport, this.header, 
+                this.navDrawer, this.raw);
         },
 
         renderUnit: function(node){
@@ -1010,6 +1026,47 @@ define([
                 }
                 this.enableControl();
             }
+        },
+
+        openNavDrawer: function(){
+            if (ck._navDrawerLastView) {
+                return;
+            }
+            ck._navDrawerLastView = ck.viewport;
+            ck.navDrawer.show();
+            ck.changeView(ck.navDrawer.find('article'), {
+                preventRender: true,
+                isNotPrev: true,
+                isModal: true
+            });
+            $(body).addClass('nav-view');
+            //choreo().play().actor(ck.mainview[0], {
+                //'transform': 'translateX(' + (screen.availWidth - 40) + 'px)'
+            //}, 400).follow().then(function(){
+            //});
+        },
+
+        closeNavDrawer: function(){
+            if (!ck._navDrawerLastView) {
+                return;
+            }
+            ck.changeView(ck._navDrawerLastView, {
+                isNotPrev: true
+            });
+            $(body).removeClass('nav-view');
+            setTimeout(function(){
+                ck._navDrawerLastView = false;
+                ck.navDrawer.hide();
+                setTimeout(function(){
+                    bus.fire('navdrawer:close');
+                }, 50);
+            }, 400);
+            //choreo().play().actor(ck.mainview[0], {
+                //'transform': 'translateX(0px)'
+            //}, 400).follow().then(function(){
+
+            //});
+            return bus.promise('navdrawer:close');
         },
 
         openModal: function(opt){
@@ -1131,7 +1188,9 @@ define([
                 return '';
             });
         if (next_id && next === current) {
-            if (!next_id || !$('#' + next_id).hasClass('ck-card')) {
+            if (!next_id 
+                    || !$('#' + next_id).hasClass('ck-card')
+                    || next_id === ck.viewport[0].id) {
                 next_id = DEFAULT_CARDID;
                 if (current_id.split(HASH_SEP).pop() === next_id) {
                     return false;
@@ -1190,9 +1249,16 @@ define([
             });
             return;
         }
+        if (ck._navDrawerLastView) {
+            ck.closeNavDrawer().then(function(){
+                forward_handler(next_id, true_link);
+            });
+            return;
+        }
         ck._sessionLocked = true;
         var next = next_id && $('#' + next_id);
-        if (!next.hasClass('ck-card')) {
+        if (!next.hasClass('ck-card')
+                || next_id === ck.viewport[0].id) {
             ck.enableControl();
             ck._sessionLocked = false;
             return;
@@ -1225,7 +1291,7 @@ define([
         }, 450, 'ease');
         moving.follow().then(function(){
             current.hide();
-            ck.cardMask.removeClass('moving');
+            ck.cardMask.removeClass('moving').css('opacity', 0);
             next.removeClass('moving');
             if (true_link) {
                 ck._unexpectStateWhenGoback = false;
@@ -1242,6 +1308,12 @@ define([
     function back_handler(prev_id){
         ck._sessionLocked = true;
         ck.disableControl();
+        if (ck._navDrawerLastView) {
+            ck.closeNavDrawer().then(function(){
+                back_handler(prev_id);
+            });
+            return;
+        }
         if (actionView.current) {
             actionView.current.close().event.once('close', function(){
                 back_handler(prev_id);

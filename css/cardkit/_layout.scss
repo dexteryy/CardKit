@@ -18,9 +18,28 @@ body {
 
   &.modal-view {
 
-    .ck-root {
+    .ck-main {
       @include box-shadow(0px 0px 10px rgba(0,0,0,.35));
       @include transform(scale(0.8));
+    }
+
+    .ck-root .ck-main .ck-header {
+      position:absolute;
+    }
+
+  }
+
+  &.nav-view {
+
+    .ck-main {
+      //position:relative;
+      @include transform(translateX(80%));
+      @include box-shadow(0px 0px 20px rgba(0,0,0,.65));
+    }
+
+    .ck-cardmask {
+      display:block;
+      z-index:$zindex_overlay + $zindex_step;
     }
 
   }
@@ -74,14 +93,17 @@ a {
   display:block;
   position:absolute;
   left: $space*4 + 0px;
-  right: $space*4 + 20px;
+  right: $space*4 + 0px;
   top:0;
 }
 
 .ck-root {
-  @include transform-origin(50% 50%);
-  //@include transform-style(preserve-3d);
-  @include transition(transform 0.4s);
+
+  .ck-main {
+    @include transform-origin(50% 50%);
+    //@include transform-style(preserve-3d);
+    @include transition(transform 0.4s);
+  }
   
   .ck-header {
     position:absolute;
@@ -188,6 +210,58 @@ a {
   display:none;
 }
 
+.ck-navdrawer {
+  display:none;
+  background:#242424;
+  position:fixed;
+  top:0;
+  left:0;
+  right:20%;
+  color:#fff;
+
+  & > header {
+    height:$nav_height;
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    background:#242424;
+    @include box-shadow(1px 6px 10px rgba(0, 0, 0, 0.5));
+    z-index:$zindex_step;
+  }
+
+  & > article {
+    overflow-y:scroll;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ck-nav-wrap {
+    margin-top:$nav_height;
+    background:#323232;
+    @include box-shadow(0 4px 4px rgba(0,0,0,.5));
+  }
+
+  .ck-nav-content {
+    min-height:100px;
+  }
+
+  .ck-footer {
+    background:none;
+    display:block;
+  }
+
+  body.no-cardscroll & {
+    position:absolute;
+
+    & > article {
+      overflow-y:visible;
+      -webkit-overflow-scrolling: auto;
+    }
+
+  }
+
+}
+
 .ck-ctl-bar {
   position:absolute;
   bottom:0;
@@ -264,6 +338,11 @@ a {
 
 body.no-cardscroll {
 
+  .ck-main {
+    @include transition(none);
+    position:relative;
+  }
+
   &.bg {
 
     background:$view_color;
@@ -277,12 +356,35 @@ body.no-cardscroll {
 
   &.modal-view {
 
-    .ck-root {
+    .ck-main {
       @include transform(scale(1));
     }
 
     .ck-wrapper {
       display:none;
+    }
+
+  }
+
+  &.nav-view {
+
+    .ck-main {
+      @include transform(translateX(0));
+      left:80%;
+    }
+
+    .ck-root {
+      width:100%;
+      overflow:hidden;
+
+      .ck-ctl-bar {
+        display:none;
+      }
+
+      .ck-main .ck-header {
+        position:absolute;
+      }
+
     }
 
   }

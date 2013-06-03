@@ -2503,10 +2503,26 @@ define("../cardkit/parser/navdrawer", [
   "../cardkit/parser/util"
 ], function($, _, util){
     
-    function exports(unit, raw){
-        if (util == raw) {}
+    var getCustom = util.getCustom,
+        getHd = util.getHd,
+        getItemDataOuter = util.getItemDataOuter;
+
+    function exports(cfg, raw){
+        cfg = $(cfg);
+        var source = util.getSource(cfg, raw),
+            config = {},
+            hd = getHd(source && source.find('.ckd-hd')),
+            contents = source && source.find('.ckd-content').map(function(elm){
+                return getCustom('.ckd-content', elm, raw, getItemDataOuter, 'content').join('') 
+                    || util.getInnerHTML(elm);
+            }) || $(),
+            custom_hd = getCustom('.ckd-hd', cfg, raw, getHd)[0] || {},
+            custom_contents = getCustom('.ckd-content', cfg, raw, getItemDataOuter, 'content').join('') 
+                    || '';
         var data = {
-        
+            config: config,
+            hd: custom_hd.html === undefined ? hd.html : custom_hd.html,
+            content: custom_contents + contents.join(''),
         };
         return data;
     }
@@ -2824,7 +2840,7 @@ define("../cardkit/tpl/layout/actionbar", [], function(){
 
 define("../cardkit/tpl/layout/navdrawer", [], function(){
 
-    return {"template":""}; 
+    return {"template":"\n{% if (navdrawer.hd) { %}\n<header>{%=navdrawer.hd%}</header>\n{% } %}\n\n<article>\n    <div class=\"ck-nav-wrap\">\n        <div class=\"ck-nav-content\">{%=navdrawer.content%}</div>\n        <div class=\"ck-footer\"></div>\n    </div>\n</article>\n\n"}; 
 
 });
 /* @source ../cardkit/tpl/unit/blank.js */;
@@ -3218,7 +3234,7 @@ define("../cardkit/render", [
         _frameConfig: {},
         _frameCustomized: {},
 
-        setFrame: function(card, header, raw){
+        setFrame: function(card, header, navDrawer, raw){
             var cfg = this._frameConfig,
                 customized = this._frameCustomized,
                 global_cfg,
@@ -3243,7 +3259,7 @@ define("../cardkit/render", [
                 $('.ck-top-actions').html(tpl.convertTpl(tpl_actionbar.template, cfg));
             }
             if (changed['navdrawer']) {
-                $('.ck-nav-navdrawer').html(tpl.convertTpl(tpl_navdrawer.template, cfg));
+                navDrawer.html(tpl.convertTpl(tpl_navdrawer.template, cfg));
             }
         }
     
@@ -7226,6 +7242,7 @@ define("../cardkit/app", [
         MINI_ITEM_MARGIN = 10,
         MINI_LIST_PADDING = 15,
 
+        TPL_NAVDRAWER = '<div class="ck-navdrawer"></div>',
         TPL_MASK = '<div class="ck-viewmask"></div>',
         TPL_CARD_MASK = '<div class="ck-cardmask"></div>';
 
@@ -7367,8 +7384,9 @@ define("../cardkit/app", [
                 open_url(this.href, this);
                 return;
             }
+            ck.openNavDrawer();
         }
-    
+
     };
 
     function open_modal_card(){
@@ -7512,7 +7530,11 @@ define("../cardkit/app", [
         ck.disableView = true;
         $(body).addClass('modal-view');
     }).bind('close', function(){
-        ck.changeView(last_view_for_modal);
+        ck.changeView(last_view_for_modal, {
+            preventRender: ck._navDrawerLastView,
+            isModal: ck._navDrawerLastView,
+            isNotPrev: true
+        });
         $(body).removeClass('bg');
     //}).bind('needclose', function(){
         //ck.closeModal();
@@ -7539,9 +7561,10 @@ define("../cardkit/app", [
             $(body).removeClass('bg');
         }
         ck.changeView(last_view_for_actions, {
-            preventRender: modalCard.isOpened,
+            isNotPrev: true,
+            preventRender: modalCard.isOpened || ck._navDrawerLastView,
             preventScroll: true,
-            isModal: modalCard.isOpened
+            isModal: modalCard.isOpened || ck._navDrawerLastView
         });
     }).bind('actionView:close', function(){
         if (!modalCard.isOpened) {
@@ -7551,9 +7574,10 @@ define("../cardkit/app", [
             $(body).removeClass('bg');
         }
         ck.changeView(last_view_for_actions, {
-            preventRender: modalCard.isOpened,
+            isNotPrev: true,
+            preventRender: modalCard.isOpened || ck._navDrawerLastView,
             preventScroll: true,
-            isModal: modalCard.isOpened
+            isModal: modalCard.isOpened || ck._navDrawerLastView
         });
     }).bind('actionView:jump', function(actionCard, href, target){
         actionCard.event.once('close', function(){
@@ -7566,6 +7590,7 @@ define("../cardkit/app", [
         init: function(opt){
             var doc = $(document);
             var root = this.root = opt.root;
+            this.mainview = $('.ck-main', root);
             this.wrapper = $('.ck-wrapper', root);
             this.header = $('.ck-header', root);
             if (!supports.BROWSER_CONTROL) {
@@ -7590,7 +7615,8 @@ define("../cardkit/app", [
                     'background': '#0f0'
                 });
             }
-            this.cardMask = $(TPL_CARD_MASK).appendTo(body);
+            this.cardMask = $(TPL_CARD_MASK).appendTo(this.mainview);
+            this.navDrawer = $(TPL_NAVDRAWER).prependTo(root);
             this.headerHeight = this.header.height();
             this.sizeInited = false;
             this.viewportGarbage = {};
@@ -7650,6 +7676,11 @@ define("../cardkit/app", [
                         ck.viewport[0].innerHTML = ck.viewport[0].innerHTML;
                     }
                 }
+            });
+
+            this.cardMask.bind('touchstart', function(e){
+                e.preventDefault();
+                ck.closeNavDrawer();
             });
 
             this.loadingCard.bind('touchstart', function(e){
@@ -8034,7 +8065,7 @@ define("../cardkit/app", [
                 card = $('#' + card);
             }
             var is_loading = card === this.loadingCard;
-            if (this.viewport) {
+            if (this.viewport && !opt.isNotPrev) {
                 card.data('prevCard', this.viewport[0].id);
             }
             this.initView(card, opt);
@@ -8089,7 +8120,8 @@ define("../cardkit/app", [
         },
 
         updateFrame: function(){
-            render.setFrame(this.viewport, this.header, this.raw);
+            render.setFrame(this.viewport, this.header, 
+                this.navDrawer, this.raw);
         },
 
         renderUnit: function(node){
@@ -8188,6 +8220,47 @@ define("../cardkit/app", [
                 }
                 this.enableControl();
             }
+        },
+
+        openNavDrawer: function(){
+            if (ck._navDrawerLastView) {
+                return;
+            }
+            ck._navDrawerLastView = ck.viewport;
+            ck.navDrawer.show();
+            ck.changeView(ck.navDrawer.find('article'), {
+                preventRender: true,
+                isNotPrev: true,
+                isModal: true
+            });
+            $(body).addClass('nav-view');
+            //choreo().play().actor(ck.mainview[0], {
+                //'transform': 'translateX(' + (screen.availWidth - 40) + 'px)'
+            //}, 400).follow().then(function(){
+            //});
+        },
+
+        closeNavDrawer: function(){
+            if (!ck._navDrawerLastView) {
+                return;
+            }
+            ck.changeView(ck._navDrawerLastView, {
+                isNotPrev: true
+            });
+            $(body).removeClass('nav-view');
+            setTimeout(function(){
+                ck._navDrawerLastView = false;
+                ck.navDrawer.hide();
+                setTimeout(function(){
+                    bus.fire('navdrawer:close');
+                }, 50);
+            }, 400);
+            //choreo().play().actor(ck.mainview[0], {
+                //'transform': 'translateX(0px)'
+            //}, 400).follow().then(function(){
+
+            //});
+            return bus.promise('navdrawer:close');
         },
 
         openModal: function(opt){
@@ -8309,7 +8382,9 @@ define("../cardkit/app", [
                 return '';
             });
         if (next_id && next === current) {
-            if (!next_id || !$('#' + next_id).hasClass('ck-card')) {
+            if (!next_id 
+                    || !$('#' + next_id).hasClass('ck-card')
+                    || next_id === ck.viewport[0].id) {
                 next_id = DEFAULT_CARDID;
                 if (current_id.split(HASH_SEP).pop() === next_id) {
                     return false;
@@ -8368,9 +8443,16 @@ define("../cardkit/app", [
             });
             return;
         }
+        if (ck._navDrawerLastView) {
+            ck.closeNavDrawer().then(function(){
+                forward_handler(next_id, true_link);
+            });
+            return;
+        }
         ck._sessionLocked = true;
         var next = next_id && $('#' + next_id);
-        if (!next.hasClass('ck-card')) {
+        if (!next.hasClass('ck-card')
+                || next_id === ck.viewport[0].id) {
             ck.enableControl();
             ck._sessionLocked = false;
             return;
@@ -8403,7 +8485,7 @@ define("../cardkit/app", [
         }, 450, 'ease');
         moving.follow().then(function(){
             current.hide();
-            ck.cardMask.removeClass('moving');
+            ck.cardMask.removeClass('moving').css('opacity', 0);
             next.removeClass('moving');
             if (true_link) {
                 ck._unexpectStateWhenGoback = false;
@@ -8420,6 +8502,12 @@ define("../cardkit/app", [
     function back_handler(prev_id){
         ck._sessionLocked = true;
         ck.disableControl();
+        if (ck._navDrawerLastView) {
+            ck.closeNavDrawer().then(function(){
+                back_handler(prev_id);
+            });
+            return;
+        }
         if (actionView.current) {
             actionView.current.close().event.once('close', function(){
                 back_handler(prev_id);

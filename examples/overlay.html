@@ -18,18 +18,50 @@
 </head>
 <body ontouchstart="return ckControl()">
 
-<div class="ck-root">
+<div class="ck-root"><div class="ck-main">
     
 <header class="ck-header">
     
-<span class="ck-top-title">CardKit Reference</span>
-<a class="ck-top-nav" class="btn" href="index.html" target="_self"></a>
+<span class="ck-top-title">CardKit Ref</span>
+<span class="ck-top-nav"></span>
 <span class="ck-top-actions"></span>
 
-<div class="ckcfg-actionbar" data-source="ckdActionbar">
+<div class="ckcfg-navdrawer">
+    <div class="ckd-hd">
+        <h2>CardKit Reference</h2>
+    </div>
+    <div class="ckd-content">
+        <div class="search">
+            <a class="ck-modal-link" href="#"
+                data-url="formcontent.html">search</a>
+        </div>
+        <ul>
+            <li><a class="ck-link" href="index.html">Home</a></li>
+        </ul>
+        <h6>Cross-platform</h6>
+        <ul>
+            <li><a class="ck-link" href="grade.html">Graded Browser Support</a></li>
+            <li><a class="ck-link" href="browsers.html">Compatibility testing</a></li>
+            <li><a class="ck-link" href="#consoleCard">Console</a></li>
+        </ul>
+        <h6>Component</h6>
+        <ul>
+            <li><a class="ck-link" href="control.html">Control</a></li>
+            <li><a class="ck-link" href="picker.html">Picker</a></li>
+            <li><a class="ck-link" href="overlay.html">Overlay</a></li>
+        </ul>
+        <h6>Unit</h6>
+        <ul>
+            <li><a class="ck-link" href="box.html">Box</a></li>
+            <li><a class="ck-link" href="list.html">List</a></li>
+            <li><a class="ck-link" href="mini.html">Mini</a></li>
+            <li><a class="ck-link" href="form.html">Form</a></li>
+            <li><a class="ck-link" href="extra.html">Extra</a></li>
+        </ul>
+    </div>
 </div>
 
-<div class="ckcfg-navdrawer">
+<div class="ckcfg-actionbar" data-source="ckdActionbar">
 </div>
 
 </header>
@@ -303,6 +335,10 @@
 
     <div class="ck-card" id="consoleCard">
 
+        <div class="ckcfg-actionbar">
+            <div class="ckd-item" data-source="ckdActionbarItem1"></div>
+        </div>
+
         <div class="ck-box-unit" data-cfg-paper="true">
             <header class="ckd-hd">Console</header>
             <div id="console"></div>
@@ -322,6 +358,9 @@
     </div>
 
     <div class="ck-card" id="demoScriptCard">
+
+        <div class="ckcfg-actionbar">
+        </div>
 
         <div class="ck-box-unit" data-cfg-plainhd="true">
             <header class="ckd-hd">Custom script</header>
@@ -432,7 +471,7 @@ require([
 
 </div>
 
-</div>
+</div></div>
 
 <script src="js/shCore.js"></script>
 <script src="js/shBrushXml.js"></script>

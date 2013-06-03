@@ -94,8 +94,8 @@ body.no-cardscroll {
     overflow:hidden;
 
     .wrapper {
-      @include transition(none);
-      @include transform(translateY(0));
+      //@include transition(none);
+      //@include transform(translateY(0));
     
       & > article {
         -webkit-overflow-scrolling: auto;
@@ -106,13 +106,6 @@ body.no-cardscroll {
           min-height:0;
         }
 
-      }
-
-    }
-
-    &.active {
-
-      .wrapper {
       }
 
     }

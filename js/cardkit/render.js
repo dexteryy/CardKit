@@ -187,7 +187,7 @@ define([
         _frameConfig: {},
         _frameCustomized: {},
 
-        setFrame: function(card, header, raw){
+        setFrame: function(card, header, navDrawer, raw){
             var cfg = this._frameConfig,
                 customized = this._frameCustomized,
                 global_cfg,
@@ -212,7 +212,7 @@ define([
                 $('.ck-top-actions').html(tpl.convertTpl(tpl_actionbar.template, cfg));
             }
             if (changed['navdrawer']) {
-                $('.ck-nav-navdrawer').html(tpl.convertTpl(tpl_navdrawer.template, cfg));
+                navDrawer.html(tpl.convertTpl(tpl_navdrawer.template, cfg));
             }
         }
     
