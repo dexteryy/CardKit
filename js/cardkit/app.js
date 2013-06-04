@@ -187,7 +187,6 @@ define([
 
         '.ck-top-nav, .ck-top-nav a': function(){
             if (this.href) {
-                open_url(this.href, this);
                 return;
             }
             ck.openNavDrawer();

@@ -1,5 +1,5 @@
 
-define('cardkit/env', [], function(){
+define('cardkit/env', ['mo/browsers'], function(){
     return {
         //showScrollMask: true,
         //showControlMask: true,

@@ -11,7 +11,7 @@ require.config({
 define('mo/easing/functions', [], function(){});
 define('mo/mainloop', [], function(){});
 
-define('cardkit/env', [], function(){
+define('cardkit/env', ['mo/browsers'], function(){
     return {};
 });
 

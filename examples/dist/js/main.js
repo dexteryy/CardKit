@@ -610,69 +610,6 @@ if (!window.window) { // for nodejs
 require.config({ enable_ozma: true });
 
 
-/* @source mo/domready.js */;
-
-/**
- * Non-plugin implementation of cross-browser DOM ready event
- * Based on OzJS's built-in module -- 'finish'
- *
- * using AMD (Asynchronous Module Definition) API with OzJS
- * see http://ozjs.org for details
- *
- * Copyright (C) 2010-2012, Dexter.Yy, MIT License
- * vim: et:ts=4:sw=4:sts=4
- */
-define("mo/domready", [
-  "finish"
-], function(finish){
-    var loaded, 
-        w = this, 
-        doc = w.document, 
-        ADD = "addEventListener",
-        IEADD = "attachEvent",
-        READY = "DOMContentLoaded", 
-        CHANGE = "onreadystatechange";
-
-    if (doc.readyState === "complete") {
-        setTimeout(finish, 1);
-    } else {
-        if (doc[ADD]){
-            loaded = function(){
-                doc.removeEventListener("READY", loaded, false);
-                finish();
-            };
-            doc[ADD](READY, loaded, false);
-            w[ADD]("load", finish, false);
-        } else if (doc[IEADD]) {
-            loaded = function(){
-                if (doc.readyState === "complete") {
-                    doc.detachEvent(CHANGE, loaded);
-                    finish();
-                }
-            };
-            doc[IEADD](CHANGE, loaded);
-            w[IEADD]("load", finish);
-            var toplevel = false;
-            try {
-                toplevel = w.frameElement == null;
-            } catch(e) {}
-
-            if (doc.documentElement.doScroll && toplevel) {
-                var check = function(){
-                    try {
-                        doc.documentElement.doScroll("left");
-                    } catch(e) {
-                        setTimeout(check, 1);
-                        return;
-                    }
-                    finish();
-                };
-                check();
-            }
-        }
-    }
-});
-
 /* @source mo/browsers.js */;
 
 /**
@@ -802,6 +739,69 @@ define("mo/browsers", [], function(){
 
     return result;
 
+});
+
+/* @source mo/domready.js */;
+
+/**
+ * Non-plugin implementation of cross-browser DOM ready event
+ * Based on OzJS's built-in module -- 'finish'
+ *
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
+define("mo/domready", [
+  "finish"
+], function(finish){
+    var loaded, 
+        w = this, 
+        doc = w.document, 
+        ADD = "addEventListener",
+        IEADD = "attachEvent",
+        READY = "DOMContentLoaded", 
+        CHANGE = "onreadystatechange";
+
+    if (doc.readyState === "complete") {
+        setTimeout(finish, 1);
+    } else {
+        if (doc[ADD]){
+            loaded = function(){
+                doc.removeEventListener("READY", loaded, false);
+                finish();
+            };
+            doc[ADD](READY, loaded, false);
+            w[ADD]("load", finish, false);
+        } else if (doc[IEADD]) {
+            loaded = function(){
+                if (doc.readyState === "complete") {
+                    doc.detachEvent(CHANGE, loaded);
+                    finish();
+                }
+            };
+            doc[IEADD](CHANGE, loaded);
+            w[IEADD]("load", finish);
+            var toplevel = false;
+            try {
+                toplevel = w.frameElement == null;
+            } catch(e) {}
+
+            if (doc.documentElement.doScroll && toplevel) {
+                var check = function(){
+                    try {
+                        doc.documentElement.doScroll("left");
+                    } catch(e) {
+                        setTimeout(check, 1);
+                        return;
+                    }
+                    finish();
+                };
+                check();
+            }
+        }
+    }
 });
 
 /* @source ../cardkit/supports.js */;
@@ -2762,6 +2762,7 @@ define("../cardkit/parser/box", [
         unit = $(unit);
         var source = util.getSource(unit, raw),
             config = {
+                disableReader: unit.data('cfgDisableReader'),
                 paper: unit.data('cfgPaper'),
                 plain: unit.data('cfgPlain'),
                 plainhd: unit.data('cfgPlainhd')
@@ -7381,7 +7382,6 @@ define("../cardkit/app", [
 
         '.ck-top-nav, .ck-top-nav a': function(){
             if (this.href) {
-                open_url(this.href, this);
                 return;
             }
             ck.openNavDrawer();
@@ -8664,7 +8664,7 @@ require.config({
 define('mo/easing/functions', [], function(){});
 define('mo/mainloop', [], function(){});
 
-define('cardkit/env', [], function(){
+define('cardkit/env', ['mo/browsers'], function(){
     return {};
 });
 

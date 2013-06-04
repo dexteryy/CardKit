@@ -13,6 +13,7 @@ define([
         unit = $(unit);
         var source = util.getSource(unit, raw),
             config = {
+                disableReader: unit.data('cfgDisableReader'),
                 paper: unit.data('cfgPaper'),
                 plain: unit.data('cfgPlain'),
                 plainhd: unit.data('cfgPlainhd')
