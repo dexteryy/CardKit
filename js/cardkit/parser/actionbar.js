@@ -19,7 +19,6 @@ define([
             config: config,
             items: custom_items.concat(items || $())
         };
-        data.overflowItems = data.items.splice(config.limit);
         return data;
     }
 

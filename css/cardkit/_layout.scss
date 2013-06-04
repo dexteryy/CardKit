@@ -144,14 +144,27 @@ a {
       background-repeat:no-repeat;
       background-position:7px 7px;
       border:1px solid transparent;
+
       &:active {
           @include box-shadow(inset 0 2px 4px rgba(0,0,0,.1), 0 1px 0 rgba(255,255,255,.1));
       }
+
     }
 
     .ck-top-nav {
       float:left;
       background-image:inline-image('menu.png');
+    }
+
+    .ck-top-actions {
+      float:right;
+      position:relative;
+      z-index:1;
+
+      .ck-item.placeholder {
+        display:none;
+      }
+
     }
 
     .ck-top-actions .ck-top-overflow {
@@ -206,7 +219,8 @@ a {
 }
 
 .ckcfg-navdrawer,
-.ckcfg-actionbar {
+.ckcfg-card-actions,
+.ckcfg-page-actions{
   display:none;
 }
 

@@ -8,6 +8,20 @@ define('cardkit/env', ['mo/browsers'], function(){
     };
 });
 
+require([
+    'dollar',
+    'cardkit/app',
+    'cardkit/pageready'
+], function($, ck){
+
+    ck.delegate.on('tap', '.ck-top-actions .ck-item.switchstyle', function(){
+        ck.confirm('This is a demo', function(){
+            location.reload();
+        });
+    });
+
+});
+
 (function(){
 
     SyntaxHighlighter.defaults['toolbar'] = false;

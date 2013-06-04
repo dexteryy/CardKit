@@ -26,7 +26,8 @@ define([
 
     var frame_parts = {
             'navdrawer': navdrawerParser, 
-            'actionbar': actionbarParser
+            'page-actions': actionbarParser,
+            'card-actions': actionbarParser
         },
 
         SCRIPT_TAG = 'script[type="text/cardscript"]',
@@ -208,7 +209,11 @@ define([
                     changed[part] = true;
                 }
             }
-            if (changed['actionbar']) {
+            if (changed['page-actions'] || changed['card-actions']) {
+                var actions = cfg['actionbar'] = cfg['card-actions'],
+                    action_items = actions.items;
+                action_items.push.apply(action_items, cfg['page-actions'].items);
+                actions.overflowItems = action_items.splice(actions.config.limit);
                 $('.ck-top-actions').html(tpl.convertTpl(tpl_actionbar.template, cfg));
             }
             if (changed['navdrawer']) {
