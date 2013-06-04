@@ -2,6 +2,7 @@ define([
     'dollar',
     'mo/lang',
     'mo/browsers',
+    'mo/cookie',
     'mo/template',
     'mo/easing/timing',
     'soviet',
@@ -24,7 +25,7 @@ define([
     './supports',
     'cardkit/env',
     'mo/domready'
-], function($, _, browsers, tpl, easing, soviet, choreo, 
+], function($, _, browsers, cookie, tpl, easing, soviet, choreo, 
     momoBase, momoTap, momoSwipe, momoDrag, momoScroll, 
     control, picker, stars, modalCard, actionView, growl, 
     tpl_overflowmenu, tpl_ctlbar, 

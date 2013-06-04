@@ -9,13 +9,16 @@ define('cardkit/env', ['mo/browsers'], function(){
 });
 
 require([
-    'dollar',
+    'mo/cookie',
     'cardkit/app',
     'cardkit/pageready'
-], function($, ck){
+], function(cookie, ck){
 
     ck.delegate.on('tap', '.ck-top-actions .ck-item.switchstyle', function(){
         ck.confirm('This is a demo', function(){
+            cookie('_ck_desktop_mode', 1, {
+                domain: location.host
+            });
             location.reload();
         });
     });
