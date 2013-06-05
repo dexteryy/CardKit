@@ -29,7 +29,15 @@
     {% } %}
 
     {% if (data.hasContent) { %}
-    <section>{%= data.content %}</section>
+    <section>
+        {% if (data.config.disableReader) { %}
+        <script type="text/template" class="ckd-delay-content">
+        {%= data.content %}
+        </script>
+        {% } else { %}
+        {%= data.content %}
+        {% } %}
+    </section>
     {% } %}
 
     {% if (data.ft) { %}

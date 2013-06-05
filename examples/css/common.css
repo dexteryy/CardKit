@@ -76,3 +76,24 @@
 .ck-navdrawer li:last-child {
   border-bottom: 0;
 }
+
+.ck-top-nav .notice {
+  position:absolute;
+  right:5px;
+  top:5px;
+  background:#f00;
+  display:inline-block;
+  width:10px;
+  height:10px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  border-radius: 5px;
+  border:1px solid #fff;
+  background-image:-webkit-linear-gradient(bottom, #c60006, #e20007);
+  background-image:-moz-linear-gradient(bottom, #c60006, #e20007);
+  background-image:linear-gradient(bottom, #c60006, #e20007);
+  -webkit-box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  -moz-box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}

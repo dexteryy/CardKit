@@ -25,7 +25,7 @@ define([
                 : getHd(source && source.find('.ckd-hd-link')),
             hd_opt = getItemDataOuter(source && source.find('.ckd-hdopt'), 'hdopt'),
             ft = getHd(source && source.find('.ckd-ft')),
-            contents = source && util.getOuterHTML(source.find('.ckd-content')),
+            contents = getItemDataOuter(source && source.find('.ckd-content'), 'content'),
             custom_hd = getCustom('.ckd-hd', unit, raw, take_hd)[0] || {},
             custom_hd_link_extern = getCustom('.ckd-hd-link-extern', unit, raw, take_hd)[0] || {},
             custom_hd_link = custom_hd_link_extern.href 
@@ -33,7 +33,7 @@ define([
                 : (getCustom('.ckd-hd-link', unit, raw, take_hd)[0] || {}),
             custom_hd_opt = getCustom('.ckd-hdopt', unit, raw, take_item_outer, 'hdopt').join(''),
             custom_ft = getCustom('.ckd-ft', unit, raw, take_hd)[0] || {};
-        getCustom('.ckd-content', unit, raw, replace_content);
+        getCustom('.ckd-content', unit, raw, replace_content, 'content');
         var data = {
             config: config,
             style: unit.data('style'),
@@ -54,13 +54,15 @@ define([
         return data;
     }
 
-    function replace_content(source, custom){
+    function replace_content(source, custom, ckdname){
         if (custom) {
-            $(custom).replaceWith(source.clone());
+            util.replaceOuterHTML($(custom), source, ckdname);
         } else {
             source = $(source);
             if (!/\S/.test(source.html() || '')) {
                 source.remove();
+            } else {
+                util.replaceOuterHTML(source, source, ckdname);
             }
         }
     }

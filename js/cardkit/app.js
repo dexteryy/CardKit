@@ -186,7 +186,7 @@ define([
             });
         },
 
-        '.ck-top-nav, .ck-top-nav a': function(){
+        '.ck-top-nav, .ck-top-nav span': function(){
             if (this.href) {
                 return;
             }
@@ -1400,6 +1400,12 @@ define([
             ck.disableControl();
             if (modalCard.isOpened) {
                 ck.closeModal().done(function(){
+                    open_url(true_link, opt);
+                });
+                return;
+            }
+            if (ck._navDrawerLastView) {
+                ck.closeNavDrawer().then(function(){
                     open_url(true_link, opt);
                 });
                 return;

@@ -2324,6 +2324,8 @@ define("../cardkit/parser/util", [
 
         getOuterHTML: getOuterHTML,
 
+        replaceOuterHTML: replaceOuterHTML,
+
         getCustom: getCustom,
 
         getHd: getHd,
@@ -2372,6 +2374,20 @@ define("../cardkit/parser/util", [
                 }
             });
         }, $).join('');
+    }
+
+    function replaceOuterHTML(target, nodes, name){
+        return nodes.forEach(function(elm){
+            var html = elm.outerHTML;
+            html = html.replace(RE_CKD_NAME, function($0, $1, $2){ 
+                if ($2 === name) {
+                    return $1 + 'ck-' + $2;
+                } else {
+                    return $0;
+                }
+            });
+            this.replaceWith(html);
+        }, target);
     }
 
     function getCustom(tag, unit, raw, fn, ckdname){
@@ -2773,7 +2789,7 @@ define("../cardkit/parser/box", [
                 : getHd(source && source.find('.ckd-hd-link')),
             hd_opt = getItemDataOuter(source && source.find('.ckd-hdopt'), 'hdopt'),
             ft = getHd(source && source.find('.ckd-ft')),
-            contents = source && util.getOuterHTML(source.find('.ckd-content')),
+            contents = getItemDataOuter(source && source.find('.ckd-content'), 'content'),
             custom_hd = getCustom('.ckd-hd', unit, raw, take_hd)[0] || {},
             custom_hd_link_extern = getCustom('.ckd-hd-link-extern', unit, raw, take_hd)[0] || {},
             custom_hd_link = custom_hd_link_extern.href 
@@ -2781,7 +2797,7 @@ define("../cardkit/parser/box", [
                 : (getCustom('.ckd-hd-link', unit, raw, take_hd)[0] || {}),
             custom_hd_opt = getCustom('.ckd-hdopt', unit, raw, take_item_outer, 'hdopt').join(''),
             custom_ft = getCustom('.ckd-ft', unit, raw, take_hd)[0] || {};
-        getCustom('.ckd-content', unit, raw, replace_content);
+        getCustom('.ckd-content', unit, raw, replace_content, 'content');
         var data = {
             config: config,
             style: unit.data('style'),
@@ -2802,13 +2818,15 @@ define("../cardkit/parser/box", [
         return data;
     }
 
-    function replace_content(source, custom){
+    function replace_content(source, custom, ckdname){
         if (custom) {
-            $(custom).replaceWith(source.clone());
+            util.replaceOuterHTML($(custom), source, ckdname);
         } else {
             source = $(source);
             if (!/\S/.test(source.html() || '')) {
                 source.remove();
+            } else {
+                util.replaceOuterHTML(source, source, ckdname);
             }
         }
     }
@@ -2882,7 +2900,7 @@ define("../cardkit/tpl/unit/list", [], function(){
 
 define("../cardkit/tpl/unit/box", [], function(){
 
-    return {"template":"\n{% function hd(){ %}\n    {% if (data.hd) { %}\n    <header class=\"ck-hd-wrap\">\n\n        <span class=\"ck-hd {%= (data.hd_url && 'clickable' || '') %}\">\n            {% if (data.hd_url) { %}\n            <a href=\"{%= data.hd_url %}\" class=\"ck-link ck-link-mask {%= (data.hd_url_extern ? 'ck-link-extern' : '') %}\"></a>\n            {% } %}\n            <span>{%= data.hd %}</span>\n        </span>\n\n        {% if (data.hd_opt) { %}\n        <div class=\"ck-hdopt-wrap\">{%=data.hd_opt%}</div>\n        {% } %}\n\n    </header>\n    {% } %}\n{% } %}\n\n{% if (data.config.plain || data.config.plainhd) { %}\n    {%= hd() %}\n{% } %}\n\n<article class=\"ck-unit-wrap\">\n\n    {% if (!data.config.plain && !data.config.plainhd) { %}\n        {%= hd() %}\n    {% } %}\n\n    {% if (data.hasContent) { %}\n    <section>{%= data.content %}</section>\n    {% } %}\n\n    {% if (data.ft) { %}\n    <footer>{%= data.ft %}</footer>\n    {% } %}\n\n</article>\n"}; 
+    return {"template":"\n{% function hd(){ %}\n    {% if (data.hd) { %}\n    <header class=\"ck-hd-wrap\">\n\n        <span class=\"ck-hd {%= (data.hd_url && 'clickable' || '') %}\">\n            {% if (data.hd_url) { %}\n            <a href=\"{%= data.hd_url %}\" class=\"ck-link ck-link-mask {%= (data.hd_url_extern ? 'ck-link-extern' : '') %}\"></a>\n            {% } %}\n            <span>{%= data.hd %}</span>\n        </span>\n\n        {% if (data.hd_opt) { %}\n        <div class=\"ck-hdopt-wrap\">{%=data.hd_opt%}</div>\n        {% } %}\n\n    </header>\n    {% } %}\n{% } %}\n\n{% if (data.config.plain || data.config.plainhd) { %}\n    {%= hd() %}\n{% } %}\n\n<article class=\"ck-unit-wrap\">\n\n    {% if (!data.config.plain && !data.config.plainhd) { %}\n        {%= hd() %}\n    {% } %}\n\n    {% if (data.hasContent) { %}\n    <section>\n        {% if (data.config.disableReader) { %}\n        <script type=\"text/template\" class=\"ckd-delay-content\">\n        {%= data.content %}\n        </script>\n        {% } else { %}\n        {%= data.content %}\n        {% } %}\n    </section>\n    {% } %}\n\n    {% if (data.ft) { %}\n    <footer>{%= data.ft %}</footer>\n    {% } %}\n\n</article>\n"}; 
 
 });
 /* @source mo/template/string.js */;
@@ -3163,6 +3181,11 @@ define("../cardkit/render", [
             var data = boxParser(unit, raw);
             if (data.hasContent || data.hd) {
                 unit.innerHTML = tpl.convertTpl(tpl_box.template, data, 'data');
+                setTimeout(function(){
+                    $('.ckd-delay-content', unit).forEach(function(tpl){
+                        this(tpl).replaceWith(tpl.innerHTML);
+                    }, $);
+                }, 100);
                 return true;
             } else {
                 $(unit).remove();
@@ -7428,7 +7451,7 @@ define("../cardkit/app", [
             });
         },
 
-        '.ck-top-nav, .ck-top-nav a': function(){
+        '.ck-top-nav, .ck-top-nav span': function(){
             if (this.href) {
                 return;
             }
@@ -8642,6 +8665,12 @@ define("../cardkit/app", [
             ck.disableControl();
             if (modalCard.isOpened) {
                 ck.closeModal().done(function(){
+                    open_url(true_link, opt);
+                });
+                return;
+            }
+            if (ck._navDrawerLastView) {
+                ck.closeNavDrawer().then(function(){
                     open_url(true_link, opt);
                 });
                 return;

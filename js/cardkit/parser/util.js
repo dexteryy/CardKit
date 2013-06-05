@@ -26,6 +26,8 @@ define([
 
         getOuterHTML: getOuterHTML,
 
+        replaceOuterHTML: replaceOuterHTML,
+
         getCustom: getCustom,
 
         getHd: getHd,
@@ -74,6 +76,20 @@ define([
                 }
             });
         }, $).join('');
+    }
+
+    function replaceOuterHTML(target, nodes, name){
+        return nodes.forEach(function(elm){
+            var html = elm.outerHTML;
+            html = html.replace(RE_CKD_NAME, function($0, $1, $2){ 
+                if ($2 === name) {
+                    return $1 + 'ck-' + $2;
+                } else {
+                    return $0;
+                }
+            });
+            this.replaceWith(html);
+        }, target);
     }
 
     function getCustom(tag, unit, raw, fn, ckdname){

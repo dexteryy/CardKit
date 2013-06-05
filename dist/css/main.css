@@ -355,6 +355,7 @@ body.no-cardscroll.ck-inited .ck-root .ck-header, body.no-cardscroll.ck-inited .
 .ck-root .ck-header .ck-top-nav, .ck-root .ck-modalview > header .ck-top-nav {
   float: left;
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwAgMAAAAqbBEUAAAADFBMVEUAAAD///8AAAD////IZVEZAAAABHRSTlMAAFqzoa8xcgAAAClJREFUKM9jCEUCDFTm1P+Hgr9U52StgoKVSJY6MJLJGXUoDodSPVEAAN65RTMMRcUhAAAAAElFTkSuQmCC');
+  position: relative;
 }
 .ck-root .ck-header .ck-top-actions, .ck-root .ck-modalview > header .ck-top-actions {
   float: right;
