@@ -623,7 +623,7 @@ require.config({ enable_ozma: true });
  */
 define("mo/browsers", [], function(){
 
-    var match, skin, os,
+    var match, skin, os, is_mobile,
         ua = this.navigator.userAgent.toLowerCase(),
         rank = { 
             "360ee": 2,
@@ -675,8 +675,10 @@ define("mo/browsers", [], function(){
             || ua.indexOf("compatible") < 0 && rmozilla.exec(ua) 
             || [];
 
+        is_mobile = rmobilesafari.exec(ua);
+
         if (match[1] === 'webkit') {
-            var vendor = rmobilesafari.exec(ua) || rsafari.exec(ua);
+            var vendor = is_mobile || rsafari.exec(ua);
             if (vendor) {
                 match[3] = match[1];
                 match[4] = match[2];
@@ -718,6 +720,8 @@ define("mo/browsers", [], function(){
         engineversion: match[4] || "0",
         os: os[1],
         osversion: os[2] || "0",
+        isMobile: os[1] === 'iphone'
+            || os[1] === 'android' && !!is_mobile,
         skin: skin[1] || "",
         ua: ua
     };

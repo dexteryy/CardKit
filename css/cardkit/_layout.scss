@@ -389,6 +389,7 @@ body.no-cardscroll {
     background:#242424;
 
     .ck-main {
+      overflow:hidden;
       @include transform(translateX(0));
       left:80%;
     }
@@ -403,6 +404,11 @@ body.no-cardscroll {
 
       .ck-main .ck-header {
         position:absolute;
+
+        .ck-top-actions {
+          display:none;
+        }
+
       }
 
     }

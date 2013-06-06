@@ -563,6 +563,7 @@ body.no-cardscroll.nav-view {
   background: #242424;
 }
 body.no-cardscroll.nav-view .ck-main {
+  overflow: hidden;
   -webkit-transform: translateX(0);
   -moz-transform: translateX(0);
   -ms-transform: translateX(0);
@@ -578,6 +579,9 @@ body.no-cardscroll.nav-view .ck-root .ck-ctl-bar {
 }
 body.no-cardscroll.nav-view .ck-root .ck-main .ck-header, body.no-cardscroll.nav-view .ck-root .ck-main .ck-modalview > header {
   position: absolute;
+}
+body.no-cardscroll.nav-view .ck-root .ck-main .ck-header .ck-top-actions, body.no-cardscroll.nav-view .ck-root .ck-main .ck-modalview > header .ck-top-actions {
+  display: none;
 }
 
 .ck-card {
