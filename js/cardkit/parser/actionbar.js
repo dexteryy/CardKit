@@ -15,6 +15,9 @@ define([
                 return util.getItemDataOuter(elm, null, 'item');
             }) || $(),
             custom_items = util.getCustom('.ckd-item', cfg, raw, util.getItemDataOuter, 'item');
+        if (source === false && !custom_items.length) {
+            return false;
+        }
         var data = {
             config: config,
             items: custom_items.concat(items || $())

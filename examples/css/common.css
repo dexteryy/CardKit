@@ -85,10 +85,10 @@
   display:inline-block;
   width:10px;
   height:10px;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  -ms-border-radius: 5px;
-  border-radius: 5px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  border-radius: 10px;
   border:1px solid #fff;
   background-image:-webkit-linear-gradient(bottom, #c60006, #e20007);
   background-image:-moz-linear-gradient(bottom, #c60006, #e20007);

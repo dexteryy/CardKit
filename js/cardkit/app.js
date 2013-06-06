@@ -77,6 +77,13 @@ define([
             //clear_active_item_mask(ck.viewport);
         //},
         
+        '.ck-link-img': function(){
+            var src = $(this).attr('src');
+            if (src) {
+                ck.openImage(src);
+            }
+        },
+
         '.ck-post-link': handle_control,
 
         '.ck-post-button, .ck-post-button span': tap_ck_post,
@@ -1069,6 +1076,10 @@ define([
             return bus.promise('navdrawer:close');
         },
 
+        openImage: function(src){
+            forward_handler(LOADING_CARDID, src);
+        },
+
         openModal: function(opt){
             this.hideAddressbar();
             this.disableControl();
@@ -1223,7 +1234,8 @@ define([
                 open_url(me.href);
             }
             return;
-        } else if ($(me).hasClass('ck-link')) {
+        } else if ($(me).hasClass('ck-link')
+                || $(me).hasClass('ck-link-img')) {
         } else if (/(^|\s)ck-\w+/.test(me.className)) {
             return;
         } else if (me.target) {

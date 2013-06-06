@@ -197,6 +197,7 @@ define([
             var cfg = this._frameConfig,
                 customized = this._frameCustomized,
                 global_cfg,
+                local_cfg,
                 cfg_node,
                 changed = {};
             for (var part in frame_parts) {
@@ -204,17 +205,24 @@ define([
                     global_cfg = header.find('.ckcfg-' + part);
                     if (global_cfg[0]) {
                         cfg[part] = frame_parts[part](global_cfg, raw);
-                        changed[part] = true;
+                        if (cfg[part]) {
+                            changed[part] = true;
+                        }
                     }
                 }
                 cfg_node = card.find('.ckcfg-' + part);
                 customized[part] = !!cfg_node[0];
                 if (customized[part]) {
-                    cfg[part] = frame_parts[part](cfg_node, raw);
-                    changed[part] = true;
+                    local_cfg = frame_parts[part](cfg_node, raw);
+                    if (local_cfg) {
+                        cfg[part] = local_cfg;
+                        changed[part] = true;
+                    } else {
+                        customized[part] = false;
+                    }
                 }
             }
-            if (changed['page-actions'] || changed['card-actions']) {
+            if (changed['card-actions']) {
                 var actions = cfg['actionbar'] = cfg['card-actions'],
                     action_items = actions.items;
                 action_items.push.apply(action_items, cfg['page-actions'].items);

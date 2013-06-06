@@ -14,7 +14,7 @@ define([
             var sid = $(node).data('source');
             if (sid) {
                 var source = raw.find('.' + sid);
-                return source[0] && source;
+                return source[0] && source || false;
             }
         },
 

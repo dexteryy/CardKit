@@ -2312,7 +2312,7 @@ define("../cardkit/parser/util", [
             var sid = $(node).data('source');
             if (sid) {
                 var source = raw.find('.' + sid);
-                return source[0] && source;
+                return source[0] && source || false;
             }
         },
 
@@ -2566,6 +2566,9 @@ define("../cardkit/parser/actionbar", [
                 return util.getItemDataOuter(elm, null, 'item');
             }) || $(),
             custom_items = util.getCustom('.ckd-item', cfg, raw, util.getItemDataOuter, 'item');
+        if (source === false && !custom_items.length) {
+            return false;
+        }
         var data = {
             config: config,
             items: custom_items.concat(items || $())
@@ -3260,6 +3263,7 @@ define("../cardkit/render", [
             var cfg = this._frameConfig,
                 customized = this._frameCustomized,
                 global_cfg,
+                local_cfg,
                 cfg_node,
                 changed = {};
             for (var part in frame_parts) {
@@ -3267,17 +3271,24 @@ define("../cardkit/render", [
                     global_cfg = header.find('.ckcfg-' + part);
                     if (global_cfg[0]) {
                         cfg[part] = frame_parts[part](global_cfg, raw);
-                        changed[part] = true;
+                        if (cfg[part]) {
+                            changed[part] = true;
+                        }
                     }
                 }
                 cfg_node = card.find('.ckcfg-' + part);
                 customized[part] = !!cfg_node[0];
                 if (customized[part]) {
-                    cfg[part] = frame_parts[part](cfg_node, raw);
-                    changed[part] = true;
+                    local_cfg = frame_parts[part](cfg_node, raw);
+                    if (local_cfg) {
+                        cfg[part] = local_cfg;
+                        changed[part] = true;
+                    } else {
+                        customized[part] = false;
+                    }
                 }
             }
-            if (changed['page-actions'] || changed['card-actions']) {
+            if (changed['card-actions']) {
                 var actions = cfg['actionbar'] = cfg['card-actions'],
                     action_items = actions.items;
                 action_items.push.apply(action_items, cfg['page-actions'].items);
@@ -7340,6 +7351,13 @@ define("../cardkit/app", [
             //clear_active_item_mask(ck.viewport);
         //},
         
+        '.ck-link-img': function(){
+            var src = $(this).attr('src');
+            if (src) {
+                ck.openImage(src);
+            }
+        },
+
         '.ck-post-link': handle_control,
 
         '.ck-post-button, .ck-post-button span': tap_ck_post,
@@ -8332,6 +8350,10 @@ define("../cardkit/app", [
             return bus.promise('navdrawer:close');
         },
 
+        openImage: function(src){
+            forward_handler(LOADING_CARDID, src);
+        },
+
         openModal: function(opt){
             this.hideAddressbar();
             this.disableControl();
@@ -8486,7 +8508,8 @@ define("../cardkit/app", [
                 open_url(me.href);
             }
             return;
-        } else if ($(me).hasClass('ck-link')) {
+        } else if ($(me).hasClass('ck-link')
+                || $(me).hasClass('ck-link-img')) {
         } else if (/(^|\s)ck-\w+/.test(me.className)) {
             return;
         } else if (me.target) {
