@@ -463,7 +463,7 @@ body.no-cardscroll .ck-navdrawer > article {
 }
 
 .ck-ctl-bar {
-  position: absolute;
+  position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
@@ -507,9 +507,6 @@ body.no-cardscroll .ck-navdrawer > article {
   -moz-transform: translateY(0);
   -ms-transform: translateY(0);
   transform: translateY(0);
-}
-body.no-cardscroll .ck-ctl-bar {
-  position: fixed;
 }
 
 .ck-ctl-backward {

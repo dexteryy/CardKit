@@ -282,7 +282,7 @@ a {
 }
 
 .ck-ctl-bar {
-  position:absolute;
+  position:fixed;
   bottom:0;
   left:0;
   width:100%;
@@ -320,10 +320,6 @@ a {
 
   .ck-topbar-enabled & {
     @include transform(translateY(0));
-  }
-
-  body.no-cardscroll & {
-    position:fixed;
   }
 
 }
