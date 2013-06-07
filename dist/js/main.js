@@ -3295,7 +3295,8 @@ define("../cardkit/render", [
             if (changed['card-actions']) {
                 var actions = cfg['actionbar'] = cfg['card-actions'],
                     action_items = actions.items;
-                action_items.push.apply(action_items, cfg['page-actions'].items);
+                action_items.push.apply(action_items, 
+                    Array.prototype.slice.call(cfg['page-actions'].items));
                 actions.overflowItems = action_items.splice(actions.config.limit);
                 $('.ck-top-actions').html(tpl.convertTpl(tpl_actionbar.template, cfg));
             }
