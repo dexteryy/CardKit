@@ -930,7 +930,7 @@
     background:$viewbg_color;
     padding-top: $nav_height*5 - 3px;
     @include transform(translateY(-$nav_height*5));
-    margin-bottom:-$nav_height*5;
+    margin-bottom:-$nav_height*5 + $space;
     @include box-shadow(0 -1px 3px rgba(0,0,0,.35));
 
     .ck-unit-wrap:not(.empty) {
