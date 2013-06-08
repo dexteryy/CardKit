@@ -7465,8 +7465,9 @@ define("../cardkit/app", [
         },
 
         '.ck-top-overflow': function(){
-            var overflow = $('.ck-top-overflow-items'),
-                options = overflow.find('.ck-item, .ck-overflow-item').map(function(item, i){
+            var selector = '.ck-top-overflow-items .ck-item,'
+                    + '.ck-top-overflow-items .ck-overflow-item',
+                options = $(selector).map(function(item, i){
                     return $(tpl.convertTpl(this, {
                         i: i,
                         text: $(item).html()
@@ -7478,7 +7479,7 @@ define("../cardkit/app", [
             bus.bind('actionView:confirmOnThis', function(actionCard){
                 var i = actionCard.val();
                 bus.once('actionView:close', function(){
-                    overflow.find('.ck-item, .ck-overflow-item').eq(i).trigger('tap');
+                    $(selector).eq(i).trigger('tap');
                 });
             });
         },
