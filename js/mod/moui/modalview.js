@@ -24,6 +24,7 @@ define('moui/modalview', [
         default_config = {
             className: 'moui-modalview',
             iframe: false,
+            contentFilter: '',
             hideConfirm: false,
             confirmText: '确认',
             cancelText: '取消'
@@ -55,6 +56,10 @@ define('moui/modalview', [
             var self = this;
             self.superClass.set.call(self, opt);
 
+            if (opt.contentFilter === undefined) {
+                self._config.contentFilter = false;
+            }
+
             if (opt.content !== undefined) {
                 self._config.iframe = null;
             } else if (opt.iframe) {
@@ -81,6 +86,10 @@ define('moui/modalview', [
         },
 
         setContent: function(html){
+            var filter = this._config.contentFilter;
+            if (filter) {
+                html = (new RegExp(filter).exec(html) || [])[1];
+            }
             this.superClass.setContent.call(this, html);
             if (html) {
                 this.event.fire('contentchange', [this]);

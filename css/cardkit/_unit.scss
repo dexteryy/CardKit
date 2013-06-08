@@ -710,6 +710,10 @@
 
   }
 
+  &[data-cfg-plain] {
+    display:none;
+  }
+
 }
 
 .ck-mini-unit {
@@ -780,6 +784,10 @@
       border-top:1px solid $border_color;
     }
 
+  }
+
+  &[data-cfg-plain] {
+    display:none;
   }
 
 }
@@ -906,6 +914,8 @@
 
 .ck-banner-unit {
 
+  $bg_height: 600px;
+
   .ck-unit-wrap {
     font-size:13px;
     background:#fff;
@@ -928,9 +938,9 @@
   body:not(.no-cardscroll):not(.no-overflowscroll) & {
     position:relative;
     background:$viewbg_color;
-    padding-top: $nav_height*5 - 3px;
-    @include transform(translateY(-$nav_height*5));
-    margin-bottom:-$nav_height*5 + $space;
+    padding-top: $bg_height - 3px;
+    @include transform(translateY(-$bg_height));
+    margin-bottom:-$bg_height + $space;
     @include box-shadow(0 -1px 3px rgba(0,0,0,.35));
 
     .ck-unit-wrap:not(.empty) {
@@ -939,7 +949,7 @@
     }
 
     .ck-top-tips {
-      top: $nav_height*5;
+      top: $bg_height;
     }
 
   }

@@ -51,6 +51,7 @@ define([
 
         TPL_NAVDRAWER = '<div class="ck-navdrawer"></div>',
         TPL_MASK = '<div class="ck-viewmask"></div>',
+        TPL_CTL_MASK = '<div class="ck-ctlmask"><div></div></div>',
         TPL_CARD_MASK = '<div class="ck-cardmask"></div>';
 
     _.mix(momoBase.Class.prototype, {
@@ -63,7 +64,9 @@ define([
             return this;
         },
         trigger: function(e, ev){
-            $(e.target).trigger(ev);
+            delete e.layerX;
+            delete e.layerY;
+            $(e.target).trigger(ev, e);
             return this;
         }
     });
@@ -82,6 +85,16 @@ define([
             if (src) {
                 ck.openImage(src);
             }
+        },
+
+        '.ck-confirm-link': function(){
+            var me = $(this);
+            if (!this.href) {
+                me = me.parent();
+            }
+            ck.confirm('', function(){
+                open_url(me.attr('href'), me);
+            }, me.data());
         },
 
         '.ck-post-link': handle_control,
@@ -423,7 +436,7 @@ define([
                     'background': '#f00'
                 });
             }
-            this.controlMask = $(TPL_MASK).appendTo(body);
+            this.controlMask = $(TPL_CTL_MASK).appendTo(body);
             if (env.showControlMask) {
                 this.controlMask.css({
                     'opacity': '0.2',
@@ -462,6 +475,8 @@ define([
                 distanceThreshold: 10 
             });
             set_alias_events(swipeGesture.event);
+            //var dragGesture = momoDrag(this.mainview);
+            //set_alias_events(dragGesture.event);
 
             if (!supports.CARD_SCROLL) {
                 $(body).addClass('no-cardscroll');
@@ -562,6 +577,8 @@ define([
                     stick_item.call(this, false);
                 }
             });
+
+            //init_card_drag();
 
             if (!supports.SAFARI_OVERFLOWSCROLL) {
 
@@ -1112,7 +1129,8 @@ define([
                 confirmText: '确认',
                 cancelText: '取消',
                 multiselect: true
-            }, opt)).open().event.once('confirm', cb);
+            }, opt)).open();
+            bus.bind('actionView:confirmOnThis', cb);
         },
 
         notify: function(content, opt) {
@@ -1352,25 +1370,29 @@ define([
             ck.cardMask.removeClass('moving');
             current.hide().removeClass('moving');
             choreo.transform(current[0], 'translateX', '0px');
-            if (prev_id === LOADING_CARDID) {
-                //alert('back: ' + document.referrer + '\n' + location.href)
-                if (compare_link(document.referrer)
-                       || !/#.+/.test(document.referrer)) { // redirect.html
-                    ck._backFromSameUrl = true;
-                }
-                history.back();
-                var loc = location.href;
-                setTimeout(function(){
-                    if (location.href === loc) {
-                        location.reload();
-                    }
-                }, 700);
-            } else {
-                ck.enableControl();
-                ck._sessionLocked = false;
-                ck.showTopbar();
-            }
+            when_back_end(prev_id);
         });
+    }
+
+    function when_back_end(prev_id){
+        if (prev_id === LOADING_CARDID) {
+            //alert('back: ' + document.referrer + '\n' + location.href)
+            if (compare_link(document.referrer)
+                   || !/#.+/.test(document.referrer)) { // redirect.html
+                ck._backFromSameUrl = true;
+            }
+            history.back();
+            var loc = location.href;
+            setTimeout(function(){
+                if (location.href === loc) {
+                    location.reload();
+                }
+            }, 700);
+        } else {
+            ck.enableControl();
+            ck._sessionLocked = false;
+            ck.showTopbar();
+        }
     }
 
     function push_history(next_id){
@@ -1462,6 +1484,52 @@ define([
             $.Event.aliases[ev] = soviet_aliases[ev] = 'ck_' + events[ev];
         }
     }
+
+    //function init_card_drag(){
+        //var _startX, _current, _prev;
+        //ck.mainview.on('dragstart', function(e){
+            //_startX = e.clientX;
+            //_current = ck.viewport;
+            //_prev = $('#' + (_current.data('prevCard') || LOADING_CARDID));
+            //ck.hideTopbar();
+            //_current.addClass('moving');
+            //ck.changeView(_prev, {
+                //isNotPrev: true
+            //});
+            //ck.cardMask.css('opacity', '0.8').addClass('moving');
+            ////ck.controlMask.show();
+        //}).on('drag', function(e){
+            //var d = e.clientX - _startX;
+            //choreo.transform(_current[0], 'translateX', d + 'px');
+            //ck.cardMask.css('opacity', (1 - d / window.innerWidth) * 0.8);
+        //}).on('dragend', function(e){
+            //var d = e.clientX - _startX,
+                //s = d / window.innerWidth;
+            //if (s > 0.5) {
+                //choreo().play().actor(_current[0], {
+                    //'transform': 'translateX(' + window.innerWidth + 'px)'
+                //}, 100).follow().then(function(){
+                    //ck._preventNextHashEv = true;
+                    //history.back();
+                    //ck.cardMask.removeClass('moving').css('opacity', 0);
+                    //_current.hide().removeClass('moving');
+                    //choreo.transform(_current[0], 'translateX', '0px');
+                    //when_back_end(_prev[0].id);
+                //});
+            //} else {
+                //choreo().play().actor(_current[0], {
+                    //'transform': 'translateX(0px)'
+                //}, 100).follow().then(function(){
+                    //ck.changeView(_current);
+                    //_prev.hide();
+                    //ck.cardMask.removeClass('moving').css('opacity', 0);
+                    //_current.removeClass('moving');
+                    //choreo.transform(_current[0], 'translateX', '0px');
+                    //ck.showTopbar();
+                //});
+            //}
+        //});
+    //}
 
     //function check_gc(controller){
         //return ck.viewportGarbage[controller.parentId];

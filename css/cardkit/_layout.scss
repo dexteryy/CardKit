@@ -335,6 +335,7 @@ a {
   float:right;
 }
 
+.ck-ctlmask,
 .ck-viewmask {
   display:none;
   opacity:0;
@@ -345,6 +346,16 @@ a {
   height:100%;
   padding-bottom:60px;
   z-index: $zindex_mask;
+}
+
+.ck-ctlmask {
+  overflow-y:scroll;
+  -webkit-overflow-scrolling: touch;
+
+  div {
+    height:300%;
+  }
+
 }
 
 .ck-raw {

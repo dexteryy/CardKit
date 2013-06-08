@@ -4770,6 +4770,7 @@ define('moui/modalview', [
         default_config = {
             className: 'moui-modalview',
             iframe: false,
+            contentFilter: '',
             hideConfirm: false,
             confirmText: '确认',
             cancelText: '取消'
@@ -4801,6 +4802,10 @@ define('moui/modalview', [
             var self = this;
             self.superClass.set.call(self, opt);
 
+            if (opt.contentFilter === undefined) {
+                self._config.contentFilter = false;
+            }
+
             if (opt.content !== undefined) {
                 self._config.iframe = null;
             } else if (opt.iframe) {
@@ -4827,6 +4832,10 @@ define('moui/modalview', [
         },
 
         setContent: function(html){
+            var filter = this._config.contentFilter;
+            if (filter) {
+                html = (new RegExp(filter).exec(html) || [])[1];
+            }
             this.superClass.setContent.call(this, html);
             if (html) {
                 this.event.fire('contentchange', [this]);
@@ -5839,6 +5848,71 @@ define('momo/drag', [
 ], function(_, momoBase){
 
     var MomoDrag = _.construct(momoBase.Class);
+
+    _.mix(MomoDrag.prototype, {
+
+        EVENTS: [
+            'drag',
+            'dragover',
+            'dragstart',
+            'dragend'
+        ],
+        DEFAULT_CONFIG: {
+            'dragThreshold': 200
+        },
+
+        checkDrag: function(){
+            if (this._holding) {
+                this._holding = false;
+                clearTimeout(this._startTimer);
+            }
+        },
+
+        press: function(e){
+            var self = this,
+                t = self.SUPPORT_TOUCH ? e.touches[0] : e,
+                src = t.target;
+            //if (src.getAttribute('draggable') !== 'true') {
+                //return;
+            //}
+            self._srcTarget = false;
+            self._holding = true;
+            self._startTimer = setTimeout(function(){
+                self._holding = false;
+                self._srcTarget = src;
+                self.trigger(_.copy(t), self.event.dragstart);
+            }, self._config.dragThreshold);
+        },
+
+        move: function(e){
+            this.checkDrag();
+            if (!this._srcTarget) {
+                return;
+            }
+            var t = this.SUPPORT_TOUCH ? e.touches[0] : e;
+            this.trigger(_.merge({ 
+                target: this._srcTarget 
+            }, t), this.event.drag);
+            this.trigger(_.copy(t), this.event.dragover);
+        },
+
+        release: drag_end,
+
+        cancel: drag_end
+
+    });
+
+    function drag_end(e){
+        this.checkDrag();
+        if (!this._srcTarget) {
+            return;
+        }
+        var t = this.SUPPORT_TOUCH ? e.changedTouches[0] : e;
+        this.trigger(_.merge({ 
+            target: this._srcTarget 
+        }, t), this.event.dragend);
+        this._srcTarget = false;
+    }
 
     function exports(elm, opt, cb){
         return new exports.Class(elm, opt, cb);
@@ -7340,6 +7414,7 @@ define("../cardkit/app", [
 
         TPL_NAVDRAWER = '<div class="ck-navdrawer"></div>',
         TPL_MASK = '<div class="ck-viewmask"></div>',
+        TPL_CTL_MASK = '<div class="ck-ctlmask"><div></div></div>',
         TPL_CARD_MASK = '<div class="ck-cardmask"></div>';
 
     _.mix(momoBase.Class.prototype, {
@@ -7352,7 +7427,9 @@ define("../cardkit/app", [
             return this;
         },
         trigger: function(e, ev){
-            $(e.target).trigger(ev);
+            delete e.layerX;
+            delete e.layerY;
+            $(e.target).trigger(ev, e);
             return this;
         }
     });
@@ -7371,6 +7448,16 @@ define("../cardkit/app", [
             if (src) {
                 ck.openImage(src);
             }
+        },
+
+        '.ck-confirm-link': function(){
+            var me = $(this);
+            if (!this.href) {
+                me = me.parent();
+            }
+            ck.confirm('', function(){
+                open_url(me.attr('href'), me);
+            }, me.data());
         },
 
         '.ck-post-link': handle_control,
@@ -7712,7 +7799,7 @@ define("../cardkit/app", [
                     'background': '#f00'
                 });
             }
-            this.controlMask = $(TPL_MASK).appendTo(body);
+            this.controlMask = $(TPL_CTL_MASK).appendTo(body);
             if (env.showControlMask) {
                 this.controlMask.css({
                     'opacity': '0.2',
@@ -7751,6 +7838,8 @@ define("../cardkit/app", [
                 distanceThreshold: 10 
             });
             set_alias_events(swipeGesture.event);
+            //var dragGesture = momoDrag(this.mainview);
+            //set_alias_events(dragGesture.event);
 
             if (!supports.CARD_SCROLL) {
                 $(body).addClass('no-cardscroll');
@@ -7851,6 +7940,8 @@ define("../cardkit/app", [
                     stick_item.call(this, false);
                 }
             });
+
+            //init_card_drag();
 
             if (!supports.SAFARI_OVERFLOWSCROLL) {
 
@@ -8401,7 +8492,8 @@ define("../cardkit/app", [
                 confirmText: '确认',
                 cancelText: '取消',
                 multiselect: true
-            }, opt)).open().event.once('confirm', cb);
+            }, opt)).open();
+            bus.bind('actionView:confirmOnThis', cb);
         },
 
         notify: function(content, opt) {
@@ -8641,25 +8733,29 @@ define("../cardkit/app", [
             ck.cardMask.removeClass('moving');
             current.hide().removeClass('moving');
             choreo.transform(current[0], 'translateX', '0px');
-            if (prev_id === LOADING_CARDID) {
-                //alert('back: ' + document.referrer + '\n' + location.href)
-                if (compare_link(document.referrer)
-                       || !/#.+/.test(document.referrer)) { // redirect.html
-                    ck._backFromSameUrl = true;
-                }
-                history.back();
-                var loc = location.href;
-                setTimeout(function(){
-                    if (location.href === loc) {
-                        location.reload();
-                    }
-                }, 700);
-            } else {
-                ck.enableControl();
-                ck._sessionLocked = false;
-                ck.showTopbar();
-            }
+            when_back_end(prev_id);
         });
+    }
+
+    function when_back_end(prev_id){
+        if (prev_id === LOADING_CARDID) {
+            //alert('back: ' + document.referrer + '\n' + location.href)
+            if (compare_link(document.referrer)
+                   || !/#.+/.test(document.referrer)) { // redirect.html
+                ck._backFromSameUrl = true;
+            }
+            history.back();
+            var loc = location.href;
+            setTimeout(function(){
+                if (location.href === loc) {
+                    location.reload();
+                }
+            }, 700);
+        } else {
+            ck.enableControl();
+            ck._sessionLocked = false;
+            ck.showTopbar();
+        }
     }
 
     function push_history(next_id){
@@ -8751,6 +8847,52 @@ define("../cardkit/app", [
             $.Event.aliases[ev] = soviet_aliases[ev] = 'ck_' + events[ev];
         }
     }
+
+    //function init_card_drag(){
+        //var _startX, _current, _prev;
+        //ck.mainview.on('dragstart', function(e){
+            //_startX = e.clientX;
+            //_current = ck.viewport;
+            //_prev = $('#' + (_current.data('prevCard') || LOADING_CARDID));
+            //ck.hideTopbar();
+            //_current.addClass('moving');
+            //ck.changeView(_prev, {
+                //isNotPrev: true
+            //});
+            //ck.cardMask.css('opacity', '0.8').addClass('moving');
+            ////ck.controlMask.show();
+        //}).on('drag', function(e){
+            //var d = e.clientX - _startX;
+            //choreo.transform(_current[0], 'translateX', d + 'px');
+            //ck.cardMask.css('opacity', (1 - d / window.innerWidth) * 0.8);
+        //}).on('dragend', function(e){
+            //var d = e.clientX - _startX,
+                //s = d / window.innerWidth;
+            //if (s > 0.5) {
+                //choreo().play().actor(_current[0], {
+                    //'transform': 'translateX(' + window.innerWidth + 'px)'
+                //}, 100).follow().then(function(){
+                    //ck._preventNextHashEv = true;
+                    //history.back();
+                    //ck.cardMask.removeClass('moving').css('opacity', 0);
+                    //_current.hide().removeClass('moving');
+                    //choreo.transform(_current[0], 'translateX', '0px');
+                    //when_back_end(_prev[0].id);
+                //});
+            //} else {
+                //choreo().play().actor(_current[0], {
+                    //'transform': 'translateX(0px)'
+                //}, 100).follow().then(function(){
+                    //ck.changeView(_current);
+                    //_prev.hide();
+                    //ck.cardMask.removeClass('moving').css('opacity', 0);
+                    //_current.removeClass('moving');
+                    //choreo.transform(_current[0], 'translateX', '0px');
+                    //ck.showTopbar();
+                //});
+            //}
+        //});
+    //}
 
     //function check_gc(controller){
         //return ck.viewportGarbage[controller.parentId];
