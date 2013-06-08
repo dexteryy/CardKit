@@ -2569,13 +2569,18 @@ define("../cardkit/parser/actionbar", [
             items = source && source.find('.ckd-item').map(function(elm){
                 return util.getItemDataOuter(elm, null, 'item');
             }) || $(),
-            custom_items = util.getCustom('.ckd-item', cfg, raw, util.getItemDataOuter, 'item');
+            overflow_items = source && source.find('.ckd-overflow-item').map(function(elm){
+                return util.getItemDataOuter(elm, null, 'overflow-item');
+            }) || $(),
+            custom_items = util.getCustom('.ckd-item', cfg, raw, util.getItemDataOuter, 'item'),
+            custom_overflow_items = util.getCustom('.ckd-overflow-item', cfg, raw, util.getItemDataOuter, 'overflow-item');
         if (source === false && !custom_items.length) {
             return false;
         }
         var data = {
             config: config,
-            items: custom_items.concat(items || $())
+            items: custom_items.concat(items || $()),
+            overflowItems: custom_overflow_items.concat(overflow_items || $())
         };
         return data;
     }
@@ -3099,6 +3104,7 @@ define("../cardkit/render", [
             'page-actions': actionbarParser,
             'card-actions': actionbarParser
         },
+        slice = Array.prototype.slice,
 
         SCRIPT_TAG = 'script[type="text/cardscript"]',
 
@@ -3294,10 +3300,14 @@ define("../cardkit/render", [
             }
             if (changed['card-actions']) {
                 var actions = cfg['actionbar'] = cfg['card-actions'],
-                    action_items = actions.items;
+                    action_items = actions.items,
+                    action_overflow_items = actions.overflowItems;
                 action_items.push.apply(action_items, 
-                    Array.prototype.slice.call(cfg['page-actions'].items));
-                actions.overflowItems = action_items.splice(actions.config.limit);
+                    slice.call(cfg['page-actions'].items));
+                action_overflow_items.push.apply(action_overflow_items, 
+                    slice.call(cfg['page-actions'].overflowItems));
+                action_overflow_items.unshift.apply(actions.overflowItems,
+                    slice.call(action_items.splice(actions.config.limit)));
                 $('.ck-top-actions').html(tpl.convertTpl(tpl_actionbar.template, cfg));
             }
             if (changed['navdrawer']) {
@@ -7455,19 +7465,20 @@ define("../cardkit/app", [
         },
 
         '.ck-top-overflow': function(){
-            var options = $('.ck-top-overflow-items .ck-item').map(function(item, i){
-                return $(tpl.convertTpl(this, {
-                    i: i,
-                    text: $(item).html()
-                }, 'item'))[0];
-            }, tpl_overflowmenu.template);
+            var overflow = $('.ck-top-overflow-items'),
+                options = overflow.find('.ck-item, .ck-overflow-item').map(function(item, i){
+                    return $(tpl.convertTpl(this, {
+                        i: i,
+                        text: $(item).html()
+                    }, 'item'))[0];
+                }, tpl_overflowmenu.template);
             actionView(this, {
                 options: options
             }).open();
             bus.bind('actionView:confirmOnThis', function(actionCard){
                 var i = actionCard.val();
                 bus.once('actionView:close', function(){
-                    $('.ck-top-overflow-items .ck-item').eq(i).trigger('tap');
+                    overflow.find('.ck-item, .ck-overflow-item').eq(i).trigger('tap');
                 });
             });
         },

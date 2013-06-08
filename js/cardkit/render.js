@@ -29,6 +29,7 @@ define([
             'page-actions': actionbarParser,
             'card-actions': actionbarParser
         },
+        slice = Array.prototype.slice,
 
         SCRIPT_TAG = 'script[type="text/cardscript"]',
 
@@ -224,10 +225,14 @@ define([
             }
             if (changed['card-actions']) {
                 var actions = cfg['actionbar'] = cfg['card-actions'],
-                    action_items = actions.items;
+                    action_items = actions.items,
+                    action_overflow_items = actions.overflowItems;
                 action_items.push.apply(action_items, 
-                    Array.prototype.slice.call(cfg['page-actions'].items));
-                actions.overflowItems = action_items.splice(actions.config.limit);
+                    slice.call(cfg['page-actions'].items));
+                action_overflow_items.push.apply(action_overflow_items, 
+                    slice.call(cfg['page-actions'].overflowItems));
+                action_overflow_items.unshift.apply(actions.overflowItems,
+                    slice.call(action_items.splice(actions.config.limit)));
                 $('.ck-top-actions').html(tpl.convertTpl(tpl_actionbar.template, cfg));
             }
             if (changed['navdrawer']) {

@@ -176,19 +176,20 @@ define([
         },
 
         '.ck-top-overflow': function(){
-            var options = $('.ck-top-overflow-items .ck-item').map(function(item, i){
-                return $(tpl.convertTpl(this, {
-                    i: i,
-                    text: $(item).html()
-                }, 'item'))[0];
-            }, tpl_overflowmenu.template);
+            var overflow = $('.ck-top-overflow-items'),
+                options = overflow.find('.ck-item, .ck-overflow-item').map(function(item, i){
+                    return $(tpl.convertTpl(this, {
+                        i: i,
+                        text: $(item).html()
+                    }, 'item'))[0];
+                }, tpl_overflowmenu.template);
             actionView(this, {
                 options: options
             }).open();
             bus.bind('actionView:confirmOnThis', function(actionCard){
                 var i = actionCard.val();
                 bus.once('actionView:close', function(){
-                    $('.ck-top-overflow-items .ck-item').eq(i).trigger('tap');
+                    overflow.find('.ck-item, .ck-overflow-item').eq(i).trigger('tap');
                 });
             });
         },
