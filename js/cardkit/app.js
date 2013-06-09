@@ -10,10 +10,11 @@ define([
     'momo/base',
     'momo/tap',
     'momo/swipe',
-    'momo/drag',
     'momo/scroll',
+    //'momo/drag',
     './view/control',
     './view/picker',
+    './view/ranger',
     './view/stars',
     './view/modalcard',
     './view/actionview',
@@ -26,8 +27,9 @@ define([
     'cardkit/env',
     'mo/domready'
 ], function($, _, browsers, cookie, tpl, easing, soviet, choreo, 
-    momoBase, momoTap, momoSwipe, momoDrag, momoScroll, 
-    control, picker, stars, modalCard, actionView, growl, 
+    momoBase, momoTap, momoSwipe, momoScroll, 
+    //momoDrag,
+    control, picker, ranger, stars, modalCard, actionView, growl, 
     tpl_overflowmenu, tpl_ctlbar, 
     bus, render, supports, env){
 
@@ -51,7 +53,6 @@ define([
 
         TPL_NAVDRAWER = '<div class="ck-navdrawer"></div>',
         TPL_MASK = '<div class="ck-viewmask"></div>',
-        TPL_CTL_MASK = '<div class="ck-ctlmask"><div></div></div>',
         TPL_CARD_MASK = '<div class="ck-cardmask"></div>';
 
     _.mix(momoBase.Class.prototype, {
@@ -436,7 +437,7 @@ define([
                     'background': '#f00'
                 });
             }
-            this.controlMask = $(TPL_CTL_MASK).appendTo(body);
+            this.controlMask = $(TPL_MASK).appendTo(body);
             if (env.showControlMask) {
                 this.controlMask.css({
                     'opacity': '0.2',
@@ -532,7 +533,23 @@ define([
                 //'.ck-link-mask': function(){
                     //clear_active_item_mask(ck.viewport);
                 //}
+            }).on('change', {
+                '.ck-ranger': function(e){
+                    ranger(this).val(e.target.value);
+                }
             }).on('touchend', {
+                '.ck-ranger': function(){
+                    var r = ranger(this);
+                    r.notify.close();
+                    var url = $(this).trigger('ranger:changed', {
+                        component: r
+                    }).data('url');
+                    if (url) {
+                        open_url(tpl.format(url, {
+                            value: r.val()
+                        }));
+                    }
+                },
                 '.ck-stars': function(e) {
                     respond_stars.call(this, e, 'val');
                 },
@@ -1152,6 +1169,7 @@ define([
 
         control: control,
         picker: picker,
+        ranger: ranger,
         modalCard: modalCard,
         actionView: actionView, 
         growl: growl
@@ -1357,7 +1375,9 @@ define([
         var current = ck.viewport;
         choreo.transform(current[0], 'translateX', '0px');
         current.addClass('moving');
-        ck.changeView(prev);
+        ck.changeView(prev, {
+            isNotPrev: true
+        });
         ck.cardMask.css('opacity', '0.8').addClass('moving');
         var moving = choreo('card:moving').clear().play();
         moving.actor(ck.cardMask[0], {
@@ -1486,45 +1506,54 @@ define([
     }
 
     //function init_card_drag(){
-        //var _startX, _current, _prev;
+        //var _startX, _current, _prev, _clone, _hideTimer;
         //ck.mainview.on('dragstart', function(e){
             //_startX = e.clientX;
-            //_current = ck.viewport;
+            //_current = ck.viewport.addClass('moving');
+            //_clone = _current.clone().show().prependTo(ck.wrapper);
             //_prev = $('#' + (_current.data('prevCard') || LOADING_CARDID));
             //ck.hideTopbar();
-            //_current.addClass('moving');
             //ck.changeView(_prev, {
                 //isNotPrev: true
             //});
             //ck.cardMask.css('opacity', '0.8').addClass('moving');
-            ////ck.controlMask.show();
+            //_hideTimer = setTimeout(function(){
+                //_current.addClass('hidding');
+            //}, 200);
         //}).on('drag', function(e){
             //var d = e.clientX - _startX;
-            //choreo.transform(_current[0], 'translateX', d + 'px');
+            //if (d < 0) {
+                //d = 0;
+            //}
+            //choreo.transform(_clone[0], 'translateX', d + 'px');
             //ck.cardMask.css('opacity', (1 - d / window.innerWidth) * 0.8);
         //}).on('dragend', function(e){
-            //var d = e.clientX - _startX,
-                //s = d / window.innerWidth;
-            //if (s > 0.5) {
-                //choreo().play().actor(_current[0], {
+            //clearTimeout(_hideTimer);
+            //var d = e.clientX - _startX;
+            //if (d < 0) {
+                //d = 0;
+            //}
+            //var s = d / window.innerWidth;
+            //if (s > 0.3) {
+                //choreo().play().actor(_clone[0], {
                     //'transform': 'translateX(' + window.innerWidth + 'px)'
                 //}, 100).follow().then(function(){
                     //ck._preventNextHashEv = true;
                     //history.back();
                     //ck.cardMask.removeClass('moving').css('opacity', 0);
-                    //_current.hide().removeClass('moving');
-                    //choreo.transform(_current[0], 'translateX', '0px');
+                    //_clone.hide().removeClass('moving');
+                    //_current.remove();
                     //when_back_end(_prev[0].id);
                 //});
             //} else {
-                //choreo().play().actor(_current[0], {
+                //choreo().play().actor(_clone[0], {
                     //'transform': 'translateX(0px)'
                 //}, 100).follow().then(function(){
-                    //ck.changeView(_current);
-                    //_prev.hide();
+                    //ck.changeView(_clone);
                     //ck.cardMask.removeClass('moving').css('opacity', 0);
-                    //_current.removeClass('moving');
-                    //choreo.transform(_current[0], 'translateX', '0px');
+                    //_prev.hide();
+                    //_clone.removeClass('moving');
+                    //_current.remove();
                     //ck.showTopbar();
                 //});
             //}

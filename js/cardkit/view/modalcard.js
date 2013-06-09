@@ -9,6 +9,8 @@ define([
             className: 'ck-modalview',
             closeDelay: 400
         }),
+        _content_filter,
+        origin_set_content = modalCard.setContent,
         origin_set = modalCard.set;
 
     modalCard.set = function(opt){
@@ -33,6 +35,8 @@ define([
             });
         }
 
+        _content_filter = opt.contentFilter;
+
         if (opt.iframeUrl) {
             opt.iframe = opt.iframeUrl;
         }
@@ -49,6 +53,13 @@ define([
         }
 
         return origin_set.call(this, opt);
+    };
+
+    modalCard.setContent = function(html){
+        if (_content_filter) {
+            html = (new RegExp(_content_filter).exec(html) || [])[1];
+        }
+        return origin_set_content.call(this, html);
     };
     
     if (supports.BROWSER_CONTROL) {

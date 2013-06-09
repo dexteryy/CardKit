@@ -4770,7 +4770,6 @@ define('moui/modalview', [
         default_config = {
             className: 'moui-modalview',
             iframe: false,
-            contentFilter: '',
             hideConfirm: false,
             confirmText: '确认',
             cancelText: '取消'
@@ -4802,10 +4801,6 @@ define('moui/modalview', [
             var self = this;
             self.superClass.set.call(self, opt);
 
-            if (opt.contentFilter === undefined) {
-                self._config.contentFilter = false;
-            }
-
             if (opt.content !== undefined) {
                 self._config.iframe = null;
             } else if (opt.iframe) {
@@ -4832,10 +4827,6 @@ define('moui/modalview', [
         },
 
         setContent: function(html){
-            var filter = this._config.contentFilter;
-            if (filter) {
-                html = (new RegExp(filter).exec(html) || [])[1];
-            }
             this.superClass.setContent.call(this, html);
             if (html) {
                 this.event.fire('contentchange', [this]);
@@ -5185,6 +5176,8 @@ define("../cardkit/view/modalcard", [
             className: 'ck-modalview',
             closeDelay: 400
         }),
+        _content_filter,
+        origin_set_content = modalCard.setContent,
         origin_set = modalCard.set;
 
     modalCard.set = function(opt){
@@ -5209,6 +5202,8 @@ define("../cardkit/view/modalcard", [
             });
         }
 
+        _content_filter = opt.contentFilter;
+
         if (opt.iframeUrl) {
             opt.iframe = opt.iframeUrl;
         }
@@ -5225,6 +5220,13 @@ define("../cardkit/view/modalcard", [
         }
 
         return origin_set.call(this, opt);
+    };
+
+    modalCard.setContent = function(html){
+        if (_content_filter) {
+            html = (new RegExp(_content_filter).exec(html) || [])[1];
+        }
+        return origin_set_content.call(this, html);
     };
     
     if (supports.BROWSER_CONTROL) {
@@ -5379,6 +5381,133 @@ define("../cardkit/view/stars", [
     };
 
     return exports;
+});
+
+/* @source moui/ranger.js */;
+
+
+define('moui/ranger', [
+  "mo/lang",
+  "dollar",
+  "eventmaster"
+], function(_, $, event){
+
+    var default_config = {
+            max: 100,
+            min: 0,
+            step: 1
+        };
+
+    function Ranger(elm, opt){
+        this.init(elm, opt);
+        this.set(this._config);
+    }
+
+    Ranger.prototype = {
+
+        _defaults: default_config,
+
+        init: function(elm, opt){
+            this.event = event();
+            var node = this._node = $(elm);
+            opt = _.mix({
+                max: node.attr('max') || undefined,
+                min: node.attr('min') || undefined,
+                step: node.attr('step') || undefined
+            }, this.data(), opt);
+            this._config = _.config({}, opt, this._defaults);
+            this.val(node.val());
+            return this;
+        },
+
+        set: function(opt){
+            if (!opt) {
+                return this;
+            }
+            _.config(this._config, opt, this._defaults);
+            return this;
+        },
+
+        data: function(){
+            return this._node.data();
+        },
+
+        val: function(v){
+            if (v !== undefined) {
+                var l = this._config.step.toString().replace(/.*\./, '').length;
+                v = Math.floor(v * Math.pow(10, l)) / Math.pow(10, l);
+                this._value = v;
+                this.event.fire('change', [this.val(), this]);
+            }
+            return this._value;
+        },
+
+        progress: function(v){
+            if (v !== undefined) {
+                var cfg = this._config;
+                if (v == 0) {
+                    this.val(cfg.min);
+                } else if (v == 1) {
+                    this.val(cfg.max);
+                } else {
+                    var current = (cfg.max - cfg.min) * v + parseFloat(cfg.min);
+                    current = Math.round(current / cfg.step) * cfg.step;
+                    this.val(current);
+                }
+            }
+            return this.val();
+        }
+
+    };
+
+    function exports(elm, opt){
+        return new exports.Ranger(elm, opt);
+    }
+
+    exports.Ranger = Ranger;
+
+    return exports;
+
+});
+
+/* @source ../cardkit/view/ranger.js */;
+
+define("../cardkit/view/ranger", [
+  "dollar",
+  "moui/ranger",
+  "../cardkit/view/growl"
+], function($, ranger, growl){
+
+    var UID = '_ckRangerUid',
+    
+        notify,
+        uid = 0,
+        lib = {};
+
+    function exports(elm, opt){
+        elm = $(elm);
+        var id = elm[0][UID];
+        if (id && lib[id]) {
+            return lib[id].set(opt);
+        }
+        id = elm[0][UID] = ++uid;
+        opt = opt || {};
+        var p = lib[id] = ranger(elm, opt);
+        if (!notify) {
+            notify = growl({});
+        }
+        p.notify = notify;
+        p.event.bind('change', function(v){
+            p.notify.set({
+                content: v
+            }).open();
+        });
+
+        return p;
+    }
+
+    return exports;
+
 });
 
 /* @source ../cardkit/view/picker.js */;
@@ -5834,91 +5963,6 @@ define('momo/scroll', [
     }
 
     exports.Class = MomoScroll;
-
-    return exports;
-
-});
-
-/* @source momo/drag.js */;
-
-
-define('momo/drag', [
-  "mo/lang",
-  "momo/base"
-], function(_, momoBase){
-
-    var MomoDrag = _.construct(momoBase.Class);
-
-    _.mix(MomoDrag.prototype, {
-
-        EVENTS: [
-            'drag',
-            'dragover',
-            'dragstart',
-            'dragend'
-        ],
-        DEFAULT_CONFIG: {
-            'dragThreshold': 200
-        },
-
-        checkDrag: function(){
-            if (this._holding) {
-                this._holding = false;
-                clearTimeout(this._startTimer);
-            }
-        },
-
-        press: function(e){
-            var self = this,
-                t = self.SUPPORT_TOUCH ? e.touches[0] : e,
-                src = t.target;
-            //if (src.getAttribute('draggable') !== 'true') {
-                //return;
-            //}
-            self._srcTarget = false;
-            self._holding = true;
-            self._startTimer = setTimeout(function(){
-                self._holding = false;
-                self._srcTarget = src;
-                self.trigger(_.copy(t), self.event.dragstart);
-            }, self._config.dragThreshold);
-        },
-
-        move: function(e){
-            this.checkDrag();
-            if (!this._srcTarget) {
-                return;
-            }
-            var t = this.SUPPORT_TOUCH ? e.touches[0] : e;
-            this.trigger(_.merge({ 
-                target: this._srcTarget 
-            }, t), this.event.drag);
-            this.trigger(_.copy(t), this.event.dragover);
-        },
-
-        release: drag_end,
-
-        cancel: drag_end
-
-    });
-
-    function drag_end(e){
-        this.checkDrag();
-        if (!this._srcTarget) {
-            return;
-        }
-        var t = this.SUPPORT_TOUCH ? e.changedTouches[0] : e;
-        this.trigger(_.merge({ 
-            target: this._srcTarget 
-        }, t), this.event.dragend);
-        this._srcTarget = false;
-    }
-
-    function exports(elm, opt, cb){
-        return new exports.Class(elm, opt, cb);
-    }
-
-    exports.Class = MomoDrag;
 
     return exports;
 
@@ -7373,10 +7417,10 @@ define("../cardkit/app", [
   "momo/base",
   "momo/tap",
   "momo/swipe",
-  "momo/drag",
   "momo/scroll",
   "../cardkit/view/control",
   "../cardkit/view/picker",
+  "../cardkit/view/ranger",
   "../cardkit/view/stars",
   "../cardkit/view/modalcard",
   "../cardkit/view/actionview",
@@ -7389,8 +7433,9 @@ define("../cardkit/app", [
   "cardkit/env",
   "mo/domready"
 ], function($, _, browsers, cookie, tpl, easing, soviet, choreo, 
-    momoBase, momoTap, momoSwipe, momoDrag, momoScroll, 
-    control, picker, stars, modalCard, actionView, growl, 
+    momoBase, momoTap, momoSwipe, momoScroll, 
+    //momoDrag,
+    control, picker, ranger, stars, modalCard, actionView, growl, 
     tpl_overflowmenu, tpl_ctlbar, 
     bus, render, supports, env){
 
@@ -7414,7 +7459,6 @@ define("../cardkit/app", [
 
         TPL_NAVDRAWER = '<div class="ck-navdrawer"></div>',
         TPL_MASK = '<div class="ck-viewmask"></div>',
-        TPL_CTL_MASK = '<div class="ck-ctlmask"><div></div></div>',
         TPL_CARD_MASK = '<div class="ck-cardmask"></div>';
 
     _.mix(momoBase.Class.prototype, {
@@ -7799,7 +7843,7 @@ define("../cardkit/app", [
                     'background': '#f00'
                 });
             }
-            this.controlMask = $(TPL_CTL_MASK).appendTo(body);
+            this.controlMask = $(TPL_MASK).appendTo(body);
             if (env.showControlMask) {
                 this.controlMask.css({
                     'opacity': '0.2',
@@ -7895,7 +7939,23 @@ define("../cardkit/app", [
                 //'.ck-link-mask': function(){
                     //clear_active_item_mask(ck.viewport);
                 //}
+            }).on('change', {
+                '.ck-ranger': function(e){
+                    ranger(this).val(e.target.value);
+                }
             }).on('touchend', {
+                '.ck-ranger': function(){
+                    var r = ranger(this);
+                    r.notify.close();
+                    var url = $(this).trigger('ranger:changed', {
+                        component: r
+                    }).data('url');
+                    if (url) {
+                        open_url(tpl.format(url, {
+                            value: r.val()
+                        }));
+                    }
+                },
                 '.ck-stars': function(e) {
                     respond_stars.call(this, e, 'val');
                 },
@@ -8515,6 +8575,7 @@ define("../cardkit/app", [
 
         control: control,
         picker: picker,
+        ranger: ranger,
         modalCard: modalCard,
         actionView: actionView, 
         growl: growl
@@ -8720,7 +8781,9 @@ define("../cardkit/app", [
         var current = ck.viewport;
         choreo.transform(current[0], 'translateX', '0px');
         current.addClass('moving');
-        ck.changeView(prev);
+        ck.changeView(prev, {
+            isNotPrev: true
+        });
         ck.cardMask.css('opacity', '0.8').addClass('moving');
         var moving = choreo('card:moving').clear().play();
         moving.actor(ck.cardMask[0], {
@@ -8849,45 +8912,54 @@ define("../cardkit/app", [
     }
 
     //function init_card_drag(){
-        //var _startX, _current, _prev;
+        //var _startX, _current, _prev, _clone, _hideTimer;
         //ck.mainview.on('dragstart', function(e){
             //_startX = e.clientX;
-            //_current = ck.viewport;
+            //_current = ck.viewport.addClass('moving');
+            //_clone = _current.clone().show().prependTo(ck.wrapper);
             //_prev = $('#' + (_current.data('prevCard') || LOADING_CARDID));
             //ck.hideTopbar();
-            //_current.addClass('moving');
             //ck.changeView(_prev, {
                 //isNotPrev: true
             //});
             //ck.cardMask.css('opacity', '0.8').addClass('moving');
-            ////ck.controlMask.show();
+            //_hideTimer = setTimeout(function(){
+                //_current.addClass('hidding');
+            //}, 200);
         //}).on('drag', function(e){
             //var d = e.clientX - _startX;
-            //choreo.transform(_current[0], 'translateX', d + 'px');
+            //if (d < 0) {
+                //d = 0;
+            //}
+            //choreo.transform(_clone[0], 'translateX', d + 'px');
             //ck.cardMask.css('opacity', (1 - d / window.innerWidth) * 0.8);
         //}).on('dragend', function(e){
-            //var d = e.clientX - _startX,
-                //s = d / window.innerWidth;
-            //if (s > 0.5) {
-                //choreo().play().actor(_current[0], {
+            //clearTimeout(_hideTimer);
+            //var d = e.clientX - _startX;
+            //if (d < 0) {
+                //d = 0;
+            //}
+            //var s = d / window.innerWidth;
+            //if (s > 0.3) {
+                //choreo().play().actor(_clone[0], {
                     //'transform': 'translateX(' + window.innerWidth + 'px)'
                 //}, 100).follow().then(function(){
                     //ck._preventNextHashEv = true;
                     //history.back();
                     //ck.cardMask.removeClass('moving').css('opacity', 0);
-                    //_current.hide().removeClass('moving');
-                    //choreo.transform(_current[0], 'translateX', '0px');
+                    //_clone.hide().removeClass('moving');
+                    //_current.remove();
                     //when_back_end(_prev[0].id);
                 //});
             //} else {
-                //choreo().play().actor(_current[0], {
+                //choreo().play().actor(_clone[0], {
                     //'transform': 'translateX(0px)'
                 //}, 100).follow().then(function(){
-                    //ck.changeView(_current);
-                    //_prev.hide();
+                    //ck.changeView(_clone);
                     //ck.cardMask.removeClass('moving').css('opacity', 0);
-                    //_current.removeClass('moving');
-                    //choreo.transform(_current[0], 'translateX', '0px');
+                    //_prev.hide();
+                    //_clone.removeClass('moving');
+                    //_current.remove();
                     //ck.showTopbar();
                 //});
             //}

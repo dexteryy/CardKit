@@ -28,6 +28,10 @@
     z-index:$zindex_view;
   }
 
+  &.hidding {
+    visibility:hidden;
+  }
+
   body.no-cardscroll & {
     -webkit-overflow-scrolling: auto;
     overflow-y:visible;

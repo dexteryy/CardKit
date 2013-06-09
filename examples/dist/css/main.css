@@ -522,7 +522,6 @@ body.no-cardscroll .ck-navdrawer > article {
   float: right;
 }
 
-.ck-ctlmask,
 .ck-viewmask {
   display: none;
   opacity: 0;
@@ -533,14 +532,6 @@ body.no-cardscroll .ck-navdrawer > article {
   height: 100%;
   padding-bottom: 60px;
   z-index: 5000;
-}
-
-.ck-ctlmask {
-  overflow-y: scroll;
-  -webkit-overflow-scrolling: touch;
-}
-.ck-ctlmask div {
-  height: 300%;
 }
 
 .ck-raw {
@@ -615,6 +606,9 @@ body.no-cardscroll.nav-view .ck-root .ck-main .ck-header .ck-top-actions, body.n
   top: 0;
   left: 0;
   z-index: 200;
+}
+.ck-card.hidding {
+  visibility: hidden;
 }
 body.no-cardscroll .ck-card {
   -webkit-overflow-scrolling: auto;
@@ -1653,6 +1647,10 @@ body:not(.no-cardscroll):not(.no-overflowscroll) .ck-banner-unit .ck-top-tips {
   display: none;
   position: absolute;
   left: 0;
+}
+
+.ck-ranger {
+  width: 100%;
 }
 
 .ck-stars {

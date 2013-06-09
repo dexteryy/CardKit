@@ -335,7 +335,7 @@ a {
   float:right;
 }
 
-.ck-ctlmask,
+//.ck-ctlmask,
 .ck-viewmask {
   display:none;
   opacity:0;
@@ -348,15 +348,15 @@ a {
   z-index: $zindex_mask;
 }
 
-.ck-ctlmask {
-  overflow-y:scroll;
-  -webkit-overflow-scrolling: touch;
+//.ck-ctlmask {
+  //overflow-y:scroll;
+  //-webkit-overflow-scrolling: touch;
 
-  div {
-    height:300%;
-  }
+  //div {
+    //height:300%;
+  //}
 
-}
+//}
 
 .ck-raw {
   display:none;

@@ -21,6 +21,10 @@
   @extend .moui-actions;
 }
 
+.ck-ranger {
+  width:100%;
+}
+
 .ck-stars {
   @extend .moui-slider;
   height:25px;
