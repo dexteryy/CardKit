@@ -69,6 +69,18 @@ define('moui/ranger', [
                 }
             }
             return this.val();
+        },
+
+        changeStart: function(){
+            this._originValue = this._value;
+            this.event.fire('changeStart', [this]);
+        },
+
+        changeEnd: function(){
+            this.event.fire('changeEnd', [this]);
+            if (this._originValue != this._value) {
+                this.event.fire('changed', [this]);
+            }
         }
 
     };

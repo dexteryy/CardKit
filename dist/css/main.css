@@ -1651,6 +1651,7 @@ body:not(.no-cardscroll):not(.no-overflowscroll) .ck-banner-unit .ck-top-tips {
 
 .ck-ranger {
   width: 100%;
+  padding: 10px 0;
 }
 
 .ck-stars {

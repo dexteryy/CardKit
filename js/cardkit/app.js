@@ -414,6 +414,14 @@ define([
         });
     });
 
+    bus.bind('ranger:changed', function(ranger, url){
+        if (url) {
+            open_url(tpl.format(url, {
+                value: ranger.val()
+            }));
+        }
+    });
+
     var ck = {
 
         init: function(opt){
@@ -536,19 +544,18 @@ define([
             }).on('change', {
                 '.ck-ranger': function(e){
                     ranger(this).val(e.target.value);
+                    return true;
+                }
+            }).on('touchstart', {
+                '.ck-ranger': function(e){
+                    ranger(this).val(e.target.value);
+                    ranger(this).changeStart();
+                    return true;
                 }
             }).on('touchend', {
                 '.ck-ranger': function(){
-                    var r = ranger(this);
-                    r.notify.close();
-                    var url = $(this).trigger('ranger:changed', {
-                        component: r
-                    }).data('url');
-                    if (url) {
-                        open_url(tpl.format(url, {
-                            value: r.val()
-                        }));
-                    }
+                    ranger(this).changeEnd();
+                    return true;
                 },
                 '.ck-stars': function(e) {
                     respond_stars.call(this, e, 'val');

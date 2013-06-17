@@ -1,8 +1,9 @@
 define([
     'dollar',
     'moui/ranger',
+    '../bus',
     './growl'
-], function($, ranger, growl){
+], function($, ranger, bus, growl){
 
     var UID = '_ckRangerUid',
     
@@ -26,6 +27,13 @@ define([
             p.notify.set({
                 content: v
             }).open();
+        }).bind('changed', function(){
+            var url = elm.trigger('ranger:changed', {
+                component: p
+            }).data('url');
+            bus.fire('ranger:changed', [p, url]);
+        }).bind('changeEnd', function(){
+            p.notify.close();
         });
 
         return p;
