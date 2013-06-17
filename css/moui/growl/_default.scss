@@ -28,6 +28,17 @@
     @include transition(bottom 0.3s cubic-bezier(0.175, 0.885, 0.320, 1.275));
   }
 
+  &.corner-stick {
+    font-size: $title_size;
+    padding:5px 10px;
+    margin:0;
+    position:absolute;
+    left:$space*4;
+    right:$space*4;
+    top:-10px;
+    @include transition(top 0.3s cubic-bezier(0.175, 0.885, 0.320, 1.275));
+  }
+
   &.rendered {
     display:block;
   }
@@ -41,6 +52,10 @@
 
     &.corner-bottom {
       bottom:$space;
+    }
+
+    &.corner-stick {
+      top:-35px;
     }
 
   }

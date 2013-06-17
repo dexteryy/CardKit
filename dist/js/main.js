@@ -3726,6 +3726,7 @@ define('moui/overlay', [
             title: '',
             content: '',
             className: 'moui-overlay',
+            parent: body,
             openDelay: 50,
             closeDelay: 0,
             event: {}
@@ -3788,6 +3789,10 @@ define('moui/overlay', [
             return this;
         },
 
+        insertNode: function(parent){
+            this._node.appendTo(parent || this._config.parent);
+        },
+
         showLoading: function(text) {
             this._node.addClass('loading');
             this._title.html((text || LOADING_DEFAULT) + LOADING_DOTS);
@@ -3831,7 +3836,8 @@ define('moui/overlay', [
         },
 
         prepareOpen: function(){
-            this._node.appendTo(body).addClass('rendered');
+            this.insertNode();
+            this._node.addClass('rendered');
             this.event.fire('prepareOpen', [this]);
         },
 
@@ -5480,7 +5486,6 @@ define("../cardkit/view/ranger", [
 
     var UID = '_ckRangerUid',
     
-        notify,
         uid = 0,
         lib = {};
 
@@ -5493,10 +5498,10 @@ define("../cardkit/view/ranger", [
         id = elm[0][UID] = ++uid;
         opt = opt || {};
         var p = lib[id] = ranger(elm, opt);
-        if (!notify) {
-            notify = growl({});
-        }
-        p.notify = notify;
+        p.notify = growl({
+            parent: elm.parent(),
+            corner: 'stick'
+        });
         p.event.bind('change', function(v){
             p.notify.set({
                 content: v

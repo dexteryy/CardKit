@@ -2029,6 +2029,18 @@ body.no-cardscroll .moui-actionview .wrapper, body.no-cardscroll .ck-actionview 
   -moz-transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   transition: bottom 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
+.moui-growl.corner-stick, .corner-stick.ck-growl {
+  font-size: 13px;
+  padding: 5px 10px;
+  margin: 0;
+  position: absolute;
+  left: 100px;
+  right: 100px;
+  top: -10px;
+  -webkit-transition: top 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  -moz-transition: top 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: top 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
 .moui-growl.rendered, .rendered.ck-growl {
   display: block;
 }
@@ -2043,6 +2055,9 @@ body.no-cardscroll .moui-actionview .wrapper, body.no-cardscroll .ck-actionview 
 }
 .moui-growl.active.corner-bottom, .active.corner-bottom.ck-growl {
   bottom: 25px;
+}
+.moui-growl.active.corner-stick, .active.corner-stick.ck-growl {
+  top: -35px;
 }
 
 .moui-select, .ck-select {
