@@ -1,4 +1,13 @@
-
+/**
+ * Momo (MoMotion)
+ * A framework and a collection for separate and simple implementation of touch gestures
+ * 
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
 define('momo/base', [
     'mo/lang/es5',
     'mo/lang/type',
@@ -97,7 +106,7 @@ define('momo/base', [
             }
         },
 
-        // implement
+        // adapter
 
         bind: nothing,
 
@@ -105,7 +114,7 @@ define('momo/base', [
 
         trigger: nothing,
 
-        // extension
+        // hook
 
         press: nothing,
 

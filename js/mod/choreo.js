@@ -789,7 +789,7 @@ define("choreo", [
 
     _.mix(exports, {
 
-        VERSION: '1.0.3',
+        VERSION: '1.0.5',
         renderMode: useCSS ? 'css' : 'js',
         Stage: Stage,
         Actor: Actor,

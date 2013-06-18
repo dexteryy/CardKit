@@ -1,14 +1,17 @@
 /**
+ * Moui
+ * OO-based UI behavior modules behind CardKit(mobile webapp framework)'s view components
+ * 
  * using AMD (Asynchronous Module Definition) API with OzJS
  * see http://ozjs.org for details
  *
- * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * Copyright (C) 2010-2013, Dexter.Yy, MIT License
  * vim: et:ts=4:sw=4:sts=4
  */
 define('moui/util/stick', [
-   "dollar", 
-   "mo/lang"
-], function($, _){
+    "dollar", 
+    "mo/lang"
+], function($){
 
     var window = this;
 

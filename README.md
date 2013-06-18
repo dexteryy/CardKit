@@ -3,13 +3,15 @@
 
 A mobile UI framework provides building blocks which are classified as "Card", "Unit" and "Component" to help you build mobile web apps quickly and simply, or transfer entire website to native-like web app for touch devices.
 
+![douban apps](doubanapp.png)
+
 ## Quick Start
 
 ### Prepare the environment
 
 1. node, npm
 2. [grunt v0.4](http://gruntjs.com/getting-started) - `npm install grunt-cli -g`
-3. [istatic](https://ozjs.org/istatic) - `node install node-istatic -g`
+3. [istatic v0.3.2+](https://ozjs.org/istatic) - `node install node-istatic -g`
 4. ruby, gem, [bundler](http://gembundler.com/)
 
 ### Install dependencies

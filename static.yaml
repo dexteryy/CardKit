@@ -9,8 +9,17 @@ repos:
     file:
       ./: js/mod/mo/
 
+  dexteryy/momo:
+    file:
+      momo/: js/mod/momo/
+
+  dexteryy/moui:
+    file:
+      ./: js/mod/moui/
+
   dexteryy/DollarJS: 
     file: 
+      dollar/: js/mod/dollar/
       dollar.js: js/mod/
 
   dexteryy/EventMaster:
@@ -25,6 +34,3 @@ repos:
     file:
       choreo.js: js/mod/
 
-  browserstate/history.js:
-    file:
-      scripts/uncompressed/history.js: js/mod/
