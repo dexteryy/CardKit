@@ -9,7 +9,7 @@ A mobile UI framework provides building blocks which are classified as "Card", "
 
 ### In the Real World
 
-![douban apps](doubanapp.png)
+![douban apps](screenshot/doubanapp.png)
 
 ## Download
 

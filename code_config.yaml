@@ -1,5 +1,0 @@
-docs:
-    pages:
-        builder: raw
-        dir: examples
-        name: Examples
