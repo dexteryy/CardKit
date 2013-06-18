@@ -1,3 +1,7 @@
+<!---
+layout: intro
+title: CardKit
+-->
 
 # CardKit
 
@@ -5,7 +9,7 @@ A mobile UI framework provides building blocks which are classified as "Card", "
 
 ### Usage and Examples
 
-[CardKit Reference App](http://douban-f2e.github.io/CardKit/refapp) (highly recommend to open in iOS/android device or simulator)
+[CardKit Reference App](http://ozjs.org/CardKit/refapp) (highly recommend to open in iOS/android device or simulator)
 
 ### In the Real World
 
@@ -54,7 +58,7 @@ or build your own:
 ## Docs & Demos
 
 1. `grunt connect`
-2. See [http://localhost:9100/](http://localhost:9001/) (or [official URL](http://douban-f2e.github.io/CardKit/refapp)) and `examples/`
+2. See [http://localhost:9100/](http://localhost:9001/) (or [official URL](http://ozjs.org/CardKit/refapp)) and `examples/`
 
 More comming soon...
 
