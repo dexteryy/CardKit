@@ -1,4 +1,4 @@
-/*! cardkit - v0.1.0 */
+/*! cardkit - v1.3.1 */
 ;
 
 /**
@@ -2272,12 +2272,11 @@ define("dollar/origin", [
     $._kvAccess = kv_access;
     $._eachNode = each_node;
 
-    $.VERSION = '1.1.2';
+    $.VERSION = '1.2.0';
 
     return $;
 
 });
-
 
 /* @source dollar.js */;
 
@@ -3702,6 +3701,16 @@ define("../cardkit/tpl/layout/overflowmenu", [], function(){
 });
 /* @source moui/overlay.js */;
 
+/**
+ * Moui
+ * OO-based UI behavior modules behind CardKit(mobile webapp framework)'s view components
+ * 
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2013, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
 define('moui/overlay', [
   "mo/lang",
   "dollar",
@@ -3889,6 +3898,16 @@ define('moui/overlay', [
 
 /* @source moui/growl.js */;
 
+/**
+ * Moui
+ * OO-based UI behavior modules behind CardKit(mobile webapp framework)'s view components
+ * 
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2013, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
 define('moui/growl', [
   "dollar",
   "mo/lang",
@@ -4020,7 +4039,16 @@ define("../cardkit/view/growl", [
 
 /* @source moui/control.js */;
 
-
+/**
+ * Moui
+ * OO-based UI behavior modules behind CardKit(mobile webapp framework)'s view components
+ * 
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2013, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
 define('moui/control', [
   "mo/lang",
   "dollar",
@@ -4223,7 +4251,16 @@ define('moui/control', [
 
 /* @source moui/picker.js */;
 
-
+/**
+ * Moui
+ * OO-based UI behavior modules behind CardKit(mobile webapp framework)'s view components
+ * 
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2013, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
 define('moui/picker', [
   "mo/lang",
   "dollar",
@@ -4515,6 +4552,16 @@ define('moui/picker', [
 
 /* @source moui/actionview.js */;
 
+/**
+ * Moui
+ * OO-based UI behavior modules behind CardKit(mobile webapp framework)'s view components
+ * 
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2013, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
 define('moui/actionview', [
   "dollar",
   "mo/lang",
@@ -4750,6 +4797,16 @@ define("../cardkit/view/actionview", [
 
 /* @source moui/modalview.js */;
 
+/**
+ * Moui
+ * OO-based UI behavior modules behind CardKit(mobile webapp framework)'s view components
+ * 
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2013, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
 define('moui/modalview', [
   "dollar",
   "mo/lang",
@@ -5391,7 +5448,16 @@ define("../cardkit/view/stars", [
 
 /* @source moui/ranger.js */;
 
-
+/**
+ * Moui
+ * OO-based UI behavior modules behind CardKit(mobile webapp framework)'s view components
+ * 
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2013, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
 define('moui/ranger', [
   "mo/lang",
   "dollar",
@@ -5731,7 +5797,16 @@ define("../cardkit/view/control", [
 
 /* @source momo/base.js */;
 
-
+/**
+ * Momo (MoMotion)
+ * A framework and a collection for separate and simple implementation of touch gestures
+ * 
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
 define('momo/base', [
   "mo/lang/es5",
   "mo/lang/type",
@@ -5830,7 +5905,7 @@ define('momo/base', [
             }
         },
 
-        // implement
+        // adapter
 
         bind: nothing,
 
@@ -5838,7 +5913,7 @@ define('momo/base', [
 
         trigger: nothing,
 
-        // extension
+        // hook
 
         press: nothing,
 
@@ -5864,7 +5939,16 @@ define('momo/base', [
 
 /* @source momo/scroll.js */;
 
-
+/**
+ * Momo (MoMotion)
+ * A framework and a collection for separate and simple implementation of touch gestures
+ * 
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
 define('momo/scroll', [
   "mo/lang",
   "momo/base"
@@ -5995,7 +6079,16 @@ define('momo/scroll', [
 
 /* @source momo/swipe.js */;
 
-
+/**
+ * Momo (MoMotion)
+ * A framework and a collection for separate and simple implementation of touch gestures
+ * 
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
 define('momo/swipe', [
   "mo/lang",
   "momo/base"
@@ -6094,7 +6187,16 @@ define('momo/swipe', [
 
 /* @source momo/tap.js */;
 
-
+/**
+ * Momo (MoMotion)
+ * A framework and a collection for separate and simple implementation of touch gestures
+ * 
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
 define('momo/tap', [
   "mo/lang",
   "momo/base"
@@ -7044,7 +7146,7 @@ define("choreo", [
 
     _.mix(exports, {
 
-        VERSION: '1.0.3',
+        VERSION: '1.0.5',
         renderMode: useCSS ? 'css' : 'js',
         Stage: Stage,
         Actor: Actor,
