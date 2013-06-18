@@ -217,7 +217,7 @@ module.exports = function(grunt) {
         connect: {
             examples: {
                 options: {
-                    hostname: 'ck.douban.com',
+                    hostname: 'lvh.me',
                     port: 9001,
                     base: 'examples/',
                     keepalive: true
