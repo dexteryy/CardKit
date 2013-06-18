@@ -3,9 +3,29 @@
 
 A mobile UI framework provides building blocks which are classified as "Card", "Unit" and "Component" to help you build mobile web apps quickly and simply, or transfer entire website to native-like web app for touch devices.
 
+### Usage and Examples
+
+[CardKit Reference App](http://douban-f2e.github.io/CardKit) (highly recommend to open in iOS/android device or simulator)
+
+### In the Real World
+
 ![douban apps](doubanapp.png)
 
-## Quick Start
+## Download
+
+Compiled and packaged "all in one"  version:
+
+* [dist/js/main.js](https://github.com/douban-f2e/CardKit/blob/master/dist/js/main.js)
+* [dist/css/main.css](https://github.com/douban-f2e/CardKit/blob/master/dist/css/main.css)
+
+Minified version:
+
+* [dist/js/main.min.js](https://github.com/douban-f2e/CardKit/blob/master/dist/js/main.min.js)
+* [dist/css/main.min.css](https://github.com/douban-f2e/CardKit/blob/master/dist/css/main.min.css)
+
+or build your own: 
+
+## Quick Start for building
 
 ### Prepare the environment
 
@@ -26,15 +46,23 @@ A mobile UI framework provides building blocks which are classified as "Card", "
 3. `grunt`
 4. `grunt deploy`
 
-## Docs & Demos
-
-1. `grunt connect`
-2. See [http://localhost:9100/](http://localhost:9001/) (or [official URL](http://code.dapps.douban.com/cardkit/docs/pages/index.html)) and `examples/`
-
 ## Dev Guild
 
 1. `grunt watch:dev` or `grunt watch:pub`
 2. Edit source files in `js/`, `css/` and `tpl/`
+
+## Docs & Demos
+
+1. `grunt connect`
+2. See [http://localhost:9100/](http://localhost:9001/) (or [official URL](http://douban-f2e.github.io/CardKit)) and `examples/`
+
+More comming soon...
+
+## Release History
+
+* 2013.6.18
+    * v1.3.1 release
+    * 从Code（豆瓣内部开发平台）迁移到Github
 
 ## Supports
 
