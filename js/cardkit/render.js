@@ -117,11 +117,11 @@ define([
             var data = boxParser(unit, raw);
             if (data.hasContent || data.hd) {
                 unit.innerHTML = tpl.convertTpl(tpl_box.template, data, 'data');
-                setTimeout(function(){
-                    $('.ckd-delay-content', unit).forEach(function(tpl){
-                        this(tpl).replaceWith(tpl.innerHTML);
-                    }, $);
-                }, 100);
+                //setTimeout(function(){
+                    //$('.ckd-delay-content', unit).forEach(function(tpl){
+                        //this(tpl).replaceWith(tpl.innerHTML);
+                    //}, $);
+                //}, 100);
                 return true;
             } else {
                 $(unit).remove();
