@@ -11,6 +11,7 @@ repos:
 
   dexteryy/momo:
     file:
+      momo.js: js/mod/
       momo/: js/mod/momo/
 
   dexteryy/moui:

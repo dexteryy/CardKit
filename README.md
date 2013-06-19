@@ -7,13 +7,23 @@ title: CardKit
 
 A mobile UI framework provides building blocks which are classified as "Card", "Unit" and "Component" to help you build mobile web apps quickly and simply, or transfer entire website to native-like web app for touch devices.
 
-### Usage and Examples
+### Usages and Examples
 
 [CardKit Reference App](http://ozjs.org/CardKit/refapp) (highly recommend to open in iOS/android device or simulator)
 
 ### In the Real World
 
 ![douban apps](screenshot/doubanapp.png)
+
+### Unsupported Platform
+
+* iOS 4.x or earlier
+* Android 3.x or earlier
+* Tablet device
+* UC and similar browsers
+* Some low-end phones
+* iOS 7 support coming soon
+* Windows Phone support coming soon
 
 ## Download
 
@@ -60,10 +70,14 @@ or build your own:
 1. `grunt connect`
 2. See [http://localhost:9100/](http://localhost:9001/) (or [official URL](http://ozjs.org/CardKit/refapp)) and `examples/`
 
-More comming soon...
+More coming soon...
 
 ## Release History
 
+* 2013.6.19
+    * 修复组件示例的post请求在github pages中无效的问题
+    * 修复Compatibility testing页面
+    * 主页和readme里补充Unsupported Platform列表
 * 2013.6.18
     * v1.3.1 release
     * 从Code（豆瓣内部开发平台）迁移到Github

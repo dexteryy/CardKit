@@ -2781,6 +2781,671 @@ define('soviet', [
 
 });
 
+/* @source momo/base.js */;
+
+/**
+ * Momo (MoMotion)
+ * A framework and a collection for separate and simple implementation of touch gestures
+ * 
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
+define('momo/base', [
+  "mo/lang/es5",
+  "mo/lang/type",
+  "mo/lang/mix"
+], function(es5, type, _){
+
+    var isFunction = type.isFunction,
+        gid = 0,
+
+        SUPPORT_TOUCH = false;
+
+    try {
+        document.createEvent("TouchEvent");  
+        SUPPORT_TOUCH = true;
+    } catch (e) {}
+
+    function MomoBase(elm, opt, cb){
+        if (!opt || isFunction(opt)) {
+            cb = opt;
+            opt = {};
+        }
+        this._listener = cb;
+        var eid = cb && ++gid;
+        this.event = {};
+        this.EVENTS.forEach(function(ev){
+            this[ev] = ev + (cb ? '_' + eid : '');
+        }, this.event);
+        this.node = elm;
+        this._config = {
+            event: this.EVENTS[0]
+        };
+        this.config(opt);
+        this.enable();
+    }
+
+    MomoBase.prototype = {
+
+        SUPPORT_TOUCH: SUPPORT_TOUCH,
+
+        PRESS: SUPPORT_TOUCH ? 'touchstart' : 'mousedown',
+        MOVE: SUPPORT_TOUCH ? 'touchmove' : 'mousemove',
+        RELEASE: SUPPORT_TOUCH ? 'touchend' : 'mouseup',
+        //CANCEL: 'touchcancel',
+
+        EVENTS: [],
+        DEFAULT_CONFIG: {
+            namespace: ''
+        },
+
+        config: function(opt){
+            var old_ns = this._config.namespace;
+            _.merge(_.mix(this._config, opt), this.DEFAULT_CONFIG);
+
+            var ns = this._config.namespace || '';
+            this.EVENTS.forEach(function(ev){
+                this[ev] = this[ev].replace(old_ns || /^/, ns);
+            }, this.event);
+
+            return this;
+        },
+
+        enable: function(){
+            var self = this;
+            self.bind(self.PRESS, 
+                    self._press || (self._press = self.press.bind(self)))
+                .bind(self.MOVE, 
+                    self._move || (self._move = self.move.bind(self)))
+                .bind(self.CANCEL, 
+                    self._cancel || (self._cancel = self.cancel.bind(self)))
+                .bind(self.RELEASE, 
+                    self._release || (self._release = self.release.bind(self)));
+            if (self._listener) {
+                self.bind(this.event[this._config.event], self._listener);
+            }
+            return self;
+        },
+
+        disable: function(){
+            var self = this;
+            self.unbind(self.PRESS, self._press)
+                .unbind(self.MOVE, self._move)
+                .unbind(self.CANCEL, self._cancel)
+                .unbind(self.RELEASE, self._release);
+            if (self._listener) {
+                self.unbind(this.event[this._config.event], self._listener);
+            }
+            return self;
+        },
+
+        once: function(ev, handler, node){
+            var self = this;
+            this.bind(ev, fn, node);
+            function fn(){
+                self.unbind(ev, fn, node);
+                return handler.apply(this, arguments);
+            }
+        },
+
+        // adapter
+
+        bind: nothing,
+
+        unbind: nothing,
+
+        trigger: nothing,
+
+        // hook
+
+        press: nothing,
+
+        move: nothing,
+
+        release: nothing,
+
+        cancel: nothing
+    
+    };
+
+    function nothing(){}
+
+    function exports(elm, opt, cb){
+        return new exports.Class(elm, opt, cb);
+    }
+
+    exports.Class = MomoBase;
+
+    return exports;
+
+});
+
+/* @source momo/scroll.js */;
+
+/**
+ * Momo (MoMotion)
+ * A framework and a collection for separate and simple implementation of touch gestures
+ * 
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
+define('momo/scroll', [
+  "mo/lang",
+  "momo/base"
+], function(_, momoBase){
+
+    var MomoScroll = _.construct(momoBase.Class);
+
+    _.mix(MomoScroll.prototype, {
+
+        EVENTS: [
+            'scrolldown', 
+            'scrollup', 
+            'scrollstart', 
+            'scrollend'
+        ],
+        DEFAULT_CONFIG: {
+            'directThreshold': 5,
+            'scrollEndGap': 5
+        },
+
+        watchScroll: function(elm){
+            this.scrollingNode = elm;
+        },
+
+        checkScollDirection: function(y){
+            var node = { target: this.node },
+                d = y - this._lastY,
+                threshold = this._config.directThreshold;
+            if (d < 0 - threshold) {
+                if (this._scrollDown !== true) {
+                    this.trigger(node, this.event.scrolldown);
+                }
+                this._lastY = y;
+                this._scrollDown = true;
+            } else if (d > threshold) {
+                if (this._scrollDown !== false) {
+                    this.trigger(node, this.event.scrollup);
+                }
+                this._lastY = y;
+                this._scrollDown = false;
+            }
+        },
+
+        press: function(e){
+            var self = this,
+                t = this.SUPPORT_TOUCH ? e.touches[0] : e;
+            self._scrollDown = null;
+            self._lastY = t.clientY;
+            self._scrollY = null;
+            self._ended = false;
+            if (self.scrollingNode) {
+                var scrolling = self._scrolling;
+                self._scrolling = false;
+                var tm = self._tm = e.timeStamp;
+                self.once(self.MOVE, function(){
+                    self.once('scroll', function(){
+                        if (tm === self._tm) {
+                            if (!scrolling) {
+                                self._started = true;
+                                self.trigger({ target: self.node }, self.event.scrollstart);
+                                if (self._ended) {
+                                    self._ended = false;
+                                    self.trigger({ target: self.node }, self.event.scrollend);
+                                }
+                            }
+                        }
+                    }, self.scrollingNode);
+                });
+            }
+        },
+
+        move: function(e){
+            var t = this.SUPPORT_TOUCH ? e.touches[0] : e;
+            this.checkScollDirection(t.clientY);
+            //this._lastY = t.clientY;
+            if (this.scrollingNode) {
+                this._scrollY = this.scrollingNode.scrollTop;
+            }
+        },
+
+        release: function(e){
+            var self = this, 
+                t = this.SUPPORT_TOUCH ? e.changedTouches[0] : e,
+                node = { target: self.node };
+            // up/down
+            this.checkScollDirection(t.clientY);
+            // end
+            if (self._scrollY !== null) {
+                var vp = self.scrollingNode,
+                    gap = Math.abs(vp.scrollTop - self._scrollY) || 0;
+                if (self._scrollY >= 0 && (self._scrollY <= vp.scrollHeight + vp.offsetHeight)
+                        && gap < self._config.scrollEndGap) {
+                    if (self._started) {
+                        self.trigger(node, self.event.scrollend);
+                        self._started = false;
+                    } else {
+                        self._ended = true;
+                    }
+                } else {
+                    var tm = self._tm;
+                    self._scrolling = true;
+                    self.once('scroll', function(){
+                        if (tm === self._tm) {
+                            self._scrolling = false;
+                            self._started = false;
+                            self.trigger(node, self.event.scrollend);
+                        }
+                    }, vp);
+                }
+                self._scrollY = null;
+            } else if (self._started) {
+                self._started = false;
+                self.trigger(node, self.event.scrollend);
+            }
+        }
+    
+    });
+
+    function exports(elm, opt, cb){
+        return new exports.Class(elm, opt, cb);
+    }
+
+    exports.Class = MomoScroll;
+
+    return exports;
+
+});
+
+/* @source momo/drag.js */;
+
+/**
+ * Momo (MoMotion)
+ * A framework and a collection for separate and simple implementation of touch gestures
+ * 
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
+define('momo/drag', [
+  "mo/lang",
+  "momo/base"
+], function(_, momoBase){
+
+    var MomoDrag = _.construct(momoBase.Class);
+
+    _.mix(MomoDrag.prototype, {
+
+        EVENTS: [
+            'drag',
+            'dragover',
+            'dragstart',
+            'dragend'
+        ],
+        DEFAULT_CONFIG: {
+            'dragThreshold': 200
+        },
+
+        checkDrag: function(){
+            if (this._holding) {
+                this._holding = false;
+                clearTimeout(this._startTimer);
+            }
+        },
+
+        press: function(e){
+            var self = this,
+                t = self.SUPPORT_TOUCH ? e.touches[0] : e,
+                src = t.target;
+            //if (src.getAttribute('draggable') !== 'true') {
+                //return;
+            //}
+            self._srcTarget = false;
+            self._holding = true;
+            self._startTimer = setTimeout(function(){
+                self._holding = false;
+                self._srcTarget = src;
+                self.trigger(_.copy(t), self.event.dragstart);
+            }, self._config.dragThreshold);
+        },
+
+        move: function(e){
+            this.checkDrag();
+            if (!this._srcTarget) {
+                return;
+            }
+            var t = this.SUPPORT_TOUCH ? e.touches[0] : e;
+            this.trigger(_.merge({ 
+                target: this._srcTarget 
+            }, t), this.event.drag);
+            this.trigger(_.copy(t), this.event.dragover);
+        },
+
+        release: drag_end,
+
+        cancel: drag_end
+
+    });
+
+    function drag_end(e){
+        this.checkDrag();
+        if (!this._srcTarget) {
+            return;
+        }
+        var t = this.SUPPORT_TOUCH ? e.changedTouches[0] : e;
+        this.trigger(_.merge({ 
+            target: this._srcTarget 
+        }, t), this.event.dragend);
+        this._srcTarget = false;
+    }
+
+    function exports(elm, opt, cb){
+        return new exports.Class(elm, opt, cb);
+    }
+
+    exports.Class = MomoDrag;
+
+    return exports;
+
+});
+
+/* @source momo/swipe.js */;
+
+/**
+ * Momo (MoMotion)
+ * A framework and a collection for separate and simple implementation of touch gestures
+ * 
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
+define('momo/swipe', [
+  "mo/lang",
+  "momo/base"
+], function(_, momoBase){
+
+    var MomoSwipe = _.construct(momoBase.Class);
+
+    _.mix(MomoSwipe.prototype, {
+
+        EVENTS: [
+            'swipeup',
+            'swipedown',
+            'swiperight',
+            'swipeleft'
+        ],
+        DEFAULT_CONFIG: {
+            'timeThreshold': 200,
+            'distanceThreshold': 20
+        },
+
+        press: function(e) {
+            var t = this.SUPPORT_TOUCH ? e.touches[0] : e;
+            this._startX = t.clientX;
+            this._startY = t.clientY;
+            this._moveX = NaN;
+            this._moveY = NaN;
+            this._startTime = e.timeStamp;
+        },
+
+        move: function(e) {
+            var t = this.SUPPORT_TOUCH ? e.touches[0] : e;
+            this._moveX = t.clientX;
+            this._moveY = t.clientY;
+        },
+
+        release: function(e) {
+            var self = this,
+                startPos = {
+                    x: self._startX,
+                    y: self._startY
+                },
+                movePos = {
+                    x: self._moveX,
+                    y: self._moveY
+                },
+                distance = get_distance(startPos, movePos),
+                direction = get_direction(startPos, movePos),
+                touchTime = e.timeStamp - self._startTime;
+
+            if (touchTime < self._config.timeThreshold &&
+                    distance > self._config.distanceThreshold) {
+                self.trigger(e, self.event['swipe' + direction]);
+            }
+        }
+
+    });
+
+    function get_distance(pos1, pos2) {
+        var x = pos2.x - pos1.x,
+            y = pos2.y - pos1.y;
+        return Math.sqrt((x * x) + (y * y));
+    }
+
+    function get_angle(pos1, pos2) {
+        return Math.atan2(pos2.y - pos1.y, pos2.x - pos1.x) * 180 / Math.PI;
+    }
+
+    function get_direction(pos1, pos2) {
+        var angle = get_angle(pos1, pos2);
+        var directions = {
+            down: angle >= 45 && angle < 135, //90
+            left: angle >= 135 || angle <= -135, //180
+            up: angle < -45 && angle > -135, //270
+            right: angle >= -45 && angle <= 45 //0
+        };
+
+        var direction, key;
+        for(key in directions){
+            if(directions[key]){
+                direction = key;
+                break;
+            }
+        }
+        return direction;
+    }
+
+    function exports(elm, opt, cb){
+        return new exports.Class(elm, opt, cb);
+    }
+
+    exports.Class = MomoSwipe;
+
+    return exports;
+
+});
+
+/* @source momo/tap.js */;
+
+/**
+ * Momo (MoMotion)
+ * A framework and a collection for separate and simple implementation of touch gestures
+ * 
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
+define('momo/tap', [
+  "mo/lang",
+  "momo/base"
+], function(_, momoBase){
+
+    var MomoTap = _.construct(momoBase.Class);
+
+    _.mix(MomoTap.prototype, {
+
+        EVENTS: ['tap', 'doubletap', 'hold', 'tapstart', 'tapcancel'],
+        DEFAULT_CONFIG: {
+            'tapRadius': 10,
+            'doubleTimeout': 300,
+            'tapThreshold': 0,
+            'holdThreshold': 500
+        },
+
+        press: function(e){
+            var self = this,
+                t = self.SUPPORT_TOUCH ? e.touches[0] : e;
+            self._startTime = e.timeStamp;
+            self._startTarget = t.target;
+            self._startPosX = t.clientX;
+            self._startPosY = t.clientY;
+            self._movePosX = self._movePosY = self._moveTarget = NaN;
+            self._started = false;
+            self._pressTrigger = function(){
+                self._started = true;
+                self.trigger(e, self.event.tapstart);
+                self._pressTrigger = nothing;
+            };
+            self._activeTimer = setTimeout(function(){
+                if (!is_moved(self)) {
+                    self._pressTrigger();
+                }
+            }, self._config.tapThreshold);
+        },
+
+        move: function(e){
+            var t = this.SUPPORT_TOUCH ? e.touches[0] : e;
+            this._moveTarget = t.target;
+            this._movePosX = t.clientX;
+            this._movePosY = t.clientY;
+        },
+
+        release: function(e){
+            var self = this,
+                tm = e.timeStamp,
+                moved = is_moved(self);
+            clearTimeout(self._activeTimer);
+            if (moved || tm - self._startTime < self._config.tapThreshold) {
+                if (!moved) {
+                    self._firstTap = tm;
+                }
+                if (self._started) {
+                    self.trigger(e, self.event.tapcancel);
+                }
+                return;
+            }
+            if (!self._started) {
+                self._pressTrigger();
+            }
+            if (tm - self._startTime > self._config.holdThreshold + self._config.tapThreshold) {
+                self.trigger(e, self.event.hold);
+            } else {
+                if (self._firstTap
+                        && (tm - self._firstTap < self._config.doubleTimeout)) {
+                    e.preventDefault();
+                    self.trigger(e, self.event.doubletap);
+                    self._firstTap = 0;
+                } else {
+                    self.trigger(e, self.event.tap);
+                    self._firstTap = tm;
+                }
+            }
+        },
+
+        cancel: function(e){
+            clearTimeout(this._activeTimer);
+            if (this._started) {
+                this.trigger(e, this.event.tapcancel);
+            }
+        }
+    
+    });
+
+    function is_moved(self){
+        if (self._moveTarget && self._moveTarget !== self._startTarget 
+                || Math.abs(self._movePosX - self._startPosX) > self._config.tapRadius
+                || Math.abs(self._movePosY - self._startPosY) > self._config.tapRadius) {
+            return true;
+        }
+    }
+
+    function nothing(){}
+
+    function exports(elm, opt, cb){
+        return new exports.Class(elm, opt, cb);
+    }
+
+    exports.Class = MomoTap;
+
+    return exports;
+
+});
+
+/* @source momo.js */;
+
+/**
+ * Momo (MoMotion)
+ * A framework and a collection for separate and simple implementation of touch gestures
+ * 
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
+define('momo', [
+  "mo/lang",
+  "dollar",
+  "momo/base",
+  "momo/tap",
+  "momo/swipe",
+  "momo/drag",
+  "momo/scroll"
+], function(_, $, momoBase,
+    momoTap, momoSwipe, momoDrag, momoScroll){
+
+    _.mix(momoBase.Class.prototype, {
+        bind: function(ev, handler, elm){
+            $(elm || this.node).bind(ev, handler);
+            return this;
+        },
+        unbind: function(ev, handler, elm){
+            $(elm || this.node).unbind(ev, handler);
+            return this;
+        },
+        trigger: function(e, ev){
+            $(e.target).trigger(ev, e);
+            return this;
+        }
+    });
+
+    var lib = {
+        tap: momoTap,
+        swipe: momoSwipe,
+        drag: momoDrag,
+        scroll: momoScroll
+    };
+
+    var exports = {
+        base: momoBase
+    };
+
+    for (var name in lib) {
+        exports[name] = lib[name];
+    }
+
+    exports.init = function(elm, opt, cb){
+        for (var name in lib) {
+            this[name](elm, opt, cb);
+        }
+    };
+
+    return exports;
+
+});
+
 /* @source  */;
 
 
@@ -2790,20 +3455,20 @@ define('dollar', [
     return $;
 });
 
-define('history.src', 'history.js');
-define('history', [
-   'dollar', 
-   'history.src', 
-   'mo/domready'
-], function($){
-    var History = this.History;
-    History.Adapter = $;
-    History.Adapter.onDomLoad = function(fn){
-        fn();
-    };
-    History.init();
-    return History;
-});
+//define('history.src', 'history.js');
+//define('history', [
+   //'dollar', 
+   //'history.src', 
+   //'mo/domready'
+//], function($){
+    //var History = this.History;
+    //History.Adapter = $;
+    //History.Adapter.onDomLoad = function(fn){
+        //fn();
+    //};
+    //History.init();
+    //return History;
+//});
 
 require([
     'mo/lang',
@@ -2811,9 +3476,11 @@ require([
     'mo/browsers',
     'momo',
     'soviet',
-    'history',
+    //'history',
     'mo/console'
-], function(_, $, browsers, momo, soviet, History, console){
+], function(_, $, browsers, momo, soviet, 
+        //History, 
+        console){
 
     console.config({
         output: $('#console')[0]

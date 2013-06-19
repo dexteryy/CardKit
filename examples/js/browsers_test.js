@@ -5,20 +5,20 @@ define('dollar', [
     return $;
 });
 
-define('history.src', 'history.js');
-define('history', [
-   'dollar', 
-   'history.src', 
-   'mo/domready'
-], function($){
-    var History = this.History;
-    History.Adapter = $;
-    History.Adapter.onDomLoad = function(fn){
-        fn();
-    };
-    History.init();
-    return History;
-});
+//define('history.src', 'history.js');
+//define('history', [
+   //'dollar', 
+   //'history.src', 
+   //'mo/domready'
+//], function($){
+    //var History = this.History;
+    //History.Adapter = $;
+    //History.Adapter.onDomLoad = function(fn){
+        //fn();
+    //};
+    //History.init();
+    //return History;
+//});
 
 require([
     'mo/lang',
@@ -26,9 +26,11 @@ require([
     'mo/browsers',
     'momo',
     'soviet',
-    'history',
+    //'history',
     'mo/console'
-], function(_, $, browsers, momo, soviet, History, console){
+], function(_, $, browsers, momo, soviet, 
+        //History, 
+        console){
 
     console.config({
         output: $('#console')[0]
