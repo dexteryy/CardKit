@@ -37,7 +37,7 @@ Minified version:
 * [dist/js/main.min.js](https://github.com/douban-f2e/CardKit/blob/master/dist/js/main.min.js)
 * [dist/css/main.min.css](https://github.com/douban-f2e/CardKit/blob/master/dist/css/main.min.css)
 
-or build your own: 
+or build your own:
 
 ## Quick Start for building
 
@@ -45,7 +45,7 @@ or build your own:
 
 1. node, npm
 2. [grunt v0.4](http://gruntjs.com/getting-started) - `npm install grunt-cli -g`
-3. [istatic v0.3.2+](https://ozjs.org/istatic) - `node install node-istatic -g`
+3. [istatic v0.3.2+](https://ozjs.org/istatic) - `npm install node-istatic -g`
 4. ruby, gem, [bundler](http://gembundler.com/)
 
 ### Install dependencies
