@@ -68,7 +68,6 @@ module.exports = function(grunt) {
                     noLineComments: false,
                     require: [
                         'compass-normalize',
-                        'animation',
                         'animate-sass',
                         'ceaser-easing',
                         'compass-recipes'
@@ -266,7 +265,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-compass');
-    grunt.loadNpmTasks('grunt-contrib-livereload');
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-complexity');
 

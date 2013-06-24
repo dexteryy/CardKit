@@ -142,21 +142,21 @@
 }
 
 
-@include keyframes(loading-dot) {
-  0% {
-    background:#666;
-    //@include transform(scale(1));
-  }
-  33% {
-    background:#ccc;
-    //@include transform(scale(0.8));
-  }
-  66% {
-    background:#ccc;
-    //@include transform(scale(0.8));
-  }
-  100% {
-    background:#666;
-    //@include transform(scale(1));
-  }
-}
+//@include keyframes(loading-dot) {
+  //0% {
+    //background:#666;
+    ////@include transform(scale(1));
+  //}
+  //33% {
+    //background:#ccc;
+    ////@include transform(scale(0.8));
+  //}
+  //66% {
+    //background:#ccc;
+    ////@include transform(scale(0.8));
+  //}
+  //100% {
+    //background:#666;
+    ////@include transform(scale(1));
+  //}
+//}

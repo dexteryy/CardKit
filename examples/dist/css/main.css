@@ -69,18 +69,18 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+  -moz-user-select: -moz-none;
   -webkit-user-select: none;
-  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   background-color: #ececec;
   background-image: -webkit-linear-gradient(bottom, #e2e2e2, #ececec);
   background-image: -moz-linear-gradient(bottom, #e2e2e2, #ececec);
-  background-image: linear-gradient(bottom, #e2e2e2, #ececec);
+  background-image: linear-gradient(to top, #e2e2e2, #ececec);
   border: solid 1px rgba(0, 0, 0, 0.3);
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
-  -ms-border-radius: 3px;
   border-radius: 3px;
   -webkit-box-shadow: inset 0 1px 0px white;
   -moz-box-shadow: inset 0 1px 0px white;
@@ -97,7 +97,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 .moui-actionview > footer .confirm:active,
 .ck-actionview > footer .confirm:active, .moui-switch .enable-text, .ck-switch .enable-text,
 .moui-switch .disable-text,
-.ck-switch .disable-text, .ck-post-button.enabled, .moui-segment .enabled.option, .ck-segment .enabled.option, .ck-segment .enabled.ck-option, .moui-select:active, .ck-select:active {
+.ck-switch .disable-text, .ck-post-button.enabled, .moui-segment .enabled.option, .ck-segment .enabled.option, .ck-segment .enabled.ck-option {
   border-color: #b2b2b2;
   -webkit-box-shadow: inset 0 1px 1px rgba(115, 115, 115, 0.8);
   -moz-box-shadow: inset 0 1px 1px rgba(115, 115, 115, 0.8);
@@ -105,7 +105,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   background-color: #dbdbdb;
   background-image: -webkit-linear-gradient(bottom, #dbdbdb, #cdcdcd);
   background-image: -moz-linear-gradient(bottom, #dbdbdb, #cdcdcd);
-  background-image: linear-gradient(bottom, #dbdbdb, #cdcdcd);
+  background-image: linear-gradient(to top, #dbdbdb, #cdcdcd);
 }
 
 [data-is-default="true"].ckbase-btn, [data-is-default="true"].ck-post-button, [data-is-default="true"].ck-modal-button, [data-is-default="true"].ck-actions-button, [data-is-default="true"].ck-growl-button, .moui-segment [data-is-default="true"].option, .ck-segment [data-is-default="true"].option, .ck-segment [data-is-default="true"].ck-option, .moui-modalview .wrapper > header button[data-is-default="true"].confirm, .ck-modalview .wrapper > header button[data-is-default="true"].confirm, .moui-modalview .wrapper > header button[data-is-default="true"].cancel, .ck-modalview .wrapper > header button[data-is-default="true"].cancel, .moui-actionview > footer [data-is-default="true"].cancel, .ck-actionview > footer [data-is-default="true"].cancel,
@@ -118,7 +118,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   background-color: #005fbf;
   background-image: -webkit-linear-gradient(bottom, #005fbf, #006ae1);
   background-image: -moz-linear-gradient(bottom, #005fbf, #006ae1);
-  background-image: linear-gradient(bottom, #005fbf, #006ae1);
+  background-image: linear-gradient(to top, #005fbf, #006ae1);
   color: #fff;
   text-shadow: 0 1px 1px black;
 }
@@ -132,7 +132,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   background-color: #0077d6;
   background-image: -webkit-linear-gradient(bottom, #0077d6, #0068d6);
   background-image: -moz-linear-gradient(bottom, #0077d6, #0068d6);
-  background-image: linear-gradient(bottom, #0077d6, #0068d6);
+  background-image: linear-gradient(to top, #0077d6, #0068d6);
 }
 
 [data-is-danger="true"].ckbase-btn, [data-is-danger="true"].ck-post-button, [data-is-danger="true"].ck-modal-button, [data-is-danger="true"].ck-actions-button, [data-is-danger="true"].ck-growl-button, .moui-segment [data-is-danger="true"].option, .ck-segment [data-is-danger="true"].option, .ck-segment [data-is-danger="true"].ck-option, .moui-modalview .wrapper > header button[data-is-danger="true"].confirm, .ck-modalview .wrapper > header button[data-is-danger="true"].confirm, .moui-modalview .wrapper > header button[data-is-danger="true"].cancel, .ck-modalview .wrapper > header button[data-is-danger="true"].cancel, .moui-actionview > footer [data-is-danger="true"].cancel, .ck-actionview > footer [data-is-danger="true"].cancel,
@@ -145,7 +145,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   background-color: #d50000;
   background-image: -webkit-linear-gradient(bottom, #d50000, #ee0000);
   background-image: -moz-linear-gradient(bottom, #d50000, #ee0000);
-  background-image: linear-gradient(bottom, #d50000, #ee0000);
+  background-image: linear-gradient(to top, #d50000, #ee0000);
   color: #fff;
   text-shadow: 0 1px 1px black;
 }
@@ -159,7 +159,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   background-color: #0077d6;
   background-image: -webkit-linear-gradient(bottom, #c50800, #b20600);
   background-image: -moz-linear-gradient(bottom, #c50800, #b20600);
-  background-image: linear-gradient(bottom, #c50800, #b20600);
+  background-image: linear-gradient(to top, #c50800, #b20600);
 }
 
 .ckbase-btn, .ck-post-button, .ck-modal-button, .ck-actions-button, .ck-growl-button, .moui-segment .option, .ck-segment .option, .ck-segment .ck-option, .moui-modalview .wrapper > header button.confirm, .ck-modalview .wrapper > header button.confirm, .moui-modalview .wrapper > header button.cancel, .ck-modalview .wrapper > header button.cancel, .moui-actionview > footer .cancel, .ck-actionview > footer .cancel,
@@ -196,6 +196,16 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   top: 1px;
 }
 
+.moui-folder > header, .ck-folder > header, .moui-select, .ck-select {
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAALAQMAAABFxz8AAAAABlBMVEX///+bm5tR7J1yAAAAAXRSTlMAQObYZgAAADJJREFUCB0FwTERABAAAMB3BpsEQhjFEUEEQYQRRQSj0b+tOobhaGErccqJlImL8HDRfc8xCDsaQayFAAAAAElFTkSuQmCC');
+  background-repeat: no-repeat;
+}
+
+.moui-folder.enabled > header, .enabled.ck-folder > header {
+  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAALAQMAAABFxz8AAAAABlBMVEX///+ampo+MvaSAAAAAXRSTlMAQObYZgAAADJJREFUCB0FwTERABAAAMB3BpsEQhjFEUEEQYQRRQSj0T8dl/CIi5TJiRKnFrbhOIatfpqZCDvYMKlxAAAAAElFTkSuQmCC');
+  background-repeat: no-repeat;
+}
+
 html {
   -webkit-text-size-adjust: 100%;
 }
@@ -205,8 +215,9 @@ body {
   color: #252525;
   background: #f2f2f2;
   line-height: 1.6;
+  -moz-user-select: -moz-none;
   -webkit-user-select: none;
-  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
   width: 100%;
   overflow-x: hidden;
@@ -255,8 +266,9 @@ a {
 
 .ck-link {
   -webkit-touch-callout: none;
+  -moz-user-select: -moz-none;
   -webkit-user-select: none;
-  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
 }
 
@@ -267,8 +279,9 @@ a {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   z-index: 10;
+  -moz-user-select: -moz-none;
   -webkit-user-select: none;
-  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
 }
 .ck-header a, .ck-modalview > header a {
@@ -315,7 +328,7 @@ a {
 body.no-cardscroll.ck-inited .ck-root .ck-header, body.no-cardscroll.ck-inited .ck-root .ck-modalview > header {
   position: fixed;
 }
-.ck-root .ck-header .ck-top-title, .ck-root .ck-modalview > header .ck-top-title, .ck-root .ck-header .ck-modalview > header h1, .ck-modalview > header .ck-root .ck-header h1, .ck-root .ck-modalview > header h1 {
+.ck-root .ck-header .ck-top-title, .ck-root .ck-modalview > header .ck-top-title, .ck-modalview > header .ck-root .ck-header h1, .ck-root .ck-modalview > header h1 {
   color: #fff;
   text-shadow: 0px 1px 0px black;
 }
@@ -331,15 +344,16 @@ body.no-cardscroll.ck-inited .ck-root .ck-header, body.no-cardscroll.ck-inited .
   -webkit-box-shadow: none;
   -moz-box-shadow: none;
   box-shadow: none;
+  -moz-user-select: -moz-none;
   -webkit-user-select: none;
-  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
   width: 40px;
   height: 40px;
   background: #fff;
   background: -webkit-linear-gradient(bottom, #78624f, #846f5b);
   background: -moz-linear-gradient(bottom, #78624f, #846f5b);
-  background: linear-gradient(bottom, #78624f, #846f5b);
+  background: linear-gradient(to top, #78624f, #846f5b);
   background-size: 24px;
   background-repeat: no-repeat;
   background-position: 7px 7px;
@@ -490,8 +504,9 @@ body.no-cardscroll .ck-navdrawer > article {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+  -moz-user-select: -moz-none;
   -webkit-user-select: none;
-  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   background-repeat: no-repeat;
@@ -589,8 +604,9 @@ body.no-cardscroll.nav-view .ck-root .ck-main .ck-header .ck-top-actions, body.n
   -webkit-box-shadow: 1px 0px 6px rgba(0, 0, 0, 0.6);
   -moz-box-shadow: 1px 0px 6px rgba(0, 0, 0, 0.6);
   box-shadow: 1px 0px 6px rgba(0, 0, 0, 0.6);
+  -moz-user-select: -moz-none;
   -webkit-user-select: none;
-  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
   overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
@@ -688,78 +704,6 @@ body.no-cardscroll .ck-loading div {
   display: block;
 }
 
-@-moz-keyframes loading-dot {
-  0% {
-    background: #666;
-  }
-
-  33% {
-    background: #ccc;
-  }
-
-  66% {
-    background: #ccc;
-  }
-
-  100% {
-    background: #666;
-  }
-}
-
-@-webkit-keyframes loading-dot {
-  0% {
-    background: #666;
-  }
-
-  33% {
-    background: #ccc;
-  }
-
-  66% {
-    background: #ccc;
-  }
-
-  100% {
-    background: #666;
-  }
-}
-
-@-ms-keyframes loading-dot {
-  0% {
-    background: #666;
-  }
-
-  33% {
-    background: #ccc;
-  }
-
-  66% {
-    background: #ccc;
-  }
-
-  100% {
-    background: #666;
-  }
-}
-
-@keyframes loading-dot {
-  0% {
-    background: #666;
-  }
-
-  33% {
-    background: #ccc;
-  }
-
-  66% {
-    background: #ccc;
-  }
-
-  100% {
-    background: #666;
-  }
-}
-
 .ck-box-unit:not([data-cfg-paper]), .ck-list-unit:not([data-cfg-paper]):not([data-style="split"]), .ck-form-unit, .ck-blank-unit {
   margin: 10px;
 }
@@ -769,7 +713,6 @@ body.no-cardscroll .ck-loading div {
   border: 1px solid white;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
-  -ms-border-radius: 3px;
   border-radius: 3px;
   -webkit-box-shadow: 0 0px 2px 0 rgba(0, 0, 0, 0.2);
   -moz-box-shadow: 0 0px 2px 0 rgba(0, 0, 0, 0.2);
@@ -863,7 +806,6 @@ body.no-overflowscroll [data-cfg-plainhd="true"].ck-box-unit:not([data-cfg-paper
   border: none;
   -webkit-border-radius: 0;
   -moz-border-radius: 0;
-  -ms-border-radius: 0;
   border-radius: 0;
   -webkit-box-shadow: none;
   -moz-box-shadow: none;
@@ -936,8 +878,9 @@ body.no-overflowscroll [data-cfg-plainhd="true"].ck-box-unit:not([data-cfg-paper
   border-color: #e6e6e6;
   padding: 40px 0 10px 0;
   font-size: 17px;
-  -webkit-user-select: text;
   -moz-user-select: text;
+  -webkit-user-select: text;
+  -ms-user-select: text;
   user-select: text;
 }
 .ck-box-unit[data-cfg-paper] .ck-unit-wrap > section p, .ck-list-unit[data-cfg-paper] .ck-unit-wrap > section p {
@@ -969,7 +912,6 @@ body.no-overflowscroll [data-cfg-plainhd="true"].ck-box-unit:not([data-cfg-paper
   transform: translateX(-7.5px);
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
-  -ms-border-radius: 3px;
   border-radius: 3px;
   position: absolute;
   top: 0;
@@ -1137,7 +1079,6 @@ body.no-overflowscroll .ck-unit-wrap {
   margin: 0 3px 0 0;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
-  -ms-border-radius: 3px;
   border-radius: 3px;
 }
 .ck-list-unit .ck-desc-wrap, .ck-mini-unit .ck-desc-wrap,
@@ -1160,8 +1101,9 @@ body.no-overflowscroll .ck-unit-wrap {
   display: block;
   line-height: 1.4;
   margin: 0 0 4px 0;
-  -webkit-user-select: text;
   -moz-user-select: text;
+  -webkit-user-select: text;
+  -ms-user-select: text;
   user-select: text;
 }
 .ck-list-unit .ck-content-wrap img, .ck-mini-unit .ck-content-wrap img,
@@ -1406,10 +1348,10 @@ body.no-overflowscroll .ck-mini-unit[data-style="slide"] .ck-list-wrap {
   box-shadow: inset 0px 2px 3px 0px rgba(0, 0, 0, 0.15);
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
-  -ms-border-radius: 3px;
   border-radius: 3px;
-  -webkit-user-select: text;
   -moz-user-select: text;
+  -webkit-user-select: text;
+  -ms-user-select: text;
   user-select: text;
 }
 .ck-form-unit .ck-item input[type="number"] {
@@ -1523,16 +1465,6 @@ body:not(.no-cardscroll):not(.no-overflowscroll) .ck-banner-unit .ck-top-tips {
   left: 33px;
 }
 
-.moui-folder > header, .ck-folder > header, .moui-select, .ck-select, .moui-select:active, .ck-select:active {
-  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAALAQMAAABFxz8AAAAABlBMVEX///+bm5tR7J1yAAAAAXRSTlMAQObYZgAAADJJREFUCB0FwTERABAAAMB3BpsEQhjFEUEEQYQRRQSj0b+tOobhaGErccqJlImL8HDRfc8xCDsaQayFAAAAAElFTkSuQmCC');
-  background-repeat: no-repeat;
-}
-
-.moui-folder.enabled > header, .enabled.ck-folder > header {
-  background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAALAQMAAABFxz8AAAAABlBMVEX///+ampo+MvaSAAAAAXRSTlMAQObYZgAAADJJREFUCB0FwTERABAAAMB3BpsEQhjFEUEEQYQRRQSj0T8dl/CIi5TJiRKnFrbhOIatfpqZCDvYMKlxAAAAAElFTkSuQmCC');
-  background-repeat: no-repeat;
-}
-
 .moui-folder, .ck-folder {
   display: block;
 }
@@ -1552,8 +1484,9 @@ body:not(.no-cardscroll):not(.no-overflowscroll) .ck-banner-unit .ck-top-tips {
 }
 
 .moui-segment, .ck-segment {
+  -moz-user-select: -moz-none;
   -webkit-user-select: none;
-  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
 }
 
@@ -1564,8 +1497,9 @@ body:not(.no-cardscroll):not(.no-overflowscroll) .ck-banner-unit .ck-top-tips {
 
 .moui-tagselector, .ck-tagselector {
   overflow: hidden;
+  -moz-user-select: -moz-none;
   -webkit-user-select: none;
-  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
 }
 
@@ -1573,7 +1507,6 @@ body:not(.no-cardscroll):not(.no-overflowscroll) .ck-banner-unit .ck-top-tips {
   border: 1px solid #dadada;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
-  -ms-border-radius: 3px;
   border-radius: 3px;
   background: #f2f2f2;
   color: #252525;
@@ -1607,8 +1540,9 @@ body:not(.no-cardscroll):not(.no-overflowscroll) .ck-banner-unit .ck-top-tips {
 }
 
 .moui-actions, .ck-actions {
+  -moz-user-select: -moz-none;
   -webkit-user-select: none;
-  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
 }
 .moui-actions li, .ck-actions li {
@@ -1634,8 +1568,9 @@ body:not(.no-cardscroll):not(.no-overflowscroll) .ck-banner-unit .ck-top-tips {
 .moui-slider, .ck-stars {
   position: relative;
   display: inline-block;
+  -moz-user-select: -moz-none;
   -webkit-user-select: none;
-  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
 }
 .moui-slider .slider-field, .ck-stars .slider-field {
@@ -1682,8 +1617,9 @@ body:not(.no-cardscroll):not(.no-overflowscroll) .ck-banner-unit .ck-top-tips {
   width: 100%;
   height: 100%;
   z-index: 1010;
+  -moz-user-select: -moz-none;
   -webkit-user-select: none;
-  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
 }
 .moui-modalview .wrapper, .ck-modalview .wrapper {
@@ -1700,16 +1636,16 @@ body:not(.no-cardscroll):not(.no-overflowscroll) .ck-banner-unit .ck-top-tips {
   background: #dfdfdf;
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   z-index: 10;
+  -moz-user-select: -moz-none;
   -webkit-user-select: none;
-  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  -webkit-border-radius: 3px 3px 0 0;
+  -webkit-border-radius: 3px;
   -moz-border-radius: 3px 3px 0 0;
-  -ms-border-radius: 3px 3px 0 0;
   border-radius: 3px 3px 0 0;
   -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
@@ -1779,8 +1715,9 @@ body.no-cardscroll .moui-modalview .wrapper > article > .content, body.no-cardsc
   width: 100%;
   height: 100%;
   z-index: 1020;
+  -moz-user-select: -moz-none;
   -webkit-user-select: none;
-  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
 }
 .moui-actionview .wrapper, .ck-actionview .wrapper {
@@ -1834,7 +1771,6 @@ body.no-cardscroll .moui-modalview .wrapper > article > .content, body.no-cardsc
   padding: 0 18px;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
-  -ms-border-radius: 3px;
   border-radius: 3px;
   -webkit-box-shadow: inset 0px 1px 0px #494949;
   -moz-box-shadow: inset 0px 1px 0px #494949;
@@ -1956,7 +1892,6 @@ body.no-cardscroll .moui-actionview .wrapper, body.no-cardscroll .ck-actionview 
   margin: 0;
   -webkit-border-radius: 0;
   -moz-border-radius: 0;
-  -ms-border-radius: 0;
   border-radius: 0;
   border: none;
   border-top: solid 1px #3e3e3e;
@@ -1969,8 +1904,9 @@ body.no-cardscroll .moui-actionview .wrapper, body.no-cardscroll .ck-actionview 
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+  -moz-user-select: -moz-none;
   -webkit-user-select: none;
-  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
@@ -2007,10 +1943,10 @@ body.no-cardscroll .moui-actionview .wrapper, body.no-cardscroll .ck-actionview 
   text-align: center;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
-  -ms-border-radius: 3px;
   border-radius: 3px;
+  -moz-user-select: -moz-none;
   -webkit-user-select: none;
-  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
 }
 .moui-growl.corner-center, .corner-center.ck-growl {
@@ -2086,6 +2022,13 @@ body.no-cardscroll .moui-actionview .wrapper, body.no-cardscroll .ck-actionview 
 }
 .moui-select[data-fluid="true"], [data-fluid="true"].ck-select {
   width: auto;
+}
+.moui-select:active, .ck-select:active {
+  border-color: #b2b2b2;
+  -webkit-box-shadow: inset 0 1px 1px rgba(115, 115, 115, 0.8);
+  -moz-box-shadow: inset 0 1px 1px rgba(115, 115, 115, 0.8);
+  box-shadow: inset 0 1px 1px rgba(115, 115, 115, 0.8);
+  background-color: #dbdbdb;
 }
 .moui-select:active button.enabled, .ck-select:active button.enabled,
 .moui-select:active span,

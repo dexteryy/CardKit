@@ -1,2 +1,2 @@
 
-generated_images_dir = 'dist/pics'
+generated_images_dir = 'target/pics'

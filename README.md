@@ -74,6 +74,8 @@ More coming soon...
 
 ## Release History
 
+* 2013.6.24
+    * 支持compass 0.13
 * 2013.6.19
     * 修复组件示例的post请求在github pages中无效的问题
     * 修复Compatibility testing页面

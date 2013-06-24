@@ -15,8 +15,20 @@ repos:
       momo/: js/mod/momo/
 
   dexteryy/moui:
-    file:
-      ./: js/mod/moui/
+    file: 
+      ./util: js/mod/moui/util/ 
+      ./control.js: js/mod/moui/ 
+      ./picker.js: js/mod/moui/ 
+      ./overlay.js: js/mod/moui/ 
+      ./actionview.js: js/mod/moui/ 
+      ./modalview.js: js/mod/moui/ 
+      ./growl.js: js/mod/moui/ 
+      ./bubble.js: js/mod/moui/ 
+      ./ranger.js: js/mod/moui/ 
+      ./slider.js: js/mod/moui/ 
+      ./imageview.js: js/mod/moui/ 
+      css/: css/  
+ 
 
   dexteryy/DollarJS: 
     file: 

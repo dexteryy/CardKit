@@ -9,8 +9,6 @@
 $support-for-original-webkit-gradients : false;
 $experimental-support-for-opera : false;
 $experimental-support-for-khtml : false;
-// https://github.com/ericam/compass-animation
-@import "animation"; 
 // https://github.com/jhardy/compass-ceaser-easing
 @import "ceaser-easing";
 // https://github.com/adamstac/animate.sass
@@ -47,7 +45,6 @@ $zindex_view: 200;
 $zindex_overlay: 1000;
 $zindex_mask: 5000;
 $zindex_step: 10;
-
 
 %block {
   display:inline-block;
@@ -172,4 +169,13 @@ $zindex_step: 10;
 
 }
 
+%unfold-icon {
+  background-image: inline-image('fold_icon.png');
+  background-repeat:no-repeat;
+}
+
+%fold-icon {
+  background-image: inline-image('unfold_icon.png');
+  background-repeat:no-repeat;
+}
 
