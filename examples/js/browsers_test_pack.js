@@ -787,11 +787,10 @@ define("mo/browsers", [], function(){
             || ua.indexOf("compatible") < 0 && rmozilla.exec(ua) 
             || [];
 
-        is_mobile = rmobilesafari.exec(ua);
-        is_webview = rwebview.exec(ua);
+        is_mobile = rmobilesafari.exec(ua) || (is_webview = rwebview.exec(ua));
 
         if (match[1] === 'webkit') {
-            var vendor = is_mobile || is_webview || rsafari.exec(ua);
+            var vendor = is_mobile || rsafari.exec(ua);
             if (vendor) {
                 match[3] = match[1];
                 match[4] = match[2];

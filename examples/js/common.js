@@ -3,7 +3,7 @@ define('cardkit/env', ['mo/browsers'], function(){
     return {
         //showScrollMask: true,
         //showControlMask: true,
-        //hideToolbars: true,
+        //fullscreenMode: true,
         enableConsole: true
     };
 });
@@ -14,7 +14,7 @@ require([
     'cardkit/pageready'
 ], function(cookie, ck){
 
-    ck.delegate.on('tap', '.ck-top-actions .ck-item.switchstyle', function(){
+    ck.delegate.on('tap', '.ck-top-actions .switchstyle', function(){
         ck.confirm('This is a demo', function(){
             cookie('_ck_desktop_mode', 1, {
                 domain: location.host

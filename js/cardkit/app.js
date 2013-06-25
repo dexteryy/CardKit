@@ -693,6 +693,14 @@ define([
 
             }
 
+            if (supports.FULLSCREEN_MODE) {
+                $(document).on('scrollstart', function(){
+                    ck.hideAllBars();
+                }).on('scrollend', function(){
+                    ck.showAllBars();
+                });
+            }
+
         },
 
         showView: function(){
@@ -999,6 +1007,14 @@ define([
                 position: 'static'
             });
             ck.showTopbar();
+        },
+
+        hideAllBars: function(){
+            $(body).addClass('allbars-disabled');
+        },
+
+        showAllBars: function(){
+            $(body).removeClass('allbars-disabled');
         },
 
         hideTopbar: function(){

@@ -108,6 +108,7 @@ a {
 %float-bar {
   background-color:rgba(69, 69, 69, 0.7);
   @include border-radius($radius);
+  @include transition(opacity 0.3s 0.1s);
 
   &:active {
     opacity: .8;
@@ -223,6 +224,7 @@ a {
       @include transform(translateY(0));
 
       .ck-top-nav {
+        @include transition(opacity 0.3s 0.1s);
       }
 
       .ck-top-title {
@@ -461,3 +463,15 @@ body.no-cardscroll {
   }
 
 }
+
+body.fullscreen-mode.allbars-disabled {
+
+  .ck-top-nav,
+  .ck-top-title,
+  .ck-top-actions,
+  .ck-ctl-bar input {
+    opacity:0;
+  }
+
+}
+

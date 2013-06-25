@@ -300,6 +300,10 @@ body.fullscreen-mode.nav-view .ck-root .ck-header .ck-top-nav, body.fullscreen-m
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   border-radius: 3px;
+  -webkit-transition: opacity 0.3s;
+  -webkit-transition-delay: 0.1s;
+  -moz-transition: opacity 0.3s 0.1s;
+  transition: opacity 0.3s 0.1s;
 }
 body.fullscreen-mode.nav-view .ck-root .ck-header .ck-top-nav:active, body.fullscreen-mode.nav-view .ck-root .ck-modalview > header .ck-top-nav:active, body.fullscreen-mode .ck-root .ck-header .ck-top-title:active, body.fullscreen-mode .ck-root .ck-modalview > header .ck-top-title:active, .ck-modalview > header body.fullscreen-mode .ck-root .ck-header h1:active, body.fullscreen-mode .ck-root .ck-modalview > header h1:active, body.fullscreen-mode .ck-root .ck-header .ck-top-actions:active, body.fullscreen-mode .ck-root .ck-modalview > header .ck-top-actions:active, .ck-ctl-bar input:active {
   opacity: .8;
@@ -425,6 +429,12 @@ body.fullscreen-mode .ck-root .ck-header, body.fullscreen-mode .ck-root .ck-moda
   -moz-transform: translateY(0);
   -ms-transform: translateY(0);
   transform: translateY(0);
+}
+body.fullscreen-mode .ck-root .ck-header .ck-top-nav, body.fullscreen-mode .ck-root .ck-modalview > header .ck-top-nav {
+  -webkit-transition: opacity 0.3s;
+  -webkit-transition-delay: 0.1s;
+  -moz-transition: opacity 0.3s 0.1s;
+  transition: opacity 0.3s 0.1s;
 }
 body.fullscreen-mode .ck-root .ck-header .ck-top-title, body.fullscreen-mode .ck-root .ck-modalview > header .ck-top-title, .ck-modalview > header body.fullscreen-mode .ck-root .ck-header h1, body.fullscreen-mode .ck-root .ck-modalview > header h1 {
   left: 0;
@@ -611,6 +621,15 @@ body.no-cardscroll.nav-view .ck-root .ck-main .ck-header, body.no-cardscroll.nav
 }
 body.no-cardscroll.nav-view .ck-root .ck-main .ck-header .ck-top-actions, body.no-cardscroll.nav-view .ck-root .ck-main .ck-modalview > header .ck-top-actions {
   display: none;
+}
+
+body.fullscreen-mode.allbars-disabled .ck-top-nav,
+body.fullscreen-mode.allbars-disabled .ck-top-title,
+body.fullscreen-mode.allbars-disabled .ck-modalview > header h1,
+.ck-modalview > header body.fullscreen-mode.allbars-disabled h1,
+body.fullscreen-mode.allbars-disabled .ck-top-actions,
+body.fullscreen-mode.allbars-disabled .ck-ctl-bar input {
+  opacity: 0;
 }
 
 .ck-card {
