@@ -623,7 +623,7 @@ require.config({ enable_ozma: true });
  */
 define("mo/browsers", [], function(){
 
-    var match, skin, os, is_mobile,
+    var match, skin, os, is_mobile, is_webview,
         ua = this.navigator.userAgent.toLowerCase(),
         rank = { 
             "360ee": 2,
@@ -644,6 +644,7 @@ define("mo/browsers", [], function(){
             randroid = /(android)[ ;]([\w.]*)/,
             rmobilesafari = /(\w+)[ \/]([\w.]+)[ \/]mobile.*safari/,
             rsafari = /(\w+)[ \/]([\w.]+) safari/,
+            rwebview = /(.)([^\/]+)[ \/]mobile\//,
             rwebkit = /(webkit)[ \/]([\w.]+)/,
             ropera = /(opera)(?:.*version)?[ \/]([\w.]+)/,
             rmsie = /(msie) ([\w.]+)/,
@@ -676,9 +677,10 @@ define("mo/browsers", [], function(){
             || [];
 
         is_mobile = rmobilesafari.exec(ua);
+        is_webview = rwebview.exec(ua);
 
         if (match[1] === 'webkit') {
-            var vendor = is_mobile || rsafari.exec(ua);
+            var vendor = is_mobile || is_webview || rsafari.exec(ua);
             if (vendor) {
                 match[3] = match[1];
                 match[4] = match[2];
@@ -689,8 +691,9 @@ define("mo/browsers", [], function(){
                         || os[1] === 'android' 
                             && 'aosp' 
                         || 'safari')
+                    || is_webview && 'webview'
                     || vendor[1];
-                match[2] = vendor[2];
+                match[2] = is_webview ? 0 : vendor[2];
             }
         }
 
@@ -811,8 +814,9 @@ define("mo/domready", [
 /* @source ../cardkit/supports.js */;
 
 define("../cardkit/supports", [
-  "mo/browsers"
-], function(browsers){
+  "mo/browsers",
+  "cardkit/env"
+], function(browsers, env){
 
     var window = this,
         document = window.document,
@@ -821,7 +825,8 @@ define("../cardkit/supports", [
         is_ios = browsers.os === 'iphone' || browsers.os === 'ipad',
         is_ios5 = is_ios
             && browsers.engine === 'webkit'
-            && parseInt(browsers.engineversion, 10) < 536,
+            && parseFloat(browsers.engineversion) < 536,
+        is_ios7 = parseFloat(browsers.osversion) >= 7,
         is_mobilefirefox = browsers.mozilla && is_android,
         is_desktop = browsers.os === 'mac'
             || browsers.os === 'windows'
@@ -843,7 +848,7 @@ define("../cardkit/supports", [
 
         BROWSER_CONTROL: is_desktop
             || browsers.mobilesafari
-            || browsers.shell === 'micromessenger'
+            //|| browsers.shell === 'micromessenger'
             //|| browsers.aosp
             || is_android && browsers.chrome,
 
@@ -863,7 +868,9 @@ define("../cardkit/supports", [
 
         PREVENT_WINDOW_SCROLL: !!browsers.mobilesafari,
 
-        HIDE_TOPBAR: !!browsers.mobilesafari
+        FULLSCREEN_MODE: browsers.webview || env.fullscreenMode,
+
+        FOLDABLE_URLBAR: browsers.mobilesafari && !is_ios7
 
     };
 
@@ -2556,14 +2563,17 @@ define("../cardkit/parser/navdrawer", [
 define("../cardkit/parser/actionbar", [
   "dollar",
   "mo/lang",
-  "../cardkit/parser/util"
-], function($, _, util){
+  "../cardkit/parser/util",
+  "../cardkit/supports"
+], function($, _, util, supports){
     
     function exports(cfg, raw){
         cfg = $(cfg);
         var source = util.getSource(cfg, raw),
             config = {
-                limit: cfg.data('cfgLimit') || 1
+                limit: cfg.data('cfgLimit') 
+                    || !supports.FULLSCREEN_MODE && 1
+                    || 0
             },
             items = source && source.find('.ckd-item').map(function(elm){
                 return util.getItemDataOuter(elm, null, 'item');
@@ -3689,7 +3699,7 @@ define("../cardkit/bus", [
 
 define("../cardkit/tpl/layout/ctlbar", [], function(){
 
-    return {"template":"<div class=\"ck-ctl-bar\">\n    <input type=\"button\" class=\"ck-ctl-backward\">\n    <input type=\"button\" class=\"ck-ctl-forward disabled\">\n    <input type=\"button\" class=\"ck-ctl-reload\">\n</div>\n"}; 
+    return {"template":"<div class=\"ck-ctl-bar\">\n    <input type=\"button\" class=\"ck-ctl-backward\">\n    <input type=\"button\" class=\"ck-ctl-reload\">\n</div>\n"}; 
 
 });
 /* @source ../cardkit/tpl/layout/overflowmenu.js */;
@@ -7742,6 +7752,14 @@ define("../cardkit/app", [
             });
         },
 
+        '.ck-top-title': function(){
+            if (supports.FULLSCREEN_MODE) {
+                $('.ck-top-nav').trigger('tap');
+            } else {
+                return true;
+            }
+        },
+
         '.ck-top-nav, .ck-top-nav span': function(){
             if (this.href) {
                 return;
@@ -8026,14 +8044,14 @@ define("../cardkit/app", [
             if (!supports.SAFARI_OVERFLOWSCROLL) {
                 $(body).addClass('no-overflowscroll');
             }
-            if (supports.HIDE_TOPBAR) {
+            if (supports.FOLDABLE_URLBAR) {
                 $(body).addClass('mobilesafari-bar');
             }
             if (supports.FIXED_BOTTOM_BUGGY) {
                 $(body).addClass('fixed-bottom-buggy');
             }
-            if (env.hideToolbars) {
-                $(body).addClass('hide-toolbars');
+            if (supports.FULLSCREEN_MODE) {
+                $(body).addClass('fullscreen-mode');
             }
 
             this.initState();
@@ -8179,7 +8197,8 @@ define("../cardkit/app", [
 
             }
 
-            if (supports.CARD_SCROLL) {
+            if (supports.CARD_SCROLL
+                    && !supports.FULLSCREEN_MODE) {
 
                 var startY,
                     topbar_holded,
@@ -8201,7 +8220,7 @@ define("../cardkit/app", [
                     .bind('touchstart', scroll_on_header);
                 this.header.bind('touchstart', scroll_on_header);
 
-                if (supports.HIDE_TOPBAR) {
+                if (supports.FOLDABLE_URLBAR) {
 
                     this.header.bind('touchmove', function(e){
                         if (topbar_holded && e.touches[0].clientY < startY) {
@@ -8542,7 +8561,7 @@ define("../cardkit/app", [
         hideAddressbar: function(){
             if (this.windowFullHeight > window.innerHeight) {
                 this.loadingCard.find('div')[0].style.visibility = 'hidden';
-                if (supports.HIDE_TOPBAR
+                if (supports.FOLDABLE_URLBAR
                         && (supports.CARD_SCROLL || !this.sizeInited)) {
                     ck.resetWindowTop();
                     body.scrollTop = 0;

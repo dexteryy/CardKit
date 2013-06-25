@@ -2,14 +2,17 @@
 define([
     'dollar',
     'mo/lang',
-    './util'
-], function($, _, util){
+    './util',
+    '../supports'
+], function($, _, util, supports){
     
     function exports(cfg, raw){
         cfg = $(cfg);
         var source = util.getSource(cfg, raw),
             config = {
-                limit: cfg.data('cfgLimit') || 1
+                limit: cfg.data('cfgLimit') 
+                    || !supports.FULLSCREEN_MODE && 1
+                    || 0
             },
             items = source && source.find('.ckd-item').map(function(elm){
                 return util.getItemDataOuter(elm, null, 'item');

@@ -9,7 +9,7 @@
  */
 define("mo/browsers", [], function(){
 
-    var match, skin, os, is_mobile,
+    var match, skin, os, is_mobile, is_webview,
         ua = this.navigator.userAgent.toLowerCase(),
         rank = { 
             "360ee": 2,
@@ -30,6 +30,7 @@ define("mo/browsers", [], function(){
             randroid = /(android)[ ;]([\w.]*)/,
             rmobilesafari = /(\w+)[ \/]([\w.]+)[ \/]mobile.*safari/,
             rsafari = /(\w+)[ \/]([\w.]+) safari/,
+            rwebview = /(.)([^\/]+)[ \/]mobile\//,
             rwebkit = /(webkit)[ \/]([\w.]+)/,
             ropera = /(opera)(?:.*version)?[ \/]([\w.]+)/,
             rmsie = /(msie) ([\w.]+)/,
@@ -62,9 +63,10 @@ define("mo/browsers", [], function(){
             || [];
 
         is_mobile = rmobilesafari.exec(ua);
+        is_webview = rwebview.exec(ua);
 
         if (match[1] === 'webkit') {
-            var vendor = is_mobile || rsafari.exec(ua);
+            var vendor = is_mobile || is_webview || rsafari.exec(ua);
             if (vendor) {
                 match[3] = match[1];
                 match[4] = match[2];
@@ -75,8 +77,9 @@ define("mo/browsers", [], function(){
                         || os[1] === 'android' 
                             && 'aosp' 
                         || 'safari')
+                    || is_webview && 'webview'
                     || vendor[1];
-                match[2] = vendor[2];
+                match[2] = is_webview ? 0 : vendor[2];
             }
         }
 

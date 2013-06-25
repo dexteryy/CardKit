@@ -904,7 +904,7 @@
     opacity:1;
   }
 
-  body.hide-toolbars &,
+  body.fullscreen-mode &,
   body.no-overflowscroll &,
   body.no-cardscroll & {
     display:none;
@@ -929,9 +929,9 @@
       background:$view_color;
     }
 
-    body.hide-toolbars & {
-      padding-top:$space/2;
-    }
+    //body.fullscreen-mode & {
+      //padding-top:$space/2;
+    //}
 
   }
 

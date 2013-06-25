@@ -209,6 +209,14 @@ define([
             });
         },
 
+        '.ck-top-title': function(){
+            if (supports.FULLSCREEN_MODE) {
+                $('.ck-top-nav').trigger('tap');
+            } else {
+                return true;
+            }
+        },
+
         '.ck-top-nav, .ck-top-nav span': function(){
             if (this.href) {
                 return;
@@ -493,14 +501,14 @@ define([
             if (!supports.SAFARI_OVERFLOWSCROLL) {
                 $(body).addClass('no-overflowscroll');
             }
-            if (supports.HIDE_TOPBAR) {
+            if (supports.FOLDABLE_URLBAR) {
                 $(body).addClass('mobilesafari-bar');
             }
             if (supports.FIXED_BOTTOM_BUGGY) {
                 $(body).addClass('fixed-bottom-buggy');
             }
-            if (env.hideToolbars) {
-                $(body).addClass('hide-toolbars');
+            if (supports.FULLSCREEN_MODE) {
+                $(body).addClass('fullscreen-mode');
             }
 
             this.initState();
@@ -646,7 +654,8 @@ define([
 
             }
 
-            if (supports.CARD_SCROLL) {
+            if (supports.CARD_SCROLL
+                    && !supports.FULLSCREEN_MODE) {
 
                 var startY,
                     topbar_holded,
@@ -668,7 +677,7 @@ define([
                     .bind('touchstart', scroll_on_header);
                 this.header.bind('touchstart', scroll_on_header);
 
-                if (supports.HIDE_TOPBAR) {
+                if (supports.FOLDABLE_URLBAR) {
 
                     this.header.bind('touchmove', function(e){
                         if (topbar_holded && e.touches[0].clientY < startY) {
@@ -1009,7 +1018,7 @@ define([
         hideAddressbar: function(){
             if (this.windowFullHeight > window.innerHeight) {
                 this.loadingCard.find('div')[0].style.visibility = 'hidden';
-                if (supports.HIDE_TOPBAR
+                if (supports.FOLDABLE_URLBAR
                         && (supports.CARD_SCROLL || !this.sizeInited)) {
                     ck.resetWindowTop();
                     body.scrollTop = 0;
