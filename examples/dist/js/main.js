@@ -8306,7 +8306,7 @@ define("../cardkit/app", [
                     rewrite_state = state === MODAL_CARDID && DEFAULT_CARDID 
                         || state;
                     if (!$('#' + rewrite_state).hasClass('ck-card')) {
-                        window.location.reload(true);
+                        //window.location.reload(true);
                         return;
                     }
                     history.back();
@@ -8316,7 +8316,11 @@ define("../cardkit/app", [
                 }
             });
 
-            $(window).bind("popstate", function(){
+            bus.once('inited', function(){
+                $(window).bind("popstate", when_pop);
+            });
+
+            function when_pop(){
                 if (ck._backFromSameUrl) {
                     var state = window.location.hash.split(HASH_SEP).pop();
                     //alert('10.2: ' + state)
@@ -8342,7 +8346,7 @@ define("../cardkit/app", [
                         }
                     }
                 }, 100);
-            });
+            }
 
         },
 
@@ -8971,7 +8975,8 @@ define("../cardkit/app", [
     function when_back_end(prev_id){
         if (prev_id === LOADING_CARDID) {
             //alert('back: ' + document.referrer + '\n' + location.href)
-            if (compare_link(document.referrer)
+            if (document.referrer
+                   && compare_link(document.referrer)
                    || !/#.+/.test(document.referrer)) { // redirect.html
                 ck._backFromSameUrl = true;
             }
