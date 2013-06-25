@@ -74,16 +74,14 @@ More coming soon...
 
 ## Release History
 
-* 2013.6.24
-    * 支持compass 0.13
-* 2013.6.19
-    * 修复组件示例的post请求在github pages中无效的问题
-    * 修复Compatibility testing页面
-    * 主页和readme里补充Unsupported Platform列表
-* 2013.6.18
-    * v1.3.1 release
-    * 从Code（豆瓣内部开发平台）迁移到Github
+See [changelog](https://github.com/douban-f2e/CardKit/wiki/Changelog)
 
-## Supports
+## More References
 
 [Mobileweb Instrumentality Project @ trello](https://trello.com/board/mobileweb-instrumentality-project/51357199230922201c0007ef)
+
+## License
+
+Copyright (c) 2013 douban.com
+Licensed under the MIT license.
+
