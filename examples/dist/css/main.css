@@ -1393,8 +1393,8 @@ body.no-overflowscroll .ck-mini-unit[data-style="slide"] .ck-list-wrap {
   font-size: 13px;
   color: #252525;
   width: 100%;
-  height: 20px;
   line-height: 20px;
+  height: 40px;
   padding: 10px;
   border: 1px solid #b9b9b9;
   -webkit-box-sizing: border-box;

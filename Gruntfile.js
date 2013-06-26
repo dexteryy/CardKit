@@ -249,7 +249,7 @@ module.exports = function(grunt) {
                 tasks: [
                     'dev', 
                     'devtest',
-                    'copy:target2pub'
+                    //'copy:target2pub'
                 ]
             }
         }
