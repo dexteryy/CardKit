@@ -8,9 +8,7 @@ define([
         body = document.body,
         is_android = browsers.os === 'android',
         is_ios = browsers.os === 'iphone' || browsers.os === 'ipad',
-        is_ios5 = is_ios
-            && browsers.engine === 'webkit'
-            && parseFloat(browsers.engineversion) < 536,
+        is_ios5 = is_ios && parseFloat(browsers.osversion) < 6,
         is_ios7 = parseFloat(browsers.osversion) >= 7,
         is_mobilefirefox = browsers.mozilla && is_android,
         is_desktop = browsers.os === 'mac'
