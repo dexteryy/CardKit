@@ -8275,8 +8275,7 @@ define("../cardkit/app", [
                     return;
                 }
                 if (ck._sessionLocked) {
-                    // @TODO 
-                    //window.location.reload(true);
+                    window.location.reload(true);
                     return;
                 }
                 if (rewrite_state) {
@@ -8337,11 +8336,12 @@ define("../cardkit/app", [
                         //alert(10 +': ' + location.href + ', ' + ck._backFromSameUrl)
                         ck._sessionLocked = false;
                         ck._backFromOtherpage = true;
-                        if (supports.GOBACK_WHEN_POP
-                                && !ck._unexpectStateWhenGoback) {
-                            history.back();
-                        } else {
-                            window.location.reload(true);
+                        if (!ck._unexpectStateWhenGoback) {
+                            if (supports.GOBACK_WHEN_POP) {
+                                history.back();
+                            } else {
+                                window.location.reload(true);
+                            }
                         }
                     }
                 }, 100);
@@ -8852,6 +8852,7 @@ define("../cardkit/app", [
         } else if ($(me).hasClass('ck-link')
                 || $(me).hasClass('ck-link-img')) {
         } else if (/(^|\s)ck-\w+/.test(me.className)) {
+            // eg. ck-link-native
             return;
         } else if (me.target) {
             if (next_id && me.target === '_self') {
@@ -8980,13 +8981,12 @@ define("../cardkit/app", [
                 ck._backFromSameUrl = true;
             }
             history.back();
-            // @TODO 
-            //var loc = location.href;
-            //setTimeout(function(){
-                //if (location.href === loc) {
-                    //location.reload();
-                //}
-            //}, 700);
+            var loc = location.href;
+            setTimeout(function(){
+                if (location.href === loc) {
+                    location.reload();
+                }
+            }, 700);
         } else {
             ck.enableControl();
             ck._sessionLocked = false;
