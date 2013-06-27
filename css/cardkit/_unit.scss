@@ -861,7 +861,7 @@
       color:$text_color;
       width:100%;
       line-height:20px;
-      height:20px+2*$space;
+      height:(20px + 2 * $space);
       padding:$space;
       border:1px solid rgb(185,185,185);
       @include box-sizing(border-box);
