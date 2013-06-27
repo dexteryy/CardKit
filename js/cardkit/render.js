@@ -3,6 +3,7 @@ define([
     'dollar',
     'mo/lang',
     'mo/template',
+    './bus',
     './tpl/unit/box',
     './tpl/unit/list',
     './tpl/unit/mini',
@@ -18,7 +19,7 @@ define([
     './parser/banner',
     './parser/actionbar',
     './parser/navdrawer'
-], function($, _, tpl, 
+], function($, _, tpl, bus,
     tpl_box, tpl_list, tpl_mini, tpl_form, tpl_banner, tpl_blank, 
     tpl_navdrawer, tpl_actionbar,
     boxParser, listParser, miniParser, formParser, 
@@ -30,6 +31,7 @@ define([
             'card-actions': actionbarParser
         },
         slice = Array.prototype.slice,
+        first_render = false,
 
         SCRIPT_TAG = 'script[type="text/cardscript"]',
 
@@ -105,6 +107,10 @@ define([
                     }
                 }
             });
+            if (first_render === false) {
+                first_render = true;
+                bus.resolve('firstRender');
+            }
             return has_content;
         },
 
@@ -117,11 +123,20 @@ define([
             var data = boxParser(unit, raw);
             if (data.hasContent || data.hd) {
                 unit.innerHTML = tpl.convertTpl(tpl_box.template, data, 'data');
-                setTimeout(function(){
-                    $('.ckd-delay-content', unit).forEach(function(tpl){
-                        this(tpl).replaceWith(tpl.innerHTML);
-                    }, $);
-                }, 100);
+                if (data.config.disableReader === 'true') {
+                    if (first_render === false) {
+                        first_render = 'skip';
+                    }
+                    setTimeout(function(){
+                        $('.ckd-delay-content', unit).forEach(function(tpl){
+                            this(tpl).replaceWith(tpl.innerHTML);
+                        }, $);
+                        if (first_render === 'skip') {
+                            first_render = true;
+                            bus.resolve('firstRender');
+                        }
+                    }, 100);
+                }
                 return true;
             } else {
                 $(unit).remove();

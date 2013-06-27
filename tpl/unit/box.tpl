@@ -30,7 +30,7 @@
 
     {% if (data.hasContent) { %}
     <section>
-        {% if (data.config.disableReader) { %}
+        {% if (data.config.disableReader === 'true') { %}
         <script type="text/template" class="ckd-delay-content">
         {%= data.content %}
         </script>

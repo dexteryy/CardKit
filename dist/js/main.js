@@ -2916,421 +2916,9 @@ define("../cardkit/tpl/unit/list", [], function(){
 
 define("../cardkit/tpl/unit/box", [], function(){
 
-    return {"template":"\n{% function hd(){ %}\n    {% if (data.hd) { %}\n    <header class=\"ck-hd-wrap\">\n\n        <span class=\"ck-hd {%= (data.hd_url && 'clickable' || '') %}\">\n            {% if (data.hd_url) { %}\n            <a href=\"{%= data.hd_url %}\" class=\"ck-link ck-link-mask {%= (data.hd_url_extern ? 'ck-link-extern' : '') %}\"></a>\n            {% } %}\n            <span>{%= data.hd %}</span>\n        </span>\n\n        {% if (data.hd_opt) { %}\n        <div class=\"ck-hdopt-wrap\">{%=data.hd_opt%}</div>\n        {% } %}\n\n    </header>\n    {% } %}\n{% } %}\n\n{% if (data.config.plain || data.config.plainhd) { %}\n    {%= hd() %}\n{% } %}\n\n<article class=\"ck-unit-wrap\">\n\n    {% if (!data.config.plain && !data.config.plainhd) { %}\n        {%= hd() %}\n    {% } %}\n\n    {% if (data.hasContent) { %}\n    <section>\n        {% if (data.config.disableReader) { %}\n        <script type=\"text/template\" class=\"ckd-delay-content\">\n        {%= data.content %}\n        </script>\n        {% } else { %}\n        {%= data.content %}\n        {% } %}\n    </section>\n    {% } %}\n\n    {% if (data.ft) { %}\n    <footer>{%= data.ft %}</footer>\n    {% } %}\n\n</article>\n"}; 
+    return {"template":"\n{% function hd(){ %}\n    {% if (data.hd) { %}\n    <header class=\"ck-hd-wrap\">\n\n        <span class=\"ck-hd {%= (data.hd_url && 'clickable' || '') %}\">\n            {% if (data.hd_url) { %}\n            <a href=\"{%= data.hd_url %}\" class=\"ck-link ck-link-mask {%= (data.hd_url_extern ? 'ck-link-extern' : '') %}\"></a>\n            {% } %}\n            <span>{%= data.hd %}</span>\n        </span>\n\n        {% if (data.hd_opt) { %}\n        <div class=\"ck-hdopt-wrap\">{%=data.hd_opt%}</div>\n        {% } %}\n\n    </header>\n    {% } %}\n{% } %}\n\n{% if (data.config.plain || data.config.plainhd) { %}\n    {%= hd() %}\n{% } %}\n\n<article class=\"ck-unit-wrap\">\n\n    {% if (!data.config.plain && !data.config.plainhd) { %}\n        {%= hd() %}\n    {% } %}\n\n    {% if (data.hasContent) { %}\n    <section>\n        {% if (data.config.disableReader === 'true') { %}\n        <script type=\"text/template\" class=\"ckd-delay-content\">\n        {%= data.content %}\n        </script>\n        {% } else { %}\n        {%= data.content %}\n        {% } %}\n    </section>\n    {% } %}\n\n    {% if (data.ft) { %}\n    <footer>{%= data.ft %}</footer>\n    {% } %}\n\n</article>\n"}; 
 
 });
-/* @source mo/template/string.js */;
-
-/**
- * using AMD (Asynchronous Module Definition) API with OzJS
- * see http://ozjs.org for details
- *
- * Copyright (C) 2010-2012, Dexter.Yy, MIT License
- * vim: et:ts=4:sw=4:sts=4
- */
-define("mo/template/string", [], function(require, exports){
-
-    exports.format = function(tpl, op){
-        return tpl.replace(/\{\{(\w+)\}\}/g, function(e1,e2){
-            return op[e2] != null ? op[e2] : "";
-        });
-    };
-
-    exports.escapeHTML = function(str){
-        str = str || '';
-        var xmlchar = {
-            //"&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            "'": "&#39;",
-            '"': "&quot;",
-            "{": "&#123;",
-            "}": "&#125;",
-            "@": "&#64;"
-        };
-        return str.replace(/[<>'"\{\}@]/g, function($1){
-            return xmlchar[$1];
-        });
-    };
-
-    exports.substr = function(str, limit, cb){
-        if(!str || typeof str !== "string")
-            return '';
-        var sub = str.substr(0, limit).replace(/([^\x00-\xff])/g, '$1 ').substr(0, limit).replace(/([^\x00-\xff])\s/g, '$1');
-        return cb ? cb.call(sub, sub) : (str.length > sub.length ? sub + '...' : sub);
-    };
-
-    exports.strsize = function(str){
-        return str.replace(/([^\x00-\xff]|[A-Z])/g, '$1 ').length;
-    };
-
-});
-
-
-/* @source mo/template/micro.js */;
-
-/**
- * using AMD (Asynchronous Module Definition) API with OzJS
- * see http://ozjs.org for details
- *
- * Copyright (C) 2010-2012, Dexter.Yy, MIT License
- * vim: et:ts=4:sw=4:sts=4
- */
-define("mo/template/micro", [
-  "mo/lang",
-  "mo/template/string"
-], function(_, stpl, require, exports){
-
-    var document = this.document;
-
-    exports.tplSettings = {
-        _cache: {},
-        evaluate: /\{%([\s\S]+?)%\}/g,
-        interpolate: /\{%=([\s\S]+?)%\}/g
-    };
-    exports.tplHelpers = {
-        mix: _.mix,
-        escapeHTML: stpl.escapeHTML,
-        substr: stpl.substr,
-        include: convertTpl,
-        _has: function(obj){
-            return function(name){
-                return _.ns(name, undefined, obj);
-            };
-        }
-    };
-
-    function convertTpl(str, data, namespace){
-        var func, c  = exports.tplSettings, suffix = namespace ? '#' + namespace : '';
-        if (!/[\t\r\n% ]/.test(str)) {
-            func = c._cache[str + suffix];
-            if (!func) {
-                var tplbox = document.getElementById(str);
-                if (tplbox) {
-                    func = c._cache[str + suffix] = convertTpl(tplbox.innerHTML, false, namespace);
-                }
-            }
-        } else {
-            func = new Function(namespace || 'obj', 'api', 'var __p=[];' 
-                + (namespace ? '' : 'with(obj){')
-                    + 'var mix=api.mix,escapeHTML=api.escapeHTML,substr=api.substr,include=api.include,has=api._has(' + (namespace || 'obj') + ');'
-                    + '__p.push(\'' +
-                    str.replace(/\\/g, '\\\\')
-                        .replace(/'/g, "\\'")
-                        .replace(c.interpolate, function(match, code) {
-                            return "'," + code.replace(/\\'/g, "'") + ",'";
-                        })
-                        .replace(c.evaluate || null, function(match, code) {
-                            return "');" + code.replace(/\\'/g, "'")
-                                                .replace(/[\r\n\t]/g, ' ') + "__p.push('";
-                        })
-                        .replace(/\r/g, '\\r')
-                        .replace(/\n/g, '\\n')
-                        .replace(/\t/g, '\\t')
-                    + "');" 
-                + (namespace ? "" : "}")
-                + "return __p.join('');");
-        }
-        return !func ? '' : (data ? func(data, exports.tplHelpers) : func);
-    }
-
-    exports.convertTpl = convertTpl;
-    exports.reloadTpl = function(str){
-        delete exports.tplSettings._cache[str];
-    };
-
-});
-
-
-/* @source mo/template.js */;
-
-/**
- * A lightweight and enhanced micro-template implementation, and minimum utilities
- *
- * using AMD (Asynchronous Module Definition) API with OzJS
- * see http://ozjs.org for details
- *
- * Copyright (C) 2010-2012, Dexter.Yy, MIT License
- * vim: et:ts=4:sw=4:sts=4
- */
-define("mo/template", [
-  "mo/lang",
-  "mo/template/string",
-  "mo/template/micro"
-], function(_, stpl, microtpl, require, exports){
-
-    _.mix(exports, stpl, microtpl);
-
-    exports.str2html = function(str){ // @TODO 
-        var temp = document.createElement("div");
-        temp.innerHTML = str;
-        var child = temp.firstChild;
-        if (temp.childNodes.length == 1) {
-            return child;
-        }
-        var fragment = document.createDocumentFragment();
-        do {
-            fragment.appendChild(child);
-        } while (child = temp.firstChild);
-        return fragment;
-    };
-
-});
-
-/* @source ../cardkit/render.js */;
-
-
-define("../cardkit/render", [
-  "dollar",
-  "mo/lang",
-  "mo/template",
-  "../cardkit/tpl/unit/box",
-  "../cardkit/tpl/unit/list",
-  "../cardkit/tpl/unit/mini",
-  "../cardkit/tpl/unit/form",
-  "../cardkit/tpl/unit/banner",
-  "../cardkit/tpl/unit/blank",
-  "../cardkit/tpl/layout/navdrawer",
-  "../cardkit/tpl/layout/actionbar",
-  "../cardkit/parser/box",
-  "../cardkit/parser/list",
-  "../cardkit/parser/mini",
-  "../cardkit/parser/form",
-  "../cardkit/parser/banner",
-  "../cardkit/parser/actionbar",
-  "../cardkit/parser/navdrawer"
-], function($, _, tpl, 
-    tpl_box, tpl_list, tpl_mini, tpl_form, tpl_banner, tpl_blank, 
-    tpl_navdrawer, tpl_actionbar,
-    boxParser, listParser, miniParser, formParser, 
-    bannerParser, actionbarParser, navdrawerParser){
-
-    var frame_parts = {
-            'navdrawer': navdrawerParser, 
-            'page-actions': actionbarParser,
-            'card-actions': actionbarParser
-        },
-        slice = Array.prototype.slice,
-
-        SCRIPT_TAG = 'script[type="text/cardscript"]',
-
-        TPL_BLANK_BANNER = '<div class="ck-banner-unit"></div>';
-
-    var exports = {
-
-        initCard: function(card, raw, footer, opt) {
-
-            if (!opt.isModal) {
-
-                card.find(SCRIPT_TAG).forEach(run_script, card[0]);
-                card.trigger('card:loaded', {
-                    card: card
-                });
-
-                var banner_cfg = card.find('.ck-banner-unit');
-                if (!banner_cfg[0]) {
-                    banner_cfg = $(TPL_BLANK_BANNER);
-                }
-                card.prepend(banner_cfg);
-
-            }
-
-            var units = card.find('.ck-box-unit, .ck-mini-unit, .ck-list-unit, .ck-form-unit, .ck-banner-unit'),
-                config = {
-                    blank: card.data('cfgBlank')
-                };
-
-            var has_content = exports.initUnit(units, raw);
-
-            if (!has_content && !opt.isModal && config.blank != 'false') {
-                card.append(tpl.convertTpl(tpl_blank.template, {
-                    config: config
-                }, 'data'));
-            }
-
-            if (!opt.isModal) {
-
-                card.append(footer.clone());
-
-                card.trigger('card:ready', {
-                    card: card
-                });
-
-            }
-
-        },
-
-        openCard: function(card, opt){
-            if (!opt.isModal) {
-                card.trigger('card:open', {
-                    card: card
-                });
-            }
-        },
-
-        closeCard: function(card, opt){
-            if (!opt.isModal) {
-                card.trigger('card:close', {
-                    card: card
-                });
-            }
-        },
-
-        initUnit: function(units, raw){
-            var has_content;
-            $(units).forEach(function(unit){
-                var type = (/ck-(\w+)-unit/.exec(unit.className) || [])[1];
-                if (type) {
-                    if (exports[type](unit, raw)) {
-                        has_content = true;
-                    }
-                }
-            });
-            return has_content;
-        },
-
-        banner: function(unit, raw){
-            var data = bannerParser(unit, raw);
-            unit.innerHTML = tpl.convertTpl(tpl_banner.template, data, 'data');
-        },
-
-        box: function(unit, raw){
-            var data = boxParser(unit, raw);
-            if (data.hasContent || data.hd) {
-                unit.innerHTML = tpl.convertTpl(tpl_box.template, data, 'data');
-                setTimeout(function(){
-                    $('.ckd-delay-content', unit).forEach(function(tpl){
-                        this(tpl).replaceWith(tpl.innerHTML);
-                    }, $);
-                }, 100);
-                return true;
-            } else {
-                $(unit).remove();
-            }
-        },
-
-        mini: function(unit, raw){
-            var data = miniParser(unit, raw);
-            data.items = data.items.filter(function(item){
-                if (!item.title && !item.author 
-                        && (!item.content || !item.content.length)) {
-                    return false;
-                }
-                return true;
-            }, data);
-            if (!data.items.length 
-                    && (!data.hd || data.config.blank == 'false')) {
-                $(unit).remove();
-                return;
-            }
-            if (data.config.limit 
-                    && data.config.limit < data.items.length) {
-                data.items.length = data.config.limit;
-            }
-            unit.innerHTML = tpl.convertTpl(tpl_mini.template, data, 'data');
-            return true;
-        },
-
-        list: function(unit, raw){
-            var data = listParser(unit, raw);
-            data.items = data.items.filter(function(item){
-                var style = this.style;
-                if (style === 'more' || style === 'menu') {
-                    if (!item.title) {
-                        return false;
-                    }
-                } else if (style === 'grid') {
-                    if (!item.icon) {
-                        return false;
-                    }
-                } else if (!item.title && !item.author) {
-                    return false;
-                }
-                return true;
-            }, data);
-            if (data.config.limit 
-                    && data.config.limit < data.items.length) {
-                data.items.length = data.config.limit;
-            }
-            if (!data.items.length 
-                    && (!data.hd || data.config.blank == 'false')) {
-                $(unit).remove();
-            } else {
-                unit.innerHTML = tpl.convertTpl(tpl_list.template, data, 'data');
-                return true;
-            }
-        },
-
-        form: function(unit, raw){
-            var data = formParser(unit, raw);
-            if (!data.items.length 
-                    && (!data.hd || data.config.blank == 'false')) {
-                $(unit).remove();
-            } else {
-                unit.innerHTML = tpl.convertTpl(tpl_form.template, data, 'data');
-                return true;
-            }
-        },
-
-        _frameConfig: {},
-        _frameCustomized: {},
-
-        setFrame: function(card, header, navDrawer, raw){
-            var cfg = this._frameConfig,
-                customized = this._frameCustomized,
-                global_cfg,
-                local_cfg,
-                cfg_node,
-                changed = {};
-            for (var part in frame_parts) {
-                if (!cfg[part] || customized[part]) {
-                    global_cfg = header.find('.ckcfg-' + part);
-                    if (global_cfg[0]) {
-                        cfg[part] = frame_parts[part](global_cfg, raw);
-                        if (cfg[part]) {
-                            changed[part] = true;
-                        }
-                    }
-                }
-                cfg_node = card.find('.ckcfg-' + part);
-                customized[part] = !!cfg_node[0];
-                if (customized[part]) {
-                    local_cfg = frame_parts[part](cfg_node, raw);
-                    if (local_cfg) {
-                        cfg[part] = local_cfg;
-                        changed[part] = true;
-                    } else {
-                        customized[part] = false;
-                    }
-                }
-            }
-            if (changed['card-actions']) {
-                var actions = cfg['actionbar'] = cfg['card-actions'],
-                    action_items = actions.items,
-                    action_overflow_items = actions.overflowItems;
-                action_items.push.apply(action_items, 
-                    slice.call(cfg['page-actions'].items));
-                action_overflow_items.push.apply(action_overflow_items, 
-                    slice.call(cfg['page-actions'].overflowItems));
-                action_overflow_items.unshift.apply(actions.overflowItems,
-                    slice.call(action_items.splice(actions.config.limit)));
-                $('.ck-top-actions').html(tpl.convertTpl(tpl_actionbar.template, cfg));
-            }
-            if (changed['navdrawer']) {
-                navDrawer.html(tpl.convertTpl(tpl_navdrawer.template, cfg));
-            }
-        }
-    
-    };
-
-    function run_script(script){
-        new Function('', script.innerHTML).call(this);
-    }
-
-    return exports;
-
-});
-
 /* @source eventmaster.js */;
 
 /**
@@ -3689,6 +3277,433 @@ define("../cardkit/bus", [
 ], function(Event){
 
     return Event();
+
+});
+
+/* @source mo/template/string.js */;
+
+/**
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
+define("mo/template/string", [], function(require, exports){
+
+    exports.format = function(tpl, op){
+        return tpl.replace(/\{\{(\w+)\}\}/g, function(e1,e2){
+            return op[e2] != null ? op[e2] : "";
+        });
+    };
+
+    exports.escapeHTML = function(str){
+        str = str || '';
+        var xmlchar = {
+            //"&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            "'": "&#39;",
+            '"': "&quot;",
+            "{": "&#123;",
+            "}": "&#125;",
+            "@": "&#64;"
+        };
+        return str.replace(/[<>'"\{\}@]/g, function($1){
+            return xmlchar[$1];
+        });
+    };
+
+    exports.substr = function(str, limit, cb){
+        if(!str || typeof str !== "string")
+            return '';
+        var sub = str.substr(0, limit).replace(/([^\x00-\xff])/g, '$1 ').substr(0, limit).replace(/([^\x00-\xff])\s/g, '$1');
+        return cb ? cb.call(sub, sub) : (str.length > sub.length ? sub + '...' : sub);
+    };
+
+    exports.strsize = function(str){
+        return str.replace(/([^\x00-\xff]|[A-Z])/g, '$1 ').length;
+    };
+
+});
+
+
+/* @source mo/template/micro.js */;
+
+/**
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
+define("mo/template/micro", [
+  "mo/lang",
+  "mo/template/string"
+], function(_, stpl, require, exports){
+
+    var document = this.document;
+
+    exports.tplSettings = {
+        _cache: {},
+        evaluate: /\{%([\s\S]+?)%\}/g,
+        interpolate: /\{%=([\s\S]+?)%\}/g
+    };
+    exports.tplHelpers = {
+        mix: _.mix,
+        escapeHTML: stpl.escapeHTML,
+        substr: stpl.substr,
+        include: convertTpl,
+        _has: function(obj){
+            return function(name){
+                return _.ns(name, undefined, obj);
+            };
+        }
+    };
+
+    function convertTpl(str, data, namespace){
+        var func, c  = exports.tplSettings, suffix = namespace ? '#' + namespace : '';
+        if (!/[\t\r\n% ]/.test(str)) {
+            func = c._cache[str + suffix];
+            if (!func) {
+                var tplbox = document.getElementById(str);
+                if (tplbox) {
+                    func = c._cache[str + suffix] = convertTpl(tplbox.innerHTML, false, namespace);
+                }
+            }
+        } else {
+            func = new Function(namespace || 'obj', 'api', 'var __p=[];' 
+                + (namespace ? '' : 'with(obj){')
+                    + 'var mix=api.mix,escapeHTML=api.escapeHTML,substr=api.substr,include=api.include,has=api._has(' + (namespace || 'obj') + ');'
+                    + '__p.push(\'' +
+                    str.replace(/\\/g, '\\\\')
+                        .replace(/'/g, "\\'")
+                        .replace(c.interpolate, function(match, code) {
+                            return "'," + code.replace(/\\'/g, "'") + ",'";
+                        })
+                        .replace(c.evaluate || null, function(match, code) {
+                            return "');" + code.replace(/\\'/g, "'")
+                                                .replace(/[\r\n\t]/g, ' ') + "__p.push('";
+                        })
+                        .replace(/\r/g, '\\r')
+                        .replace(/\n/g, '\\n')
+                        .replace(/\t/g, '\\t')
+                    + "');" 
+                + (namespace ? "" : "}")
+                + "return __p.join('');");
+        }
+        return !func ? '' : (data ? func(data, exports.tplHelpers) : func);
+    }
+
+    exports.convertTpl = convertTpl;
+    exports.reloadTpl = function(str){
+        delete exports.tplSettings._cache[str];
+    };
+
+});
+
+
+/* @source mo/template.js */;
+
+/**
+ * A lightweight and enhanced micro-template implementation, and minimum utilities
+ *
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
+define("mo/template", [
+  "mo/lang",
+  "mo/template/string",
+  "mo/template/micro"
+], function(_, stpl, microtpl, require, exports){
+
+    _.mix(exports, stpl, microtpl);
+
+    exports.str2html = function(str){ // @TODO 
+        var temp = document.createElement("div");
+        temp.innerHTML = str;
+        var child = temp.firstChild;
+        if (temp.childNodes.length == 1) {
+            return child;
+        }
+        var fragment = document.createDocumentFragment();
+        do {
+            fragment.appendChild(child);
+        } while (child = temp.firstChild);
+        return fragment;
+    };
+
+});
+
+/* @source ../cardkit/render.js */;
+
+
+define("../cardkit/render", [
+  "dollar",
+  "mo/lang",
+  "mo/template",
+  "../cardkit/bus",
+  "../cardkit/tpl/unit/box",
+  "../cardkit/tpl/unit/list",
+  "../cardkit/tpl/unit/mini",
+  "../cardkit/tpl/unit/form",
+  "../cardkit/tpl/unit/banner",
+  "../cardkit/tpl/unit/blank",
+  "../cardkit/tpl/layout/navdrawer",
+  "../cardkit/tpl/layout/actionbar",
+  "../cardkit/parser/box",
+  "../cardkit/parser/list",
+  "../cardkit/parser/mini",
+  "../cardkit/parser/form",
+  "../cardkit/parser/banner",
+  "../cardkit/parser/actionbar",
+  "../cardkit/parser/navdrawer"
+], function($, _, tpl, bus,
+    tpl_box, tpl_list, tpl_mini, tpl_form, tpl_banner, tpl_blank, 
+    tpl_navdrawer, tpl_actionbar,
+    boxParser, listParser, miniParser, formParser, 
+    bannerParser, actionbarParser, navdrawerParser){
+
+    var frame_parts = {
+            'navdrawer': navdrawerParser, 
+            'page-actions': actionbarParser,
+            'card-actions': actionbarParser
+        },
+        slice = Array.prototype.slice,
+        first_render = false,
+
+        SCRIPT_TAG = 'script[type="text/cardscript"]',
+
+        TPL_BLANK_BANNER = '<div class="ck-banner-unit"></div>';
+
+    var exports = {
+
+        initCard: function(card, raw, footer, opt) {
+
+            if (!opt.isModal) {
+
+                card.find(SCRIPT_TAG).forEach(run_script, card[0]);
+                card.trigger('card:loaded', {
+                    card: card
+                });
+
+                var banner_cfg = card.find('.ck-banner-unit');
+                if (!banner_cfg[0]) {
+                    banner_cfg = $(TPL_BLANK_BANNER);
+                }
+                card.prepend(banner_cfg);
+
+            }
+
+            var units = card.find('.ck-box-unit, .ck-mini-unit, .ck-list-unit, .ck-form-unit, .ck-banner-unit'),
+                config = {
+                    blank: card.data('cfgBlank')
+                };
+
+            var has_content = exports.initUnit(units, raw);
+
+            if (!has_content && !opt.isModal && config.blank != 'false') {
+                card.append(tpl.convertTpl(tpl_blank.template, {
+                    config: config
+                }, 'data'));
+            }
+
+            if (!opt.isModal) {
+
+                card.append(footer.clone());
+
+                card.trigger('card:ready', {
+                    card: card
+                });
+
+            }
+
+        },
+
+        openCard: function(card, opt){
+            if (!opt.isModal) {
+                card.trigger('card:open', {
+                    card: card
+                });
+            }
+        },
+
+        closeCard: function(card, opt){
+            if (!opt.isModal) {
+                card.trigger('card:close', {
+                    card: card
+                });
+            }
+        },
+
+        initUnit: function(units, raw){
+            var has_content;
+            $(units).forEach(function(unit){
+                var type = (/ck-(\w+)-unit/.exec(unit.className) || [])[1];
+                if (type) {
+                    if (exports[type](unit, raw)) {
+                        has_content = true;
+                    }
+                }
+            });
+            if (first_render === false) {
+                first_render = true;
+                bus.resolve('firstRender');
+            }
+            return has_content;
+        },
+
+        banner: function(unit, raw){
+            var data = bannerParser(unit, raw);
+            unit.innerHTML = tpl.convertTpl(tpl_banner.template, data, 'data');
+        },
+
+        box: function(unit, raw){
+            var data = boxParser(unit, raw);
+            if (data.hasContent || data.hd) {
+                unit.innerHTML = tpl.convertTpl(tpl_box.template, data, 'data');
+                if (data.config.disableReader === 'true') {
+                    if (first_render === false) {
+                        first_render = 'skip';
+                    }
+                    setTimeout(function(){
+                        $('.ckd-delay-content', unit).forEach(function(tpl){
+                            this(tpl).replaceWith(tpl.innerHTML);
+                        }, $);
+                        if (first_render === 'skip') {
+                            first_render = true;
+                            bus.resolve('firstRender');
+                        }
+                    }, 100);
+                }
+                return true;
+            } else {
+                $(unit).remove();
+            }
+        },
+
+        mini: function(unit, raw){
+            var data = miniParser(unit, raw);
+            data.items = data.items.filter(function(item){
+                if (!item.title && !item.author 
+                        && (!item.content || !item.content.length)) {
+                    return false;
+                }
+                return true;
+            }, data);
+            if (!data.items.length 
+                    && (!data.hd || data.config.blank == 'false')) {
+                $(unit).remove();
+                return;
+            }
+            if (data.config.limit 
+                    && data.config.limit < data.items.length) {
+                data.items.length = data.config.limit;
+            }
+            unit.innerHTML = tpl.convertTpl(tpl_mini.template, data, 'data');
+            return true;
+        },
+
+        list: function(unit, raw){
+            var data = listParser(unit, raw);
+            data.items = data.items.filter(function(item){
+                var style = this.style;
+                if (style === 'more' || style === 'menu') {
+                    if (!item.title) {
+                        return false;
+                    }
+                } else if (style === 'grid') {
+                    if (!item.icon) {
+                        return false;
+                    }
+                } else if (!item.title && !item.author) {
+                    return false;
+                }
+                return true;
+            }, data);
+            if (data.config.limit 
+                    && data.config.limit < data.items.length) {
+                data.items.length = data.config.limit;
+            }
+            if (!data.items.length 
+                    && (!data.hd || data.config.blank == 'false')) {
+                $(unit).remove();
+            } else {
+                unit.innerHTML = tpl.convertTpl(tpl_list.template, data, 'data');
+                return true;
+            }
+        },
+
+        form: function(unit, raw){
+            var data = formParser(unit, raw);
+            if (!data.items.length 
+                    && (!data.hd || data.config.blank == 'false')) {
+                $(unit).remove();
+            } else {
+                unit.innerHTML = tpl.convertTpl(tpl_form.template, data, 'data');
+                return true;
+            }
+        },
+
+        _frameConfig: {},
+        _frameCustomized: {},
+
+        setFrame: function(card, header, navDrawer, raw){
+            var cfg = this._frameConfig,
+                customized = this._frameCustomized,
+                global_cfg,
+                local_cfg,
+                cfg_node,
+                changed = {};
+            for (var part in frame_parts) {
+                if (!cfg[part] || customized[part]) {
+                    global_cfg = header.find('.ckcfg-' + part);
+                    if (global_cfg[0]) {
+                        cfg[part] = frame_parts[part](global_cfg, raw);
+                        if (cfg[part]) {
+                            changed[part] = true;
+                        }
+                    }
+                }
+                cfg_node = card.find('.ckcfg-' + part);
+                customized[part] = !!cfg_node[0];
+                if (customized[part]) {
+                    local_cfg = frame_parts[part](cfg_node, raw);
+                    if (local_cfg) {
+                        cfg[part] = local_cfg;
+                        changed[part] = true;
+                    } else {
+                        customized[part] = false;
+                    }
+                }
+            }
+            if (changed['card-actions']) {
+                var actions = cfg['actionbar'] = cfg['card-actions'],
+                    action_items = actions.items,
+                    action_overflow_items = actions.overflowItems;
+                action_items.push.apply(action_items, 
+                    slice.call(cfg['page-actions'].items));
+                action_overflow_items.push.apply(action_overflow_items, 
+                    slice.call(cfg['page-actions'].overflowItems));
+                action_overflow_items.unshift.apply(actions.overflowItems,
+                    slice.call(action_items.splice(actions.config.limit)));
+                $('.ck-top-actions').html(tpl.convertTpl(tpl_actionbar.template, cfg));
+            }
+            if (changed['navdrawer']) {
+                navDrawer.html(tpl.convertTpl(tpl_navdrawer.template, cfg));
+            }
+        }
+    
+    };
+
+    function run_script(script){
+        new Function('', script.innerHTML).call(this);
+    }
+
+    return exports;
 
 });
 
@@ -8246,9 +8261,11 @@ define("../cardkit/app", [
         showView: function(){
             $(body).addClass('ck-inited');
             ck.hideAddressbar();
-            ck.hideLoadingCard();
-            ck.enableControl();
-            bus.resolve('inited');
+            bus.once('firstRender', function(){
+                ck.hideLoadingCard();
+                ck.enableControl();
+                bus.resolve('inited');
+            });
         },
 
         initWindow: function(){

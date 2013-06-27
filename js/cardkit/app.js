@@ -706,9 +706,11 @@ define([
         showView: function(){
             $(body).addClass('ck-inited');
             ck.hideAddressbar();
-            ck.hideLoadingCard();
-            ck.enableControl();
-            bus.resolve('inited');
+            bus.once('firstRender', function(){
+                ck.hideLoadingCard();
+                ck.enableControl();
+                bus.resolve('inited');
+            });
         },
 
         initWindow: function(){
