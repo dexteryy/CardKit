@@ -293,10 +293,6 @@ body.fullscreen-mode.nav-view {
     margin:5px 0;
   }
 
-  body.has_ctlbar & {
-    height:15px + $nav_height;
-  }
-
 }
 
 .ckcfg-navdrawer,
@@ -371,6 +367,7 @@ body.fullscreen-mode.nav-view {
 
   input {
     @extend %float-bar;
+    opacity:1;
     float:left;
     display:inline-block;
     margin:0;

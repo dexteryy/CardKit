@@ -7995,7 +7995,7 @@ define("../cardkit/app", [
             this.header = $('.ck-header', root);
             if (!supports.BROWSER_CONTROL) {
                 this.ctlbar = $(tpl_ctlbar.template).appendTo(this.wrapper);
-                $(body).addClass('has_ctlbar');
+                $(body).addClass('has-ctlbar');
             }
             this.footer = $('.ck-footer', root);
             this.raw = $('.ck-raw', root);

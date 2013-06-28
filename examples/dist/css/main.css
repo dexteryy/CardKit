@@ -488,9 +488,6 @@ body.fullscreen-mode.nav-view .ck-top-nav {
   color: #8e8e8e;
   margin: 5px 0;
 }
-body.has_ctlbar .ck-footer {
-  height: 57.5px;
-}
 
 .ckcfg-navdrawer,
 .ckcfg-card-actions,
@@ -557,6 +554,7 @@ body.no-cardscroll .ck-navdrawer > article {
   z-index: 1000;
 }
 .ck-ctl-bar input {
+  opacity: 1;
   float: left;
   display: inline-block;
   margin: 0;
