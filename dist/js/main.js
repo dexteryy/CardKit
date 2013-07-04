@@ -5267,22 +5267,20 @@ define("../cardkit/view/modalcard", [
         if (!opt) {
             return this;
         }
+
         var self = this,
             url = opt.jsonUrl || opt.url;
         if (url) {
             opt.content = '';
             self.showLoading();
-            net.ajax({
-                url: url,
-                dataType: opt.jsonUrl ? 'json' : 'text',
-                success: function(data){
-                    if (opt.jsonUrl) {
-                        data = data.html;
-                    }
-                    self.setContent(data);
-                    self.hideLoading();
-                }
-            });
+            if (opt.jsonUrl) {
+                net.getJSON(url, callback);
+            } else if (opt.url) {
+                net.ajax({
+                    url: url,
+                    success: callback
+                });
+            }
         }
 
         _content_filter = opt.contentFilter;
@@ -5300,6 +5298,14 @@ define("../cardkit/view/modalcard", [
                     return elm.innerHTML;
                 }
             }).join('');
+        }
+
+        function callback(data){
+            if (opt.jsonUrl) {
+                data = data.html;
+            }
+            self.setContent(data);
+            self.hideLoading();
         }
 
         return origin_set.call(this, opt);
