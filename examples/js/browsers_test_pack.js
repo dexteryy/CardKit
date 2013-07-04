@@ -877,8 +877,7 @@ define("mo/lang/es5", [], function(){
         //window = host.window,
         _objproto = Object.prototype,
         _arrayproto = Array.prototype,
-        _fnproto = Function.prototype,
-        _toString = _objproto.toString;
+        _fnproto = Function.prototype;
 
     function Empty() {}
 
@@ -1006,7 +1005,7 @@ define("mo/lang/es5", [], function(){
 
     if (!Array.isArray) {
         Array.isArray = function(obj) {
-            return _toString.call(obj) === "[object Array]";
+            return _toString(obj) === "[object Array]";
         };
     }
 

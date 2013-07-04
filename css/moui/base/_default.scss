@@ -11,8 +11,8 @@ $experimental-support-for-opera : false;
 $experimental-support-for-khtml : false;
 // https://github.com/jhardy/compass-ceaser-easing
 @import "ceaser-easing";
-// https://github.com/adamstac/animate.sass
-@import "animate/shared";
+// https://github.com/ericam/compass-animate
+@import "animate";
 
 
 $text_color: #252525;

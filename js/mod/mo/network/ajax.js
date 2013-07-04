@@ -9,7 +9,7 @@ define("mo/network/ajax", [
     "../browsers"
 ], function(browsers, require, exports){
 
-    var httpParam = function(a) {
+    exports.params = function(a) {
         var s = [];
         if (a.constructor == Array) {
             for (var i = 0; i < a.length; i++)
@@ -24,7 +24,7 @@ define("mo/network/ajax", [
     /**
      * From jquery by John Resig
      */ 
-    var ajax = function(s){
+    exports.ajax = function(s){
         var options = {
             type: s.type || "GET",
             url: s.url || "",
@@ -50,7 +50,7 @@ define("mo/network/ajax", [
         };
         
         if ( options.data && options.processData && typeof options.data != "string" )
-            options.data = httpParam(options.data);
+            options.data = this.params(options.data);
         if ( options.data && options.type.toLowerCase() == "get" ) {
             options.url += (options.url.match(/\?/) ? "&" : "?") + options.data;
             options.data = null;
@@ -127,8 +127,5 @@ define("mo/network/ajax", [
         }
         return xhr;
     };
-
-    exports.ajax = ajax;
-    exports.params = httpParam;
 
 });

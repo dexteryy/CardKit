@@ -10,12 +10,10 @@
 define("mo/network", [
     "./lang", 
     "./network/ajax"
-], function(_, net, require, exports){
+], function(_, exports){
 
     var window = this,
         uuid4jsonp = 1;
-
-    _.mix(exports, net);
 
     exports.getScript = function(url, op){
         var doc = _.isWindow(this) ? this.document : document,
@@ -84,7 +82,7 @@ define("mo/network", [
         }
         var cbName = op.callbackName || 'jsoncallback';
         data[cbName] = op.callback;
-        url = [url, /\?/.test(url) ? "&" : "?", exports.httpParam(data)].join("");
+        url = [url, /\?/.test(url) ? "&" : "?", exports.params(data)].join("");
         if (fn) {
             _.ns(op.callback, fn);
         }
@@ -95,7 +93,7 @@ define("mo/network", [
     exports.getRequest = function(url, params){
         var img = new Image();
         img.onload = function(){ img = null; }; //阻止IE下的自动垃圾回收引起的请求未发出状况
-        img.src = !params ? url : [url, /\?/.test(url) ? "&" : "?", typeof params == "string" ? params : exports.httpParam(params)].join('');
+        img.src = !params ? url : [url, /\?/.test(url) ? "&" : "?", typeof params == "string" ? params : exports.params(params)].join('');
     };
 
     exports.parseJSON = function(json){
@@ -109,5 +107,9 @@ define("mo/network", [
         }
         return json;
     };
+
+    exports.httpParam = exports.params; // deprecated
+
+    return exports;
 
 });
