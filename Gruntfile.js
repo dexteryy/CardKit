@@ -172,12 +172,25 @@ module.exports = function(grunt) {
                 files: [{
                     expand: true,
                     cwd: '<%= meta.distDir %>/js/',
-                    src: ['**'],
+                    src: ['**', '!**/*.min.*'],
                     dest: '<%= meta.jsPublicDir %>/'
                 }, {
                     expand: true,
                     cwd: '<%= meta.distDir %>/css/',
-                    src: ['**'],
+                    src: ['**', '!**/*.min.*'],
+                    dest: '<%= meta.cssPublicDir %>/'
+                }]
+            },
+            min2pub: {
+                files: [{
+                    expand: true,
+                    cwd: '<%= meta.distDir %>/js/',
+                    src: ['**/*.min.*'],
+                    dest: '<%= meta.jsPublicDir %>/'
+                }, {
+                    expand: true,
+                    cwd: '<%= meta.distDir %>/css/',
+                    src: ['**/*.min.*'],
                     dest: '<%= meta.cssPublicDir %>/'
                 }]
             }
@@ -297,8 +310,17 @@ module.exports = function(grunt) {
         'copy:dist2examples'
     ]);
 
-    grunt.registerTask('deploy', [
+    grunt.registerTask('deploy:dist', [
         'copy:dist2pub'
+    ]);
+
+    grunt.registerTask('deploy:min', [
+        'copy:min2pub'
+    ]);
+
+    grunt.registerTask('deploy', [
+        'deploy:dist',
+        'deploy:min'
     ]);
 
     grunt.registerTask('default', [
