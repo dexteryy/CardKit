@@ -58,11 +58,10 @@ or build your own:
 1. `cp config.js.tmpl config.js`
 2. Resolve TODO in config.js
 3. `grunt`
-4. `grunt deploy`
 
 ## Dev Guild
 
-1. `grunt watch:dev` or `grunt watch:pub`
+1. `grunt watch`
 2. Edit source files in `js/`, `css/` and `tpl/`
 
 ## Docs & Demos

@@ -9,14 +9,18 @@ module.exports = function(grunt) {
             targetDir: 'target',
             distDir: 'dist',
             examplesDir: 'examples',
+            jstplDir: "js/<%= pkg.name %>/tpl",
             jsPublicDir: config.jsPublicDir + '/<%= pkg.name %>',
-            cssPublicDir: config.cssPublicDir + '/<%= pkg.name %>',
-            picsPublicDir: config.picsPublicDir + '/<%= pkg.name %>'
+            cssPublicDir: config.cssPublicDir + '/<%= pkg.name %>'
         },
 
         clean: {
-            test: ["<%= meta.examplesDir %>/dist"],
-            target: ["<%= meta.targetDir %>"],
+            jstpl: ["<%= meta.jstplDir %>/"],
+            examples_js: ["<%= meta.examplesDir %>/dist/js"],
+            examples_css: ["<%= meta.examplesDir %>/dist/css"],
+            target_js: ["<%= meta.targetDir %>/js"],
+            target_css: ["<%= meta.targetDir %>/css"],
+            target_pics: ["<%= meta.targetDir %>/pics"],
             dist: ["<%= meta.distDir %>"]
         },
 
@@ -30,7 +34,7 @@ module.exports = function(grunt) {
                     expand: true,     // Enable dynamic expansion.
                     cwd: 'tpl/',
                     src: ['**/*.tpl'], // Actual pattern(s) to match.
-                    dest: 'js/<%= pkg.name %>/tpl/',   // Destination path prefix.
+                    dest: '<%= meta.jstplDir %>/',   // Destination path prefix.
                     ext: '.js'
                 }]
             }
@@ -139,15 +143,39 @@ module.exports = function(grunt) {
         },
 
         copy: {
-            target2examples: {
+            target_js_to_examples: {
                 files: [{
                     expand: true,
-                    cwd: '<%= meta.targetDir %>/',
-                    src: ['**', '!pics/**'],
-                    dest: '<%= meta.examplesDir %>/dist/'
+                    cwd: '<%= meta.targetDir %>/js/',
+                    src: ['**'],
+                    dest: '<%= meta.examplesDir %>/dist/js/'
                 }]
             },
-            dist2examples: {
+            target_css_to_examples: {
+                files: [{
+                    expand: true,
+                    cwd: '<%= meta.targetDir %>/css/',
+                    src: ['**'],
+                    dest: '<%= meta.examplesDir %>/dist/css/'
+                }]
+            },
+            target_js_to_pub: {
+                files: [{
+                    expand: true,
+                    cwd: '<%= meta.targetDir %>/js/',
+                    src: ['**'],
+                    dest: '<%= meta.jsPublicDir %>/'
+                }]
+            },
+            target_css_to_pub: {
+                files: [{
+                    expand: true,
+                    cwd: '<%= meta.targetDir %>/css/',
+                    src: ['**'],
+                    dest: '<%= meta.cssPublicDir %>/'
+                }]
+            },
+            dist_to_examples: {
                 files: [{
                     expand: true,
                     cwd: '<%= meta.distDir %>/',
@@ -155,20 +183,7 @@ module.exports = function(grunt) {
                     dest: '<%= meta.examplesDir %>/dist/'
                 }]
             },
-            target2pub: {
-                files: [{
-                    expand: true,
-                    cwd: '<%= meta.targetDir %>/js/',
-                    src: ['**', '!pics/**'],
-                    dest: '<%= meta.jsPublicDir %>/'
-                }, {
-                    expand: true,
-                    cwd: '<%= meta.targetDir %>/css/',
-                    src: ['**', '!pics/**'],
-                    dest: '<%= meta.cssPublicDir %>/'
-                }]
-            },
-            dist2pub: {
+            dist_to_pub: {
                 files: [{
                     expand: true,
                     cwd: '<%= meta.distDir %>/js/',
@@ -181,7 +196,7 @@ module.exports = function(grunt) {
                     dest: '<%= meta.cssPublicDir %>/'
                 }]
             },
-            min2pub: {
+            min_to_pub: {
                 files: [{
                     expand: true,
                     cwd: '<%= meta.distDir %>/js/',
@@ -205,19 +220,19 @@ module.exports = function(grunt) {
                     asi: true 
                 },
                 files: {
-                    src: ['./*.js', 'js/**/*.js', '!js/mod/**', '!js/cardkit/tpl/**']
+                    src: ['./*.js', 'js/**/*.js', '!js/mod/**', '!<%= meta.jstplDir %>/**']
                 }
             },
             dist: {
                 files: {
-                    src: ['./*.js', 'js/**/*.js', '!js/mod/**', '!js/cardkit/tpl/**']
+                    src: ['./*.js', 'js/**/*.js', '!js/mod/**', '!<%= meta.jstplDir %>/**']
                 }
             }
         },
 
         complexity: {
             generic: {
-                src: ['js/cardkit/**/*.js', '!js/cardkit/tpl/**'],
+                src: ['js/<%= pkg.name %>/**/*.js', '!<%= meta.jstplDir %>/**'],
                 options: {
                     cyclomatic: 10,
                     halstead: 25,
@@ -238,31 +253,37 @@ module.exports = function(grunt) {
         },
 
         watch: {
-            dev: {
+            js: {
                 files: [
-                    'tpl/**/*.tpl', 
-                    'pics/**/*.{png,jpg}', 
                     'js/**/*.js', 
-                    'examples/js/**/*.js', 
-                    'css/**/*.scss'
+                    '!<%= meta.jstplDir %>/**',
+                    'examples/js/**/*.js',
+                    '!examples/js/**/*_pack.js'
                 ],
                 tasks: [
-                    'dev', 
-                    'devtest'
+                    'dev:js',
+                    'test'
                 ]
             },
-            pub: {
-                files: [
-                    'tpl/**/*.tpl', 
-                    'pics/**/*.{png,jpg}', 
-                    'js/**/*.js', 
-                    'examples/js/**/*.js', 
-                    'css/**/*.scss'
-                ],
+            css: {
+                files: ['css/**/*.scss'],
                 tasks: [
-                    'dev', 
-                    'devtest',
-                    'copy:target2pub'
+                    'dev:css',
+                    'test'
+                ]
+            },
+            tpl: {
+                files: ['tpl/**/*.tpl'],
+                tasks: [
+                    'dev:tpl',
+                    'test'
+                ]
+            },
+            img: {
+                files: ['pics/**/*.{png,jpg}'],
+                tasks: [
+                    'dev:img',
+                    'test'
                 ]
             }
         }
@@ -280,24 +301,36 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-compass');
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-complexity');
-
     grunt.loadNpmTasks('grunt-furnace');
     grunt.loadNpmTasks('grunt-ozjs');
-    
-    grunt.registerTask('dev', [
-        'clean:target', 
-        'clean:test', 
-        'furnace:tpl', 
+
+    grunt.registerTask('dev:js', [
+        'clean:target_js', 
+        'ozma',
+    ]);
+
+    grunt.registerTask('dev:css', [
+        'clean:target_css', 
+        'compass',
+    ]);
+
+    grunt.registerTask('dev:img', [
+        'clean:target_pics', 
         'imagemin', 
-        'ozma', 
-        'compass'
+        'dev:css'
     ]);
 
-    grunt.registerTask('devtest', [
-        'clean:test',
-        'copy:target2examples'
+    grunt.registerTask('dev:tpl', [
+        'clean:jstpl',
+        'furnace:tpl', 
+        'dev:js'
     ]);
 
+    grunt.registerTask('dev', [
+        'dev:tpl',
+        'dev:img'
+    ]);
+    
     grunt.registerTask('publish', [
         'clean:dist',
         'concat',
@@ -306,28 +339,42 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask('test', [
-        'clean:test',
-        'copy:dist2examples'
+        'test:examples',
+        'test:public'
     ]);
 
-    grunt.registerTask('deploy:dist', [
-        'copy:dist2pub'
+    grunt.registerTask('test:examples', [
+        'clean:examples_js',
+        'clean:examples_css',
+        'copy:target_js_to_examples',
+        'copy:target_css_to_examples',
     ]);
 
-    grunt.registerTask('deploy:min', [
-        'copy:min2pub'
+    grunt.registerTask('test:public', [
+        'copy:target_js_to_pub',
+        'copy:target_css_to_pub'
     ]);
 
     grunt.registerTask('deploy', [
-        'deploy:dist',
-        'deploy:min'
+        'deploy:examples',
+        'deploy:public'
+    ]);
+
+    grunt.registerTask('deploy:examples', [
+        'clean:examples_js',
+        'clean:examples_css',
+        'copy:dist_to_examples'
+    ]);
+
+    grunt.registerTask('deploy:public', [
+        'copy:dist_to_pub'
     ]);
 
     grunt.registerTask('default', [
         'jshint:dist',
         'dev',
         'publish',
-        'test'
+        'deploy'
     ]);
 
 };
