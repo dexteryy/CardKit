@@ -205,41 +205,38 @@ a {
 
 body.fullscreen-mode {
 
-  .ck-root .ck-header {
-    background:none;
-    border:none;
-    @include box-shadow(none);
-    width:auto;
-    top:$space - 2px;
-    left:$space + 2px;
-    right:$space + 2px;
-    @include transform(translateY(0));
-  }
+  //.ck-root .ck-header {
+    //background:none;
+    //border:none;
+    //@include box-shadow(none);
+    //width:auto;
+    //top:$space - 2px;
+    //left:$space + 2px;
+    //right:$space + 2px;
+    //@include transform(translateY(0));
+  //}
 
-  .ck-top-nav {
-    @include transition(opacity 0.3s 0.1s);
-    opacity:0;
-  }
+  //.ck-top-nav {
+    //@include transition(opacity 0.3s 0.1s);
+    //opacity:0;
+  //}
 
-  .ck-top-title {
-    @extend %float-bar;
-    left:0;
-    right:auto;
-    display:inline-block;
-    padding:0 $space 0 $top_btn_size;
-  }
+  //.ck-top-title {
+    //@extend %float-bar;
+    //left:0;
+    //right:auto;
+    //display:inline-block;
+    //padding:0 $space 0 $top_btn_size;
+  //}
 
-  .ck-top-actions {
-    @extend %float-bar;
-  }
+  //.ck-top-actions {
+    //@extend %float-bar;
+  //}
 
-  .ck-header, .ck-ctl-bar {
+  .ck-header { // @TODO temp
     display: none;
   }
-  .ck-banner-unit .ck-unit-wrap {
-    padding-top: 5px;
-    bottom: 0;
-  }
+
 }
 
 body.fullscreen-mode.ck-topbar-enabled {

@@ -4323,7 +4323,7 @@ a {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
-body.fullscreen-mode .ck-top-title, body.fullscreen-mode .ck-modalview > header h1, .ck-modalview > header body.fullscreen-mode h1, body.fullscreen-mode .ck-top-actions, body.fullscreen-mode.nav-view .ck-top-nav, .ck-ctl-bar input {
+body.fullscreen-mode.nav-view .ck-top-nav, .ck-ctl-bar input {
   background-color: rgba(69, 69, 69, 0.7);
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
@@ -4334,7 +4334,7 @@ body.fullscreen-mode .ck-top-title, body.fullscreen-mode .ck-modalview > header 
   transition: opacity 0.3s 0.1s;
   opacity: 0;
 }
-body.fullscreen-mode .ck-top-title:active, body.fullscreen-mode .ck-modalview > header h1:active, .ck-modalview > header body.fullscreen-mode h1:active, body.fullscreen-mode .ck-top-actions:active, body.fullscreen-mode.nav-view .ck-top-nav:active, .ck-ctl-bar input:active {
+body.fullscreen-mode.nav-view .ck-top-nav:active, .ck-ctl-bar input:active {
   opacity: .8;
 }
 
@@ -4448,40 +4448,8 @@ body.ck-topbar-enabled .ck-root .ck-header, body.ck-topbar-enabled .ck-root .ck-
   display: none;
 }
 
-body.fullscreen-mode .ck-root .ck-header, body.fullscreen-mode .ck-root .ck-modalview > header {
-  background: none;
-  border: none;
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
-  width: auto;
-  top: 8px;
-  left: 12px;
-  right: 12px;
-  -webkit-transform: translateY(0);
-  -moz-transform: translateY(0);
-  -ms-transform: translateY(0);
-  transform: translateY(0);
-}
-body.fullscreen-mode .ck-top-nav {
-  -webkit-transition: opacity 0.3s;
-  -webkit-transition-delay: 0.1s;
-  -moz-transition: opacity 0.3s 0.1s;
-  transition: opacity 0.3s 0.1s;
-  opacity: 0;
-}
-body.fullscreen-mode .ck-top-title, body.fullscreen-mode .ck-modalview > header h1, .ck-modalview > header body.fullscreen-mode h1 {
-  left: 0;
-  right: auto;
-  display: inline-block;
-  padding: 0 10px 0 40px;
-}
-body.fullscreen-mode .ck-header, body.fullscreen-mode .ck-modalview > header, body.fullscreen-mode .ck-ctl-bar {
+body.fullscreen-mode .ck-header, body.fullscreen-mode .ck-modalview > header {
   display: none;
-}
-body.fullscreen-mode .ck-banner-unit .ck-unit-wrap {
-  padding-top: 5px;
-  bottom: 0;
 }
 
 body.fullscreen-mode.ck-topbar-enabled .ck-top-nav,
@@ -5489,6 +5457,10 @@ body.fullscreen-mode .ck-top-tips, body.no-overflowscroll .ck-top-tips, body.no-
 .ck-banner-unit .ck-unit-wrap.empty {
   padding: 42.5px 0 0 0;
   background: #f2f2f2;
+}
+body.fullscreen-mode .ck-banner-unit .ck-unit-wrap {
+  padding-top: 5px;
+  bottom: 0;
 }
 body:not(.no-cardscroll):not(.no-overflowscroll) .ck-banner-unit {
   position: relative;

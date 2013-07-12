@@ -31,7 +31,7 @@ define([
 
         BROWSER_CONTROL: is_desktop
             || browsers.mobilesafari
-            //|| browsers.shell === 'micromessenger'
+            || browsers.webview
             //|| browsers.aosp
             || is_android && browsers.chrome,
 

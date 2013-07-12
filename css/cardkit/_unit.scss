@@ -929,9 +929,10 @@
       background:$view_color;
     }
 
-    //body.fullscreen-mode & {
-      //padding-top:$space/2;
-    //}
+    body.fullscreen-mode & {
+      padding-top:$space/2;
+      bottom:0;
+    }
 
   }
 
