@@ -4476,6 +4476,13 @@ body.fullscreen-mode .ck-top-title, body.fullscreen-mode .ck-modalview > header 
   display: inline-block;
   padding: 0 10px 0 40px;
 }
+body.fullscreen-mode .ck-header, body.fullscreen-mode .ck-modalview > header, body.fullscreen-mode .ck-ctl-bar {
+  display: none;
+}
+body.fullscreen-mode .ck-banner-unit .ck-unit-wrap {
+  padding-top: 5px;
+  bottom: 0;
+}
 
 body.fullscreen-mode.ck-topbar-enabled .ck-top-nav,
 body.fullscreen-mode.ck-topbar-enabled .ck-top-title,
@@ -4580,8 +4587,6 @@ body.no-cardscroll .ck-navdrawer > article {
   position: fixed;
   bottom: 8px;
   left: 12px;
-  right: 12px;
-  height: 42.5px;
   z-index: 1000;
 }
 .ck-ctl-bar input {
