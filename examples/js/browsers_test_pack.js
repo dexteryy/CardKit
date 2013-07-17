@@ -2718,7 +2718,7 @@ define('soviet', [
                 }
             }
             result = handler.call(t, e);
-            if (this.preventDefault && !result) { 
+            if (this.preventDefault && result === false) { 
                 e.preventDefault();
             }
         }
