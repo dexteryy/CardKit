@@ -7709,15 +7709,19 @@ define("../cardkit/app", [
             show_actions(me);
         },
 
-        '.ck-modal-button': open_modal_card,
-        '.ck-modal-link': open_modal_card,
+        '.ck-modal-button, .ck-modal-button *': open_modal_card,
+        '.ck-modal-link, .ck-modal-button *': open_modal_card,
 
         '.ck-growl-button': function(){
             growl(this).open();
         },
 
-        '.ck-actionview article > .ck-option': function(){
-            actionView.current.select(this);
+        '.ck-actionview article > .ck-option, .ck-actionview article > .ck-option > *': function(){
+            var me = $(this);
+            if (!me.hasClass('ck-option')) {
+                me = me.parent();
+            }
+            actionView.current.select(me);
         },
 
         '.ck-actionview > footer .confirm': function(){
@@ -7786,7 +7790,11 @@ define("../cardkit/app", [
     };
 
     function open_modal_card(){
-        ck.openModal($(this).data());
+        var me = $(this);
+        if (!me.hasClass('ck-modal-button')) {
+            me = me.closest('.ck-modal-button');
+        }
+        ck.openModal(me.data());
     }
 
     function handle_control(){
@@ -8851,8 +8859,11 @@ define("../cardkit/app", [
 
     function link_handler(e){
         var me = e.target;
-        while (!me.href) {
+        while (me && !me.href) {
             me = me.parentNode;
+        }
+        if (!me) {
+            return;
         }
         var next_id = check_inner_link(me.href);
         if (next_id === false) {
@@ -8904,6 +8915,7 @@ define("../cardkit/app", [
             });
             return;
         }
+
         ck._sessionLocked = true;
         var next = next_id && $('#' + next_id);
         if (!next.hasClass('ck-card')

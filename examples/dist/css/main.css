@@ -4197,6 +4197,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 .moui-actionview > footer .confirm,
 .ck-actionview > footer .confirm {
   margin: 0 7px 0 0;
+  white-space: nowrap;
 }
 .ckbase-btn:last-child, .ck-post-button:last-child, .ck-modal-button:last-child, .ck-actions-button:last-child, .ck-growl-button:last-child, .moui-segment .option:last-child, .ck-segment .option:last-child, .ck-segment .ck-option:last-child, .moui-modalview .wrapper > header button.confirm:last-child, .ck-modalview .wrapper > header button.confirm:last-child, .moui-modalview .wrapper > header button.cancel:last-child, .ck-modalview .wrapper > header button.cancel:last-child, .moui-actionview > footer .cancel:last-child, .ck-actionview > footer .cancel:last-child,
 .moui-actionview > footer .confirm:last-child,
@@ -4691,6 +4692,7 @@ body.no-cardscroll .ck-card {
 .ck-loading {
   display: block;
   position: fixed;
+  z-index: 1000;
   bottom: 0;
   left: 0;
   width: 100%;
