@@ -193,9 +193,13 @@ define([
             var selector = '.ck-top-overflow-items .ck-item,'
                     + '.ck-top-overflow-items .ck-overflow-item',
                 options = $(selector).map(function(item, i){
+                    var label = $(item).data('label');
+                    if (label) {
+                        label = $(label, item)[0];
+                    }
                     return $(tpl.convertTpl(this, {
                         i: i,
-                        text: $(item).html()
+                        text:  $(label || item).text()
                     }, 'item'))[0];
                 }, tpl_overflowmenu.template);
             actionView(this, {
