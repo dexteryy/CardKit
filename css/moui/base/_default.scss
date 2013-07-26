@@ -112,6 +112,7 @@ $zindex_step: 10;
 %button {
   @extend %block;
   margin:0 7px 0 0;
+  white-space: nowrap;
 
   &:last-child {
     margin-right:0;
