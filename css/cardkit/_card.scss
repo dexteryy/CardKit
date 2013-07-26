@@ -47,6 +47,7 @@
 .ck-loading {
   display:block;
   position:fixed;
+  z-index: $zindex_overlay;
   bottom:0;
   left:0;
   width:100%;
