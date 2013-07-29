@@ -5765,18 +5765,11 @@ body:not(.no-cardscroll):not(.no-overflowscroll) .ck-banner-unit .ck-top-tips {
   -ms-transform: translateY(0);
   transform: translateY(0);
 }
-
-body.no-cardscroll .moui-modalview, body.no-cardscroll .ck-modalview {
-  position: relative;
-  overflow: hidden;
+.moui-modalview.loading button.confirm, .loading.ck-modalview button.confirm {
+  opacity: .2;
 }
-body.no-cardscroll .moui-modalview .wrapper > article, body.no-cardscroll .ck-modalview .wrapper > article {
-  -webkit-overflow-scrolling: auto;
-  overflow-y: visible;
-  height: auto;
-}
-body.no-cardscroll .moui-modalview .wrapper > article > .content, body.no-cardscroll .ck-modalview .wrapper > article > .content {
-  min-height: 0;
+.moui-modalview.loading .wrapper > article > .content, .loading.ck-modalview .wrapper > article > .content {
+  opacity: 0;
 }
 
 .moui-actionview, .ck-actionview {
@@ -6067,6 +6060,19 @@ body.no-cardscroll .moui-actionview .wrapper, body.no-cardscroll .ck-actionview 
 }
 .moui-growl.active.corner-stick, .active.corner-stick.ck-growl {
   top: -35px;
+}
+
+body.no-cardscroll .ck-modalview {
+  position: relative;
+  overflow: hidden;
+}
+body.no-cardscroll .ck-modalview .wrapper > article {
+  -webkit-overflow-scrolling: auto;
+  overflow-y: visible;
+  height: auto;
+}
+body.no-cardscroll .ck-modalview .wrapper > article > .content {
+  min-height: 0;
 }
 
 .moui-select, .ck-select {

@@ -85,31 +85,17 @@
 
   }
 
-}
+  &.loading {
 
-body.no-cardscroll {
+    button.confirm {
+      opacity:.2;
+    }
 
-  .moui-modalview {
-    position:relative;
-    overflow:hidden;
-
-    .wrapper {
-      //@include transition(none);
-      //@include transform(translateY(0));
-    
-      & > article {
-        -webkit-overflow-scrolling: auto;
-        overflow-y:visible;
-        height:auto;
-
-        & > .content {
-          min-height:0;
-        }
-
-      }
-
+    .wrapper > article > .content {
+      opacity:0;
     }
 
   }
 
 }
+

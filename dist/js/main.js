@@ -3896,6 +3896,7 @@ define('moui/overlay', [
 
         applyClose: function() {
             this.isOpened = false;
+            this.hideLoading();
             this._content.empty();
             this._node.removeClass('rendered');
             this.event.fire('close', [this]);
@@ -5318,6 +5319,7 @@ define("../cardkit/view/modalcard", [
             className: 'ck-modalview',
             closeDelay: 400
         }),
+        _tm,
         _content_filter,
         origin_set_content = modalCard.setContent,
         origin_set = modalCard.set;
@@ -5328,10 +5330,12 @@ define("../cardkit/view/modalcard", [
         }
 
         var self = this,
+            tm = +new Date(),
             url = opt.jsonUrl || opt.url;
         if (url) {
             opt.content = '';
             self.showLoading();
+            _tm = tm;
             if (opt.jsonUrl) {
                 net.getJSON(url, callback);
             } else if (opt.url) {
@@ -5360,6 +5364,9 @@ define("../cardkit/view/modalcard", [
         }
 
         function callback(data){
+            if (tm !== _tm) {
+                return;
+            }
             if (opt.jsonUrl) {
                 data = data.html;
             }
@@ -5387,6 +5394,7 @@ define("../cardkit/view/modalcard", [
     modalCard.event.bind('confirm', function(modal){
         modal.event.fire('confirmOnThis', arguments);
     }).bind('close', function(modal){
+        _tm = 0;
         modal.event.unbind('confirmOnThis');
     });
 
@@ -7965,6 +7973,7 @@ define("../cardkit/app", [
         ck.changeView(current, { 
             isModal: true 
         });
+        ck.enableControl();
         if (modalCard._iframeContent) {
             modalCard.event.done('frameOnload', function(){
                 var iframe_body = $(modalCard._iframeWindow[0].document.body);
@@ -7972,23 +7981,9 @@ define("../cardkit/app", [
                 ck.initView(iframe_body, {
                     isModal: true
                 });
-                setTimeout(function(){
-                    ck.enableControl();
-                }, 400);
             });
         } else if (!modalCard._content.html()) { // @TODO 换更靠谱的方法
-            modalCard.event.done('contentchange', function(){
-                ck.initView(current, {
-                    isModal: true
-                });
-                setTimeout(function(){
-                    ck.enableControl();
-                }, 400);
-            });
-        } else {
-            setTimeout(function(){
-                ck.enableControl();
-            }, 400);
+            modalCard.event.done('contentchange', when_modal_content_loaded);
         }
     }).bind('prepareClose', function(){
         ck.disableView = false;
@@ -7997,12 +7992,14 @@ define("../cardkit/app", [
         ck.disableView = true;
         $(body).addClass('modal-view');
     }).bind('close', function(){
+        modalCard.event.cancel('contentchange', when_modal_content_loaded);
         ck.changeView(last_view_for_modal, {
             preventRender: ck._navDrawerLastView,
             isModal: ck._navDrawerLastView,
             isNotPrev: true
         });
         $(body).removeClass('bg');
+        ck.enableControl();
     //}).bind('needclose', function(){
         //ck.closeModal();
     });
@@ -8846,6 +8843,12 @@ define("../cardkit/app", [
     };
 
     function nothing(){}
+
+    function when_modal_content_loaded(){
+        ck.initView(modalCard._contentWrapper, {
+            isModal: true
+        });
+    }
 
     function stick_item(is_forward){
         var self = $(this).closest('.ck-list-wrap'),

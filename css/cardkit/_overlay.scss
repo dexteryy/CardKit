@@ -40,3 +40,30 @@
 .ck-growl {
   @extend .moui-growl;
 }
+
+body.no-cardscroll {
+
+  .ck-modalview {
+    position:relative;
+    overflow:hidden;
+
+    .wrapper {
+      //@include transition(none);
+      //@include transform(translateY(0));
+    
+      & > article {
+        -webkit-overflow-scrolling: auto;
+        overflow-y:visible;
+        height:auto;
+
+        & > .content {
+          min-height:0;
+        }
+
+      }
+
+    }
+
+  }
+
+}

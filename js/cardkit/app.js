@@ -347,6 +347,7 @@ define([
         ck.changeView(current, { 
             isModal: true 
         });
+        ck.enableControl();
         if (modalCard._iframeContent) {
             modalCard.event.done('frameOnload', function(){
                 var iframe_body = $(modalCard._iframeWindow[0].document.body);
@@ -354,23 +355,9 @@ define([
                 ck.initView(iframe_body, {
                     isModal: true
                 });
-                setTimeout(function(){
-                    ck.enableControl();
-                }, 400);
             });
         } else if (!modalCard._content.html()) { // @TODO 换更靠谱的方法
-            modalCard.event.done('contentchange', function(){
-                ck.initView(current, {
-                    isModal: true
-                });
-                setTimeout(function(){
-                    ck.enableControl();
-                }, 400);
-            });
-        } else {
-            setTimeout(function(){
-                ck.enableControl();
-            }, 400);
+            modalCard.event.done('contentchange', when_modal_content_loaded);
         }
     }).bind('prepareClose', function(){
         ck.disableView = false;
@@ -379,12 +366,14 @@ define([
         ck.disableView = true;
         $(body).addClass('modal-view');
     }).bind('close', function(){
+        modalCard.event.cancel('contentchange', when_modal_content_loaded);
         ck.changeView(last_view_for_modal, {
             preventRender: ck._navDrawerLastView,
             isModal: ck._navDrawerLastView,
             isNotPrev: true
         });
         $(body).removeClass('bg');
+        ck.enableControl();
     //}).bind('needclose', function(){
         //ck.closeModal();
     });
@@ -1228,6 +1217,12 @@ define([
     };
 
     function nothing(){}
+
+    function when_modal_content_loaded(){
+        ck.initView(modalCard._contentWrapper, {
+            isModal: true
+        });
+    }
 
     function stick_item(is_forward){
         var self = $(this).closest('.ck-list-wrap'),

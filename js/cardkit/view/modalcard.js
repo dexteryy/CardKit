@@ -9,6 +9,7 @@ define([
             className: 'ck-modalview',
             closeDelay: 400
         }),
+        _tm,
         _content_filter,
         origin_set_content = modalCard.setContent,
         origin_set = modalCard.set;
@@ -19,10 +20,12 @@ define([
         }
 
         var self = this,
+            tm = +new Date(),
             url = opt.jsonUrl || opt.url;
         if (url) {
             opt.content = '';
             self.showLoading();
+            _tm = tm;
             if (opt.jsonUrl) {
                 net.getJSON(url, callback);
             } else if (opt.url) {
@@ -51,6 +54,9 @@ define([
         }
 
         function callback(data){
+            if (tm !== _tm) {
+                return;
+            }
             if (opt.jsonUrl) {
                 data = data.html;
             }
@@ -78,6 +84,7 @@ define([
     modalCard.event.bind('confirm', function(modal){
         modal.event.fire('confirmOnThis', arguments);
     }).bind('close', function(modal){
+        _tm = 0;
         modal.event.unbind('confirmOnThis');
     });
 
