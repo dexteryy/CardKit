@@ -46,17 +46,25 @@ $zindex_overlay: 1000;
 $zindex_mask: 5000;
 $zindex_step: 10;
 
-%block {
+%reset-button {
   display:inline-block;
-  width: (160px/2);
-  height: $button_height;
   margin:0;
   padding:0;
   text-decoration:none;
   @include appearance(none);
   @include user-select(none);
   -webkit-tap-highlight-color: rgba(0,0,0,0);
+  background:none;
+  border:none;
+  text-align:center;
+  cursor:pointer;
+}
 
+%block {
+  @extend %reset-button;
+
+  width: (160px/2);
+  height: $button_height;
   background-color: #ececec;
   @include background-image(linear-gradient(bottom, #e2e2e2, #ececec));
   border: solid 1px rgba(0,0,0,.3);
@@ -67,7 +75,6 @@ $zindex_step: 10;
   font-size:$button_size;
   font-weight:bold;
   color:$text_color;
-  text-align:center;
   @include text-shadow(0 1px 1px #fff);
 }
 

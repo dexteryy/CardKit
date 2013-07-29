@@ -126,7 +126,7 @@ define('momo/base', [
     
     };
 
-    function nothing(){}
+    function nothing(){ return this; }
 
     function exports(elm, opt, cb){
         return new exports.Class(elm, opt, cb);

@@ -1520,6 +1520,7 @@ define("dollar/origin", [
             }, doc.body).filter(pick)[0],
         MOUSE_EVENTS = { click: 1, mousedown: 1, mouseup: 1, mousemove: 1 },
         TOUCH_EVENTS = { touchstart: 1, touchmove: 1, touchend: 1, touchcancel: 1 },
+        SPECIAL_TRIGGERS = { submit: 1, focus: 1, blur: 1 },
         CSS_NUMBER = { 
             'column-count': 1, 'columns': 1, 'font-weight': 1, 
             'line-height': 1, 'opacity': 1, 'z-index': 1, 'zoom': 1 
@@ -1766,6 +1767,9 @@ define("dollar/origin", [
             node.dataset[css_method(name)] = value;
         }, function(node, name){
             var data = (node || {}).dataset;
+            if (!data) {
+                return null;
+            }
             return name ? data[css_method(name)] 
                 : _.mix({}, data);
         }),
@@ -1962,7 +1966,7 @@ define("dollar/origin", [
                 $(this).off(subject, fn);
                 return cb.apply(this, arguments);
             };
-            $(this).on(subject, fn);
+            return $(this).on(subject, fn);
         },
 
         trigger: trigger,
@@ -1995,7 +1999,7 @@ define("dollar/origin", [
     }
 
     function matches_selector(elm, selector){
-        return elm && elm[MATCHES_SELECTOR](selector);
+        return elm && elm.nodeType === 1 && elm[MATCHES_SELECTOR](selector);
     }
 
     function find_selector(selector, attr){
@@ -2137,15 +2141,15 @@ define("dollar/origin", [
             event = Event(event);
         }
         _.mix(event, data);
-        me.forEach(event.type == 'submit' 
-            && !event.defaultPrevented 
-                ? function(node){
-                    node.submit();
-                } : function(node){
-                    if ('dispatchEvent' in node) {
-                        node.dispatchEvent(this);
-                    }
-                }, event);
+        me.forEach((SPECIAL_TRIGGERS[event.type]
+                && !event.defaultPrevented) 
+            ? function(node){
+                node[event.type]();
+            } : function(node){
+                if ('dispatchEvent' in node) {
+                    node.dispatchEvent(this);
+                }
+            }, event);
         return this;
     }
 
@@ -2274,8 +2278,6 @@ define("dollar/origin", [
     $.trigger = trigger;
     $._kvAccess = kv_access;
     $._eachNode = each_node;
-
-    $.VERSION = '1.2.0';
 
     return $;
 
@@ -4350,6 +4352,24 @@ define('moui/picker', [
             return this;
         },
 
+        _watchEnable: function(controller){
+            controller._pickerEnableWatcher = when_enable.bind(this);
+            controller.event.bind('enable', controller._pickerEnableWatcher);
+        },
+
+        _watchDisable: function(controller){
+            controller._pickerDisableWatcher = when_disable.bind(this);
+            controller.event.bind('disable', controller._pickerDisableWatcher);
+        },
+
+        _unwatchEnable: function(controller){
+            controller.event.unbind('enable', controller._pickerEnableWatcher);
+        },
+
+        _unwatchDisable: function(controller){
+            controller.event.unbind('disable', controller._pickerDisableWatcher);
+        },
+
         addOption: function(elm){
             elm = $(elm)[0];
             if (elm[OID]) {
@@ -4360,8 +4380,7 @@ define('moui/picker', [
                 enableVal: elm.value,
                 label: false
             });
-            controller.event.bind('enable', when_enable.bind(this))
-                .bind('disable', when_disable.bind(this));
+            this._watchEnable(controller);
             this._options.push(controller);
             if (controller.isEnabled) {
                 change.call(this, 'enable', controller);
@@ -4417,19 +4436,24 @@ define('moui/picker', [
             }
         },
 
+        getSelectedData: function() {
+            var list = this.getSelected().map(function(controller){
+                return controller.data();
+            });
+            if (list.length <= 1) {
+                return list[0];
+            }
+            return list;
+        },
+
         val: function(){
-            if (!this._config) {
-                return;
+            var list = this.getSelected().map(function(controller){
+                return controller.val();
+            });
+            if (list.length <= 1) {
+                return list[0];
             }
-            if (this._config.multiselect) {
-                return this._allSelected.map(function(controller){
-                    return controller.val();
-                });
-            } else {
-                if (this._lastSelected) {
-                    return this._lastSelected.val();
-                }
-            }
+            return list;
         },
 
         data: function(){
@@ -4456,8 +4480,13 @@ define('moui/picker', [
         selectAll: function(){
             if (this._config.multiselect) {
                 this._options.forEach(function(controller){
-                    controller.enable();
-                });
+                    if (!controller.isEnabled) {
+                        this._unwatchEnable(controller);
+                        controller.enable();
+                        change.call(this, 'enable', controller);
+                    }
+                }, this);
+                this.event.fire('change', [this, this._options[0]]);
             }
             this._lastActionTarget = null;
             return this;
@@ -4466,9 +4495,14 @@ define('moui/picker', [
         unselectAll: function(){
             if (this._config.multiselect) {
                 this._options.forEach(function(controller){
-                    controller.disable();
-                });
+                    if (controller.isEnabled) {
+                        this._unwatchDisable(controller);
+                        controller.disable();
+                        change.call(this, 'disable', controller);
+                    }
+                }, this);
                 this._lastActionTarget = null;
+                this.event.fire('change', [this, this._options[0]]);
             } else {
                 this.undo();
             }
@@ -4478,8 +4512,17 @@ define('moui/picker', [
         selectInvert: function(){
             if (this._config.multiselect) {
                 this._options.forEach(function(controller){
-                    controller.toggle();
-                });
+                    if (controller.isEnabled) {
+                        this._unwatchDisable(controller);
+                        controller.toggle();
+                        change.call(this, 'disable', controller);
+                    } else {
+                        this._unwatchEnable(controller);
+                        controller.toggle();
+                        change.call(this, 'enable', controller);
+                    }
+                }, this);
+                this.event.fire('change', [this, this._options[0]]);
             }
             this._lastActionTarget = null;
             return this;
@@ -4532,16 +4575,26 @@ define('moui/picker', [
 
     function change(subject, controller){
         if (subject === 'enable') {
+            if (!this._config.ignoreStatus) {
+                this._unwatchEnable(controller);
+                this._watchDisable(controller);
+            }
             if (this._config.multiselect) {
                 this._allSelected.push(controller);
             } else {
                 var last = this._lastSelected;
                 this._lastSelected = controller;
                 if (last) {
+                    this._unwatchDisable(last);
                     last.disable();
+                    this._watchEnable(last);
                 }
             }
         } else {
+            if (!this._config.ignoreStatus) {
+                this._unwatchDisable(controller);
+                this._watchEnable(controller);
+            }
             if (this._config.multiselect) {
                 var i = this._allSelected.indexOf(controller);
                 if (i !== -1) {
@@ -4685,6 +4738,12 @@ define('moui/actionview', [
         val: function(){
             if (this._picker) {
                 return this._picker.val();
+            }
+        },
+
+        data: function(){
+            if (this._picker) {
+                return this._picker.getSelectedData();
             }
         },
 
@@ -5951,7 +6010,7 @@ define('momo/base', [
     
     };
 
-    function nothing(){}
+    function nothing(){ return this; }
 
     function exports(elm, opt, cb){
         return new exports.Class(elm, opt, cb);

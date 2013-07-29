@@ -130,15 +130,17 @@
             </div>
             <div class="ckd-item">
 <!--demo-->
-<div class="ck-segment demo" 
+<div class="ck-segment picker1-2 demo" 
         data-label="false">
     <button type="button" class="ck-option" 
+            value="up"
             data-num-field=".op-num span"
             data-enable-method="get"
             data-enable-url="data/enable.txt">Up
         <span class="op-num">(<span>100</span>)</span>
     </button>
     <button type="button" class="ck-option"
+            value="down"
             data-num-field=".op-num span"
             data-enable-method="get"
             data-enable-url="data/disable.txt">Down
@@ -381,6 +383,7 @@ require([
 
     ck.delegate.on('picker:change', {
 
+        '.picker1-2': show_result,
         '.picker2': show_result,
         '.picker3': show_result,
 
@@ -404,7 +407,9 @@ require([
                     default:
                 }
             }
-        }
+        },
+
+        '.actions1-1': show_result
 
     }).on('picker:response', {
 

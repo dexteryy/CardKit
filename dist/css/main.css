@@ -4092,8 +4092,6 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 .moui-switch .disable-text,
 .ck-switch .disable-text, .moui-select, .ck-select {
   display: inline-block;
-  width: 80px;
-  height: 29px;
   margin: 0;
   padding: 0;
   text-decoration: none;
@@ -4105,6 +4103,19 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   -ms-user-select: none;
   user-select: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  background: none;
+  border: none;
+  text-align: center;
+  cursor: pointer;
+}
+
+.ckbase-btn, .ck-post-button, .ck-modal-button, .ck-actions-button, .ck-growl-button, .moui-segment .option, .ck-segment .option, .ck-segment .ck-option, .moui-modalview .wrapper > header button.confirm, .ck-modalview .wrapper > header button.confirm, .moui-modalview .wrapper > header button.cancel, .ck-modalview .wrapper > header button.cancel, .moui-actionview > footer .cancel, .ck-actionview > footer .cancel,
+.moui-actionview > footer .confirm,
+.ck-actionview > footer .confirm, .moui-switch, .ck-switch, .moui-switch .block, .ck-switch .block, .moui-switch .enable-text, .ck-switch .enable-text,
+.moui-switch .disable-text,
+.ck-switch .disable-text, .moui-select, .ck-select {
+  width: 80px;
+  height: 29px;
   background-color: #ececec;
   background-image: -webkit-linear-gradient(bottom, #e2e2e2, #ececec);
   background-image: -moz-linear-gradient(bottom, #e2e2e2, #ececec);
@@ -4120,7 +4131,6 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   font-size: 15px;
   font-weight: bold;
   color: #252525;
-  text-align: center;
   text-shadow: 0 1px 1px white;
 }
 

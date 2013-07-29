@@ -210,10 +210,14 @@
         data-fluid="true"
         data-title="Choose the order">
     <input type="hidden" value="date">
-    <button type="button" value="price" class="ck-option">Order by price</button>
-    <button type="button" value="date" class="ck-option enabled">Order by date</button>
-    <button type="button" value="alpha" class="ck-option">Order by alphabet</button>
-    <button type="button" value="editor" class="ck-option">Order by editor</button>
+    <button type="button" value="price" 
+         data-a="1" data-b="10" class="ck-option">Order by price</button>
+    <button type="button" value="date" 
+         data-a="2" data-b="20"  class="ck-option enabled">Order by date</button>
+    <button type="button" value="alpha" 
+         data-a="3" data-b="30"  class="ck-option">Order by alphabet</button>
+    <button type="button" value="editor" 
+         data-a="4" data-b="40"  class="ck-option">Order by editor</button>
 </div>
 <!--demo end-->
                 <div class="ck-folder"
@@ -233,10 +237,10 @@
         data-title="Choose members"
         data-content="1. member A<br>2. member B<br>3. member C<br>4. member D">
     <span>Choose members</span>
-    <input class="ck-option" type="button" value="A">
-    <input class="ck-option enabled" type="button" value="B">
-    <input class="ck-option" type="button" value="C">
-    <input class="ck-option" type="button" value="D">
+    <input class="ck-option" type="button" value="A" data-a="1" data-b="10">
+    <input class="ck-option enabled" type="button" value="B" data-a="2" data-b="20">
+    <input class="ck-option" type="button" value="C" data-a="3" data-b="30">
+    <input class="ck-option" type="button" value="D" data-a="4" data-b="40">
 </button>
 <!--demo end-->
                 <div class="ck-folder"
@@ -547,7 +551,9 @@ require([
 
     function when_confirm(e){
         var result = e.component.val();
+        var data = e.component.data();
         console.info('value: ', result);
+        console.info('data: ', data);
         notify.set({
             content: 'value: ' + result
         }).open();

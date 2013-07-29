@@ -76,6 +76,24 @@ define('moui/picker', [
             return this;
         },
 
+        _watchEnable: function(controller){
+            controller._pickerEnableWatcher = when_enable.bind(this);
+            controller.event.bind('enable', controller._pickerEnableWatcher);
+        },
+
+        _watchDisable: function(controller){
+            controller._pickerDisableWatcher = when_disable.bind(this);
+            controller.event.bind('disable', controller._pickerDisableWatcher);
+        },
+
+        _unwatchEnable: function(controller){
+            controller.event.unbind('enable', controller._pickerEnableWatcher);
+        },
+
+        _unwatchDisable: function(controller){
+            controller.event.unbind('disable', controller._pickerDisableWatcher);
+        },
+
         addOption: function(elm){
             elm = $(elm)[0];
             if (elm[OID]) {
@@ -86,8 +104,7 @@ define('moui/picker', [
                 enableVal: elm.value,
                 label: false
             });
-            controller.event.bind('enable', when_enable.bind(this))
-                .bind('disable', when_disable.bind(this));
+            this._watchEnable(controller);
             this._options.push(controller);
             if (controller.isEnabled) {
                 change.call(this, 'enable', controller);
@@ -143,19 +160,24 @@ define('moui/picker', [
             }
         },
 
+        getSelectedData: function() {
+            var list = this.getSelected().map(function(controller){
+                return controller.data();
+            });
+            if (list.length <= 1) {
+                return list[0];
+            }
+            return list;
+        },
+
         val: function(){
-            if (!this._config) {
-                return;
+            var list = this.getSelected().map(function(controller){
+                return controller.val();
+            });
+            if (list.length <= 1) {
+                return list[0];
             }
-            if (this._config.multiselect) {
-                return this._allSelected.map(function(controller){
-                    return controller.val();
-                });
-            } else {
-                if (this._lastSelected) {
-                    return this._lastSelected.val();
-                }
-            }
+            return list;
         },
 
         data: function(){
@@ -182,8 +204,13 @@ define('moui/picker', [
         selectAll: function(){
             if (this._config.multiselect) {
                 this._options.forEach(function(controller){
-                    controller.enable();
-                });
+                    if (!controller.isEnabled) {
+                        this._unwatchEnable(controller);
+                        controller.enable();
+                        change.call(this, 'enable', controller);
+                    }
+                }, this);
+                this.event.fire('change', [this, this._options[0]]);
             }
             this._lastActionTarget = null;
             return this;
@@ -192,9 +219,14 @@ define('moui/picker', [
         unselectAll: function(){
             if (this._config.multiselect) {
                 this._options.forEach(function(controller){
-                    controller.disable();
-                });
+                    if (controller.isEnabled) {
+                        this._unwatchDisable(controller);
+                        controller.disable();
+                        change.call(this, 'disable', controller);
+                    }
+                }, this);
                 this._lastActionTarget = null;
+                this.event.fire('change', [this, this._options[0]]);
             } else {
                 this.undo();
             }
@@ -204,8 +236,17 @@ define('moui/picker', [
         selectInvert: function(){
             if (this._config.multiselect) {
                 this._options.forEach(function(controller){
-                    controller.toggle();
-                });
+                    if (controller.isEnabled) {
+                        this._unwatchDisable(controller);
+                        controller.toggle();
+                        change.call(this, 'disable', controller);
+                    } else {
+                        this._unwatchEnable(controller);
+                        controller.toggle();
+                        change.call(this, 'enable', controller);
+                    }
+                }, this);
+                this.event.fire('change', [this, this._options[0]]);
             }
             this._lastActionTarget = null;
             return this;
@@ -258,16 +299,26 @@ define('moui/picker', [
 
     function change(subject, controller){
         if (subject === 'enable') {
+            if (!this._config.ignoreStatus) {
+                this._unwatchEnable(controller);
+                this._watchDisable(controller);
+            }
             if (this._config.multiselect) {
                 this._allSelected.push(controller);
             } else {
                 var last = this._lastSelected;
                 this._lastSelected = controller;
                 if (last) {
+                    this._unwatchDisable(last);
                     last.disable();
+                    this._watchEnable(last);
                 }
             }
         } else {
+            if (!this._config.ignoreStatus) {
+                this._unwatchDisable(controller);
+                this._watchEnable(controller);
+            }
             if (this._config.multiselect) {
                 var i = this._allSelected.indexOf(controller);
                 if (i !== -1) {

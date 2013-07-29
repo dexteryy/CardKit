@@ -26,6 +26,7 @@ define("dollar/origin", [
             }, doc.body).filter(pick)[0],
         MOUSE_EVENTS = { click: 1, mousedown: 1, mouseup: 1, mousemove: 1 },
         TOUCH_EVENTS = { touchstart: 1, touchmove: 1, touchend: 1, touchcancel: 1 },
+        SPECIAL_TRIGGERS = { submit: 1, focus: 1, blur: 1 },
         CSS_NUMBER = { 
             'column-count': 1, 'columns': 1, 'font-weight': 1, 
             'line-height': 1, 'opacity': 1, 'z-index': 1, 'zoom': 1 
@@ -272,6 +273,9 @@ define("dollar/origin", [
             node.dataset[css_method(name)] = value;
         }, function(node, name){
             var data = (node || {}).dataset;
+            if (!data) {
+                return null;
+            }
             return name ? data[css_method(name)] 
                 : _.mix({}, data);
         }),
@@ -468,7 +472,7 @@ define("dollar/origin", [
                 $(this).off(subject, fn);
                 return cb.apply(this, arguments);
             };
-            $(this).on(subject, fn);
+            return $(this).on(subject, fn);
         },
 
         trigger: trigger,
@@ -501,7 +505,7 @@ define("dollar/origin", [
     }
 
     function matches_selector(elm, selector){
-        return elm && elm[MATCHES_SELECTOR](selector);
+        return elm && elm.nodeType === 1 && elm[MATCHES_SELECTOR](selector);
     }
 
     function find_selector(selector, attr){
@@ -643,15 +647,15 @@ define("dollar/origin", [
             event = Event(event);
         }
         _.mix(event, data);
-        me.forEach(event.type == 'submit' 
-            && !event.defaultPrevented 
-                ? function(node){
-                    node.submit();
-                } : function(node){
-                    if ('dispatchEvent' in node) {
-                        node.dispatchEvent(this);
-                    }
-                }, event);
+        me.forEach((SPECIAL_TRIGGERS[event.type]
+                && !event.defaultPrevented) 
+            ? function(node){
+                node[event.type]();
+            } : function(node){
+                if ('dispatchEvent' in node) {
+                    node.dispatchEvent(this);
+                }
+            }, event);
         return this;
     }
 
@@ -780,8 +784,6 @@ define("dollar/origin", [
     $.trigger = trigger;
     $._kvAccess = kv_access;
     $._eachNode = each_node;
-
-    $.VERSION = '1.2.0';
 
     return $;
 

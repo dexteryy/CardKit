@@ -113,6 +113,12 @@ define('moui/actionview', [
             }
         },
 
+        data: function(){
+            if (this._picker) {
+                return this._picker.getSelectedData();
+            }
+        },
+
         confirm: function(){
             this.event.fire('confirm', [this, this._picker]);
             return this.ok();
