@@ -1,7 +1,7 @@
 
 require.config({
-    baseUrl: 'js/mod/',
-    distUrl: 'dist/js/mod/',
+    baseUrl: 'js/component/',
+    distUrl: 'dist/js/component/',
     aliases: {
         'cardkit': '../cardkit/'
     }

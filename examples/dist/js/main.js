@@ -1,4 +1,4 @@
-/*! cardkit - v1.3.1 */
+/*! cardkit - v1.4.0 */
 ;
 
 /**
@@ -9253,8 +9253,8 @@ define("../cardkit/app", [
 
 
 require.config({
-    baseUrl: 'js/mod/',
-    distUrl: 'dist/js/mod/',
+    baseUrl: 'js/component/',
+    distUrl: 'dist/js/component/',
     aliases: {
         'cardkit': '../cardkit/'
     }

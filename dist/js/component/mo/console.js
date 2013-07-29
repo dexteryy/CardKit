@@ -1,9 +1,12 @@
+/*! cardkit - v1.4.0 */
+;
+
 
 define('mo/console', [
-    './lang',
-    './browsers',
-    './template/string',
-    './domready'
+  "mo/lang",
+  "mo/browsers",
+  "mo/template/string",
+  "mo/domready"
 ], function(_, browsers, tpl){
 
     var console = this.console = this.console || {},

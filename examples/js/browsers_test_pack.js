@@ -1,5 +1,5 @@
 
-/* @source ../lib/oz.js */;
+/* @source oz.js */;
 
 /**
  * OzJS: microkernel for modular javascript 

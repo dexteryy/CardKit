@@ -1,6 +1,0 @@
-{
-  "baseUrl":"js/mod/",
-  "distUrl":"target/js/mod/",
-  "loader":"../lib/oz.js",
-  "disableAutoSuffix":true
-}

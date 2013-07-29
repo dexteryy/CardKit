@@ -7,21 +7,76 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
         meta: {
             targetDir: 'target',
-            distDir: 'dist',
+            distDir: '.dist',
+            releaseDir: 'dist',
             examplesDir: 'examples',
             jstplDir: "js/<%= pkg.name %>/tpl",
+            jsComponentDir: "js/component",
             jsPublicDir: config.jsPublicDir + '/<%= pkg.name %>',
             cssPublicDir: config.cssPublicDir + '/<%= pkg.name %>'
         },
 
         clean: {
             jstpl: ["<%= meta.jstplDir %>/"],
-            examples_js: ["<%= meta.examplesDir %>/dist/js"],
-            examples_css: ["<%= meta.examplesDir %>/dist/css"],
+            jsComponent: ["<%= meta.jsComponentDir %>/"],
+            cssMoui: ["css/moui/"],
+            examples_dist: ["<%= meta.examplesDir %>/dist/js", "<%= meta.examplesDir %>/dist/css"],
             target_js: ["<%= meta.targetDir %>/js"],
             target_css: ["<%= meta.targetDir %>/css"],
             target_pics: ["<%= meta.targetDir %>/pics"],
+            release: ["<%= meta.releaseDir %>"],
             dist: ["<%= meta.distDir %>"]
+        },
+
+        dispatch: {
+            options: {
+                directory: "bower_components"
+            },
+            "ozjs": {
+                use: {
+                    "<%= meta.jsComponentDir %>/": "oz.js"
+                }
+            },
+            "mo": {
+                use: {
+                    "<%= meta.jsComponentDir %>/mo/": ["**/*.js", "!**/Gruntfile.js"]
+                }
+            },
+            "eventmaster": {
+                use: {
+                    "<%= meta.jsComponentDir %>/": "eventmaster.js"
+                }
+            },
+            "dollar": {
+                use: {
+                    "<%= meta.jsComponentDir %>/": ["**/*.js", "!**/Gruntfile.js"]
+                }
+            },
+            "soviet": {
+                use: {
+                    "<%= meta.jsComponentDir %>/": "soviet.js"
+                }
+            },
+            "choreo": {
+                use: {
+                    "<%= meta.jsComponentDir %>/": "choreo.js"
+                }
+            },
+            "momo": {
+                use: {
+                    "<%= meta.jsComponentDir %>/": ["**/*.js", "!**/Gruntfile.js"]
+                }
+            },
+            "moui": {
+                use: [{
+                    cwd: "css/moui",
+                    src: ["**"],
+                    dest: "css/moui/"
+                }, {
+                    src: ["**/*.js", "!**/Gruntfile.js"],
+                    dest: "<%= meta.jsComponentDir %>/moui/"
+                }]
+            }
         },
 
         furnace: {
@@ -42,20 +97,20 @@ module.exports = function(grunt) {
 
         ozma: {
             main: {
-                saveConfig: true,
+                saveConfig: false,
                 src: 'js/main.js',
                 config: {
-                    baseUrl: "js/mod/",
-                    distUrl: "<%= meta.targetDir %>/js/mod/",
-                    loader: "../lib/oz.js",
+                    baseUrl: "<%= meta.jsComponentDir %>/",
+                    distUrl: "<%= meta.targetDir %>/<%= meta.jsComponentDir %>/",
+                    loader: "oz.js",
                     disableAutoSuffix: true
                 }
             },
             browsers: {
                 src: 'examples/js/browsers_test.js',
                 config: {
-                    baseUrl: "js/mod/",
-                    loader: "../lib/oz.js"
+                    baseUrl: "<%= meta.jsComponentDir %>/",
+                    loader: "oz.js"
                 }
             }
         },
@@ -143,44 +198,30 @@ module.exports = function(grunt) {
         },
 
         copy: {
-            target_js_to_examples: {
+            target_to_examples: {
                 files: [{
                     expand: true,
                     cwd: '<%= meta.targetDir %>/js/',
                     src: ['**'],
                     dest: '<%= meta.examplesDir %>/dist/js/'
-                }]
-            },
-            target_css_to_examples: {
-                files: [{
+                }, {
                     expand: true,
                     cwd: '<%= meta.targetDir %>/css/',
                     src: ['**'],
                     dest: '<%= meta.examplesDir %>/dist/css/'
                 }]
             },
-            target_js_to_pub: {
+            target_to_pub: {
                 files: [{
                     expand: true,
                     cwd: '<%= meta.targetDir %>/js/',
                     src: ['**'],
                     dest: '<%= meta.jsPublicDir %>/'
-                }]
-            },
-            target_css_to_pub: {
-                files: [{
+                }, {
                     expand: true,
                     cwd: '<%= meta.targetDir %>/css/',
                     src: ['**'],
                     dest: '<%= meta.cssPublicDir %>/'
-                }]
-            },
-            dist_to_examples: {
-                files: [{
-                    expand: true,
-                    cwd: '<%= meta.distDir %>/',
-                    src: ['**'],
-                    dest: '<%= meta.examplesDir %>/dist/'
                 }]
             },
             dist_to_pub: {
@@ -196,6 +237,19 @@ module.exports = function(grunt) {
                     dest: '<%= meta.cssPublicDir %>/'
                 }]
             },
+            release_to_examples: {
+                files: [{
+                    expand: true,
+                    cwd: '<%= meta.releaseDir %>/js/',
+                    src: ['**'],
+                    dest: '<%= meta.examplesDir %>/dist/js/'
+                }, {
+                    expand: true,
+                    cwd: '<%= meta.releaseDir %>/css/',
+                    src: ['**'],
+                    dest: '<%= meta.examplesDir %>/dist/css/'
+                }]
+            },
             min_to_pub: {
                 files: [{
                     expand: true,
@@ -207,6 +261,22 @@ module.exports = function(grunt) {
                     cwd: '<%= meta.distDir %>/css/',
                     src: ['**/*.min.*'],
                     dest: '<%= meta.cssPublicDir %>/'
+                }]
+            },
+            restore: {
+                files: [{
+                    expand: true,
+                    cwd: '<%= meta.releaseDir %>/',
+                    src: ['**'],
+                    dest: '<%= meta.distDir %>/'
+                }]
+            },
+            release: {
+                files: [{
+                    expand: true,
+                    cwd: '<%= meta.distDir %>/',
+                    src: ['**'],
+                    dest: '<%= meta.releaseDir %>/'
                 }]
             }
         },
@@ -220,12 +290,12 @@ module.exports = function(grunt) {
                     asi: true 
                 },
                 files: {
-                    src: ['./*.js', 'js/**/*.js', '!js/mod/**', '!<%= meta.jstplDir %>/**']
+                    src: ['./*.js', 'js/**/*.js', '!<%= meta.jsComponentDir %>/**', '!<%= meta.jstplDir %>/**']
                 }
             },
             dist: {
                 files: {
-                    src: ['./*.js', 'js/**/*.js', '!js/mod/**', '!<%= meta.jstplDir %>/**']
+                    src: ['./*.js', 'js/**/*.js', '!<%= meta.jsComponentDir %>/**', '!<%= meta.jstplDir %>/**']
                 }
             }
         },
@@ -302,7 +372,14 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-complexity');
     grunt.loadNpmTasks('grunt-furnace');
+    grunt.loadNpmTasks('grunt-dispatch');
     grunt.loadNpmTasks('grunt-ozjs');
+
+    grunt.registerTask('prepare', [
+        'clean:jsComponent',
+        'clean:cssMoui',
+        'dispatch'
+    ]);
 
     grunt.registerTask('dev:js', [
         'clean:target_js', 
@@ -331,7 +408,7 @@ module.exports = function(grunt) {
         'dev:img'
     ]);
     
-    grunt.registerTask('publish', [
+    grunt.registerTask('build', [
         'clean:dist',
         'concat',
         'uglify', 
@@ -339,42 +416,37 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask('test', [
-        'test:examples',
-        'test:public'
+        'clean:examples_dist',
+        'copy:target_to_examples',
+        'copy:target_to_pub'
     ]);
 
-    grunt.registerTask('test:examples', [
-        'clean:examples_js',
-        'clean:examples_css',
-        'copy:target_js_to_examples',
-        'copy:target_css_to_examples',
-    ]);
-
-    grunt.registerTask('test:public', [
-        'copy:target_js_to_pub',
-        'copy:target_css_to_pub'
-    ]);
-
-    grunt.registerTask('deploy', [
-        'deploy:examples',
-        'deploy:public'
-    ]);
-
-    grunt.registerTask('deploy:examples', [
-        'clean:examples_js',
-        'clean:examples_css',
-        'copy:dist_to_examples'
-    ]);
-
-    grunt.registerTask('deploy:public', [
-        'copy:dist_to_pub'
+    grunt.registerTask('restore', [
+        'clean:examples_dist',
+        'copy:release_to_examples',
+        'clean:dist',
+        'copy:restore'
     ]);
 
     grunt.registerTask('default', [
+        'prepare',
         'jshint:dist',
         'dev',
-        'publish',
-        'deploy'
+        'restore'
+    ]);
+
+    grunt.registerTask('deploy', [
+        'build',
+        'copy:dist_to_pub'
+    ]);
+
+    grunt.registerTask('publish', [
+        'prepare',
+        'jshint:dist',
+        'dev',
+        'build',
+        'copy:release',
+        'restore'
     ]);
 
 };

@@ -45,13 +45,14 @@ or build your own:
 
 1. node, npm
 2. [grunt v0.4](http://gruntjs.com/getting-started) - `npm install grunt-cli -g`
-3. [istatic v0.3.2+](https://ozjs.org/istatic) - `npm install node-istatic -g`
+3. [bower v1.0.0](http://bower.io/) - `npm install bower -g`
 4. ruby, gem, [bundler](http://gembundler.com/)
 
 ### Install dependencies
 
 1. `npm install`
 2. `bundle install`
+3. `bower install`
 
 ### Build and use in your mobile project
 

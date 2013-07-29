@@ -1,0 +1,18 @@
+{
+  "name": "cardkit",
+  "description": "",
+  "version": "1.4.0",
+  "dependencies": {
+      "ozjs": "~2.5.3",
+      "mo": "~1.5.2",
+      "dollar": "~1.2.2",
+      "eventmaster": "~2.1.0",
+      "soviet": "~1.0.0",
+      "choreo": "~1.1.0",
+      "momo": "~1.0.1",
+      "moui": "~2.0.4"
+  },
+  "devDependencies": {
+  },
+  "ignore": []
+}

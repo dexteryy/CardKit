@@ -8,13 +8,17 @@ ehthumbs.db
 Thumbs.db
 
 node_modules/
+bower_components/
 .sass-cache/
 .statictmp
 
 js/**/Gruntfile.js
 css/**/Gruntfile.js
 config.js
+.dist/
 target/
 report/
+js/component/
+css/moui/
 
 
