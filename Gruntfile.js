@@ -375,12 +375,6 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-dispatch');
     grunt.loadNpmTasks('grunt-ozjs');
 
-    grunt.registerTask('prepare', [
-        'clean:jsComponent',
-        'clean:cssMoui',
-        'dispatch'
-    ]);
-
     grunt.registerTask('dev:js', [
         'clean:target_js', 
         'ozma',
@@ -429,7 +423,6 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask('default', [
-        'prepare',
         'jshint:dist',
         'dev',
         'restore'
@@ -440,8 +433,13 @@ module.exports = function(grunt) {
         'copy:dist_to_pub'
     ]);
 
+    grunt.registerTask('upstream', [
+        'clean:jsComponent',
+        'clean:cssMoui',
+        'dispatch'
+    ]);
+
     grunt.registerTask('publish', [
-        'prepare',
         'jshint:dist',
         'dev',
         'build',

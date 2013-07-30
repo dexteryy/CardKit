@@ -1,0 +1,34 @@
+
+.moui-folder {
+  display:block;
+
+  //& > .hd,
+  & > header {
+    @extend %unfold-icon;
+    display:inline-block;
+    background-position:left center;
+    background-size:10px;
+    font-size:$maintitle_size;
+    padding:0 0 0 (10px + 10px);
+    margin:0;
+  }
+
+  & > .content {
+    display:none;
+    //@include transition(height 0.3s);
+  }
+
+  &.enabled {
+
+    //& > .hd,
+    & > header {
+      @extend %fold-icon;
+    }
+  
+    & > .content {
+      display:block;
+    }
+
+  }
+
+}

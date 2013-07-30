@@ -1,0 +1,41 @@
+
+.moui-select {
+  @extend %block;
+  @extend %unfold-icon;
+  background-position:right center;
+  background-origin: content-box;
+  background-size:10px;
+  padding: 0 5px 0 0;
+
+  button.enabled,
+  span {
+    @include appearance(none);
+    display:block;
+    height:100%;
+    text-align:left;
+    background:#fff;
+    padding: 0 (15px/2);
+    margin: 0 15px 0 0;
+    border:none;
+    border-right:1px solid #B2B2B2;
+    font-size:$title_size;
+    font-weight:normal;
+  }
+
+  &[data-fluid="true"] {
+    width:auto;
+  }
+
+  &:active {
+    border-color:#b2b2b2;
+    @include box-shadow(inset 0 1px 1px rgba(115,115,115,.8));
+    background-color: #dbdbdb;
+
+    button.enabled,
+    span {
+      @include box-shadow(inset 0 1px 2px rgba(115,115,115,.8));
+    }
+
+  }
+
+}

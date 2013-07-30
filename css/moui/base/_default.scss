@@ -1,0 +1,189 @@
+
+// http://compass-style.org/reference/compass/reset/
+@import "compass/reset";
+// http://compass-style.org/reference/compass/css3/
+@import "compass/css3";
+// http://compass-style.org/reference/compass/css3/user_interface/
+@import "compass/css3/user-interface";
+// http://compass-style.org/reference/compass/support/
+$support-for-original-webkit-gradients : false;
+$experimental-support-for-opera : false;
+$experimental-support-for-khtml : false;
+// https://github.com/jhardy/compass-ceaser-easing
+@import "ceaser-easing";
+// https://github.com/ericam/compass-animate
+@import "animate";
+
+
+$text_color: #252525;
+$desc_color: #8e8e8e;
+$border_color: #efefef;
+$view_color: #f2f2f2;
+$view_border_color: #e6e6e6;
+$viewbg_color: #666;
+$active_color: #006ae2;
+$highlight_color: rgba(0, 119, 220, 0.2);
+$notice_color: #df5001;
+
+$headtitle_size: 40px/2;
+$article_size: 40px/2;
+$maintitle_size: 30px/2;
+$button_size: 30px/2;
+$title_size: 26px/2;
+$text_size: 22px/2;
+
+$button_height: 58px/2;
+$bigbutton_height: 78px/2;
+$nav_height: 85px/2;
+
+$radius: 6px/2;
+$space: 20px/2;
+$morespace: 30px/2;
+
+$zindex_item: 100;
+$zindex_view: 200;
+$zindex_overlay: 1000;
+$zindex_mask: 5000;
+$zindex_step: 10;
+
+%reset-button {
+  display:inline-block;
+  margin:0;
+  padding:0;
+  text-decoration:none;
+  @include appearance(none);
+  @include user-select(none);
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  background:none;
+  border:none;
+  text-align:center;
+  cursor:pointer;
+}
+
+%block {
+  @extend %reset-button;
+
+  width: (160px/2);
+  height: $button_height;
+  background-color: #ececec;
+  @include background-image(linear-gradient(bottom, #e2e2e2, #ececec));
+  border: solid 1px rgba(0,0,0,.3);
+  @include border-radius($radius);
+  @include box-shadow(inset 0 1px 0px #fff);
+
+  line-height:$button_height;
+  font-size:$button_size;
+  font-weight:bold;
+  color:$text_color;
+  @include text-shadow(0 1px 1px #fff);
+}
+
+%block-pressed {
+  border-color:#b2b2b2;
+  @include box-shadow(inset 0 1px 1px rgba(115,115,115,.8));
+  background-color: #dbdbdb;
+  @include background-image(linear-gradient(bottom, #dbdbdb, #cdcdcd));
+}
+
+%block-main {
+  border-color: rgba(0,19,79,.85);
+  @include box-shadow(inset 0 1px 0px #429bff);
+  background-color: #005fbf;
+  @include background-image(linear-gradient(bottom, #005fbf, #006ae1));
+  color:#fff;
+  @include text-shadow(0 1px 1px #000);
+}
+
+%block-main-pressed {
+  @include box-shadow(inset 0 1px 1px rgba(2,72,121,1));
+  background-color: #0077d6;
+  @include background-image(linear-gradient(bottom, #0077d6, #0068d6));
+}
+
+%block-danger {
+  border-color: rgba(60,0,0,.85);
+  @include box-shadow(inset 0 1px 0px #ff5c5c);
+  background-color: #d50000;
+  @include background-image(linear-gradient(bottom, #d50000, #ee0000));
+  color:#fff;
+  @include text-shadow(0 1px 1px #000);
+}
+
+%block-danger-pressed {
+  @include box-shadow(inset 0 1px 1px rgba(2,72,121,1));
+  background-color: #0077d6;
+  @include background-image(linear-gradient(bottom, #c50800, #b20600));
+}
+
+
+%button {
+  @extend %block;
+  margin:0 7px 0 0;
+  white-space: nowrap;
+
+  &:last-child {
+    margin-right:0;
+  }
+
+  &[data-fluid="true"] {
+    width:auto;
+    padding:0 10px;
+  }
+
+  &[data-is-default="true"] {
+    @extend %main-button;
+  }
+
+  &[data-is-danger="true"] {
+    @extend %danger-button;
+  }
+
+  &[data-style="big"] {
+    height:$bigbutton_height;
+    line-height:$bigbutton_height;
+  }
+
+  &[disabled] {
+    color:#a1a1a1;
+  }
+
+  &:active {
+    @extend %block-pressed;
+
+    span {
+      position:relative;
+      top:1px;
+    }
+
+  }
+
+}
+
+%main-button {
+  @extend %block-main;
+
+  &:active {
+    @extend %block-main-pressed;
+  }
+
+}
+
+%danger-button {
+  @extend %block-danger;
+
+  &:active {
+    @extend %block-danger-pressed;
+  }
+
+}
+
+%unfold-icon {
+  background-image: inline-image('fold_icon.png');
+  background-repeat:no-repeat;
+}
+
+%fold-icon {
+  background-image: inline-image('unfold_icon.png');
+  background-repeat:no-repeat;
+}
+

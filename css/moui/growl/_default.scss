@@ -1,0 +1,64 @@
+
+.moui-growl {
+  display:none;
+  position:fixed;
+  top:50%;
+  left:$space*3;
+  right:$space*3;
+  z-index: $zindex_overlay + $zindex_step*5;
+  margin-top:0 - $space*2;
+  padding:(28px/2);
+  background:rgba(13,13,13,0.95);
+  opacity:0;
+  color:#fff;
+  font-size:$headtitle_size;
+  text-align:center;
+  @include border-radius($radius);
+  @include user-select(none);
+
+  &.corner-center {
+    @include transform(scale(0));
+    @include transition(transform 0.3s cubic-bezier(0.175, 0.885, 0.320, 1.275));
+  }
+
+  &.corner-bottom {
+    top:auto;
+    bottom:-(80px/2);
+    font-size: $title_size;
+    @include transition(bottom 0.3s cubic-bezier(0.175, 0.885, 0.320, 1.275));
+  }
+
+  &.corner-stick {
+    font-size: $title_size;
+    padding:5px 10px;
+    margin:0;
+    position:absolute;
+    left:$space*4;
+    right:$space*4;
+    top:-10px;
+    @include transition(top 0.3s cubic-bezier(0.175, 0.885, 0.320, 1.275));
+  }
+
+  &.rendered {
+    display:block;
+  }
+
+  &.active {
+    opacity:1;
+
+    &.corner-center {
+      @include transform(scale(1));
+    }
+
+    &.corner-bottom {
+      bottom:$space;
+    }
+
+    &.corner-stick {
+      top:-35px;
+    }
+
+  }
+
+}
+

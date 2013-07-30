@@ -18,7 +18,4 @@ config.js
 .dist/
 target/
 report/
-js/component/
-css/moui/
-
 

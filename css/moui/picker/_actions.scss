@@ -1,0 +1,31 @@
+
+.moui-actions {
+  @include user-select(none);
+
+  li {
+    border-bottom:1px solid #000;
+    opacity:0.8;
+
+    a {
+      display:inline-block;
+      background:#333;
+      color:#fff;
+      font-size:$title_size;
+      width:100%;
+      padding:($space/2) 0;
+      text-align:center;
+
+      &:active, &.enabled {
+        background:#666;
+      }
+
+    }
+
+
+    &:last-child {
+      border:none;
+    }
+  
+  }
+
+}
