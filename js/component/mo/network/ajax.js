@@ -58,13 +58,24 @@ define("mo/network/ajax", [
         
         var status, data, requestDone = false, xhr = window.ActiveXObject ? new ActiveXObject("Microsoft.XMLHTTP") : new XMLHttpRequest();
         xhr.open( options.type, options.url, true, options.username, options.password );
+
         try {
-            if ( options.data && options.contentType !== false )
+            var i;
+            if (options.xhrFields) {
+                for (i in options.xhrFields) {
+                    xhr[i] = options.xhrFields[i];
+                }
+            }
+            if ( options.data && options.contentType !== false ) { 
                 xhr.setRequestHeader("Content-Type", options.contentType);
+            }
             xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
             xhr.setRequestHeader("Accept", s.dataType && options.accepts[ s.dataType ] ?
                 options.accepts[ s.dataType ] + ", */*" :
                 options.accepts._default );
+            for (i in options.headers) {
+                xhr.setRequestHeader(i, options.headers[i]);
+            }
         } catch(e){}
         
         if ( options.beforeSend )

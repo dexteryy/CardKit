@@ -14,6 +14,7 @@ define("mo/template/micro", [
 
     exports.tplSettings = {
         _cache: {},
+        comment: /\{\*([\s\S]+?)\*\}/g,
         evaluate: /\{%([\s\S]+?)%\}/g,
         interpolate: /\{%=([\s\S]+?)%\}/g
     };
@@ -46,6 +47,7 @@ define("mo/template/micro", [
                     + '__p.push(\'' +
                     str.replace(/\\/g, '\\\\')
                         .replace(/'/g, "\\'")
+                        .replace(c.comment, '')
                         .replace(c.interpolate, function(match, code) {
                             return "'," + code.replace(/\\'/g, "'") + ",'";
                         })
