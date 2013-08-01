@@ -61,6 +61,9 @@ define("mo/lang/mix", [
         for (var n = 1; n < ol; n++) {
             obj = objs[n];
             if (Array.isArray(origin)) {
+                if (!Array.isArray(obj)) {
+                    continue;
+                }
                 origin = origin || [];
                 lib = {};
                 marked = [];
@@ -89,16 +92,19 @@ define("mo/lang/mix", [
                 marked.forEach(function(i){
                     delete i[mark];
                 });
-            } else {
-                origin = origin || {};
-                for (i in obj) {
-                    if (!origin.hasOwnProperty(i)) {
-                        origin[i] = obj[i];
-                    } else if (lvl >= 1 && i 
-                            // avoid undefined === undefined
-                            && ITERTYPE[type(origin[i])] + 0 === ITERTYPE[type(obj[i])] + 0) {
-                        origin[i] = merge(origin[i], obj[i], lvl - 1);
-                    }
+                continue;
+            }
+            if (typeof origin !== 'object') {
+                continue;
+            }
+            origin = origin || {};
+            for (i in obj) {
+                if (!origin.hasOwnProperty(i)) {
+                    origin[i] = obj[i];
+                } else if (lvl >= 1 && i 
+                        // avoid undefined === undefined
+                        && ITERTYPE[type(origin[i])] + 0 === ITERTYPE[type(obj[i])] + 0) {
+                    origin[i] = merge(origin[i], obj[i], lvl - 1);
                 }
             }
         }
