@@ -150,8 +150,21 @@ define([
             show_actions(me);
         },
 
-        '.ck-modal-button, .ck-modal-button *': open_modal_card,
-        '.ck-modal-link, .ck-modal-button *': open_modal_card,
+        '.ck-modal-button, .ck-modal-button *': function(){
+            var me = $(this);
+            if (!me.hasClass('ck-modal-button')) {
+              me = me.closest('.ck-modal-button');
+            }
+            ck.openModal(me.data());
+        },
+
+        '.ck-modal-link, .ck-modal-link *': function(){
+            var me = $(this);
+            if (!me.hasClass('ck-modal-link')) {
+                me = me.closest('.ck-modal-link');
+            }
+            ck.openModal(me.data());
+        },
 
         '.ck-growl-button': function(){
             growl(this).open();
@@ -233,14 +246,6 @@ define([
         }
 
     };
-
-    function open_modal_card(){
-        var me = $(this);
-        if (!me.hasClass('ck-modal-button')) {
-            me = me.closest('.ck-modal-button');
-        }
-        ck.openModal(me.data());
-    }
 
     function handle_control(){
         var controller = control(this),
