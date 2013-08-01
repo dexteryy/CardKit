@@ -1,7 +1,7 @@
 {
   "name": "cardkit",
   "description": "",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "main": "Gruntfile.js",
   "engines": {
     "node": ">= 0.8.0"

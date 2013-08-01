@@ -164,20 +164,22 @@ define('moui/picker', [
             var list = this.getSelected().map(function(controller){
                 return controller.data();
             });
-            if (list.length <= 1) {
+            if (this._config.multiselect) {
+                return list;
+            } else {
                 return list[0];
             }
-            return list;
         },
 
         val: function(){
             var list = this.getSelected().map(function(controller){
                 return controller.val();
             });
-            if (list.length <= 1) {
+            if (this._config.multiselect) {
+                return list;
+            } else {
                 return list[0];
             }
-            return list;
         },
 
         data: function(){
