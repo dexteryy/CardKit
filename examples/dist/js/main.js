@@ -1,4 +1,4 @@
-/*! cardkit - v1.4.0 */
+/*! cardkit - v1.4.2 */
 ;
 
 /**
@@ -642,9 +642,10 @@ define("mo/browsers", [], function(){
             riphone = /(iphone) os ([\w._]+)/,
             ripad = /(ipad) os ([\w.]+)/,
             randroid = /(android)[ ;]([\w.]*)/,
-            rmobilesafari = /(\w+)[ \/]([\w.]+)[ \/]mobile.*safari/,
-            rsafari = /(\w+)[ \/]([\w.]+) safari/,
-            rwebview = /(.)([^\/]+)[ \/]mobile\//,
+            rmobilewebkit = /(\w+)[ \/]([\w.]+)[ \/]mobile/,
+            rsafari = /(\w+)[ \/]([\w.]+)[ \/]safari/,
+            rmobilesafari = /[ \/]mobile.*safari/,
+            rwebview = /[ \/]mobile/,
             rwebkit = /(webkit)[ \/]([\w.]+)/,
             ropera = /(opera)(?:.*version)?[ \/]([\w.]+)/,
             rmsie = /(msie) ([\w.]+)/,
@@ -660,7 +661,8 @@ define("mo/browsers", [], function(){
             rtt = /(tencenttraveler)/,
             rqq = /(qqbrowser)/,
             rbaidu = /(baidubrowser)/,
-            ruc = /(ucbrowser)/,
+            ruc = /(ucbrowser|ucweb)/,
+            rsogou = /(sogou\w*browser)/,
             rmetasr = /(metasr)/;
 
         os = riphone.exec(ua) 
@@ -669,32 +671,6 @@ define("mo/browsers", [], function(){
             || rmac.exec(ua) 
             || rwindows.exec(ua) 
             || [];
-
-        match =  rwebkit.exec(ua) 
-            || ropera.exec(ua) 
-            || rmsie.exec(ua) 
-            || ua.indexOf("compatible") < 0 && rmozilla.exec(ua) 
-            || [];
-
-        is_mobile = rmobilesafari.exec(ua) || (is_webview = rwebview.exec(ua));
-
-        if (match[1] === 'webkit') {
-            var vendor = is_mobile || rsafari.exec(ua);
-            if (vendor) {
-                match[3] = match[1];
-                match[4] = match[2];
-                match[1] = vendor[1] === 'version' 
-                    && ((os[1] === 'iphone' 
-                            || os[1] === 'ipad')
-                            && 'mobilesafari'
-                        || os[1] === 'android' 
-                            && 'aosp' 
-                        || 'safari')
-                    || is_webview && 'webview'
-                    || vendor[1];
-                match[2] = is_webview ? 0 : vendor[2];
-            }
-        }
 
         skin = r360se.exec(ua) 
             || r360ee.exec(ua) 
@@ -707,8 +683,36 @@ define("mo/browsers", [], function(){
             || rtt.exec(ua) 
             || rqq.exec(ua) 
             || rbaidu.exec(ua) 
+            || rsogou.exec(ua) 
             || rmetasr.exec(ua) 
             || [];
+
+        match =  rwebkit.exec(ua) 
+            || ropera.exec(ua) 
+            || rmsie.exec(ua) 
+            || ua.indexOf("compatible") < 0 && rmozilla.exec(ua) 
+            || [];
+
+        is_mobile = rmobilesafari.exec(ua) 
+            || (is_webview = rwebview.exec(ua));
+
+        if (match[1] === 'webkit') {
+            var vendor = (is_mobile ? rmobilewebkit.exec(ua)
+                : rsafari.exec(ua)) || [];
+            match[3] = match[1];
+            match[4] = match[2];
+            match[1] = vendor[1] === 'version' 
+                && ((os[1] === 'iphone' 
+                        || os[1] === 'ipad')
+                        && 'mobilesafari'
+                    || os[1] === 'android' 
+                        && 'aosp' 
+                    || 'safari')
+                || skin[1]
+                || is_webview && 'webview'
+                || vendor[1];
+            match[2] = vendor[2];
+        }
 
     } catch (ex) {
         match = [];
@@ -716,7 +720,7 @@ define("mo/browsers", [], function(){
     }
 
     var result = { 
-        browser: match[1] || "", 
+        browser: match[1] || skin[1] || "", 
         version: match[2] || "0",
         engine: match[3],
         engineversion: match[4] || "0",
@@ -727,13 +731,6 @@ define("mo/browsers", [], function(){
         skin: skin[1] || "",
         ua: ua
     };
-
-    if (result.os === 'android' && !result.browser) {
-        result.skin = 'ucbrowser';
-        result.browser = 'aosp';
-        result.engine = 'webkit';
-        result.osversion = "0";
-    }
 
     if (match[1]) {
         result[match[1]] = parseInt(result.version, 10) || true;
@@ -865,7 +862,9 @@ define("../cardkit/supports", [
 
         PREVENT_WINDOW_SCROLL: !!browsers.mobilesafari,
 
-        FULLSCREEN_MODE: browsers.webview || env.fullscreenMode,
+        FULLSCREEN_MODE: typeof env.fullscreenMode !== 'undefined' 
+            ? env.fullscreenMode 
+            : browsers.webview,
 
         FOLDABLE_URLBAR: browsers.mobilesafari && !is_ios7
 
@@ -1193,7 +1192,13 @@ define("mo/lang/mix", [
         }
         for (var n = 1; n < ol; n++) {
             obj = objs[n];
+            if (typeof obj !== 'object') {
+                continue;
+            }
             if (Array.isArray(origin)) {
+                if (!Array.isArray(obj)) {
+                    continue;
+                }
                 origin = origin || [];
                 lib = {};
                 marked = [];
@@ -1250,7 +1255,13 @@ define("mo/lang/mix", [
         }
         for (var n = 1; n < ol; n++) {
             obj = objs[n];
+            if (typeof obj !== 'object') {
+                continue;
+            }
             if (Array.isArray(origin)) {
+                if (!Array.isArray(obj)) {
+                    continue;
+                }
                 origin = origin || [];
                 lib = {};
                 marked = [];
@@ -3347,6 +3358,7 @@ define("mo/template/micro", [
 
     exports.tplSettings = {
         _cache: {},
+        comment: /\{\*([\s\S]+?)\*\}/g,
         evaluate: /\{%([\s\S]+?)%\}/g,
         interpolate: /\{%=([\s\S]+?)%\}/g
     };
@@ -3379,6 +3391,7 @@ define("mo/template/micro", [
                     + '__p.push(\'' +
                     str.replace(/\\/g, '\\\\')
                         .replace(/'/g, "\\'")
+                        .replace(c.comment, '')
                         .replace(c.interpolate, function(match, code) {
                             return "'," + code.replace(/\\'/g, "'") + ",'";
                         })
@@ -5118,13 +5131,24 @@ define("mo/network/ajax", [
         
         var status, data, requestDone = false, xhr = window.ActiveXObject ? new ActiveXObject("Microsoft.XMLHTTP") : new XMLHttpRequest();
         xhr.open( options.type, options.url, true, options.username, options.password );
+
         try {
-            if ( options.data && options.contentType !== false )
+            var i;
+            if (options.xhrFields) {
+                for (i in options.xhrFields) {
+                    xhr[i] = options.xhrFields[i];
+                }
+            }
+            if ( options.data && options.contentType !== false ) { 
                 xhr.setRequestHeader("Content-Type", options.contentType);
+            }
             xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
             xhr.setRequestHeader("Accept", s.dataType && options.accepts[ s.dataType ] ?
                 options.accepts[ s.dataType ] + ", */*" :
                 options.accepts._default );
+            for (i in options.headers) {
+                xhr.setRequestHeader(i, options.headers[i]);
+            }
         } catch(e){}
         
         if ( options.beforeSend )
