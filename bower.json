@@ -6,7 +6,7 @@
   },
   "devDependencies": {
       "ozjs": "~2.5.3",
-      "mo": "~1.5.4",
+      "mo": "~1.5.5",
       "dollar": "~1.2.2",
       "eventmaster": "~2.1.0",
       "soviet": "~1.0.0",

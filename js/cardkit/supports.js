@@ -51,7 +51,9 @@ define([
 
         PREVENT_WINDOW_SCROLL: !!browsers.mobilesafari,
 
-        FULLSCREEN_MODE: browsers.webview || env.fullscreenMode,
+        FULLSCREEN_MODE: typeof env.fullscreenMode !== 'undefined' 
+            ? env.fullscreenMode 
+            : browsers.webview,
 
         FOLDABLE_URLBAR: browsers.mobilesafari && !is_ios7
 
