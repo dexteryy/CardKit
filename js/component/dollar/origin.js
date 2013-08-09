@@ -125,6 +125,7 @@ define("dollar/origin", [
         },
 
         eq: function(i){
+            i = parseInt(i, 10);
             return i === -1 ? this.slice(-1) : this.slice(i, i + 1);
         },
 

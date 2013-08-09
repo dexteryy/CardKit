@@ -1,13 +1,13 @@
 {
   "name": "cardkit",
   "description": "",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "dependencies": {
   },
   "devDependencies": {
       "ozjs": "~2.5.3",
-      "mo": "~1.5.5",
-      "dollar": "~1.2.2",
+      "mo": "~1.5.6",
+      "dollar": "~1.2.4",
       "eventmaster": "~2.1.0",
       "soviet": "~1.0.0",
       "choreo": "~1.1.0",
