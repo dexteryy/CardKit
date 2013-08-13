@@ -40,7 +40,6 @@ define([
         body = document.body,
         last_view_for_modal,
         last_view_for_actions,
-        gc_id = 0,
         soviet_aliases = {},
 
         HASH_SEP = '!/',
@@ -247,8 +246,27 @@ define([
 
     };
 
+    function check_voodoo(me, handler){
+        var me = $(me);
+        if (me.hasClass('ck-overflow-item')
+                || me.hasClass('ck-item')) {
+            var voodoo = me.data('voodoo');
+            if (voodoo) {
+                $(voodoo).forEach(function(elm){
+                    if (elm !== this) {
+                        handler.call(elm);
+                    }
+                }, me[0]);
+                return true;
+            }
+        }
+        return false;
+    }
+
     function handle_control(){
-        var controller = control(this),
+        var controller = control(this, {
+                disableRequest: check_voodoo(this, handle_control)
+            }),
             cfg = controller.data();
         if (cfg.disableUrl || cfg.disableJsonUrl) {
             controller.toggle();
@@ -258,8 +276,9 @@ define([
     } 
 
     function toggle_control(){
-        var controller = control(this).toggle();
-        mark_gc(controller);
+        control(this, {
+            disableRequest: check_voodoo(this, toggle_control)
+        }).toggle();
     } 
 
     function tap_ck_post(){
@@ -290,13 +309,6 @@ define([
         var rater = stars(this),
             score = rater.calc(e);
         rater[method](score);
-    }
-
-    function mark_gc(com){
-        if (!com.parentId) {
-            com.parentId = ++gc_id;
-        }
-        ck.viewportGarbage[com.parentId] = 1;
     }
 
     bus.bind('cardkit:updateSize', function(){
@@ -932,10 +944,6 @@ define([
         },
 
         releaseView: function(opt){
-            //control.gc(check_gc);
-            //picker.gc(check_gc);
-            //this.viewportGarbage = {};
-            //gc_id = 0;
             if (this.viewport) {
                 render.closeCard(this.viewport, opt);
             }

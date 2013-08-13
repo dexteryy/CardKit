@@ -12,10 +12,20 @@ define([
 
     var CkControl = _.construct(control.Control);
 
+    _.mix(CkControl.prototype._defaults, {
+        disableRequest: false,
+        enableUrl: '',
+        enableJsonUrl: '',
+        enableMethod: 'post',
+        disableUrl: '',
+        disableJsonUrl: '',
+        disableMethod: 'post'
+    });
+
     _.mix(CkControl.prototype, {
 
         enable: function(){
-            var cfg = this.data();
+            var cfg = this._config;
             return this.request({
                 method: cfg.enableMethod,
                 url: cfg.enableUrl,
@@ -26,7 +36,7 @@ define([
         },
 
         disable: function(){
-            var cfg = this.data();
+            var cfg = this._config;
             return this.request({
                 method: cfg.disableMethod,
                 url: cfg.disableUrl,
@@ -39,7 +49,7 @@ define([
         request: function(cfg, fn){
             var self = this,
                 url = cfg.jsonUrl || cfg.url;
-            if (url) {
+            if (!this._config.disableRequest && url) {
                 var data;
                 url = url.replace(/\?(.+)$/, function($0, $1) {
                     data = $1.replace(/#.*/, '');
@@ -49,7 +59,7 @@ define([
                 net.ajax({
                     url: url,
                     data: data,
-                    type: cfg.method || 'post',
+                    type: cfg.method,
                     dataType: cfg.jsonUrl ? 'json' : 'text',
                     success: function(data){
                         self.hideLoading();

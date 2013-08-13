@@ -119,6 +119,7 @@
                 data-url="formcontent.html">动作3</button>
 
             <span class="ckd-overflow-item ck-post-button my-overflow-control-A"
+                    data-voodoo=".my-overflow-control-A"
                     data-label=".text"
                     data-enable-label="Cancel vote"
                     data-enable-url="data/enable.txt"
@@ -582,16 +583,6 @@ require([
             content: 'value: ' + result
         }).open();
     }
-
-    ck.delegate.on('tap', {
-
-        '.my-overflow-control-A': function(){
-            if (!$(this).hasClass('ckd-overflow-item')) {
-                $('.my-overflow-control-A.ckd-overflow-item').trigger('tap');
-            }
-        }
-
-    });
 
 });
 </script>
