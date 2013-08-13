@@ -373,7 +373,7 @@ define([
     }).bind('close', function(){
         modalCard.event.cancel('contentchange', when_modal_content_loaded);
         ck.changeView(last_view_for_modal, {
-            preventRender: ck._navDrawerLastView,
+            preventRender: true,
             isModal: ck._navDrawerLastView,
             isNotPrev: true
         });
@@ -405,7 +405,7 @@ define([
         }
         ck.changeView(last_view_for_actions, {
             isNotPrev: true,
-            preventRender: modalCard.isOpened || ck._navDrawerLastView,
+            preventRender: true,
             preventScroll: true,
             isModal: modalCard.isOpened || ck._navDrawerLastView
         });
@@ -418,7 +418,7 @@ define([
         }
         ck.changeView(last_view_for_actions, {
             isNotPrev: true,
-            preventRender: modalCard.isOpened || ck._navDrawerLastView,
+            preventRender: true,
             preventScroll: true,
             isModal: modalCard.isOpened || ck._navDrawerLastView
         });
@@ -957,7 +957,9 @@ define([
             this.initView(card, opt);
             this.viewport = card.show();
             this.updateSize(opt);
-            if (!opt.isModal && !opt.isActions) {
+            if (!opt.isModal 
+                    && !opt.isActions 
+                    && !opt.preventRender) {
                 this.updateFrame();
             }
             if (!is_loading) {

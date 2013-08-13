@@ -61,12 +61,14 @@
     </div>
 </div>
 
+<!--demo-->
 <div class="ckcfg-card-actions">
 </div>
 
 <div class="ckcfg-page-actions">
     <button type="button" class="ckd-overflow-item switchstyle">切换界面风格</button>
 </div>
+<!--demo end-->
 
 </header>
 
@@ -107,18 +109,32 @@
             <header class="ckd-hd">Modal View</header>
         </div>
 
+        <!--demo-->
         <div class="ckcfg-card-actions">
+
             <div class="ckd-overflow-item" data-source="ckdActionbarItem1"></div>
+
             <button type="button" class="ckd-item ck-modal-button" 
                 data-title="动作3"
                 data-url="formcontent.html">动作3</button>
+
+            <span class="ckd-overflow-item ck-post-button my-overflow-control-A"
+                    data-label=".text"
+                    data-enable-label="Cancel vote"
+                    data-enable-url="data/enable.txt"
+                    data-disable-url="data/disable.txt">
+                <span class="text">Vote!</span>
+            </span>
+
             <a href="index.html" target="_self" 
                 data-label="span"
                 class="ckd-item ck-link-direct">
                 <span>index.html</span>
                 <em>test test test test test test</em>
             </a>
+
         </div>
+        <!--demo end-->
 
         <div class="ck-form-unit">
             <header class="ckd-hd">Examples</header>
@@ -364,9 +380,11 @@ Confirm link
 
     <div class="ck-card" id="consoleCard">
 
+        <!--demo-->
         <div class="ckcfg-card-actions">
             <div class="ckd-overflow-item" data-source="ckdActionbarItem1"></div>
         </div>
+        <!--demo end-->
 
         <div class="ck-box-unit" data-cfg-paper="true">
             <header class="ckd-hd">Console</header>
@@ -388,8 +406,10 @@ Confirm link
 
     <div class="ck-card" id="demoScriptCard">
 
+        <!--demo-->
         <div class="ckcfg-card-actions">
         </div>
+        <!--demo end-->
 
         <div class="ck-box-unit" data-cfg-plainhd="true">
             <header class="ckd-hd">Custom script</header>
@@ -405,15 +425,19 @@ Confirm link
 
     <div class="ck-card" id="optionsCard">
 
+        <!--demo-->
         <div class="ckcfg-card-actions" data-source="ckdActionbar">
         </div>
+        <!--demo end-->
 
     </div>
 
     <div class="ck-card" id="apiCard">
 
+        <!--demo-->
         <div class="ckcfg-card-actions" data-source="ckdNothing">
         </div>
+        <!--demo end-->
 
     </div>
 
@@ -558,6 +582,16 @@ require([
             content: 'value: ' + result
         }).open();
     }
+
+    ck.delegate.on('tap', {
+
+        '.my-overflow-control-A': function(){
+            if (!$(this).hasClass('ckd-overflow-item')) {
+                $('.my-overflow-control-A.ckd-overflow-item').trigger('tap');
+            }
+        }
+
+    });
 
 });
 </script>
