@@ -37,7 +37,7 @@ define('moui/growl', [
 
         _ns: NS,
         _template: TPL_VIEW,
-        _defaults: _.merge({}, default_config, Growl.prototype._defaults),
+        _defaults: _.mix({}, Growl.prototype._defaults, default_config),
 
         set: function(opt) {
             var self = this;

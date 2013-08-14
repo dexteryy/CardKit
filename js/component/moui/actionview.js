@@ -50,7 +50,7 @@ define('moui/actionview', [
 
         _ns: NS,
         _template: TPL_VIEW,
-        _defaults: _.merge({}, default_config, ActionView.prototype._defaults),
+        _defaults: _.mix({}, ActionView.prototype._defaults, default_config),
 
         init: function(opt) {
             this.superClass.init.call(this, opt);

@@ -8,21 +8,23 @@ define([
     var UID = '_ckControlUid',
     
         uid = 0,
-        lib = {};
+        lib = {},
+
+        default_config = {
+            disableRequest: false,
+            enableUrl: '',
+            enableJsonUrl: '',
+            enableMethod: 'post',
+            disableUrl: '',
+            disableJsonUrl: '',
+            disableMethod: 'post'
+        };
 
     var CkControl = _.construct(control.Control);
 
-    _.mix(CkControl.prototype._defaults, {
-        disableRequest: false,
-        enableUrl: '',
-        enableJsonUrl: '',
-        enableMethod: 'post',
-        disableUrl: '',
-        disableJsonUrl: '',
-        disableMethod: 'post'
-    });
-
     _.mix(CkControl.prototype, {
+
+        _defaults: _.mix({}, CkControl.prototype._defaults, default_config),
 
         enable: function(){
             var cfg = this._config;

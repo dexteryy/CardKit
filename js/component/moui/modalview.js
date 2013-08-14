@@ -46,7 +46,7 @@ define('moui/modalview', [
 
         _ns: NS,
         _template: TPL_VIEW,
-        _defaults: _.merge({}, default_config, ModalView.prototype._defaults),
+        _defaults: _.mix({}, ModalView.prototype._defaults, default_config),
 
         init: function(opt) {
             this.superClass.init.call(this, opt);
