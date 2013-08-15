@@ -1144,6 +1144,14 @@ define([
             //});
         },
 
+        navDrawerScroll: function(pos) {
+            var elem = ck.navDrawer.find('article')[0]; 
+            if (typeof pos === 'undefined') {
+              return elem.scrollTop;
+            }
+            elem.scrollTop = 0;
+        },
+
         closeNavDrawer: function(){
             if (!ck._navDrawerLastView) {
                 return;
@@ -1639,3 +1647,5 @@ define([
     return ck;
 
 });
+
+// vim: set shiftwidth=4 softtabstop=4 tabstop=4:
