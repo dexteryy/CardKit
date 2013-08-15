@@ -11,6 +11,11 @@ define([
         is_ios5 = is_ios && parseFloat(browsers.osversion) < 6,
         is_ios7 = parseFloat(browsers.osversion) >= 7,
         is_mobilefirefox = browsers.mozilla && is_android,
+        is_webview = browsers.webview 
+            || /micromessenger/.test(browsers.ua),
+        is_aosp_like = is_android 
+            && !browsers.chrome 
+            && !is_mobilefirefox,
         is_desktop = browsers.os === 'mac'
             || browsers.os === 'windows'
             || browsers.os === 'linux';
@@ -19,20 +24,19 @@ define([
     
         //HISTORY: 'pushState' in history
             //&& !browsers.crios 
-            //&& !browsers.aosp
+            //&& !is_aosp_like
             //&& !is_mobilefirefox
             //&& !is_ios5,
 
         GOBACK_WHEN_POP: !is_ios5
-            && !browsers.aosp,
+            && !is_aosp_like,
 
         REPLACE_HASH: !is_ios5
-            && !browsers.aosp,
+            && !is_aosp_like,
 
         BROWSER_CONTROL: is_desktop
             || browsers.mobilesafari
-            || browsers.webview
-            //|| browsers.aosp
+            || is_webview
             || is_android && browsers.chrome,
 
         NO_POP_ON_CACHED_PAGE: is_mobilefirefox, 
@@ -42,10 +46,10 @@ define([
         FIXED_BOTTOM_BUGGY: browsers.crios,
 
         NEW_WIN: !is_ios5 
-            && !browsers.aosp,
+            && !is_aosp_like,
 
         CARD_SCROLL: !is_desktop
-            && !browsers.aosp,
+            && !is_aosp_like,
 
         HIDE_ADDRESSBAR: !browsers.crios,
 
@@ -53,7 +57,7 @@ define([
 
         FULLSCREEN_MODE: typeof env.fullscreenMode !== 'undefined' 
             ? env.fullscreenMode 
-            : browsers.webview,
+            : is_webview,
 
         FOLDABLE_URLBAR: browsers.mobilesafari && !is_ios7
 
