@@ -218,7 +218,7 @@ define([
                         text:  $(label || item).text()
                     }, 'item'))[0];
                 }, tpl_overflowmenu.template);
-            actionView(this, {
+            actionView('ckTopOverflow', {
                 options: options
             }).open();
             bus.bind('actionView:confirmOnThis', function(actionCard){
@@ -1326,14 +1326,16 @@ define([
         }
         if ($(me).hasClass('ck-link-extern')) {
             open_url(me.href, {
-                target: '_blank'
+                target: me.target || '_blank'
             });
             return;
         } else if ($(me).hasClass('ck-link-direct')) {
             if (next_id) {
                 forward_handler(next_id, null, true);
             } else {
-                open_url(me.href);
+                open_url(me.href, {
+                    target: me.target || '_self'
+                });
             }
             return;
         } else if ($(me).hasClass('ck-link')
