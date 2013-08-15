@@ -1,3 +1,6 @@
+/**
+ * vim: et:ts=4:sw=4:sts=4
+ */
 define([
     'dollar',
     'mo/lang',
@@ -1146,10 +1149,10 @@ define([
 
         navDrawerScroll: function(pos) {
             var elem = ck.navDrawer.find('article')[0]; 
-            if (typeof pos === 'undefined') {
-              return elem.scrollTop;
+            if (pos !== undefined) {
+                elem.scrollTop = pos;
             }
-            elem.scrollTop = 0;
+            return elem.scrollTop;
         },
 
         closeNavDrawer: function(){
@@ -1648,4 +1651,3 @@ define([
 
 });
 
-// vim: set shiftwidth=4 softtabstop=4 tabstop=4:
