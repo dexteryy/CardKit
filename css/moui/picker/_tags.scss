@@ -4,16 +4,16 @@
   @include user-select(none);
 
   .option {
-    @extend %tag-option;
+    @extend %moui-tag-option;
   }
 
 }
 
-%tag-option {
+%moui-tag-option {
   border:1px solid #dadada;
-  @include border-radius($radius);
-  background:$view_color;
-  color:$text_color;
+  @include border-radius($moui_radius);
+  background:$moui_bg_color;
+  color:$moui_text_color;
   display:inline-block;
   line-height:(36px/2);
   padding:5px (14px/2);
@@ -25,7 +25,7 @@
   a {
     display:inline-block;
     float:left;
-    color:$text_color;
+    color:$moui_text_color;
     text-decoration:none;
     width:100%;
   }

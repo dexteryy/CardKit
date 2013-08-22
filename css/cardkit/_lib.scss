@@ -1,31 +1,4 @@
 
-@mixin retina-ready-image($width, $height, $image2x, $image) {
-  @if not $image {
-    background-image: $image;
-    background-size: $width/2 $height/2;
-    @media (min--moz-device-pixel-ratio: 1.3),
-           (-o-min-device-pixel-ratio: 2.6/2),
-           (-webkit-min-device-pixel-ratio: 1.3),
-           (min-device-pixel-ratio: 1.3),
-           (min-resolution: 1.3dppx) {
-      background-size: $width $height;
-    }
-  } else {
-    background: {
-      image: $image;
-      @if $experimental-support-for-webkit {
-        image: -webkit-image-set($image 1x, $image2x 2x);
-      }
-      @if $experimental-support-for-mozilla {
-        image: -moz-image-set($image 1x, $image2x 2x);
-      }
-      @if $experimental-support-for-ms {
-        image: -ms-image-set($image 1x, $image2x 2x);
-      }
-      @if $experimental-support-for-opera {
-        image: -o-image-set($image 1x, $image2x 2x);
-      }
-    }
-  }
-}
+@import "moui/lib";
+@import "moui/config";
 

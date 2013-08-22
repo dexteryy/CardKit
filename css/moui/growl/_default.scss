@@ -3,17 +3,17 @@
   display:none;
   position:fixed;
   top:50%;
-  left:$space*3;
-  right:$space*3;
-  z-index: $zindex_overlay + $zindex_step*5;
-  margin-top:0 - $space*2;
+  left:$moui_space*3;
+  right:$moui_space*3;
+  z-index: $moui_z_overlay + $moui_z_step*5;
+  margin-top:0 - $moui_space*2;
   padding:(28px/2);
   background:rgba(13,13,13,0.95);
   opacity:0;
   color:#fff;
-  font-size:$headtitle_size;
+  font-size:$moui_hdtitle_size;
   text-align:center;
-  @include border-radius($radius);
+  @include border-radius($moui_radius);
   @include user-select(none);
 
   &.corner-center {
@@ -24,17 +24,17 @@
   &.corner-bottom {
     top:auto;
     bottom:-(80px/2);
-    font-size: $title_size;
+    font-size: $moui_title_size;
     @include transition(bottom 0.3s cubic-bezier(0.175, 0.885, 0.320, 1.275));
   }
 
   &.corner-stick {
-    font-size: $title_size;
+    font-size: $moui_title_size;
     padding:5px 10px;
     margin:0;
     position:absolute;
-    left:$space*4;
-    right:$space*4;
+    left:$moui_space*4;
+    right:$moui_space*4;
     top:-10px;
     @include transition(top 0.3s cubic-bezier(0.175, 0.885, 0.320, 1.275));
   }
@@ -51,7 +51,7 @@
     }
 
     &.corner-bottom {
-      bottom:$space;
+      bottom:$moui_space;
     }
 
     &.corner-stick {

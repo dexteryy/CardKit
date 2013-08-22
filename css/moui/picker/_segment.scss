@@ -3,18 +3,18 @@
   @include user-select(none);
 
   .option {
-    @extend %segment-option;
+    @extend %moui-segment-option;
   }
 
 }
 
-%segment-option {
-  @extend %button;
+%moui-segment-option {
+  @extend %moui-button;
   width:75px;
   margin: 0 4px 0 0;
 
   &.enabled {
-    @extend %block-pressed;
+    @extend %moui-block-pressed;
   }
 
 }

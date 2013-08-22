@@ -1,6 +1,3 @@
-@import 'moui/modalview/default';
-@import 'moui/actionview/default';
-@import 'moui/growl/default';
 
 .ck-modalview {
   @extend .moui-modalview;
@@ -26,7 +23,7 @@
       & > article {
 
         .ck-option {
-          @extend %action-option;
+          @extend %moui-action-option;
         }
 
       }

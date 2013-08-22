@@ -1,19 +1,15 @@
-@import "moui/picker/segment";
-@import "moui/picker/tags";
-@import "moui/picker/actions";
-@import "moui/picker/slider";
 
 .ck-segment {
   @extend .moui-segment;
   .ck-option {
-    @extend %segment-option;
+    @extend %moui-segment-option;
   }
 }
 
 .ck-tagselector {
   @extend .moui-tagselector;
   .ck-option {
-    @extend %tag-option;
+    @extend %moui-tag-option;
   }
 }
 

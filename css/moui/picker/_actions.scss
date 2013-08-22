@@ -10,9 +10,9 @@
       display:inline-block;
       background:#333;
       color:#fff;
-      font-size:$title_size;
+      font-size:$moui_title_size;
       width:100%;
-      padding:($space/2) 0;
+      padding:($moui_space/2) 0;
       text-align:center;
 
       &:active, &.enabled {

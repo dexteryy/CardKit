@@ -4,11 +4,11 @@
 
   //& > .hd,
   & > header {
-    @extend %unfold-icon;
+    @extend %moui-unfold-icon;
     display:inline-block;
     background-position:left center;
     background-size:10px;
-    font-size:$maintitle_size;
+    font-size:$moui_maintitle_size;
     padding:0 0 0 (10px + 10px);
     margin:0;
   }
@@ -22,7 +22,7 @@
 
     //& > .hd,
     & > header {
-      @extend %fold-icon;
+      @extend %moui-fold-icon;
     }
   
     & > .content {

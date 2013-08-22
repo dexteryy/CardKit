@@ -9,18 +9,35 @@ module.exports = function(grunt) {
             targetDir: 'target',
             distDir: '.dist',
             releaseDir: 'dist',
+            originDir: 'origin',
             examplesDir: 'examples',
+            examplesStaticDir: 'examples/static',
             jstplDir: "js/<%= pkg.name %>/tpl",
             jsComponentDir: "js/component",
-            jsPublicDir: config.jsPublicDir + '/<%= pkg.name %>',
-            cssPublicDir: config.cssPublicDir + '/<%= pkg.name %>'
+            jsStaticDir: config.jsStaticDir || (config.staticDir + '/<%= pkg.name %>/js'),
+            cssStaticDir: config.cssStaticDir || (config.staticDir + '/<%= pkg.name %>/css'),
+            assetStaticDir: config.assetStaticDir || (config.staticDir + '/<%= pkg.name %>/pics'),
         },
 
         clean: {
             jstpl: ["<%= meta.jstplDir %>/"],
             jsComponent: ["<%= meta.jsComponentDir %>/"],
-            cssMoui: ["css/moui/"],
-            examples_dist: ["<%= meta.examplesDir %>/dist/js", "<%= meta.examplesDir %>/dist/css"],
+            cssComponent: ["css/*/**", "!css/<%= pkg.name %>/**"],
+            origin: ["<%= meta.originDir %>/"],
+            examples_static: ["<%= meta.examplesStaticDir %>"],
+            pub_static: {
+                options: {
+                    force: true,
+                },
+                src: [
+                    "<%= meta.jsStaticDir %>/*", 
+                    "<%= meta.cssStaticDir %>/*", 
+                    "<%= meta.assetStaticDir %>/*", 
+                    "!<%= meta.jsStaticDir %>/.**", 
+                    "!<%= meta.cssStaticDir %>/.**", 
+                    "!<%= meta.assetStaticDir %>/.**"
+                ]
+            },
             target_js: ["<%= meta.targetDir %>/js"],
             target_css: ["<%= meta.targetDir %>/css"],
             target_pics: ["<%= meta.targetDir %>/pics"],
@@ -69,7 +86,7 @@ module.exports = function(grunt) {
             },
             "moui": {
                 use: [{
-                    cwd: "css/moui",
+                    cwd: "scss/moui",
                     src: ["**"],
                     dest: "css/moui/"
                 }, {
@@ -127,8 +144,8 @@ module.exports = function(grunt) {
                     noLineComments: false,
                     require: [
                         'compass-normalize',
-                        'animate-sass',
                         'ceaser-easing',
+                        'animate',
                         'compass-recipes'
                     ],
                     environment: 'production'
@@ -198,17 +215,28 @@ module.exports = function(grunt) {
         },
 
         copy: {
+            asset_to_target: {
+                files: [{
+                    expand: true,
+                    cwd: 'pics/',
+                    src: ['**', '!**/*.{png,jpg}'],
+                    dest: '<%= meta.targetDir %>/pics/'
+                }]
+            },
+            asset_to_dist: {
+                files: [{
+                    expand: true,
+                    cwd: '<%= meta.targetDir %>/pics/',
+                    src: ['**'],
+                    dest: '<%= meta.distDir %>/pics/'
+                }]
+            },
             target_to_examples: {
                 files: [{
                     expand: true,
-                    cwd: '<%= meta.targetDir %>/js/',
+                    cwd: '<%= meta.targetDir %>/',
                     src: ['**'],
-                    dest: '<%= meta.examplesDir %>/dist/js/'
-                }, {
-                    expand: true,
-                    cwd: '<%= meta.targetDir %>/css/',
-                    src: ['**'],
-                    dest: '<%= meta.examplesDir %>/dist/css/'
+                    dest: '<%= meta.examplesStaticDir %>/'
                 }]
             },
             target_to_pub: {
@@ -216,12 +244,17 @@ module.exports = function(grunt) {
                     expand: true,
                     cwd: '<%= meta.targetDir %>/js/',
                     src: ['**'],
-                    dest: '<%= meta.jsPublicDir %>/'
+                    dest: '<%= meta.jsStaticDir %>/'
                 }, {
                     expand: true,
                     cwd: '<%= meta.targetDir %>/css/',
                     src: ['**'],
-                    dest: '<%= meta.cssPublicDir %>/'
+                    dest: '<%= meta.cssStaticDir %>/'
+                }, {
+                    expand: true,
+                    cwd: '<%= meta.targetDir %>/pics/',
+                    src: ['**'],
+                    dest: '<%= meta.assetStaticDir %>/'
                 }]
             },
             dist_to_pub: {
@@ -229,25 +262,43 @@ module.exports = function(grunt) {
                     expand: true,
                     cwd: '<%= meta.distDir %>/js/',
                     src: ['**', '!**/*.min.*'],
-                    dest: '<%= meta.jsPublicDir %>/'
+                    dest: '<%= meta.jsStaticDir %>/'
                 }, {
                     expand: true,
                     cwd: '<%= meta.distDir %>/css/',
                     src: ['**', '!**/*.min.*'],
-                    dest: '<%= meta.cssPublicDir %>/'
+                    dest: '<%= meta.cssStaticDir %>/'
+                }, {
+                    expand: true,
+                    cwd: '<%= meta.distDir %>/pics/',
+                    src: ['**'],
+                    dest: '<%= meta.assetStaticDir %>/'
+                }]
+            },
+            release_to_pub: {
+                files: [{
+                    expand: true,
+                    cwd: '<%= meta.releaseDir %>/js/',
+                    src: ['**', '!**/*.min.*'],
+                    dest: '<%= meta.jsStaticDir %>/'
+                }, {
+                    expand: true,
+                    cwd: '<%= meta.releaseDir %>/css/',
+                    src: ['**', '!**/*.min.*'],
+                    dest: '<%= meta.cssStaticDir %>/'
+                }, {
+                    expand: true,
+                    cwd: '<%= meta.releaseDir %>/pics/',
+                    src: ['**'],
+                    dest: '<%= meta.assetStaticDir %>/'
                 }]
             },
             release_to_examples: {
                 files: [{
                     expand: true,
-                    cwd: '<%= meta.releaseDir %>/js/',
+                    cwd: '<%= meta.releaseDir %>/',
                     src: ['**'],
-                    dest: '<%= meta.examplesDir %>/dist/js/'
-                }, {
-                    expand: true,
-                    cwd: '<%= meta.releaseDir %>/css/',
-                    src: ['**'],
-                    dest: '<%= meta.examplesDir %>/dist/css/'
+                    dest: '<%= meta.examplesStaticDir %>/'
                 }]
             },
             min_to_pub: {
@@ -255,12 +306,12 @@ module.exports = function(grunt) {
                     expand: true,
                     cwd: '<%= meta.distDir %>/js/',
                     src: ['**/*.min.*'],
-                    dest: '<%= meta.jsPublicDir %>/'
+                    dest: '<%= meta.jsStaticDir %>/'
                 }, {
                     expand: true,
                     cwd: '<%= meta.distDir %>/css/',
                     src: ['**/*.min.*'],
-                    dest: '<%= meta.cssPublicDir %>/'
+                    dest: '<%= meta.cssStaticDir %>/'
                 }]
             },
             restore: {
@@ -349,10 +400,10 @@ module.exports = function(grunt) {
                     'test'
                 ]
             },
-            img: {
-                files: ['pics/**/*.{png,jpg}'],
+            asset: {
+                files: ['pics/**'],
                 tasks: [
-                    'dev:img',
+                    'dev:asset',
                     'test'
                 ]
             }
@@ -385,9 +436,10 @@ module.exports = function(grunt) {
         'compass',
     ]);
 
-    grunt.registerTask('dev:img', [
+    grunt.registerTask('dev:asset', [
         'clean:target_pics', 
         'imagemin', 
+        'copy:asset_to_target',
         'dev:css'
     ]);
 
@@ -397,49 +449,58 @@ module.exports = function(grunt) {
         'dev:js'
     ]);
 
+    grunt.registerTask('build_components', [
+    ]);
+
     grunt.registerTask('dev', [
         'dev:tpl',
-        'dev:img'
+        'dev:asset'
     ]);
     
     grunt.registerTask('build', [
         'clean:dist',
         'concat',
+        'copy:asset_to_dist',
         'uglify', 
         'cssmin'
     ]);
 
     grunt.registerTask('test', [
-        'clean:examples_dist',
         'copy:target_to_examples',
         'copy:target_to_pub'
     ]);
 
     grunt.registerTask('restore', [
-        'clean:examples_dist',
+        'clean:pub_static',
+        'copy:release_to_pub',
+        'clean:examples_static',
         'copy:release_to_examples',
         'clean:dist',
         'copy:restore'
     ]);
 
     grunt.registerTask('default', [
+        'build_components',
         'jshint:dist',
         'dev',
         'restore'
     ]);
 
     grunt.registerTask('deploy', [
-        'build',
+        'clean:pub_static',
         'copy:dist_to_pub'
     ]);
 
-    grunt.registerTask('upstream', [
+    grunt.registerTask('update', [
         'clean:jsComponent',
-        'clean:cssMoui',
-        'dispatch'
+        'clean:cssComponent',
+        'clean:origin',
+        'dispatch',
+        'build_components'
     ]);
 
     grunt.registerTask('publish', [
+        'build_components',
         'jshint:dist',
         'dev',
         'build',

@@ -1,11 +1,9 @@
-@import "moui/control/switch";
-@import "moui/control/folder";
 
 .ck-post-button {
   @extend .ckbase-btn;
 
   &.enabled {
-    @extend %block-pressed;
+    @extend %moui-block-pressed;
   }
 
 }

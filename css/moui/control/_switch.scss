@@ -1,13 +1,13 @@
 
 .moui-switch {
-  @extend %block;
+  @extend %moui-block;
   border:0;
   position:relative;
   width:75px;
   text-align:left;
 
   .block {
-    @extend %block;
+    @extend %moui-block;
     width:36px + 3px;
     position:absolute;
     top:0;
@@ -17,8 +17,8 @@
 
   .enable-text,
   .disable-text {
-    @extend %block;
-    @extend %block-pressed;
+    @extend %moui-block;
+    @extend %moui-block-pressed;
     width:36px;
     position:absolute;
     right:0;
@@ -27,8 +27,8 @@
   }
 
   .enable-text {
-    @extend %block-main;
-    @extend %block-main-pressed;
+    @extend %moui-block-main;
+    @extend %moui-block-main-pressed;
     right:auto;
     left:0;
   }

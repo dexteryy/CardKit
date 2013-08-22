@@ -1,7 +1,7 @@
 
 .moui-select {
-  @extend %block;
-  @extend %unfold-icon;
+  @extend %moui-block;
+  @extend %moui-unfold-icon;
   background-position:right center;
   background-origin: content-box;
   background-size:10px;
@@ -18,7 +18,7 @@
     margin: 0 15px 0 0;
     border:none;
     border-right:1px solid #B2B2B2;
-    font-size:$title_size;
+    font-size:$moui_title_size;
     font-weight:normal;
   }
 

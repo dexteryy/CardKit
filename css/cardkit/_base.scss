@@ -1,12 +1,20 @@
-@import "moui/base/default";
-@import "cardkit/lib";
 
-$top_btn_size: 80px/2;
+@import "moui/base";
+@import "moui/control/switch";
+@import "moui/control/folder";
+@import "moui/picker/segment";
+@import "moui/picker/tags";
+@import "moui/picker/actions";
+@import "moui/picker/slider";
+@import "moui/picker/select";
+@import 'moui/actionview/default';
+@import 'moui/modalview/default';
+@import 'moui/growl/default';
 
 .ckbase-btn {
-  @extend %button;
+  @extend %moui-button;
 }
 
 .ckbase-mainbtn {
-  @extend %main-button;
+  @extend %moui-main-button;
 }

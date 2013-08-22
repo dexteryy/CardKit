@@ -1,6 +1,6 @@
 
 %ck-unit {
-  margin:$space;
+  margin:$moui_space;
 
   .ck-unit-wrap {
     @extend %ck-unit-wrap;
@@ -11,7 +11,7 @@
 %ck-unit-wrap {
   background-color:#fff;
   border:1px solid rgb(255,255,255);
-  @include border-radius($radius);
+  @include border-radius($moui_radius);
   @include box-shadow(0 0px 2px 0 rgba(0, 0, 0, .2));
   word-wrap: break-word;
 }
@@ -24,10 +24,10 @@
     position:relative;
 
     .ck-hd {
-      padding:($space/2) 0;
-      font-size:$maintitle_size;
+      padding:($moui_space/2) 0;
+      font-size:$moui_maintitle_size;
       font-weight:bold;
-      color:$text_color;
+      color:$moui_text_color;
       display:block;
     }
 
@@ -40,9 +40,9 @@
 
   .ck-unit-wrap > footer {
     @extend %info-text;
-    border-top:1px solid $border_color;
-    margin:0 $morespace;
-    padding:($space) 0;
+    border-top:1px solid $moui_border_color;
+    margin:0 $moui_morespace;
+    padding:($moui_space) 0;
   }
 
   &[data-cfg-plainhd="true"] {
@@ -52,9 +52,9 @@
 }
 
 %item {
-  border-bottom:1px solid $border_color;
-  margin:0 $morespace;
-  padding:($space/2) 0;
+  border-bottom:1px solid $moui_border_color;
+  margin:0 $moui_morespace;
+  padding:($moui_space/2) 0;
 }
 
 %more-link {
@@ -62,13 +62,13 @@
     image: inline-image('drawer_icon.png');
     repeat: no-repeat;
     position: right;
-    size: 5.5px $space;
+    size: 5.5px $moui_space;
   }
 }
 
 %info-text {
-  font-size:$text_size;
-  color:$desc_color;
+  font-size:$moui_text_size;
+  color:$moui_desc_color;
 }
 
 %plain-hd-parts {
@@ -76,7 +76,7 @@
   .ck-hd-wrap {
     @extend %plain-hd;
     padding:0;
-    margin:$space 0;
+    margin:$moui_space 0;
     border:none;
 
     .ck-hd {
@@ -101,15 +101,15 @@
 %plain-hd {
 
   .ck-hd {
-    padding:0 $morespace 0 5px;
+    padding:0 $moui_morespace 0 5px;
     background-origin: content-box;
-    color:$desc_color;
+    color:$moui_desc_color;
     //font-weight:normal;
   }
 
   .ck-hdopt-wrap {
     bottom:-5px;
-    background:$view_color;
+    background:$ck_view_color;
   }
 
   .ck-link-mask {
@@ -131,22 +131,22 @@
     @include box-shadow(none);
 
     & > footer {
-      padding:$space 0 0 $space/2;
-      margin-top:$morespace;
+      padding:$moui_space 0 0 $moui_space/2;
+      margin-top:$moui_morespace;
       margin-left:0;
       margin-right:0;
-      border-color:$view_border_color;
+      border-color:$ck_view_border_color;
     }
 
     & > section {
       margin:0;
-      padding-left:$morespace;
-      padding-right:$morespace;
+      padding-left:$moui_morespace;
+      padding-right:$moui_morespace;
       padding-bottom:0;
-      border-color:$view_border_color;
+      border-color:$ck_view_border_color;
 
       &:first-child {
-        border-top:1px solid $view_border_color;
+        border-top:1px solid $ck_view_border_color;
       }
 
       &:last-child {
@@ -170,29 +170,29 @@
   .ck-hd-wrap {
     @extend %plain-hd;
     padding:0;
-    margin:$space 0;
+    margin:$moui_space 0;
   }
 
 }
 
 %paper-unit {
-  margin:$morespace;
+  margin:$moui_morespace;
   word-wrap: break-word;
 
   .ck-unit-wrap {
-    padding:0 0 ($space) 0;
-    border-bottom:1px solid $view_border_color;
+    padding:0 0 ($moui_space) 0;
+    border-bottom:1px solid $ck_view_border_color;
   }
 
   .ck-hd-wrap {
-    //border-bottom:1px solid $view_border_color;
-    //padding:0 0 $space 0;
+    //border-bottom:1px solid $ck_view_border_color;
+    //padding:0 0 $moui_space 0;
     line-height:1.6;
-    margin-bottom:$space;
+    margin-bottom:$moui_space;
     position:relative;
 
     .ck-hd {
-      font-size: $headtitle_size;
+      font-size: $moui_hdtitle_size;
       line-height:1.4;
       font-weight:bold;
     }
@@ -205,11 +205,11 @@
 
   .ck-hdopt-wrap {
     bottom:-4px;
-    background:$view_color;
+    background:$ck_view_color;
   }
 
   .ck-unit-wrap > footer {
-    border-color:$view_border_color;
+    border-color:$ck_view_border_color;
   }
 
   .ck-item,
@@ -218,8 +218,8 @@
   }
 
   .ck-unit-wrap > section {
-    border-color:$view_border_color;
-    padding:40px 0 $space 0;
+    border-color:$ck_view_border_color;
+    padding:40px 0 $moui_space 0;
     //line-height:(54px/2);
     font-size:(34px/2);
     @include user-select(text);
@@ -236,15 +236,15 @@
   }
 
   .ck-item {
-    padding:$space 0;
-    border-bottom:1px solid $view_border_color;
+    padding:$moui_space 0;
+    border-bottom:1px solid $ck_view_border_color;
 
     &:first-child {
       //padding-top:0;
     }
 
     &:last-child {
-      margin-bottom:$morespace;
+      margin-bottom:$moui_morespace;
     }
 
   }
@@ -259,23 +259,23 @@
   display:block;
   width:100%;
   height:100%;
-  //padding:0 (($space + $space)/2);
-  //@include transform(translateX(-($space + $space)/2));
-  padding:0 (($morespace)/2);
-  @include transform(translateX(-($morespace)/2));
-  @include border-radius($radius);
+  //padding:0 (($moui_space + $moui_space)/2);
+  //@include transform(translateX(-($moui_space + $moui_space)/2));
+  padding:0 (($moui_morespace)/2);
+  @include transform(translateX(-($moui_morespace)/2));
+  @include border-radius($moui_radius);
   position:absolute;
   top:0;
   left:0;
-  z-index:$zindex_item;
+  z-index:$moui_z_item;
   //-webkit-tap-highlight-color: rgba(0,0,0,0);
-  -webkit-tap-highlight-color: $highlight_color;
+  -webkit-tap-highlight-color: $moui_highlight_color;
 
   //&.ck-link-mask-active {
   //&:active {
-    //background:$active_color;
+    //background:$moui_active_color;
     //opacity:.4;
-    //z-index:$zindex_item + $zindex_step * 4;
+    //z-index:$moui_z_item + $moui_z_step * 4;
   //}
 
 }
@@ -294,12 +294,12 @@
 .ck-hdopt-wrap {
   display:inline-block;
   position:absolute;
-  bottom:$space/2 - 1px;
+  bottom:$moui_space/2 - 1px;
   right:0;
-  z-index:$zindex_item + $zindex_step;
-  font-size:$title_size;
-  line-height:$button_height+2px;
-  height:$button_height+2px;
+  z-index:$moui_z_item + $moui_z_step;
+  font-size:$moui_title_size;
+  line-height:$moui_btn_h+2px;
+  height:$moui_btn_h+2px;
   background:#fff;
 
   .ck-hdopt {
@@ -322,14 +322,14 @@
   }
 
   .ck-unit-wrap > section {
-    border-top:1px solid $border_color;
-    margin:0 $morespace;
-    padding:$morespace 0;
-    font-size:$title_size;
+    border-top:1px solid $moui_border_color;
+    margin:0 $moui_morespace;
+    padding:$moui_morespace 0;
+    font-size:$moui_title_size;
 
     img {
       max-width:100%;
-      margin:$space/2 auto;
+      margin:$moui_space/2 auto;
       display:block;
     }
 
@@ -363,8 +363,8 @@
 
       .ck-initem {
         background:none;
-        padding:$space 0;
-        color:$desc_color;
+        padding:$moui_space 0;
+        color:$moui_desc_color;
       }
 
     }
@@ -373,9 +373,9 @@
 
   .ck-initem {
     position:relative;
-    font-size: $text_size;
-    padding:($space/2) 0;
-    color:$text_color;
+    font-size: $moui_text_size;
+    padding:($moui_space/2) 0;
+    color:$moui_text_color;
     display:block;
   }
 
@@ -393,7 +393,7 @@
   .ck-avatar,
   .ck-icon {
     float:left;
-    margin:2px $space 0 0;
+    margin:2px $moui_space 0 0;
 
     img {
       width:(60px / 2);
@@ -414,9 +414,9 @@
   .ck-opt {
     float:right;
     width:40px;
-    margin:2px 0 0 $space;
+    margin:2px 0 0 $moui_space;
     position:relative;
-    z-index:$zindex_item + $zindex_step;
+    z-index:$moui_z_item + $moui_z_step;
   }
 
   .ck-author-info-wrap,
@@ -434,7 +434,7 @@
   }
 
   .ck-title-line {
-    font-size:$title_size;
+    font-size:$moui_title_size;
     line-height:1.2;
     display:block;
     margin:0 0 4px 0;
@@ -449,7 +449,7 @@
   a.ck-avatar img,
   a.ck-author {
     position:relative;
-    z-index:$zindex_item + $zindex_step;
+    z-index:$moui_z_item + $moui_z_step;
   }
 
   .ck-title-prefix,
@@ -466,16 +466,16 @@
   .ck-title-suffix,
   .ck-author-prefix,
   .ck-author-suffix {
-    color:$desc_color;
+    color:$moui_desc_color;
   }
 
   .ck-title-tag {
     display:inline-block;
-    font-size: $text_size;
+    font-size: $moui_text_size;
     background:#ffc;
     padding:0px 2px;
     margin:0 3px 0 0;
-    @include border-radius($radius);
+    @include border-radius($moui_radius);
   }
 
   .ck-desc-wrap,
@@ -494,7 +494,7 @@
 
   .ck-content-wrap,
   .ck-author-content-wrap {
-    font-size:$title_size;
+    font-size:$moui_title_size;
     display:block;
     line-height: 1.4;
     margin:0 0 4px 0;
@@ -502,7 +502,7 @@
 
     img {
       max-width:100%;
-      margin:$space/2 auto;
+      margin:$moui_space/2 auto;
       display:block;
     }
 
@@ -560,13 +560,13 @@
     } 
 
     .ck-title-line {
-      font-size:$maintitle_size;
-      padding-right:$space;
+      font-size:$moui_maintitle_size;
+      padding-right:$moui_space;
     }
 
     .ck-title {
       font-weight:bold;
-      color:$text_color;
+      color:$moui_text_color;
     }
 
     .clickable {
@@ -595,9 +595,9 @@
 
     .ck-list {
       overflow:hidden;
-      margin:0 $morespace;
-      padding:$space 0;
-      border-bottom:1px solid $border_color;
+      margin:0 $moui_morespace;
+      padding:$moui_space 0;
+      border-bottom:1px solid $moui_border_color;
 
       &:last-child {
         border-bottom:none;
@@ -637,20 +637,20 @@
     }
 
     .ck-link-mask {
-      padding:$space/2 0;
-      @include transform(translateY(-$space/2));
+      padding:$moui_space/2 0;
+      @include transform(translateY(-$moui_space/2));
     }
 
   }
 
   &[data-style="split"] {
-    margin:$space 0;
+    margin:$moui_space 0;
     @extend %unit-parts;
     @extend %plain-hd-parts;
 
     .ck-hd-wrap {
-      margin-left: $space;
-      margin-right: $space;
+      margin-left: $moui_space;
+      margin-right: $moui_space;
     }
 
     .ck-unit-wrap > footer {
@@ -658,7 +658,7 @@
     }
 
     .ck-item {
-      margin:$space;
+      margin:$moui_space;
       @extend %ck-unit-wrap;
       padding:5px 0;
 
@@ -671,7 +671,7 @@
     .ck-initem {
       @extend %item;
       border:none;
-      //padding:$space 0;
+      //padding:$moui_space 0;
     }
 
     .ck-title {
@@ -679,9 +679,9 @@
     }
 
     .ck-author-box {
-      padding:$space 0 0 0;
-      margin-top:$space;
-      border-top:1px solid $border_color;
+      padding:$moui_space 0 0 0;
+      margin-top:$moui_space;
+      border-top:1px solid $moui_border_color;
     }
 
   }
@@ -699,13 +699,13 @@
     .ck-unit-wrap > footer,
     .ck-hd-wrap,
     .ck-list {
-      margin-left:$morespace;
-      margin-right:$morespace;
+      margin-left:$moui_morespace;
+      margin-right:$moui_morespace;
     }
 
     .ck-link-mask {
-      //padding:$space/2;
-      //@include transform(translateX(-$space/2) translateY(-$space/2));
+      //padding:$moui_space/2;
+      //@include transform(translateX(-$moui_space/2) translateY(-$moui_space/2));
     }
 
   }
@@ -718,15 +718,15 @@
 
 .ck-mini-unit {
   @extend %list-parts;
-  margin: $space*2 0;
+  margin: $moui_space*2 0;
 
   &[data-style="slide"] {
     @extend %unit-parts;
     @extend %plain-hd-parts;
 
     .ck-hd-wrap {
-      margin-left: $space;
-      margin-right: $space;
+      margin-left: $moui_space;
+      margin-right: $moui_space;
     }
 
     .ck-unit-wrap.slide {
@@ -766,7 +766,7 @@
     }
 
     .ck-item {
-      margin:0 $space 3px $space;
+      margin:0 $moui_space 3px $moui_space;
       @extend %ck-unit-wrap;
     }
 
@@ -780,8 +780,8 @@
     }
 
     .ck-author-box {
-      padding:$space 0 0 0;
-      border-top:1px solid $border_color;
+      padding:$moui_space 0 0 0;
+      border-top:1px solid $moui_border_color;
     }
 
   }
@@ -799,26 +799,26 @@
 
   .ck-item {
     @extend %item;
-    padding:$space 0;
+    padding:$moui_space 0;
     display:block;
 
     &:first-child {
-      padding-top:$morespace;
+      padding-top:$moui_morespace;
     }
 
     &:last-child {
       border:none;
-      padding-bottom:$morespace;
+      padding-bottom:$moui_morespace;
     }
 
     &.blank {
       text-align:center;
-      color:$desc_color;
+      color:$moui_desc_color;
     }
 
     .ck-folder,
     p {
-      margin:$space 0;
+      margin:$moui_space 0;
 
       &:first-child {
         margin-top:0;
@@ -831,13 +831,13 @@
     }
 
     label {
-      font-size:$maintitle_size;
-      //margin:0 0 0 $space/2;
+      font-size:$moui_maintitle_size;
+      //margin:0 0 0 $moui_space/2;
 
       em {
-        color:$desc_color;
-        font-size:$title_size;
-        margin:0 0 0 $space/2;
+        color:$moui_desc_color;
+        font-size:$moui_title_size;
+        margin:0 0 0 $moui_space/2;
 
         &:first-child {
           margin-left:0;
@@ -849,24 +849,24 @@
 
     .ck-title {
       display:block;
-      line-height:$maintitle_size;
-      margin:0 0 $space 0;
+      line-height:$moui_maintitle_size;
+      margin:0 0 $moui_space 0;
     }
 
     input[type="text"], 
     input[type="number"], 
     input[type="password"], 
     textarea {
-      font-size:$title_size;
-      color:$text_color;
+      font-size:$moui_title_size;
+      color:$moui_text_color;
       width:100%;
       line-height:20px;
-      height:(20px + 2 * $space);
-      padding:$space;
+      height:(20px + 2 * $moui_space);
+      padding:$moui_space;
       border:1px solid rgb(185,185,185);
       @include box-sizing(border-box);
       @include box-shadow(inset 0px 2px 3px 0px rgba(0,0,0,0.15));
-      @include border-radius($radius);
+      @include border-radius($moui_radius);
       @include user-select(text);
     }
     
@@ -883,7 +883,7 @@
 }
 
 .ck-top-tips {
-  $myheight: $nav_height - 2px;
+  $_height: $moui_nav_h - 2px;
   position:absolute;
   top:0;
   left:0;
@@ -891,9 +891,9 @@
   text-align:center;
   font-size:10px;
   color:#999;
-  height:$myheight;
-  line-height:$myheight;
-  border-bottom:1px solid $border_color;
+  height:$_height;
+  line-height:$_height;
+  border-bottom:1px solid $moui_border_color;
 
   span {
     opacity:0;
@@ -914,23 +914,23 @@
 
 .ck-banner-unit {
 
-  $bg_height: 600px;
+  $_bgheight: 600px;
 
   .ck-unit-wrap {
     font-size:13px;
     background:#fff;
-    padding: $space/2;
-    padding-top: $space/2 + $nav_height;
+    padding: $moui_space/2;
+    padding-top: $moui_space/2 + $moui_nav_h;
     position:relative;
     bottom:-3px;
 
     &.empty {
-      padding:$nav_height 0 0 0;
-      background:$view_color;
+      padding:$moui_nav_h 0 0 0;
+      background:$ck_view_color;
     }
 
     body.fullscreen-mode & {
-      padding-top:$space/2;
+      padding-top:$moui_space/2;
       bottom:0;
     }
 
@@ -938,10 +938,10 @@
 
   body:not(.no-cardscroll):not(.no-overflowscroll) & {
     position:relative;
-    background:$viewbg_color;
-    padding-top: $bg_height - 3px;
-    @include transform(translateY(-$bg_height));
-    margin-bottom:-$bg_height + $space;
+    background:$ck_viewbg_color;
+    padding-top: $_bgheight - 3px;
+    @include transform(translateY(-$_bgheight));
+    margin-bottom:-$_bgheight + $moui_space;
     @include box-shadow(0 -1px 3px rgba(0,0,0,.35));
 
     .ck-unit-wrap:not(.empty) {
@@ -950,7 +950,7 @@
     }
 
     .ck-top-tips {
-      top: $bg_height;
+      top: $_bgheight;
     }
 
   }
@@ -963,11 +963,11 @@
 
   .ck-unit-wrap > div {
     @extend %item;
-    padding:$space 0;
+    padding:$moui_space 0;
     display:block;
     border:none;
     text-align:center;
-    font-size:$maintitle_size;
+    font-size:$moui_maintitle_size;
   }
 
 }

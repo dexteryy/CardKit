@@ -4,9 +4,9 @@ html {
 }
 
 body {
-  font:$text_size Helvetica,sans-serif;
-  color:$text_color;
-  background:$view_color;
+  font:$moui_text_size Helvetica,sans-serif;
+  color:$moui_text_color;
+  background:$ck_view_color;
   line-height:1.6;
   @include user-select(none);
   width:100%;
@@ -39,7 +39,7 @@ body {
 
     .ck-cardmask {
       display:block;
-      z-index:$zindex_overlay + $zindex_step;
+      z-index:$moui_z_overlay + $moui_z_step;
     }
 
     .ck-ctl-bar {
@@ -64,8 +64,8 @@ pre {
 
 a {
   text-decoration:none;
-  color:$active_color;
-  -webkit-tap-highlight-color: $highlight_color;
+  color:$moui_active_color;
+  -webkit-tap-highlight-color: $moui_highlight_color;
 }
 
 .ck-link {
@@ -74,10 +74,10 @@ a {
 }
 
 .ck-header {
-  height: $nav_height - 1px;
+  height: $moui_nav_h - 1px;
   @include box-shadow(0 1px 2px rgba(0,0,0,.35));
   border-bottom:1px solid rgba(0,0,0,.2);
-  z-index:$zindex_step;
+  z-index:$moui_z_step;
   @include user-select(none);
 
   a {
@@ -85,13 +85,11 @@ a {
     -webkit-tap-highlight-color: rgba(0,0,0,0);
   }
 
-  $top_btn_space: 1px;
-
 }
 
 %float-bar {
   background-color:rgba(69, 69, 69, 0.7);
-  @include border-radius($radius);
+  @include border-radius($moui_radius);
   @include transition(opacity 0.3s 0.1s);
   opacity:0;
 
@@ -102,14 +100,14 @@ a {
 }
 
 .ck-top-title {
-  font-size:$article_size;
+  font-size:$moui_article_size;
   font-weight:bold;
-  line-height: $nav_height;
+  line-height: $moui_nav_h;
   text-align:center;
   display:block;
   position:absolute;
-  left: $space*4 + 0px;
-  right: $space*4 + 0px;
+  left: $moui_space*4 + 0px;
+  right: $moui_space*4 + 0px;
   top:0;
 }
 
@@ -127,9 +125,9 @@ a {
     left:0;
     width:100%;
     background:#627b9e;
-    z-index: $zindex_overlay;
+    z-index: $moui_z_overlay;
 
-    @include transform(translateY(-$nav_height));
+    @include transform(translateY(-$moui_nav_h));
     @include transition(transform 150ms);
 
     body.no-cardscroll.ck-inited & {
@@ -161,8 +159,8 @@ a {
   @include box-shadow(none);
   @include user-select(none);
 
-  width:$top_btn_size;
-  height:$top_btn_size;
+  width:$ck_top_btn_size;
+  height:$ck_top_btn_size;
   background:#fff;
   @include background(linear-gradient(bottom, #78624f, #846f5b));
   background-size:24px;
@@ -210,9 +208,9 @@ body.fullscreen-mode {
     //border:none;
     //@include box-shadow(none);
     //width:auto;
-    //top:$space - 2px;
-    //left:$space + 2px;
-    //right:$space + 2px;
+    //top:$moui_space - 2px;
+    //left:$moui_space + 2px;
+    //right:$moui_space + 2px;
     //@include transform(translateY(0));
   //}
 
@@ -226,7 +224,7 @@ body.fullscreen-mode {
     //left:0;
     //right:auto;
     //display:inline-block;
-    //padding:0 $space 0 $top_btn_size;
+    //padding:0 $moui_space 0 $ck_top_btn_size;
   //}
 
   //.ck-top-actions {
@@ -288,12 +286,12 @@ body.fullscreen-mode.nav-view {
   height:15px;
   margin:30px 0 0 0;
   padding:0 0 15px 0;
-  background:$view_color;
+  background:$ck_view_color;
   text-align:center;
   
   .copyright {
-    font-size:$text_size;
-    color:$desc_color;
+    font-size:$moui_text_size;
+    color:$moui_desc_color;
     margin:5px 0;
   }
 
@@ -315,14 +313,14 @@ body.fullscreen-mode.nav-view {
   color:#fff;
 
   & > header {
-    height:$nav_height;
+    height:$moui_nav_h;
     position:absolute;
     top:0;
     left:0;
     right:0;
     background:#242424;
     @include box-shadow(1px 6px 10px rgba(0, 0, 0, 0.5));
-    z-index:$zindex_step;
+    z-index:$moui_z_step;
   }
 
   & > article {
@@ -331,7 +329,7 @@ body.fullscreen-mode.nav-view {
   }
 
   .ck-nav-wrap {
-    margin-top:$nav_height;
+    margin-top:$moui_nav_h;
     background:#323232;
     @include box-shadow(0 4px 4px rgba(0,0,0,.5));
   }
@@ -363,9 +361,9 @@ body.fullscreen-mode.nav-view {
 
 .ck-ctl-bar {
   position:fixed;
-  bottom:$space - 2px;
-  left:$space + 2px;
-  z-index: $zindex_overlay;
+  bottom:$moui_space - 2px;
+  left:$moui_space + 2px;
+  z-index: $moui_z_overlay;
 
   input {
     @extend %float-bar;
@@ -374,9 +372,9 @@ body.fullscreen-mode.nav-view {
     display:inline-block;
     margin:0;
     padding:0;
-    //width:$top_btn_size;
+    //width:$ck_top_btn_size;
     width: (110px/2);
-    height:$top_btn_size;
+    height:$ck_top_btn_size;
     border:none;
     @include appearance(none);
     @include user-select(none);
@@ -413,7 +411,7 @@ body.fullscreen-mode.nav-view {
   width:100%;
   height:100%;
   padding-bottom:60px;
-  z-index: $zindex_mask;
+  z-index: $moui_z_mask;
 }
 
 //.ck-ctlmask {
@@ -439,7 +437,7 @@ body.no-cardscroll {
 
   &.bg {
 
-    background:$view_color;
+    background:$ck_view_color;
     //.ck-wrapper {
       //position:fixed;
       //top:0;
