@@ -1,7 +1,14 @@
 
 module.exports = function(grunt) {
 
-    var config = require('./config');
+    var config;
+    try {
+        config = require('./config');
+    } catch(ex) {
+        config = {};
+        grunt.log.writeln('WARNING: config.js does not exist');
+    }
+    config.staticDir = config.staticDir || 'public/static';
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -471,7 +478,7 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask('restore', [
-        'clean:pub_static',
+        //'clean:pub_static',
         'copy:release_to_pub',
         'clean:examples_static',
         'copy:release_to_examples',
@@ -487,7 +494,7 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask('deploy', [
-        'clean:pub_static',
+        //'clean:pub_static',
         'copy:dist_to_pub'
     ]);
 

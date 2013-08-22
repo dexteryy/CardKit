@@ -1,4 +1,4 @@
-/*! cardkit - v1.4.2 */
+/*! cardkit - v1.5.0 */
 ;
 
 /**
@@ -820,6 +820,11 @@ define("../cardkit/supports", [
         is_ios5 = is_ios && parseFloat(browsers.osversion) < 6,
         is_ios7 = parseFloat(browsers.osversion) >= 7,
         is_mobilefirefox = browsers.mozilla && is_android,
+        is_webview = browsers.webview 
+            || /micromessenger/.test(browsers.ua),
+        is_aosp_like = is_android 
+            && !browsers.chrome 
+            && !is_mobilefirefox,
         is_desktop = browsers.os === 'mac'
             || browsers.os === 'windows'
             || browsers.os === 'linux';
@@ -828,20 +833,19 @@ define("../cardkit/supports", [
     
         //HISTORY: 'pushState' in history
             //&& !browsers.crios 
-            //&& !browsers.aosp
+            //&& !is_aosp_like
             //&& !is_mobilefirefox
             //&& !is_ios5,
 
         GOBACK_WHEN_POP: !is_ios5
-            && !browsers.aosp,
+            && !is_aosp_like,
 
         REPLACE_HASH: !is_ios5
-            && !browsers.aosp,
+            && !is_aosp_like,
 
         BROWSER_CONTROL: is_desktop
             || browsers.mobilesafari
-            || browsers.webview
-            //|| browsers.aosp
+            || is_webview
             || is_android && browsers.chrome,
 
         NO_POP_ON_CACHED_PAGE: is_mobilefirefox, 
@@ -851,10 +855,10 @@ define("../cardkit/supports", [
         FIXED_BOTTOM_BUGGY: browsers.crios,
 
         NEW_WIN: !is_ios5 
-            && !browsers.aosp,
+            && !is_aosp_like,
 
         CARD_SCROLL: !is_desktop
-            && !browsers.aosp,
+            && !is_aosp_like,
 
         HIDE_ADDRESSBAR: !browsers.crios,
 
@@ -862,7 +866,7 @@ define("../cardkit/supports", [
 
         FULLSCREEN_MODE: typeof env.fullscreenMode !== 'undefined' 
             ? env.fullscreenMode 
-            : browsers.webview,
+            : is_webview,
 
         FOLDABLE_URLBAR: browsers.mobilesafari && !is_ios7
 
@@ -3973,7 +3977,7 @@ define('moui/growl', [
 
         _ns: NS,
         _template: TPL_VIEW,
-        _defaults: _.merge({}, default_config, Growl.prototype._defaults),
+        _defaults: _.mix({}, Growl.prototype._defaults, default_config),
 
         set: function(opt) {
             var self = this;
@@ -4693,7 +4697,7 @@ define('moui/actionview', [
 
         _ns: NS,
         _template: TPL_VIEW,
-        _defaults: _.merge({}, default_config, ActionView.prototype._defaults),
+        _defaults: _.mix({}, ActionView.prototype._defaults, default_config),
 
         init: function(opt) {
             this.superClass.init.call(this, opt);
@@ -4940,7 +4944,7 @@ define('moui/modalview', [
 
         _ns: NS,
         _template: TPL_VIEW,
-        _defaults: _.merge({}, default_config, ModalView.prototype._defaults),
+        _defaults: _.mix({}, ModalView.prototype._defaults, default_config),
 
         init: function(opt) {
             this.superClass.init.call(this, opt);
@@ -5822,14 +5826,26 @@ define("../cardkit/view/control", [
     var UID = '_ckControlUid',
     
         uid = 0,
-        lib = {};
+        lib = {},
+
+        default_config = {
+            disableRequest: false,
+            enableUrl: '',
+            enableJsonUrl: '',
+            enableMethod: 'post',
+            disableUrl: '',
+            disableJsonUrl: '',
+            disableMethod: 'post'
+        };
 
     var CkControl = _.construct(control.Control);
 
     _.mix(CkControl.prototype, {
 
+        _defaults: _.mix({}, CkControl.prototype._defaults, default_config),
+
         enable: function(){
-            var cfg = this.data();
+            var cfg = this._config;
             return this.request({
                 method: cfg.enableMethod,
                 url: cfg.enableUrl,
@@ -5840,7 +5856,7 @@ define("../cardkit/view/control", [
         },
 
         disable: function(){
-            var cfg = this.data();
+            var cfg = this._config;
             return this.request({
                 method: cfg.disableMethod,
                 url: cfg.disableUrl,
@@ -5853,7 +5869,7 @@ define("../cardkit/view/control", [
         request: function(cfg, fn){
             var self = this,
                 url = cfg.jsonUrl || cfg.url;
-            if (url) {
+            if (!this._config.disableRequest && url) {
                 var data;
                 url = url.replace(/\?(.+)$/, function($0, $1) {
                     data = $1.replace(/#.*/, '');
@@ -5863,7 +5879,7 @@ define("../cardkit/view/control", [
                 net.ajax({
                     url: url,
                     data: data,
-                    type: cfg.method || 'post',
+                    type: cfg.method,
                     dataType: cfg.jsonUrl ? 'json' : 'text',
                     success: function(data){
                         self.hideLoading();
@@ -7650,6 +7666,9 @@ define("mo/cookie", [], function(){
 
 /* @source ../cardkit/app.js */;
 
+/**
+ * vim: et:ts=4:sw=4:sts=4
+ */
 define("../cardkit/app", [
   "dollar",
   "mo/lang",
@@ -7691,7 +7710,6 @@ define("../cardkit/app", [
         body = document.body,
         last_view_for_modal,
         last_view_for_actions,
-        gc_id = 0,
         soviet_aliases = {},
 
         HASH_SEP = '!/',
@@ -7870,7 +7888,7 @@ define("../cardkit/app", [
                         text:  $(label || item).text()
                     }, 'item'))[0];
                 }, tpl_overflowmenu.template);
-            actionView(this, {
+            actionView('ckTopOverflow', {
                 options: options
             }).open();
             bus.bind('actionView:confirmOnThis', function(actionCard){
@@ -7898,8 +7916,27 @@ define("../cardkit/app", [
 
     };
 
+    function check_voodoo(me, handler){
+        var me = $(me);
+        if (me.hasClass('ck-overflow-item')
+                || me.hasClass('ck-item')) {
+            var voodoo = me.data('voodoo');
+            if (voodoo) {
+                $(voodoo).forEach(function(elm){
+                    if (elm !== this) {
+                        handler.call(elm);
+                    }
+                }, me[0]);
+                return true;
+            }
+        }
+        return false;
+    }
+
     function handle_control(){
-        var controller = control(this),
+        var controller = control(this, {
+                disableRequest: check_voodoo(this, handle_control)
+            }),
             cfg = controller.data();
         if (cfg.disableUrl || cfg.disableJsonUrl) {
             controller.toggle();
@@ -7909,8 +7946,9 @@ define("../cardkit/app", [
     } 
 
     function toggle_control(){
-        var controller = control(this).toggle();
-        mark_gc(controller);
+        control(this, {
+            disableRequest: check_voodoo(this, toggle_control)
+        }).toggle();
     } 
 
     function tap_ck_post(){
@@ -7941,13 +7979,6 @@ define("../cardkit/app", [
         var rater = stars(this),
             score = rater.calc(e);
         rater[method](score);
-    }
-
-    function mark_gc(com){
-        if (!com.parentId) {
-            com.parentId = ++gc_id;
-        }
-        ck.viewportGarbage[com.parentId] = 1;
     }
 
     bus.bind('cardkit:updateSize', function(){
@@ -8024,7 +8055,7 @@ define("../cardkit/app", [
     }).bind('close', function(){
         modalCard.event.cancel('contentchange', when_modal_content_loaded);
         ck.changeView(last_view_for_modal, {
-            preventRender: ck._navDrawerLastView,
+            preventRender: true,
             isModal: ck._navDrawerLastView,
             isNotPrev: true
         });
@@ -8056,7 +8087,7 @@ define("../cardkit/app", [
         }
         ck.changeView(last_view_for_actions, {
             isNotPrev: true,
-            preventRender: modalCard.isOpened || ck._navDrawerLastView,
+            preventRender: true,
             preventScroll: true,
             isModal: modalCard.isOpened || ck._navDrawerLastView
         });
@@ -8069,7 +8100,7 @@ define("../cardkit/app", [
         }
         ck.changeView(last_view_for_actions, {
             isNotPrev: true,
-            preventRender: modalCard.isOpened || ck._navDrawerLastView,
+            preventRender: true,
             preventScroll: true,
             isModal: modalCard.isOpened || ck._navDrawerLastView
         });
@@ -8583,10 +8614,6 @@ define("../cardkit/app", [
         },
 
         releaseView: function(opt){
-            //control.gc(check_gc);
-            //picker.gc(check_gc);
-            //this.viewportGarbage = {};
-            //gc_id = 0;
             if (this.viewport) {
                 render.closeCard(this.viewport, opt);
             }
@@ -8608,7 +8635,9 @@ define("../cardkit/app", [
             this.initView(card, opt);
             this.viewport = card.show();
             this.updateSize(opt);
-            if (!opt.isModal && !opt.isActions) {
+            if (!opt.isModal 
+                    && !opt.isActions 
+                    && !opt.preventRender) {
                 this.updateFrame();
             }
             if (!is_loading) {
@@ -8783,6 +8812,14 @@ define("../cardkit/app", [
                 //'transform': 'translateX(' + (screen.availWidth - 40) + 'px)'
             //}, 400).follow().then(function(){
             //});
+        },
+
+        navDrawerScroll: function(pos) {
+            var elem = ck.navDrawer.find('article')[0]; 
+            if (pos !== undefined) {
+                elem.scrollTop = pos;
+            }
+            return elem.scrollTop;
         },
 
         closeNavDrawer: function(){
@@ -8967,14 +9004,16 @@ define("../cardkit/app", [
         }
         if ($(me).hasClass('ck-link-extern')) {
             open_url(me.href, {
-                target: '_blank'
+                target: me.target || '_blank'
             });
             return;
         } else if ($(me).hasClass('ck-link-direct')) {
             if (next_id) {
                 forward_handler(next_id, null, true);
             } else {
-                open_url(me.href);
+                open_url(me.href, {
+                    target: me.target || '_self'
+                });
             }
             return;
         } else if ($(me).hasClass('ck-link')
@@ -9279,12 +9318,13 @@ define("../cardkit/app", [
 
 });
 
+
 /* @source  */;
 
 
 require.config({
     baseUrl: 'js/component/',
-    distUrl: 'dist/js/component/',
+    distUrl: 'static/js/component/',
     aliases: {
         'cardkit': '../cardkit/'
     }
