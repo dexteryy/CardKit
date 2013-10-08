@@ -7822,7 +7822,7 @@ define("../cardkit/app", [
         '.ck-modal-button, .ck-modal-button *': function(){
             var me = $(this);
             if (!me.hasClass('ck-modal-button')) {
-              me = me.closest('.ck-modal-button');
+                me = me.closest('.ck-modal-button');
             }
             ck.openModal(me.data());
         },
@@ -8323,24 +8323,24 @@ define("../cardkit/app", [
 
             }
 
-            if (supports.CARD_SCROLL) {
+            //if (supports.CARD_SCROLL) {
 
-                doc.bind('scroll', function(){
-                    if (modalCard.isOpened) {
-                        var y = window.scrollY;
-                        if (!y && window.innerHeight >= ck.windowFullHeight) {
-                            return;
-                        }
-                        //ck.hideAddressbar();
-                        ck.resetWindowTop();
-                        body.scrollTop = 0;
-                        if (y > 40) {
-                            ck.viewport[0].scrollTop = ck.viewport[0].scrollTop + y - 40;
-                        }
-                    }
-                });
+                //doc.bind('scroll', function(){
+                    //if (modalCard.isOpened) {
+                        //var y = window.scrollY;
+                        //if (!y && window.innerHeight >= ck.windowFullHeight) {
+                            //return;
+                        //}
+                        ////ck.hideAddressbar();
+                        //ck.resetWindowTop();
+                        //body.scrollTop = 0;
+                        //if (y > 40) {
+                            //ck.viewport[0].scrollTop = ck.viewport[0].scrollTop + y - 40;
+                        //}
+                    //}
+                //});
 
-            }
+            //}
 
             if (supports.CARD_SCROLL
                     && !supports.FULLSCREEN_MODE) {
