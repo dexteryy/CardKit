@@ -1141,6 +1141,7 @@ define([
                 isModal: true
             });
             $(body).addClass('nav-view');
+            render.openCard(ck.navDrawer);
             //choreo().play().actor(ck.mainview[0], {
                 //'transform': 'translateX(' + (screen.availWidth - 40) + 'px)'
             //}, 400).follow().then(function(){
@@ -1167,6 +1168,7 @@ define([
                 ck._navDrawerLastView = false;
                 ck.navDrawer.hide();
                 setTimeout(function(){
+                    render.closeCard(ck.navDrawer);
                     bus.fire('navdrawer:close');
                 }, 50);
             }, 400);

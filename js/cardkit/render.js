@@ -41,19 +41,17 @@ define([
 
         initCard: function(card, raw, footer, opt) {
 
+            card.find(SCRIPT_TAG).forEach(run_script, card[0]);
+            card.trigger('card:loaded', {
+                card: card
+            });
+
             if (!opt.isModal) {
-
-                card.find(SCRIPT_TAG).forEach(run_script, card[0]);
-                card.trigger('card:loaded', {
-                    card: card
-                });
-
                 var banner_cfg = card.find('.ck-banner-unit');
                 if (!banner_cfg[0]) {
                     banner_cfg = $(TPL_BLANK_BANNER);
                 }
                 card.prepend(banner_cfg);
-
             }
 
             var units = card.find('.ck-box-unit, .ck-mini-unit, .ck-list-unit, .ck-form-unit, .ck-banner-unit'),
@@ -70,18 +68,18 @@ define([
             }
 
             if (!opt.isModal) {
-
                 card.append(footer.clone());
-
-                card.trigger('card:ready', {
-                    card: card
-                });
-
             }
+
+            card.trigger('card:ready', {
+                card: card
+            });
+
 
         },
 
         openCard: function(card, opt){
+            opt = opt || {};
             if (!opt.isModal) {
                 card.trigger('card:open', {
                     card: card
@@ -90,6 +88,7 @@ define([
         },
 
         closeCard: function(card, opt){
+            opt = opt || {};
             if (!opt.isModal) {
                 card.trigger('card:close', {
                     card: card
@@ -252,6 +251,10 @@ define([
             }
             if (changed['navdrawer']) {
                 navDrawer.html(tpl.convertTpl(tpl_navdrawer.template, cfg));
+                navDrawer.find(SCRIPT_TAG).forEach(run_script, navDrawer[0]);
+                navDrawer.trigger('card:ready', {
+                    card: navDrawer
+                });
             }
         }
     
