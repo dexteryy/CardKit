@@ -1,0 +1,41 @@
+
+.ck-box-card {
+
+  &:not([data-cfg-paper="true"]) {
+    @extend %ck-card;
+    @extend %card-parts;
+
+    .ck-hd-wrap {
+      border-bottom:0;
+    }
+
+  }
+
+  .ck-card-wrap > section {
+    border-top:1px solid $moui_border_color;
+    margin:0 $moui_morespace;
+    padding:$moui_morespace 0;
+    font-size:$moui_title_size;
+
+    img {
+      max-width:100%;
+      margin:$moui_space/2 auto;
+      display:block;
+    }
+
+    &:first-child {
+      border-top:0;
+    }
+
+  }
+
+  &[data-cfg-plain="true"] {
+    @extend %plain-card;
+  }
+
+  &[data-cfg-paper="true"] {
+    @extend %paper-card;
+  }
+
+}
+

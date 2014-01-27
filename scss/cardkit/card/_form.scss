@@ -1,0 +1,89 @@
+
+.ck-form-card {
+  @extend %ck-card;
+  @extend %card-parts;
+
+  .ck-item {
+    @extend %item;
+    padding:$moui_space 0;
+    display:block;
+
+    &:first-child {
+      padding-top:$moui_morespace;
+    }
+
+    &:last-child {
+      border:none;
+      padding-bottom:$moui_morespace;
+    }
+
+    &.blank {
+      text-align:center;
+      color:$moui_desc_color;
+    }
+
+    .ck-folder,
+    p {
+      margin:$moui_space 0;
+
+      &:first-child {
+        margin-top:0;
+      }
+
+      &:last-child {
+        margin-bottom:0;
+      }
+
+    }
+
+    label {
+      font-size:$moui_maintitle_size;
+      //margin:0 0 0 $moui_space/2;
+
+      em {
+        color:$moui_desc_color;
+        font-size:$moui_title_size;
+        margin:0 0 0 $moui_space/2;
+
+        &:first-child {
+          margin-left:0;
+        }
+
+      }
+
+    }
+
+    .ck-title {
+      display:block;
+      line-height:$moui_maintitle_size;
+      margin:0 0 $moui_space 0;
+    }
+
+    input[type="text"], 
+    input[type="number"], 
+    input[type="password"], 
+    textarea {
+      font-size:$moui_title_size;
+      color:$moui_text_color;
+      width:100%;
+      line-height:20px;
+      height:(20px + 2 * $moui_space);
+      padding:$moui_space;
+      border:1px solid rgb(185,185,185);
+      @include box-sizing(border-box);
+      @include box-shadow(inset 0px 2px 3px 0px rgba(0,0,0,0.15));
+      @include border-radius($moui_radius);
+      @include user-select(text);
+    }
+    
+    input[type="number"] {
+        width: 80px;
+    }
+
+    textarea {
+      height:(352px/2);
+    }
+
+  }
+
+}

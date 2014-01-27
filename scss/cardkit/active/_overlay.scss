@@ -1,0 +1,40 @@
+
+.ck-modalview {
+  @extend .moui-modalview;
+
+  & > header {
+    @extend .ck-header;
+
+    h1 {
+      @extend .ck-top-title;
+    }
+
+  }
+
+}
+
+.ck-actionview {
+  @extend .moui-actionview;
+
+  .wrapper {
+
+    .content {
+
+      & > article {
+
+        .ck-option {
+          @extend %moui-action-option;
+        }
+
+      }
+
+    }
+
+  }
+
+}
+
+.ck-growl {
+  @extend .moui-growl;
+}
+

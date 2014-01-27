@@ -1,0 +1,24 @@
+
+.ck-segment {
+  @extend .moui-segment;
+  .ck-option {
+    @extend %moui-segment-option;
+  }
+}
+
+.ck-tagselector {
+  @extend .moui-tagselector;
+  .ck-option {
+    @extend %moui-tag-option;
+  }
+}
+
+.ck-actions {
+  @extend .moui-actions;
+}
+
+.ck-ranger {
+  width:100%;
+  padding: 10px 0;
+}
+

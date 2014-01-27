@@ -1,0 +1,28 @@
+
+.ckbase-btn, // @deprecated
+.ck-btn {
+  @extend %moui-button;
+}
+
+.ckbase-mainbtn, // @deprecated
+.ck-mainbtn {
+  @extend %moui-main-button;
+}
+
+.ck-post-button {
+  @extend %ck-btn;
+
+  &.enabled {
+    @extend %moui-block-pressed;
+  }
+
+}
+
+.ck-switch {
+  @extend .moui-switch;
+}
+
+.ck-folder {
+  @extend .moui-folder;
+}
+

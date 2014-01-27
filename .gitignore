@@ -12,10 +12,7 @@ bower_components/
 .sass-cache/
 .statictmp
 
-js/**/Gruntfile.js
-css/**/Gruntfile.js
-config.js
-.dist/
-target/
-report/
+vendor/
+scss/moui/
+cardkit/tpl/
 

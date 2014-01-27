@@ -1,0 +1,171 @@
+
+%list-parts {
+
+  .ck-list-wrap {
+    overflow:hidden;
+  }
+
+  .ck-item {
+
+    &.blank {
+      text-align:center;
+
+      .ck-initem {
+        background:none;
+        padding:$moui_space 0;
+        color:$moui_desc_color;
+      }
+
+    }
+
+  }
+
+  .ck-initem {
+    position:relative;
+    font-size: $moui_text_size;
+    padding:($moui_space/2) 0;
+    color:$moui_text_color;
+    display:block;
+  }
+
+  .ck-title-box {
+    display:block;
+    overflow:hidden;
+  }
+
+  .ck-author-box {
+    display:block;
+    overflow:hidden;
+    margin:4px 0 0 0;
+  }
+
+  .ck-avatar,
+  .ck-icon {
+    float:left;
+    margin:2px $moui_space 0 0;
+
+    img {
+      width:(60px / 2);
+      min-height:30px;
+      background:#666;
+      float:left;
+    }
+
+  }
+
+  .ck-author-set,
+  .ck-title-set {
+    display:block;
+    overflow:hidden;
+    position:relative;
+  }
+
+  .ck-opt {
+    float:right;
+    width:40px;
+    margin:2px 0 0 $moui_space;
+    position:relative;
+    z-index:$moui_z_item + $moui_z_step;
+  }
+
+  .ck-author-info-wrap,
+  .ck-info-wrap {
+    display:inline;
+    @extend %info-text;
+    position:absolute;
+    bottom:0;
+    right:0;
+  }
+
+  .ck-author-info,
+  .ck-info {
+    display:inline;
+  }
+
+  .ck-title-line {
+    font-size:$moui_title_size;
+    line-height:1.2;
+    display:block;
+    margin:0 0 4px 0;
+  }
+
+  .ck-author-line {
+    line-height:1.2;
+    display:block;
+    margin:0 0 4px 0;
+  }
+
+  a.ck-avatar img,
+  a.ck-author {
+    position:relative;
+    z-index:$moui_z_item + $moui_z_step;
+  }
+
+  .ck-title-prefix,
+  .ck-title-suffix,
+  .ck-title,
+  .ck-author-prefix,
+  .ck-author-suffix,
+  .ck-author {
+    display:inline;
+    margin:0 3px 0 0;
+  }
+
+  .ck-title-prefix,
+  .ck-title-suffix,
+  .ck-author-prefix,
+  .ck-author-suffix {
+    color:$moui_desc_color;
+  }
+
+  .ck-title-tag {
+    display:inline-block;
+    font-size: $moui_text_size;
+    background:#ffc;
+    padding:0px 2px;
+    margin:0 3px 0 0;
+    @include border-radius($moui_radius);
+  }
+
+  .ck-desc-wrap,
+  .ck-author-desc-wrap {
+    @extend %info-text;
+    display:block;
+    line-height:1.2;
+    margin:0 0 4px 0;
+  }
+
+  .ck-desc,
+  .ck-author-desc {
+    display:inline;
+    margin:0 3px 0 0;
+  }
+
+  .ck-content-wrap,
+  .ck-author-content-wrap {
+    font-size:$moui_title_size;
+    display:block;
+    line-height: 1.4;
+    margin:0 0 4px 0;
+    @include user-select(text);
+
+    img {
+      max-width:100%;
+      margin:$moui_space/2 auto;
+      display:block;
+    }
+
+  }
+
+  .ck-meta-wrap,
+  .ck-author-meta-wrap {
+    @extend %info-text;
+  }
+
+  .ck-meta,
+  .ck-author-meta{
+    display:inline;
+    margin:0 3px 0 0;
+  }
+
+}
