@@ -8,7 +8,7 @@ define([
 var source_states = {
         source: helper.readSource
     },
-    SEL = '.ck-box-card',
+    SEL = '.ckd-box-card',
     SEL_OLD = '.ck-box-unit'; // @deprecated
 
 return function(guard, parent){

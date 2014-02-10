@@ -4,7 +4,7 @@ define([
     './list'
 ], function($, list_spec){ 
 
-var SEL = '.ck-mini-card',
+var SEL = '.ckd-mini-card',
     SEL_OLD = '.ck-mini-unit'; // @deprecated
 
 return function(guard, parent){

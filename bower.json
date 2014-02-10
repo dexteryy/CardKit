@@ -1,16 +1,16 @@
 {
   "name": "cardkit",
   "description": "A missing mobile web app toolkit for front-end developers",
-  "version": "2.0.0-alpha.1",
+  "version": "2.0.0-alpha.2",
   "main": "cardkit.js",
   "dependencies": {
     "mo": "~1.6.6",
-    "dollar": "~1.4.0",
-    "darkdom": "~0.6.2",
+    "dollar": "~1.4.1",
+    "darkdom": "~0.7.0",
     "eventmaster": "~2.1.0",
     "soviet": "~1.0.0",
     "momo": "~1.2.0-alpha.1",
-    "moui": "~2.2.5"
+    "moui": "~2.3.0-alpha.1"
   },
   "ignore": [
     "**/.*",

@@ -12,7 +12,7 @@ var source_states = {
     },
     source_item_states = list_spec.sourceItemStates,
     source_item_spec = list_spec.sourceItemSpec,
-    SEL = '.ck-list-card',
+    SEL = '.ckd-list-card',
     SEL_OLD = '.ck-list-unit'; // @deprecated
 
 function init_list(guard){

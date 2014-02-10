@@ -76,7 +76,7 @@ function exports(guard, parent){
     guard.component(specs);
 }
 
-exports.SELECTOR = '.ck-page-card';
+exports.SELECTOR = '.ckd-page-card';
 exports.SELECTOR_OLD = '.ck-card'; // @deprecated
 
 return exports;

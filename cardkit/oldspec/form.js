@@ -10,7 +10,7 @@ var source_states = {
         source: helper.readSource
     },
     source_item_spec = form_spec.sourceItemSpec,
-    SEL = '.ck-form-card',
+    SEL = '.ckd-form-card',
     SEL_OLD = '.ck-form-unit'; // @deprecated
 
 return function(guard, parent){

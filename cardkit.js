@@ -25,7 +25,7 @@ var DEFAULT_DECK = 'main',
     _defaults = {
         appWrapper: null,
         defaultPage: 'ckDefault',
-        supportOldVer: true 
+        oldStyle: false 
     };
 
 var exports = {
@@ -37,13 +37,11 @@ var exports = {
     },
 
     initSpec: function(){
-        var support_old = this._config.supportOldVer;
         _.each(specs, function(data, name){
+            var spec = this._config.oldStyle 
+                ? oldspecs[name][0] : data[0];
             this.component(name, data[1][name]());
-            this.spec(name, data[0], 'default');
-            if (support_old && oldspecs[name]) {
-                this.spec(name, oldspecs[name][0], 'old');
-            }
+            this.spec(name, spec);
         }, this);
     },
 
@@ -66,62 +64,32 @@ var exports = {
         }
     },
 
-    spec: function(name, spec, serie){
-        if (!_.isFunction(spec)) {
-            serie = spec;
-            spec = null;
-        }
-        if (!serie) {
-            if (!spec) {
-                var re = {};
-                _.each(_specs, function(specs, serie){
-                    this[serie] = specs[name];
-                }, re);
-                return re;
-            }
-            serie = 'default';
-        }
-        var specs = _specs[serie];
-        if (!specs) {
-            specs = _specs[serie] = {};
-        }
+    spec: function(name, spec){
         if (spec) {
-            specs[name] = spec;
+            _specs[name] = spec;
         } else {
-            return specs[name];
+            return _specs[name];
         }
     },
 
-    guard: function(name, serie){
-        var guards = _guards[serie];
-        if (!guards) {
-            guards = _guards[serie] = {};
+    guard: function(name){
+        if (!_guards[name]) {
+            _guards[name] = this.component(name).createGuard();
         }
-        if (!guards[name]) {
-            guards[name] = this.component(name).createGuard();
-        }
-        return guards[name];
+        return _guards[name];
     },
 
     render: function(name, parent){
-        var series = this.spec(name);
-        _.each(series, function(spec, serie){
-            var guard = this.guard(name, serie);
+        var spec = this.spec(name);
+        var guard = this.guard(name);
+        if (spec && guard) {
             spec(guard, parent);
             guard.mount();
-        }, this);
+        }
     },
 
     openPage: function(page){
-        if (!page || typeof page === 'string') {
-            var hash = RE_HASH.exec(location.href);
-            page = page 
-                || hash && hash[1] 
-                || this._config.defaultPage;
-            page = $('#' + page);
-        } else {
-            page = $(page);
-        }
+        page = this.findPage(page);
         if (_page_opening || !page[0] 
                 || !this.isPage(page)) {
             return false;
@@ -164,12 +132,33 @@ var exports = {
         return true;
     },
 
+    resetPage: function(page){
+        page = this.findPage(page);
+        if (!page[0]) {
+            return;
+        }
+        page.resetDarkDOM();
+    },
+
+    findPage: function(page){
+        if (!page || typeof page === 'string') {
+            var hash = RE_HASH.exec(location.href);
+            page = page 
+                || hash && hash[1] 
+                || this._config.defaultPage;
+            page = $('#' + page);
+        } else {
+            page = $(page);
+        }
+        return page;
+    },
+
     isPage: function(page){
-        var spec = specs['page'][0];
-        var old_spec = oldspecs['page'][0];
+        var spec = (this._config.oldStyle 
+            ? oldspecs : specs)['page'][0];
         return page.is(spec.SELECTOR)
-            || page.is(old_spec.SELECTOR)
-            || page.is(old_spec.SELECTOR_OLD);
+            || spec.SELECTOR_OLD 
+                && page.is(spec.SELECTOR_OLD);
     },
 
     isLandscape: function() {
@@ -186,6 +175,15 @@ _.mix(exports, ui.action);
 _.mix(exports, ui.component);
 
 exports.openURL = exports.openLink; // @deprecated
+
+exports.modalCard.event.on('open', function(modal){
+    modal.lastDecktop = _decks[_current_deck];
+    exports.openPage(modal.pageNode());
+}).on('willUpdateContent', function(modal){
+    exports.resetPage(modal.pageNode());
+}).on('close', function(modal){
+    exports.openPage(modal.lastDecktop);
+});
 
 function open_page(page){
     if (page.getDarkState('isPageActive') === 'true') {

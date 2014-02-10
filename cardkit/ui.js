@@ -10,7 +10,7 @@ define([
     './ui/control',
     './ui/picker',
     './ui/ranger',
-    './ui/modalcard',
+    './ui/modalview',
     './ui/actionview',
     './ui/growl',
     './supports',
@@ -18,9 +18,10 @@ define([
 ], function(_, $, browsers, tpl, soviet, 
     momoBase, momoTap,
     control, picker, ranger, 
-    modalCard, actionView, growl, supports, bus){
+    modalView, actionView, growl, supports, bus){
 
 var doc = document,
+    modalCard = modalView(),
     _soviet_aliases = {};
 
 _.mix(momoBase.Class.prototype, {
@@ -165,6 +166,16 @@ var tap_events = {
         show_actions($(this));
     },
 
+    '.ck-confirm-link': function(){
+        var me = this;
+        if (!me.href) {
+            me = me.parentNode;
+        }
+        actions.confirm('', function(){
+            actions.openLink(me.href, me.target);
+        }, $(me).data());
+    },
+
     // growl 
 
     '.ck-growl-button': function(){
@@ -192,6 +203,7 @@ var components = {
     picker: picker,
     ranger: ranger,
     modalCard: modalCard,
+    modalView: modalView,
     actionView: actionView, 
     growl: growl
 };
@@ -291,6 +303,7 @@ var exports = {
         actionView.forceOptions.parent = wrapper;
         growl.forceOptions.parent = wrapper;
         modalCard.set({
+            oldStylePage: opt.oldStyle,
             parent: wrapper
         });
         var tapGesture = momoTap(doc, {

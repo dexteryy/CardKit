@@ -5,7 +5,7 @@ title: CardKit
 
 # CardKit
 
-A mobile UI framework provides building blocks which are classified as "Card", "Unit" and "Component" to help you build mobile web apps quickly and simply, or transfer entire website to native-like web app for touch devices.
+A mobile UI framework provides building blocks to help you build mobile web apps quickly and simply, or transfer entire website to native-like web app for touch devices.
 
 ### Documents for Cardkit2
 
