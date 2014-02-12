@@ -1,14 +1,10 @@
 
 require.config({
-    baseUrl: 'vendor/',
-    aliases: {
-        cardkit: '../../cardkit/'
-    }
+    baseUrl: 'vendor/'
 });
 
 define('mo/easing/functions', [], function(){});
 define('mo/mainloop', [], function(){});
-define('cardkit', '../../cardkit.js');
 
 require(['cardkit'], function(){});
 

@@ -61,6 +61,14 @@ module.exports = function(grunt) {
             dist: ["dist", "cardkit/tpl"],
         },
 
+        copy: {
+            cardkit: {
+                files: [{
+                    'build/vendor/': ['cardkit/**', 'cardkit.js']
+                }]
+            }
+        },
+
         furnace: {
             cardkit_tpl: {
                 options: {
@@ -71,7 +79,7 @@ module.exports = function(grunt) {
                     expand: true,
                     cwd: 'tpl/cardkit',
                     src: ['**/*.tpl'],
-                    dest: 'cardkit/tpl',
+                    dest: 'build/vendor/cardkit/tpl',
                     ext: '.js'
                 }]
             }
@@ -211,6 +219,7 @@ module.exports = function(grunt) {
     grunt.registerTask('publish', [
         'jshint:dist',
         'clean:dist',
+        'copy:cardkit',
         'furnace',
         'imagemin',
         'compass',

@@ -655,8 +655,8 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  right: 0;
+  bottom: 0;
   z-index: 1010;
   -moz-user-select: -moz-none;
   -ms-user-select: none;
@@ -664,15 +664,16 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   user-select: none;
 }
 .moui-modalview .wrapper, .ck-modalview .wrapper {
+  position: relative;
+  -moz-transition: -moz-transform 0.4s;
+  -o-transition: -o-transform 0.4s;
+  -webkit-transition: -webkit-transform 0.4s;
+  transition: transform 0.4s;
   -moz-transform: translateY(100%);
   -ms-transform: translateY(100%);
   -o-transform: translateY(100%);
   -webkit-transform: translateY(100%);
   transform: translateY(100%);
-  -moz-transition: -moz-transform 0.4s;
-  -o-transition: -o-transform 0.4s;
-  -webkit-transition: -webkit-transform 0.4s;
-  transition: transform 0.4s;
 }
 .moui-modalview .wrapper > header, .ck-modalview .wrapper > header {
   height: 40px;
@@ -683,10 +684,10 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   -ms-user-select: none;
   -webkit-user-select: none;
   user-select: none;
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
+  right: 0;
   -moz-border-radius: 3px 3px 0 0;
   -webkit-border-radius: 3px;
   border-radius: 3px 3px 0 0;
@@ -702,7 +703,6 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   margin: 0 70px;
 }
 .moui-modalview .wrapper > header button.confirm, .ck-modalview .wrapper > header button.confirm, .moui-modalview .wrapper > header button.cancel, .ck-modalview .wrapper > header button.cancel {
-  width: 55px;
   margin: 7.5px 0 0 7.5px;
   float: left;
 }
@@ -711,31 +711,42 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   float: right;
 }
 .moui-modalview .wrapper > article, .ck-modalview .wrapper > article {
-  height: 1000px;
   background: #f2f2f2;
-  overflow-y: scroll;
-  -webkit-overflow-scrolling: touch;
 }
 .moui-modalview .wrapper > article > .content, .ck-modalview .wrapper > article > .content {
-  padding: 40px 0 0 0;
   min-height: 2000px;
 }
 .moui-modalview .shd, .ck-modalview .shd {
   position: absolute;
   top: 0;
+  bottom: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  right: 0;
+  background: #333;
+  opacity: 0;
+  -moz-transition: opacity 0.4s;
+  -o-transition: opacity 0.4s;
+  -webkit-transition: opacity 0.4s;
+  transition: opacity 0.4s;
 }
 .moui-modalview.rendered, .rendered.ck-modalview {
   display: block;
 }
+.moui-modalview.active .shd, .active.ck-modalview .shd {
+  opacity: 1;
+}
 .moui-modalview.active .wrapper, .active.ck-modalview .wrapper {
-  -moz-transform: translateY(0);
-  -ms-transform: translateY(0);
-  -o-transform: translateY(0);
-  -webkit-transform: translateY(0);
-  transform: translateY(0);
+  -moz-transform: none;
+  -ms-transform: none;
+  -o-transform: none;
+  -webkit-transform: none;
+  transform: none;
+}
+.moui-modalview.active .wrapper > header, .active.ck-modalview .wrapper > header {
+  position: fixed;
+}
+.moui-modalview.active .wrapper > article > .content, .active.ck-modalview .wrapper > article > .content {
+  min-height: inherit;
 }
 .moui-modalview.loading button.confirm, .loading.ck-modalview button.confirm {
   opacity: .2;
@@ -819,7 +830,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   top: -35px;
 }
 
-.ck-header, .ck-modalview > header {
+.ck-header {
   height: 40px;
   -moz-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
   -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
@@ -831,18 +842,17 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   -webkit-user-select: none;
   user-select: none;
 }
-.ck-header a, .ck-modalview > header a {
+.ck-header a {
   -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
 }
 
 .ck-card,
-.ck-page-card,
-.ckcfg-page-title,
-.ckcfg-page-nav,
-.ckcfg-card-actions,
-.ckcfg-page-actions,
-.ckcfg-page-footer {
+.ckd-page-card,
+.ckd-page-title,
+.ckd-page-nav,
+.ckd-page-actions,
+.ckd-page-footer {
   display: none;
 }
 
@@ -868,7 +878,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   transition: transform 0.3s;
   -webkit-backface-visibility: hidden;
 }
-.ck-page-card.topbar-enabled .ck-header, .ck-page-card.topbar-enabled .ck-modalview > header {
+.ck-page-card.topbar-enabled .ck-header {
   -moz-transform: translateY(0);
   -ms-transform: translateY(0);
   -o-transform: translateY(0);
@@ -906,6 +916,9 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 .ck-page-card[data-deck="navdrawer"][data-page-active="false"] {
   display: none;
 }
+.ck-page-card[data-deck="modalview"] {
+  display: block;
+}
 .ck-page-card[data-deck-active="false"][data-page-active="true"][data-curdeck="navdrawer"] {
   display: block;
   -moz-transform: translateX(85%);
@@ -919,7 +932,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   left: 0;
   right: 0;
 }
-.ck-page-card[data-deck-active="false"][data-page-active="true"][data-curdeck="navdrawer"] .ck-header, .ck-page-card[data-deck-active="false"][data-page-active="true"][data-curdeck="navdrawer"] .ck-modalview > header {
+.ck-page-card[data-deck-active="false"][data-page-active="true"][data-curdeck="navdrawer"] .ck-header {
   position: static;
   -moz-transform: translateY(0);
   -ms-transform: translateY(0);
@@ -938,6 +951,17 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 }
 .ck-page-card[data-deck-active="false"][data-page-active="true"][data-curdeck="navdrawer"] .ck-page-link-mask {
   display: block;
+}
+.ck-page-card[data-deck-active="false"][data-page-active="true"][data-curdeck="modalview"] {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.ck-page-card[data-deck-active="false"][data-page-active="true"][data-curdeck="modalview"][data-deck="modalview"] {
+  position: static;
 }
 
 .ck-page-card pre {
@@ -965,7 +989,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   z-index: 210;
 }
 
-.ck-header, .ck-modalview > header {
+.ck-header {
   position: fixed;
   top: 0;
   left: 0;
@@ -982,7 +1006,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   -webkit-transform: translateY(-40px);
   transform: translateY(-40px);
 }
-.ck-in-webview .ck-header, .ck-in-webview .ck-modalview > header {
+.ck-in-webview .ck-header {
   position: relative;
   -moz-transform: translateY(0);
   -ms-transform: translateY(0);
@@ -991,7 +1015,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   transform: translateY(0);
 }
 
-.ck-top-title, .ck-modalview > header h1 {
+.ck-top-title {
   font-size: 20px;
   font-weight: bold;
   line-height: 40px;
@@ -1101,7 +1125,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 }
 
 .ck-article {
-  padding-top: 40px;
+  padding-top: 45px;
 }
 .ck-in-webview .ck-article, .with-banner .ck-article, .no-header .ck-article {
   padding-top: 0;
@@ -1780,6 +1804,10 @@ ck-part {
 .ck-ranger {
   width: 100%;
   padding: 10px 0;
+}
+
+.ck-modalview .ck-page-card .ck-article {
+  padding-top: 45px;
 }
 
 .ck-select .ck-option,

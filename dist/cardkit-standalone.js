@@ -1494,10 +1494,10 @@ define("eventmaster", [
     return exports;
 });
 
-/* @source ../../cardkit/bus.js */;
+/* @source cardkit/bus.js */;
 
 
-define("../../cardkit/bus", [
+define("cardkit/bus", [
   "eventmaster"
 ], function(event){
 
@@ -1654,10 +1654,10 @@ define("mo/browsers", [], function(){
 
 });
 
-/* @source ../../cardkit/supports.js */;
+/* @source cardkit/supports.js */;
 
 
-define("../../cardkit/supports", [
+define("cardkit/supports", [
   "mo/browsers"
 ], function(browsers){
 
@@ -1783,7 +1783,8 @@ define("dollar/origin", [
                 return selector;
             } else if (typeof selector !== 'string') {
                 var nodes = new $();
-                if (detect.isArraylike(selector)) {
+                if (detect.isArraylike(selector)
+                        && selector.nodeType !== 1) {
                     _array_push.apply(nodes, _array_slice.call(selector));
                 } else {
                     _array_push.call(nodes, selector);
@@ -2923,10 +2924,12 @@ define('moui/overlay', [
         applyClose: function() {
             this.isOpened = false;
             this.hideLoading();
-            this._content.empty();
+            this.beforeClose();
             this._node.removeClass('rendered');
             this.event.fire('close', [this]);
         },
+
+        beforeClose: function(){},
 
         destroy: function() {
             this._node.remove();
@@ -3161,9 +3164,9 @@ define('moui/growl', [
 
 });
 
-/* @source ../../cardkit/ui/growl.js */;
+/* @source cardkit/ui/growl.js */;
 
-define("../../cardkit/ui/growl", [
+define("cardkit/ui/growl", [
   "mo/lang",
   "dollar",
   "moui/growl"
@@ -3473,9 +3476,9 @@ define("mo/network", [
 
 });
 
-/* @source ../../cardkit/ui/util.js */;
+/* @source cardkit/ui/util.js */;
 
-define("../../cardkit/ui/util", [
+define("cardkit/ui/util", [
   "mo/lang",
   "dollar",
   "mo/network"
@@ -4344,12 +4347,12 @@ define('moui/actionview', [
 
 });
 
-/* @source ../../cardkit/ui/actionview.js */;
+/* @source cardkit/ui/actionview.js */;
 
-define("../../cardkit/ui/actionview", [
+define("cardkit/ui/actionview", [
   "moui/actionview",
-  "../../cardkit/bus",
-  "../../cardkit/ui/util"
+  "cardkit/bus",
+  "cardkit/ui/util"
 ], function(actionView, bus, util) {
 
 var exports = util.singleton({
@@ -4441,8 +4444,10 @@ define('moui/modalview', [
                 <div class="shd"></div>\
                 <div class="wrapper">\
                     <header>\
-                        <button type="button" class="confirm" data-is-default="true"></button>\
-                        <button type="button" class="cancel"></button>\
+                        <button type="button" class="confirm" \
+                            data-fluid="true" data-is-default="true"></button>\
+                        <button type="button" class="cancel" \
+                            data-fluid="true"></button>\
                         <h1></h1>\
                     </header>\
                     <article><div class="content"></div></article>\
@@ -4509,10 +4514,9 @@ define('moui/modalview', [
         },
 
         setContent: function(html){
+            this.event.fire('willUpdateContent', [this]);
             this.superMethod('setContent', [html]);
-            if (html) {
-                this.event.fire('contentchange', [this]);
-            }
+            this.event.fire('updateContent', [this]);
             return this;
         },
 
@@ -4577,6 +4581,10 @@ define('moui/modalview', [
             this._clearIframeContent();
             this._contentWrapper[0].scrollTop = 0;
             return this.superMethod('applyClose', arguments);
+        },
+
+        beforeClose: function(){
+            this.setContent('');
         }
 
     });
@@ -4593,29 +4601,48 @@ define('moui/modalview', [
 
 });
 
-/* @source ../../cardkit/ui/modalcard.js */;
+/* @source cardkit/ui/modalview.js */;
 
-define("../../cardkit/ui/modalcard", [
+define("cardkit/ui/modalview", [
+  "mo/lang",
   "dollar",
   "mo/network",
   "moui/modalview"
-], function($, net, modal) {
+], function(_, $, net, originModal) {
 
-    var modalCard = modal({
-            className: 'ck-modalview',
-            closeDelay: 400
-        }),
-        SCRIPT_TYPES = {
-            'text/darkscript': 1,
-            'text/cardscript': 1,
-            'text/jscode': 1
-        },
-        _tm,
-        _content_filter,
-        origin_set_content = modalCard.setContent,
-        origin_set = modalCard.set;
+var default_config = {
+        className: 'ck-modalview',
+        openDelay: 400,
+        closeDelay: 400,
+        oldStylePage: false,
+        contentFilter: false
+    },
+    SCRIPT_TYPES = {
+        'text/darkscript': 1,
+        'text/cardscript': 1,
+        'text/jscode': 1
+    },
+    singleton,
+    _tm;
 
-    modalCard.set = function(opt){
+var ModalView = _.construct(originModal.ModalView);
+
+_.mix(ModalView.prototype, {
+
+    _defaults: _.mix({}, ModalView.prototype._defaults, default_config),
+
+    init: function() {
+        this.superMethod('init', arguments);
+        this.event.bind('confirm', function(modal){
+            modal.event.fire('confirmOnThis', arguments);
+        }).bind('close', function(modal){
+            _tm = 0;
+            modal.event.unbind('confirmOnThis');
+        });
+        return this;
+    },
+
+    set: function(opt){
         if (!opt) {
             return this;
         }
@@ -4636,8 +4663,6 @@ define("../../cardkit/ui/modalcard", [
                 });
             }
         }
-
-        _content_filter = opt.contentFilter;
 
         if (opt.iframeUrl) {
             opt.iframe = opt.iframeUrl;
@@ -4666,24 +4691,46 @@ define("../../cardkit/ui/modalcard", [
             self.hideLoading();
         }
 
-        return origin_set.call(this, opt);
-    };
+        return this.superMethod('set', [opt]);
+    },
 
-    modalCard.setContent = function(html){
-        if (_content_filter) {
-            html = (new RegExp(_content_filter).exec(html) || [])[1];
+    setContent: function(html){
+        if (html) {
+            var filter = this._config.contentFilter;
+            if (filter) {
+                html = (new RegExp(filter).exec(html) || [])[1];
+            }
+            var oldstyle = this._config.oldStylePage;
+            var page_start = oldstyle 
+                ? '<div class="ckd-page-card ck-modal-page" ' 
+                    + 'data-cfg-deck="modalview" '
+                    + 'id="ckPage-' + this.id + '">'
+                : '<ck-card type="page" ' 
+                    + 'data-cfg-deck="modalview" '
+                    + 'id="ckPageOld-' + this.id + '">'
+                    + this.id + '" class="ck-modal-page">';
+            var page_end = oldstyle ? '</ck-card>' : '</div>';
+            html = page_start + html + page_end;
         }
-        return origin_set_content.call(this, html);
-    };
+        return this.superMethod('setContent', [html]);
+    },
 
-    modalCard.event.bind('confirm', function(modal){
-        modal.event.fire('confirmOnThis', arguments);
-    }).bind('close', function(modal){
-        _tm = 0;
-        modal.event.unbind('confirmOnThis');
-    });
+    pageNode: function(){
+        return this._content.find('.ck-modal-page');
+    }
 
-    return modalCard;
+});
+
+function exports(opt) {
+    if (!singleton) {
+        singleton = new exports.ModalView(opt);
+    }
+    return singleton;
+}
+
+exports.ModalView = ModalView;
+
+return exports;
 
 });
 
@@ -4795,13 +4842,13 @@ define('moui/ranger', [
 
 });
 
-/* @source ../../cardkit/ui/ranger.js */;
+/* @source cardkit/ui/ranger.js */;
 
-define("../../cardkit/ui/ranger", [
+define("cardkit/ui/ranger", [
   "moui/ranger",
-  "../../cardkit/bus",
-  "../../cardkit/ui/growl",
-  "../../cardkit/ui/util"
+  "cardkit/bus",
+  "cardkit/ui/growl",
+  "cardkit/ui/util"
 ], function(ranger, bus, growl, util){
 
 return util.singleton({
@@ -4839,12 +4886,12 @@ return util.singleton({
 
 });
 
-/* @source ../../cardkit/ui/picker.js */;
+/* @source cardkit/ui/picker.js */;
 
-define("../../cardkit/ui/picker", [
+define("cardkit/ui/picker", [
   "mo/lang",
   "moui/picker",
-  "../../cardkit/ui/util"
+  "cardkit/ui/util"
 ], function(_, picker, util) {
 
 
@@ -4903,12 +4950,12 @@ return util.singleton({
 
 });
 
-/* @source ../../cardkit/ui/control.js */;
+/* @source cardkit/ui/control.js */;
 
-define("../../cardkit/ui/control", [
+define("cardkit/ui/control", [
   "mo/lang",
   "moui/control",
-  "../../cardkit/ui/util"
+  "cardkit/ui/util"
 ], function(_, control, util) {
 
 var default_config = {
@@ -5538,10 +5585,10 @@ define('soviet', [
 
 });
 
-/* @source ../../cardkit/ui.js */;
+/* @source cardkit/ui.js */;
 
 
-define("../../cardkit/ui", [
+define("cardkit/ui", [
   "mo/lang",
   "dollar",
   "mo/browsers",
@@ -5549,20 +5596,21 @@ define("../../cardkit/ui", [
   "soviet",
   "momo/base",
   "momo/tap",
-  "../../cardkit/ui/control",
-  "../../cardkit/ui/picker",
-  "../../cardkit/ui/ranger",
-  "../../cardkit/ui/modalcard",
-  "../../cardkit/ui/actionview",
-  "../../cardkit/ui/growl",
-  "../../cardkit/supports",
-  "../../cardkit/bus"
+  "cardkit/ui/control",
+  "cardkit/ui/picker",
+  "cardkit/ui/ranger",
+  "cardkit/ui/modalview",
+  "cardkit/ui/actionview",
+  "cardkit/ui/growl",
+  "cardkit/supports",
+  "cardkit/bus"
 ], function(_, $, browsers, tpl, soviet, 
     momoBase, momoTap,
     control, picker, ranger, 
-    modalCard, actionView, growl, supports, bus){
+    modalView, actionView, growl, supports, bus){
 
 var doc = document,
+    modalCard = modalView(),
     _soviet_aliases = {};
 
 _.mix(momoBase.Class.prototype, {
@@ -5707,6 +5755,16 @@ var tap_events = {
         show_actions($(this));
     },
 
+    '.ck-confirm-link': function(){
+        var me = this;
+        if (!me.href) {
+            me = me.parentNode;
+        }
+        actions.confirm('', function(){
+            actions.openLink(me.href, me.target);
+        }, $(me).data());
+    },
+
     // growl 
 
     '.ck-growl-button': function(){
@@ -5734,6 +5792,7 @@ var components = {
     picker: picker,
     ranger: ranger,
     modalCard: modalCard,
+    modalView: modalView,
     actionView: actionView, 
     growl: growl
 };
@@ -5833,6 +5892,7 @@ var exports = {
         actionView.forceOptions.parent = wrapper;
         growl.forceOptions.parent = wrapper;
         modalCard.set({
+            oldStylePage: opt.oldStyle,
             parent: wrapper
         });
         var tapGesture = momoTap(doc, {
@@ -5932,10 +5992,10 @@ return exports;
 });
 
 
-/* @source ../../cardkit/helper.js */;
+/* @source cardkit/helper.js */;
 
 
-define("../../cardkit/helper", [
+define("cardkit/helper", [
   "mo/lang",
   "dollar"
 ], function(_, $){
@@ -5970,11 +6030,11 @@ return exports;
 
 });
 
-/* @source ../../cardkit/oldspec/common/item.js */;
+/* @source cardkit/oldspec/common/item.js */;
 
 
-define("../../cardkit/oldspec/common/item", [
-  "../../cardkit/helper"
+define("cardkit/oldspec/common/item", [
+  "cardkit/helper"
 ], function(helper){
 
 var source_states = {
@@ -6103,11 +6163,11 @@ return {
 });
 
 
-/* @source ../../cardkit/oldspec/common/scaffold.js */;
+/* @source cardkit/oldspec/common/scaffold.js */;
 
 
-define("../../cardkit/oldspec/common/scaffold", [
-  "../../cardkit/helper"
+define("cardkit/oldspec/common/scaffold", [
+  "cardkit/helper"
 ], function(helper){
 
 var source_states = {
@@ -6152,22 +6212,22 @@ return {
 });
 
 
-/* @source ../../cardkit/spec/common/source_item.js */;
+/* @source cardkit/spec/common/source_item.js */;
 
 
-define("../../cardkit/spec/common/source_item", [
-  "../../cardkit/oldspec/common/item"
+define("cardkit/spec/common/source_item", [
+  "cardkit/oldspec/common/item"
 ], function(__oz0, require){
 
-    return require("../../cardkit/oldspec/common/item");
+    return require("cardkit/oldspec/common/item");
 
 });
 
 
-/* @source ../../cardkit/spec/common/item.js */;
+/* @source cardkit/spec/common/item.js */;
 
 
-define("../../cardkit/spec/common/item", [], function(){
+define("cardkit/spec/common/item", [], function(){
 
 return {
     title: function(guard){
@@ -6232,22 +6292,22 @@ return {
 });
 
 
-/* @source ../../cardkit/spec/common/source_scaffold.js */;
+/* @source cardkit/spec/common/source_scaffold.js */;
 
 
-define("../../cardkit/spec/common/source_scaffold", [
-  "../../cardkit/oldspec/common/scaffold"
+define("cardkit/spec/common/source_scaffold", [
+  "cardkit/oldspec/common/scaffold"
 ], function(__oz0, require){
 
-    return require("../../cardkit/oldspec/common/scaffold");
+    return require("cardkit/oldspec/common/scaffold");
 
 });
 
 
-/* @source ../../cardkit/spec/common/scaffold.js */;
+/* @source cardkit/spec/common/scaffold.js */;
 
 
-define("../../cardkit/spec/common/scaffold", [], function(){
+define("cardkit/spec/common/scaffold", [], function(){
 
 return {
     hd: function(guard){
@@ -6278,15 +6338,15 @@ return {
 });
 
 
-/* @source ../../cardkit/spec/list.js */;
+/* @source cardkit/spec/list.js */;
 
 
-define("../../cardkit/spec/list", [
+define("cardkit/spec/list", [
   "dollar",
-  "../../cardkit/spec/common/scaffold",
-  "../../cardkit/spec/common/source_scaffold",
-  "../../cardkit/spec/common/item",
-  "../../cardkit/spec/common/source_item"
+  "cardkit/spec/common/scaffold",
+  "cardkit/spec/common/source_scaffold",
+  "cardkit/spec/common/item",
+  "cardkit/spec/common/source_item"
 ], function($, 
     scaffold_specs, source_scaffold_specs, item_specs, source_item_specs){ 
 
@@ -6348,15 +6408,15 @@ return exports;
 });
 
 
-/* @source ../../cardkit/oldspec/list.js */;
+/* @source cardkit/oldspec/list.js */;
 
 
-define("../../cardkit/oldspec/list", [
+define("cardkit/oldspec/list", [
   "dollar",
-  "../../cardkit/helper",
-  "../../cardkit/spec/list",
-  "../../cardkit/oldspec/common/scaffold",
-  "../../cardkit/oldspec/common/item"
+  "cardkit/helper",
+  "cardkit/spec/list",
+  "cardkit/oldspec/common/scaffold",
+  "cardkit/oldspec/common/item"
 ], function($, helper, list_spec, scaffold_specs, item_specs){ 
 
 var source_states = {
@@ -6364,7 +6424,7 @@ var source_states = {
     },
     source_item_states = list_spec.sourceItemStates,
     source_item_spec = list_spec.sourceItemSpec,
-    SEL = '.ck-list-card',
+    SEL = '.ckd-list-card',
     SEL_OLD = '.ck-list-unit'; // @deprecated
 
 function init_list(guard){
@@ -6403,19 +6463,19 @@ return exports;
 });
 
 
-/* @source ../../cardkit/oldspec/box.js */;
+/* @source cardkit/oldspec/box.js */;
 
 
-define("../../cardkit/oldspec/box", [
+define("cardkit/oldspec/box", [
   "dollar",
-  "../../cardkit/helper",
-  "../../cardkit/oldspec/common/scaffold"
+  "cardkit/helper",
+  "cardkit/oldspec/common/scaffold"
 ], function($, helper, scaffold_specs){ 
 
 var source_states = {
         source: helper.readSource
     },
-    SEL = '.ck-box-card',
+    SEL = '.ckd-box-card',
     SEL_OLD = '.ck-box-unit'; // @deprecated
 
 return function(guard, parent){
@@ -6438,13 +6498,13 @@ return function(guard, parent){
 
 });
 
-/* @source ../../cardkit/spec/form.js */;
+/* @source cardkit/spec/form.js */;
 
 
-define("../../cardkit/spec/form", [
+define("cardkit/spec/form", [
   "dollar",
-  "../../cardkit/spec/common/scaffold",
-  "../../cardkit/spec/common/source_scaffold"
+  "cardkit/spec/common/scaffold",
+  "cardkit/spec/common/source_scaffold"
 ], function($, scaffold_specs, source_scaffold_specs){ 
 
 var SEL = 'ck-card[type="form"]';
@@ -6478,21 +6538,21 @@ return exports;
 });
 
 
-/* @source ../../cardkit/oldspec/form.js */;
+/* @source cardkit/oldspec/form.js */;
 
 
-define("../../cardkit/oldspec/form", [
+define("cardkit/oldspec/form", [
   "dollar",
-  "../../cardkit/helper",
-  "../../cardkit/spec/form",
-  "../../cardkit/oldspec/common/scaffold"
+  "cardkit/helper",
+  "cardkit/spec/form",
+  "cardkit/oldspec/common/scaffold"
 ], function($, helper, form_spec, scaffold_specs){ 
 
 var source_states = {
         source: helper.readSource
     },
     source_item_spec = form_spec.sourceItemSpec,
-    SEL = '.ck-form-card',
+    SEL = '.ckd-form-card',
     SEL_OLD = '.ck-form-unit'; // @deprecated
 
 return function(guard, parent){
@@ -6519,15 +6579,15 @@ return function(guard, parent){
 });
 
 
-/* @source ../../cardkit/oldspec/mini.js */;
+/* @source cardkit/oldspec/mini.js */;
 
 
-define("../../cardkit/oldspec/mini", [
+define("cardkit/oldspec/mini", [
   "dollar",
-  "../../cardkit/oldspec/list"
+  "cardkit/oldspec/list"
 ], function($, list_spec){ 
 
-var SEL = '.ck-mini-card',
+var SEL = '.ckd-mini-card',
     SEL_OLD = '.ck-mini-unit'; // @deprecated
 
 return function(guard, parent){
@@ -6539,12 +6599,12 @@ return function(guard, parent){
 });
 
 
-/* @source ../../cardkit/spec/mini.js */;
+/* @source cardkit/spec/mini.js */;
 
 
-define("../../cardkit/spec/mini", [
+define("cardkit/spec/mini", [
   "dollar",
-  "../../cardkit/spec/list"
+  "cardkit/spec/list"
 ], function($, list_spec){ 
 
 var SEL = 'ck-card[type="mini"]';
@@ -6557,13 +6617,13 @@ return function(guard, parent){
 });
 
 
-/* @source ../../cardkit/spec/box.js */;
+/* @source cardkit/spec/box.js */;
 
 
-define("../../cardkit/spec/box", [
+define("cardkit/spec/box", [
   "dollar",
-  "../../cardkit/spec/common/scaffold",
-  "../../cardkit/spec/common/source_scaffold"
+  "cardkit/spec/common/scaffold",
+  "cardkit/spec/common/source_scaffold"
 ], function($, scaffold_specs, source_scaffold_specs){ 
 
 var SEL = 'ck-card[type="box"]';
@@ -6637,41 +6697,48 @@ var _defaults = {
 
 var dom_ext = {
 
+    darkGuard: function(){
+        return _guards[this.getAttribute(MY_BRIGHT)];
+    },
+
     mountDarkDOM: function(){
-        var me = $(this),
-            guard = _guards[me.attr(MY_BRIGHT)];
+        var guard = this.darkGuard();
         if (guard) {
-            guard.mountRoot(me);
+            guard.mountRoot(this);
         }
     },
 
     unmountDarkDOM: function(){
-        var me = $(this),
-            guard = _guards[me.attr(MY_BRIGHT)];
+        var guard = this.darkGuard();
         if (guard) {
-            guard.unmountRoot(me);
+            guard.unmountRoot(this);
+        }
+    },
+
+    resetDarkDOM: function(){
+        var guard = this.darkGuard();
+        if (guard) {
+            guard.unmountRoot(this);
+            guard.unregisterRoot(this);
         }
     },
 
     getDarkState: function(name){
-        var me = $(this),
-            guard = _guards[me.attr(MY_BRIGHT)];
+        var guard = this.darkGuard();
         return guard
-            && read_state(me, guard.stateGetter(name))
+            && read_state($(this), guard.stateGetter(name))
             || null;
     },
 
     setDarkState: function(name, value, opt){
         opt = opt || {};
-        var me = $(this),
-            guard = _guards[me.attr(MY_BRIGHT)];
-        if (!guard) {
-            return;
-        }
-        var setter = guard.stateSetter(name);
-        write_state(me, setter, value);
-        if (opt.update) {
-            this.updateDarkStates();
+        var guard = this.darkGuard();
+        if (guard) {
+            var setter = guard.stateSetter(name);
+            write_state($(this), setter, value);
+            if (opt.update) {
+                this.updateDarkStates();
+            }
         }
     },
 
@@ -6931,7 +6998,13 @@ DarkGuard.prototype = {
     unmountRoot: function(target){
         target = $(target);
         var bright_id = target.attr(MY_BRIGHT);
+        target.find('[' + MY_BRIGHT + ']').forEach(function(child){
+            var child_id = $(child).attr(MY_BRIGHT);
+            var guard = _guards[child_id];
+            guard.unregisterRoot(child);
+        }, _darkdata);
         $('#' + bright_id).remove();
+        delete target[0].isMountedDarkDOM;
         delete _darkdata[bright_id];
     },
 
@@ -7679,22 +7752,22 @@ return exports;
 
 });
 
-/* @source ../../cardkit/spec/page.js */;
+/* @source cardkit/spec/page.js */;
 
 
-define("../../cardkit/spec/page", [
+define("cardkit/spec/page", [
   "dollar",
   "darkdom",
-  "../../cardkit/helper",
-  "../../cardkit/spec/box",
-  "../../cardkit/spec/list",
-  "../../cardkit/spec/mini",
-  "../../cardkit/spec/form"
+  "cardkit/helper",
+  "cardkit/spec/box",
+  "cardkit/spec/list",
+  "cardkit/spec/mini",
+  "cardkit/spec/form"
 ], function(__oz0, __oz1, __oz2, __oz3, __oz4, __oz5, __oz6, require){ 
 
 var $ = require("dollar"),
     darkdom = require("darkdom"),
-    helper = require("../../cardkit/helper"),
+    helper = require("cardkit/helper"),
     UNMOUNT_FLAG = '.unmount-page';
 
 var specs = {
@@ -7704,10 +7777,10 @@ var specs = {
     banner: banner_spec,
     footer: 'ck-part[type="footer"]',
     blank: blank_spec,
-    box: require("../../cardkit/spec/box"),
-    list: require("../../cardkit/spec/list"),
-    mini: require("../../cardkit/spec/mini"),
-    form: require("../../cardkit/spec/form"),
+    box: require("cardkit/spec/box"),
+    list: require("cardkit/spec/list"),
+    mini: require("cardkit/spec/mini"),
+    form: require("cardkit/spec/form"),
 };
 
 function blank_spec(guard){
@@ -7808,51 +7881,51 @@ return exports;
 });
 
 
-/* @source ../../cardkit/oldspec/page.js */;
+/* @source cardkit/oldspec/page.js */;
 
 
-define("../../cardkit/oldspec/page", [
+define("cardkit/oldspec/page", [
   "dollar",
-  "../../cardkit/spec/page",
-  "../../cardkit/helper",
-  "../../cardkit/oldspec/box",
-  "../../cardkit/oldspec/list",
-  "../../cardkit/oldspec/mini",
-  "../../cardkit/oldspec/form"
+  "cardkit/spec/page",
+  "cardkit/helper",
+  "cardkit/oldspec/box",
+  "cardkit/oldspec/list",
+  "cardkit/oldspec/mini",
+  "cardkit/oldspec/form"
 ], function(__oz0, __oz1, __oz2, __oz3, __oz4, __oz5, __oz6, require){ 
 
 var $ = require("dollar"),
-    newspec = require("../../cardkit/spec/page"),
-    helper = require("../../cardkit/helper"),
+    newspec = require("cardkit/spec/page"),
+    helper = require("cardkit/helper"),
     action_attr = newspec.initOldStyleActionState,
     UNMOUNT_FLAG = '.unmount-page';
 
 var specs = {
-    title: '.ckcfg-card-title',
+    title: '.ckd-page-title',
     actionbar: actionbar_spec,
     nav: nav_spec,
     banner: banner_spec,
     footer: footer_spec,
     blank: blank_spec,
-    box: require("../../cardkit/oldspec/box"),
-    list: require("../../cardkit/oldspec/list"),
-    mini: require("../../cardkit/oldspec/mini"),
-    form: require("../../cardkit/oldspec/form"),
+    box: require("cardkit/oldspec/box"),
+    list: require("cardkit/oldspec/list"),
+    mini: require("cardkit/oldspec/mini"),
+    form: require("cardkit/oldspec/form"),
 };
 
 function blank_spec(guard){
-    guard.watch('.ckcfg-card-blank');
+    guard.watch('.ckd-page-blank');
 }
 
 function nav_spec(guard){
-    guard.watch('.ckcfg-card-nav');
+    guard.watch('.ckd-page-nav');
     guard.state({
         link: 'href'
     });
 }
 
 function banner_spec(guard){
-    guard.watch('.ckcfg-card-banner');
+    guard.watch('.ckd-page-banner');
     guard.watch('.ck-banner-unit'); // @deprecated
     guard.state({
         plainStyle: 'data-cfg-plain'
@@ -7860,7 +7933,7 @@ function banner_spec(guard){
 }
 
 function actionbar_spec(guard){
-    guard.watch('.ckcfg-card-actions');
+    guard.watch('.ckd-page-actions');
     guard.state({
         limit: 'data-cfg-limit',
         source: helper.readSource 
@@ -7871,7 +7944,7 @@ function actionbar_spec(guard){
 }
 
 function footer_spec(guard){
-    guard.watch('.ckcfg-card-footer');
+    guard.watch('.ckd-page-footer');
     guard.state('source', helper.readSource);
 }
 
@@ -7896,7 +7969,7 @@ function exports(guard, parent){
     guard.component(specs);
 }
 
-exports.SELECTOR = '.ck-page-card';
+exports.SELECTOR = '.ckd-page-card';
 exports.SELECTOR_OLD = '.ck-card'; // @deprecated
 
 return exports;
@@ -7904,63 +7977,63 @@ return exports;
 });
 
 
-/* @source ../../cardkit/oldspec.js */;
+/* @source cardkit/oldspec.js */;
 
 
-define("../../cardkit/oldspec", [
-  "../../cardkit/oldspec/page",
-  "../../cardkit/oldspec/box",
-  "../../cardkit/oldspec/list"
+define("cardkit/oldspec", [
+  "cardkit/oldspec/page",
+  "cardkit/oldspec/box",
+  "cardkit/oldspec/list"
 ], function(__oz0, __oz1, __oz2, require){
 
     return {
-        page: [require("../../cardkit/oldspec/page")],
-        box: [require("../../cardkit/oldspec/box")],
-        list: [require("../../cardkit/oldspec/list")],
+        page: [require("cardkit/oldspec/page")],
+        box: [require("cardkit/oldspec/box")],
+        list: [require("cardkit/oldspec/list")],
     };
 
 });
 
 
-/* @source ../../cardkit/tpl/scaffold/ft.js */;
+/* @source cardkit/tpl/scaffold/ft.js */;
 
-define("../../cardkit/tpl/scaffold/ft", [], function(){
+define("cardkit/tpl/scaffold/ft", [], function(){
 
     return {"template":"<footer>{%= content %}</footer>\n"}; 
 
 });
-/* @source ../../cardkit/tpl/scaffold/hd_opt.js */;
+/* @source cardkit/tpl/scaffold/hd_opt.js */;
 
-define("../../cardkit/tpl/scaffold/hd_opt", [], function(){
+define("cardkit/tpl/scaffold/hd_opt", [], function(){
 
     return {"template":"<span class=\"ck-hdopt\">{%= content %}</span>\n"}; 
 
 });
-/* @source ../../cardkit/tpl/scaffold/hd.js */;
+/* @source cardkit/tpl/scaffold/hd.js */;
 
-define("../../cardkit/tpl/scaffold/hd", [], function(){
+define("cardkit/tpl/scaffold/hd", [], function(){
 
     return {"template":"<span class=\"ck-hd {%= (hdLink && 'clickable' || '') %}\">\n    {% if (hdLink) { %}\n    <a href=\"{%= hdLink %}\" \n        target=\"{%= (hdLinkTarget || '_self') %}\" \n        class=\"ck-link-mask ck-link\"></a>\n    {% } %}\n    <span>{%= content %}</span>\n</span>\n"}; 
 
 });
-/* @source ../../cardkit/card/common/scaffold.js */;
+/* @source cardkit/card/common/scaffold.js */;
 
 
-define("../../cardkit/card/common/scaffold", [
+define("cardkit/card/common/scaffold", [
   "darkdom",
   "mo/template/micro",
-  "../../cardkit/helper",
-  "../../cardkit/tpl/scaffold/hd",
-  "../../cardkit/tpl/scaffold/hd_opt",
-  "../../cardkit/tpl/scaffold/ft"
+  "cardkit/helper",
+  "cardkit/tpl/scaffold/hd",
+  "cardkit/tpl/scaffold/hd_opt",
+  "cardkit/tpl/scaffold/ft"
 ], function(__oz0, __oz1, __oz2, __oz3, __oz4, __oz5, require){
 
 var darkdom = require("darkdom"),
     convert = require("mo/template/micro").convertTpl,
-    helper = require("../../cardkit/helper"),
-    render_hd = convert(require("../../cardkit/tpl/scaffold/hd").template),
-    render_hdopt = convert(require("../../cardkit/tpl/scaffold/hd_opt").template),
-    render_ft = convert(require("../../cardkit/tpl/scaffold/ft").template);
+    helper = require("cardkit/helper"),
+    render_hd = convert(require("cardkit/tpl/scaffold/hd").template),
+    render_hdopt = convert(require("cardkit/tpl/scaffold/hd_opt").template),
+    render_ft = convert(require("cardkit/tpl/scaffold/ft").template);
 
 var exports = {
 
@@ -8024,182 +8097,182 @@ return exports;
 });
 
 
-/* @source ../../cardkit/tpl/item/author_meta.js */;
+/* @source cardkit/tpl/item/author_meta.js */;
 
-define("../../cardkit/tpl/item/author_meta", [], function(){
+define("cardkit/tpl/item/author_meta", [], function(){
 
     return {"template":"<span class=\"ck-author-meta\">{%= content %}</span>\n"}; 
 
 });
-/* @source ../../cardkit/tpl/item/author_info.js */;
+/* @source cardkit/tpl/item/author_info.js */;
 
-define("../../cardkit/tpl/item/author_info", [], function(){
+define("cardkit/tpl/item/author_info", [], function(){
 
     return {"template":"<span class=\"ck-author-info\">{%= content %}</span>\n"}; 
 
 });
-/* @source ../../cardkit/tpl/item/author_desc.js */;
+/* @source cardkit/tpl/item/author_desc.js */;
 
-define("../../cardkit/tpl/item/author_desc", [], function(){
+define("cardkit/tpl/item/author_desc", [], function(){
 
     return {"template":"<span class=\"ck-author-desc\">{%= content %}</span>\n"}; 
 
 });
-/* @source ../../cardkit/tpl/item/avatar.js */;
+/* @source cardkit/tpl/item/avatar.js */;
 
-define("../../cardkit/tpl/item/avatar", [], function(){
+define("cardkit/tpl/item/avatar", [], function(){
 
     return {"template":"{% if (state.imgUrl) { %}\n    {% if (context.authorLink) { %}\n    <a href=\"{%= context.authorLink %}\" \n            target=\"{%= (context.authorLinkTarget || '_self') %}\" \n            class=\"ck-avatar ck-link\">\n        <img src=\"{%= state.imgUrl %}\"/>\n    </a>\n    {% } else { %}\n    <span class=\"ck-avatar\">\n        <img src=\"{%= state.imgUrl %}\"/>\n    </span>\n    {% } %}\n{% } %}\n"}; 
 
 });
-/* @source ../../cardkit/tpl/item/author_suffix.js */;
+/* @source cardkit/tpl/item/author_suffix.js */;
 
-define("../../cardkit/tpl/item/author_suffix", [], function(){
+define("cardkit/tpl/item/author_suffix", [], function(){
 
     return {"template":"<span class=\"ck-author-suffix\">{%= content %}</span>\n"}; 
 
 });
-/* @source ../../cardkit/tpl/item/author_prefix.js */;
+/* @source cardkit/tpl/item/author_prefix.js */;
 
-define("../../cardkit/tpl/item/author_prefix", [], function(){
+define("cardkit/tpl/item/author_prefix", [], function(){
 
     return {"template":"<span class=\"ck-author-prefix\">{%= content %}</span>\n"}; 
 
 });
-/* @source ../../cardkit/tpl/item/author.js */;
+/* @source cardkit/tpl/item/author.js */;
 
-define("../../cardkit/tpl/item/author", [], function(){
+define("cardkit/tpl/item/author", [], function(){
 
     return {"template":"{% if (context.authorLink) { %}\n<a href=\"{%= context.authorLink %}\" \n    target=\"{%= (context.authorLinkTarget || '_self') %}\" \n    class=\"ck-author ck-link\">{%= content %}</a>\n{% } else { %}\n<span class=\"ck-author\">{%= content %}</span>\n{% } %}\n"}; 
 
 });
-/* @source ../../cardkit/tpl/item/meta.js */;
+/* @source cardkit/tpl/item/meta.js */;
 
-define("../../cardkit/tpl/item/meta", [], function(){
+define("cardkit/tpl/item/meta", [], function(){
 
     return {"template":"<span class=\"ck-meta\">{%= content %}</span>\n"}; 
 
 });
-/* @source ../../cardkit/tpl/item/content.js */;
+/* @source cardkit/tpl/item/content.js */;
 
-define("../../cardkit/tpl/item/content", [], function(){
+define("cardkit/tpl/item/content", [], function(){
 
     return {"template":"<span class=\"ck-content\">{%= content %}</span>\n"}; 
 
 });
-/* @source ../../cardkit/tpl/item/opt.js */;
+/* @source cardkit/tpl/item/opt.js */;
 
-define("../../cardkit/tpl/item/opt", [], function(){
+define("cardkit/tpl/item/opt", [], function(){
 
     return {"template":"<span class=\"ck-opt\">{%= content %}</span>\n"}; 
 
 });
-/* @source ../../cardkit/tpl/item/info.js */;
+/* @source cardkit/tpl/item/info.js */;
 
-define("../../cardkit/tpl/item/info", [], function(){
+define("cardkit/tpl/item/info", [], function(){
 
     return {"template":"<span class=\"ck-info\">{%= content %}</span>\n"}; 
 
 });
-/* @source ../../cardkit/tpl/item/desc.js */;
+/* @source cardkit/tpl/item/desc.js */;
 
-define("../../cardkit/tpl/item/desc", [], function(){
+define("cardkit/tpl/item/desc", [], function(){
 
     return {"template":"<span class=\"ck-desc\">{%= content %}</span>\n"}; 
 
 });
-/* @source ../../cardkit/tpl/item/icon.js */;
+/* @source cardkit/tpl/item/icon.js */;
 
-define("../../cardkit/tpl/item/icon", [], function(){
+define("cardkit/tpl/item/icon", [], function(){
 
     return {"template":"{% if (state.imgUrl) { %}\n    {% if (context.isItemLinkAlone) { %}\n    <a href=\"{%= context.itemLink %}\" \n            target=\"{%= (context.itemLinkTarget || '_self') %}\" \n            class=\"ck-icon ck-link\">\n        <img src=\"{%= state.imgUrl %}\"/>\n    </a>\n    {% } else { %}\n    <span class=\"ck-icon\">\n        <img src=\"{%= state.imgUrl %}\"/>\n    </span>\n    {% } %}\n{% } %}\n"}; 
 
 });
-/* @source ../../cardkit/tpl/item/title_tag.js */;
+/* @source cardkit/tpl/item/title_tag.js */;
 
-define("../../cardkit/tpl/item/title_tag", [], function(){
+define("cardkit/tpl/item/title_tag", [], function(){
 
     return {"template":"<span class=\"ck-tag\">{%= content %}</span>\n"}; 
 
 });
-/* @source ../../cardkit/tpl/item/title_suffix.js */;
+/* @source cardkit/tpl/item/title_suffix.js */;
 
-define("../../cardkit/tpl/item/title_suffix", [], function(){
+define("cardkit/tpl/item/title_suffix", [], function(){
 
     return {"template":"<span class=\"ck-title-suffix\">{%= content %}</span>\n"}; 
 
 });
-/* @source ../../cardkit/tpl/item/title_prefix.js */;
+/* @source cardkit/tpl/item/title_prefix.js */;
 
-define("../../cardkit/tpl/item/title_prefix", [], function(){
+define("cardkit/tpl/item/title_prefix", [], function(){
 
     return {"template":"<span class=\"ck-title-prefix\">{%= content %}</span>\n"}; 
 
 });
-/* @source ../../cardkit/tpl/item/title.js */;
+/* @source cardkit/tpl/item/title.js */;
 
-define("../../cardkit/tpl/item/title", [], function(){
+define("cardkit/tpl/item/title", [], function(){
 
     return {"template":"{% if (context.isItemLinkAlone) { %}\n<a href=\"{%= context.itemLink %}\" \n    class=\"ck-link\"\n    target=\"{%= (context.itemLinkTarget || '_self') %}\">{%= content %}</a>\n{% } else { %}\n<span class=\"ck-title\">{%= content %}</span>\n{% } %}\n\n"}; 
 
 });
-/* @source ../../cardkit/tpl/item.js */;
+/* @source cardkit/tpl/item.js */;
 
-define("../../cardkit/tpl/item", [], function(){
+define("cardkit/tpl/item", [], function(){
 
     return {"template":"<div class=\"ck-item {%= (itemLink && 'clickable' || '') %}\" \n        style=\"width:{%= (context.state.col ? Math.floor(1000/context.state.col)/10 + '%' : '') %};\">\n\n    <div class=\"ck-initem\">\n\n        {% if (itemLink && !isItemLinkAlone) { %}\n        <a href=\"{%= itemLink %}\" \n            target=\"{%= (itemLinkTarget || '_self') %}\"\n            class=\"ck-link-mask ck-link\"></a>\n        {% } %}\n\n        <div class=\"ck-title-box\">\n\n            {%= component.opt.join('') %}\n            {%= component.icon %}\n\n            <div class=\"ck-title-set\">\n\n                {% if (itemContent) { %}\n                <div class=\"ck-title-line\">\n                    {%= component.titlePrefix.join('') %}\n                    {%= itemContent %}\n                    {%= component.titleSuffix.join('') %}\n                    {%= component.titleTag.join('') %}\n                </div>\n                {% } %}\n\n                {% if (component.info.length) { %}\n                <div class=\"ck-info-wrap\">\n                    {%= component.info.join('') %}\n                </div>\n                {% } %}\n\n                {% if (component.desc.length) { %}\n                <div class=\"ck-desc-wrap\">\n                    {%= component.desc.join('') %}\n                </div>\n                {% } %}\n\n            </div>\n\n            {% if (component.content.length) { %}\n            <div class=\"ck-content-wrap\">\n                {%= component.content.join('') %}\n            </div>\n            {% } %}\n\n            {% if (component.meta.length) { %}\n            <div class=\"ck-meta-wrap\">\n                {%= component.meta.join('') %}\n            </div>\n            {% } %}\n\n        </div>\n\n        {% if (component.author || component.authorDesc.length || component.authorMeta.length) { %}\n        <div class=\"ck-author-box\">\n\n            {%= component.avatar %}\n\n            <div class=\"ck-author-set\">\n\n                <div class=\"ck-author-line\">\n                    {%= component.authorPrefix.join('') %}\n                    {%= component.author %}\n                    {%= component.authorSuffix.join('') %}\n                </div>\n\n                {% if (component.authorInfo.length) { %}\n                <div class=\"ck-author-info-wrap\">\n                    {%= component.authorInfo.join('') %}\n                </div>\n                {% } %}\n\n                {% if (component.authorDesc.length) { %}\n                <div class=\"ck-author-desc-wrap\">\n                    {%= component.authorDesc.join('') %}\n                </div>\n                {% } %}\n\n            </div>\n\n            {% if (component.authorMeta.length) { %}\n            <div class=\"ck-author-meta-wrap\">\n                {%= component.authorMeta.join('') %}\n            </div>\n            {% } %}\n\n        </div>\n        {% } %}\n\n    </div>\n\n</div>\n\n"}; 
 
 });
-/* @source ../../cardkit/card/item.js */;
+/* @source cardkit/card/item.js */;
 
 
-define("../../cardkit/card/item", [
+define("cardkit/card/item", [
   "darkdom",
   "mo/lang/mix",
   "mo/template/micro",
-  "../../cardkit/helper",
-  "../../cardkit/tpl/item",
-  "../../cardkit/tpl/item/title",
-  "../../cardkit/tpl/item/title_prefix",
-  "../../cardkit/tpl/item/title_suffix",
-  "../../cardkit/tpl/item/title_tag",
-  "../../cardkit/tpl/item/icon",
-  "../../cardkit/tpl/item/desc",
-  "../../cardkit/tpl/item/info",
-  "../../cardkit/tpl/item/opt",
-  "../../cardkit/tpl/item/content",
-  "../../cardkit/tpl/item/meta",
-  "../../cardkit/tpl/item/author",
-  "../../cardkit/tpl/item/author_prefix",
-  "../../cardkit/tpl/item/author_suffix",
-  "../../cardkit/tpl/item/avatar",
-  "../../cardkit/tpl/item/author_desc",
-  "../../cardkit/tpl/item/author_info",
-  "../../cardkit/tpl/item/author_meta"
+  "cardkit/helper",
+  "cardkit/tpl/item",
+  "cardkit/tpl/item/title",
+  "cardkit/tpl/item/title_prefix",
+  "cardkit/tpl/item/title_suffix",
+  "cardkit/tpl/item/title_tag",
+  "cardkit/tpl/item/icon",
+  "cardkit/tpl/item/desc",
+  "cardkit/tpl/item/info",
+  "cardkit/tpl/item/opt",
+  "cardkit/tpl/item/content",
+  "cardkit/tpl/item/meta",
+  "cardkit/tpl/item/author",
+  "cardkit/tpl/item/author_prefix",
+  "cardkit/tpl/item/author_suffix",
+  "cardkit/tpl/item/avatar",
+  "cardkit/tpl/item/author_desc",
+  "cardkit/tpl/item/author_info",
+  "cardkit/tpl/item/author_meta"
 ], function(__oz0, __oz1, __oz2, __oz3, __oz4, __oz5, __oz6, __oz7, __oz8, __oz9, __oz10, __oz11, __oz12, __oz13, __oz14, __oz15, __oz16, __oz17, __oz18, __oz19, __oz20, __oz21, require){
 
 var darkdom = require("darkdom"),
     _ = require("mo/lang/mix"),
     convert = require("mo/template/micro").convertTpl,
-    helper = require("../../cardkit/helper"),
-    render_item = convert(require("../../cardkit/tpl/item").template),
-    render_title = convert(require("../../cardkit/tpl/item/title").template),
-    render_title_prefix = convert(require("../../cardkit/tpl/item/title_prefix").template),
-    render_title_suffix = convert(require("../../cardkit/tpl/item/title_suffix").template),
-    render_title_tag = convert(require("../../cardkit/tpl/item/title_tag").template),
-    render_icon = convert(require("../../cardkit/tpl/item/icon").template),
-    render_desc = convert(require("../../cardkit/tpl/item/desc").template),
-    render_info = convert(require("../../cardkit/tpl/item/info").template),
-    render_opt = convert(require("../../cardkit/tpl/item/opt").template),
-    render_content = convert(require("../../cardkit/tpl/item/content").template),
-    render_meta = convert(require("../../cardkit/tpl/item/meta").template),
-    render_author = convert(require("../../cardkit/tpl/item/author").template),
-    render_author_prefix = convert(require("../../cardkit/tpl/item/author_prefix").template),
-    render_author_suffix = convert(require("../../cardkit/tpl/item/author_suffix").template),
-    render_avatar = convert(require("../../cardkit/tpl/item/avatar").template),
-    render_author_desc = convert(require("../../cardkit/tpl/item/author_desc").template),
-    render_author_info = convert(require("../../cardkit/tpl/item/author_info").template),
-    render_author_meta = convert(require("../../cardkit/tpl/item/author_meta").template);
+    helper = require("cardkit/helper"),
+    render_item = convert(require("cardkit/tpl/item").template),
+    render_title = convert(require("cardkit/tpl/item/title").template),
+    render_title_prefix = convert(require("cardkit/tpl/item/title_prefix").template),
+    render_title_suffix = convert(require("cardkit/tpl/item/title_suffix").template),
+    render_title_tag = convert(require("cardkit/tpl/item/title_tag").template),
+    render_icon = convert(require("cardkit/tpl/item/icon").template),
+    render_desc = convert(require("cardkit/tpl/item/desc").template),
+    render_info = convert(require("cardkit/tpl/item/info").template),
+    render_opt = convert(require("cardkit/tpl/item/opt").template),
+    render_content = convert(require("cardkit/tpl/item/content").template),
+    render_meta = convert(require("cardkit/tpl/item/meta").template),
+    render_author = convert(require("cardkit/tpl/item/author").template),
+    render_author_prefix = convert(require("cardkit/tpl/item/author_prefix").template),
+    render_author_suffix = convert(require("cardkit/tpl/item/author_suffix").template),
+    render_avatar = convert(require("cardkit/tpl/item/avatar").template),
+    render_author_desc = convert(require("cardkit/tpl/item/author_desc").template),
+    render_author_info = convert(require("cardkit/tpl/item/author_info").template),
+    render_author_meta = convert(require("cardkit/tpl/item/author_meta").template);
 
 var exports = {
 
@@ -8396,38 +8469,38 @@ return exports;
 
 });
 
-/* @source ../../cardkit/tpl/list.js */;
+/* @source cardkit/tpl/list.js */;
 
-define("../../cardkit/tpl/list", [], function(){
+define("cardkit/tpl/list", [], function(){
 
     return {"template":"<div class=\"ck-list-card{%= (state.blankText === 'false' ? ' no-blank' : '') %}\"\n        data-style=\"{%= state.subtype %}\"\n        {%= state.col ? 'data-cfg-col=\"' + state.col + '\" ' : '' %}\n        {%= state.paperStyle ? 'data-cfg-paper=\"true\" ' : '' %}\n        {%= state.plainStyle ? 'data-cfg-plain=\"true\" ' : '' %}\n        {%= state.plainHdStyle ? 'data-cfg-plainhd=\"true\" ' : '' %}>\n\n    {% if (hasSplitHd) { %}\n        {%= hdwrap %}\n    {% } %}\n\n    <article class=\"ck-card-wrap\">\n\n        {% if (!hasSplitHd) { %}\n            {%= hdwrap %}\n        {% } %}\n        \n        <div class=\"ck-list-wrap\">\n\n            {% if (component.item.length) { %}\n\n                <div class=\"ck-list\">\n                {% component.item.forEach(function(item, i){ %}\n\n                    {% if (i && (i % state.col === 0)) { %}\n                    </div><div class=\"ck-list\">\n                    {% } %}\n\n                    {%= item %}\n\n                {% }); %}\n                </div>\n\n            {% } else { %}\n\n                <div class=\"ck-list\">\n                    <div class=\"ck-item blank\">\n                        <div class=\"ck-initem\">\n                        {% if (component.blank) { %}\n                            {%= component.blank %}\n                        {% } else { %}\n                            {%=(state.blankText || '目前还没有内容')%}\n                        {% } %}\n                        </div>\n                    </div>\n                </div>\n\n            {% } %}\n\n        </div>\n\n        {%= component.ft %}\n\n    </article>\n\n</div>\n\n"}; 
 
 });
-/* @source ../../cardkit/tpl/scaffold/hdwrap.js */;
+/* @source cardkit/tpl/scaffold/hdwrap.js */;
 
-define("../../cardkit/tpl/scaffold/hdwrap", [], function(){
+define("cardkit/tpl/scaffold/hdwrap", [], function(){
 
     return {"template":"\n{% if (component.hd) { %}\n<header class=\"ck-hd-wrap\">\n\n    {%= component.hd %}\n\n    {% if (component.hdOpt.length) { %}\n        <div class=\"ck-hdopt-wrap\">\n            {%= component.hdOpt.join('') %}\n        </div>\n    {% } %}\n\n</header>\n{% } %}\n"}; 
 
 });
-/* @source ../../cardkit/card/list.js */;
+/* @source cardkit/card/list.js */;
 
 
-define("../../cardkit/card/list", [
+define("cardkit/card/list", [
   "darkdom",
   "mo/template/micro",
-  "../../cardkit/tpl/scaffold/hdwrap",
-  "../../cardkit/tpl/list",
-  "../../cardkit/card/item",
-  "../../cardkit/card/common/scaffold"
+  "cardkit/tpl/scaffold/hdwrap",
+  "cardkit/tpl/list",
+  "cardkit/card/item",
+  "cardkit/card/common/scaffold"
 ], function(__oz0, __oz1, __oz2, __oz3, __oz4, __oz5, require){
 
 var darkdom = require("darkdom"),
     convert = require("mo/template/micro").convertTpl,
-    render_hdwrap = convert(require("../../cardkit/tpl/scaffold/hdwrap").template),
-    render_list = convert(require("../../cardkit/tpl/list").template),
-    item = require("../../cardkit/card/item"),
-    scaffold_components = require("../../cardkit/card/common/scaffold");
+    render_hdwrap = convert(require("cardkit/tpl/scaffold/hdwrap").template),
+    render_list = convert(require("cardkit/tpl/list").template),
+    item = require("cardkit/card/item"),
+    scaffold_components = require("cardkit/card/common/scaffold");
 
 var exports = {
 
@@ -8457,40 +8530,40 @@ return exports;
 });
 
 
-/* @source ../../cardkit/tpl/box.js */;
+/* @source cardkit/tpl/box.js */;
 
-define("../../cardkit/tpl/box", [], function(){
+define("cardkit/tpl/box", [], function(){
 
     return {"template":"<div class=\"ck-box-card\"\n        data-style=\"{%= state.subtype %}\"\n        {%= state.paperStyle ? 'data-cfg-paper=\"true\" ' : '' %}\n        {%= state.plainStyle ? 'data-cfg-plain=\"true\" ' : '' %}\n        {%= state.plainHdStyle ? 'data-cfg-plainhd=\"true\" ' : '' %}>\n\n    {% if (hasSplitHd) { %}\n        {%= hdwrap %}\n    {% } %}\n\n    <article class=\"ck-card-wrap\">\n\n        {% if (!hasSplitHd) { %}\n            {%= hdwrap %}\n        {% } %}\n\n        {% if (!isBlank) { %}\n            <section>{%= content %}</section>\n        {% } %}\n\n        {%= component.ft %}\n\n    </article>\n\n</div>\n"}; 
 
 });
-/* @source ../../cardkit/tpl/box/content.js */;
+/* @source cardkit/tpl/box/content.js */;
 
-define("../../cardkit/tpl/box/content", [], function(){
+define("cardkit/tpl/box/content", [], function(){
 
     return {"template":"<div class=\"ck-content\">{%= content %}</div>\n"}; 
 
 });
-/* @source ../../cardkit/card/box.js */;
+/* @source cardkit/card/box.js */;
 
 
-define("../../cardkit/card/box", [
+define("cardkit/card/box", [
   "darkdom",
   "mo/template/micro",
-  "../../cardkit/helper",
-  "../../cardkit/tpl/box/content",
-  "../../cardkit/tpl/scaffold/hdwrap",
-  "../../cardkit/tpl/box",
-  "../../cardkit/card/common/scaffold"
+  "cardkit/helper",
+  "cardkit/tpl/box/content",
+  "cardkit/tpl/scaffold/hdwrap",
+  "cardkit/tpl/box",
+  "cardkit/card/common/scaffold"
 ], function(__oz0, __oz1, __oz2, __oz3, __oz4, __oz5, __oz6, require){
 
 var darkdom = require("darkdom"),
     convert = require("mo/template/micro").convertTpl,
-    helper = require("../../cardkit/helper"),
-    render_content = convert(require("../../cardkit/tpl/box/content").template),
-    render_hdwrap = convert(require("../../cardkit/tpl/scaffold/hdwrap").template),
-    render_box = convert(require("../../cardkit/tpl/box").template),
-    scaffold_components = require("../../cardkit/card/common/scaffold");
+    helper = require("cardkit/helper"),
+    render_content = convert(require("cardkit/tpl/box/content").template),
+    render_hdwrap = convert(require("cardkit/tpl/scaffold/hdwrap").template),
+    render_box = convert(require("cardkit/tpl/box").template),
+    scaffold_components = require("cardkit/card/common/scaffold");
 
 var exports = {
 
@@ -8527,40 +8600,40 @@ return exports;
 });
 
 
-/* @source ../../cardkit/tpl/form.js */;
+/* @source cardkit/tpl/form.js */;
 
-define("../../cardkit/tpl/form", [], function(){
+define("cardkit/tpl/form", [], function(){
 
     return {"template":"<div class=\"ck-form-card{%= (state.blankText === 'false' ? ' no-blank' : '') %}\"\n        data-style=\"{%= state.subtype %}\"\n        {%= state.plainHdStyle ? 'data-cfg-plainhd=\"true\" ' : '' %}>\n\n    {% if (hasSplitHd) { %}\n        {%= hdwrap %}\n    {% } %}\n\n    <article class=\"ck-card-wrap\">\n\n        {% if (!hasSplitHd) { %}\n            {%= hdwrap %}\n        {% } %}\n\n        {% if (component.item.length) { %}\n            {% component.item.forEach(function(item){ %}\n                {%= item %}\n            {% }); %}\n        {% } else { %}\n            <div class=\"ck-item blank\">\n            {% if (component.blank) { %}\n                {%= component.blank %}\n            {% } else { %}\n                {%=(state.blankText || '目前还没有内容')%}\n            {% } %}\n            </div>\n        {% } %}\n\n        {%= component.ft %}\n\n    </article>\n\n</div>\n"}; 
 
 });
-/* @source ../../cardkit/tpl/form/item.js */;
+/* @source cardkit/tpl/form/item.js */;
 
-define("../../cardkit/tpl/form/item", [], function(){
+define("cardkit/tpl/form/item", [], function(){
 
     return {"template":"<div class=\"ck-item\">{%= content %}</div>\n"}; 
 
 });
-/* @source ../../cardkit/card/form.js */;
+/* @source cardkit/card/form.js */;
 
 
-define("../../cardkit/card/form", [
+define("cardkit/card/form", [
   "darkdom",
   "mo/template/micro",
-  "../../cardkit/tpl/form/item",
-  "../../cardkit/tpl/box/content",
-  "../../cardkit/tpl/scaffold/hdwrap",
-  "../../cardkit/tpl/form",
-  "../../cardkit/card/common/scaffold"
+  "cardkit/tpl/form/item",
+  "cardkit/tpl/box/content",
+  "cardkit/tpl/scaffold/hdwrap",
+  "cardkit/tpl/form",
+  "cardkit/card/common/scaffold"
 ], function(__oz0, __oz1, __oz2, __oz3, __oz4, __oz5, __oz6, require){
 
 var darkdom = require("darkdom"),
     convert = require("mo/template/micro").convertTpl,
-    render_item = convert(require("../../cardkit/tpl/form/item").template),
-    render_content = convert(require("../../cardkit/tpl/box/content").template),
-    render_hdwrap = convert(require("../../cardkit/tpl/scaffold/hdwrap").template),
-    render_form = convert(require("../../cardkit/tpl/form").template),
-    scaffold_components = require("../../cardkit/card/common/scaffold");
+    render_item = convert(require("cardkit/tpl/form/item").template),
+    render_content = convert(require("cardkit/tpl/box/content").template),
+    render_hdwrap = convert(require("cardkit/tpl/scaffold/hdwrap").template),
+    render_form = convert(require("cardkit/tpl/form").template),
+    scaffold_components = require("cardkit/card/common/scaffold");
 
 var exports = {
 
@@ -8603,31 +8676,31 @@ return exports;
 });
 
 
-/* @source ../../cardkit/tpl/mini.js */;
+/* @source cardkit/tpl/mini.js */;
 
-define("../../cardkit/tpl/mini", [], function(){
+define("cardkit/tpl/mini", [], function(){
 
     return {"template":"<div class=\"ck-mini-card{%= (state.blankText === 'false' ? ' no-blank' : '') %}\"\n        data-style=\"{%= state.subtype %}\">\n\n    {% if (hasSplitHd) { %}\n        {%= hdwrap %}\n    {% } %}\n\n    <article class=\"ck-card-wrap {%= (component.item.length > 1 ? 'slide' : '') %}\">\n\n        {% if (!hasSplitHd) { %}\n            {%= hdwrap %}\n        {% } %}\n        \n        <div class=\"ck-list-wrap\">\n\n            {% if (component.item.length) { %}\n\n                <div class=\"ck-list\" style=\"width:{%= listWidth %};\">\n                {% component.item.forEach(function(item){ %}\n                    <div class=\"ck-col\" style=\"width:{%= itemWidth %};\">\n                        {%= item %}\n                    </div>\n                {% }); %}\n                </div>\n\n            {% } else { %}\n\n                <div class=\"ck-list\">\n                    <div class=\"ck-item blank\">\n                        <div class=\"ck-initem\">\n                        {% if (component.blank) { %}\n                            {%= component.blank %}\n                        {% } else { %}\n                            {%=(state.blankText || '目前还没有内容')%}\n                        {% } %}\n                        </div>\n                    </div>\n                </div>\n\n            {% } %}\n\n        </div>\n\n        {%= component.ft %}\n\n    </article>\n\n</div>\n\n"}; 
 
 });
-/* @source ../../cardkit/card/mini.js */;
+/* @source cardkit/card/mini.js */;
 
 
-define("../../cardkit/card/mini", [
+define("cardkit/card/mini", [
   "darkdom",
   "mo/template/micro",
-  "../../cardkit/tpl/scaffold/hdwrap",
-  "../../cardkit/tpl/mini",
-  "../../cardkit/card/item",
-  "../../cardkit/card/common/scaffold"
+  "cardkit/tpl/scaffold/hdwrap",
+  "cardkit/tpl/mini",
+  "cardkit/card/item",
+  "cardkit/card/common/scaffold"
 ], function(__oz0, __oz1, __oz2, __oz3, __oz4, __oz5, require){
 
 var darkdom = require("darkdom"),
     convert = require("mo/template/micro").convertTpl,
-    render_hdwrap = convert(require("../../cardkit/tpl/scaffold/hdwrap").template),
-    render_mini = convert(require("../../cardkit/tpl/mini").template),
-    item = require("../../cardkit/card/item"),
-    scaffold_components = require("../../cardkit/card/common/scaffold");
+    render_hdwrap = convert(require("cardkit/tpl/scaffold/hdwrap").template),
+    render_mini = convert(require("cardkit/tpl/mini").template),
+    item = require("cardkit/card/item"),
+    scaffold_components = require("cardkit/card/common/scaffold");
 
 var exports = {
 
@@ -8657,84 +8730,84 @@ return exports;
 });
 
 
-/* @source ../../cardkit/tpl/page.js */;
+/* @source cardkit/tpl/page.js */;
 
-define("../../cardkit/tpl/page", [], function(){
+define("cardkit/tpl/page", [], function(){
 
     return {"template":"\n<div class=\"ck-page-card{%= !hasHeader ? ' no-header' : '' %}{%= !component.banner || componentData.banner.isBlank ? '' : ' with-banner' %}\" \n        data-style=\"{%= state.subtype %}\"\n        data-page-active=\"{%= state.isPageActive || 'false' %}\"\n        data-deck-active=\"{%= state.isDeckActive || 'false' %}\"\n        data-deck=\"{%= (state.deck || 'main') %}\"\n        data-curdeck=\"{%= state.currentDeck %}\"\n        data-cardid=\"{%= state.cardId %}\">\n\n    {% if (hasHeader) { %}\n    <div class=\"ck-header\">\n        {%= component.nav %}\n        {%= component.title %}\n        {%= component.actionbar %}\n    </div>\n    {% } %}\n\n    {%= component.banner %}\n\n    <div class=\"ck-article\">\n        {% if (!isBlank) { %}\n            {%= content %}\n        {% } else { %}\n            <div class=\"ck-blank-card\">\n                <article class=\"ck-card-wrap\">\n                    {% if (component.blank) { %}\n                        {%= component.blank %}\n                    {% } else { %}\n                        <div>{%=(state.blankText || '目前还没有内容')%}</div>\n                    {% } %}\n                </article>\n            </div>\n        {% } %}\n    </div>\n\n    {% if (component.footer) { %}\n    <div class=\"ck-footer\">{%= component.footer %}</div>\n    {% } %}\n\n    <a class=\"ck-page-link-mask ck-link\" href=\"#{%= state.cardId %}\"></a>\n\n</div>\n\n"}; 
 
 });
-/* @source ../../cardkit/tpl/page/actionbar/action.js */;
+/* @source cardkit/tpl/page/actionbar/action.js */;
 
-define("../../cardkit/tpl/page/actionbar/action", [], function(){
+define("cardkit/tpl/page/actionbar/action", [], function(){
 
     return {"template":"\n<span class=\"ck-item\">\n    <button type=\"button\" class=\"ck-option\" \n        value=\"{%= id %}\">{%= state.label %}</button>\n    {%= content %}\n</span>\n"}; 
 
 });
-/* @source ../../cardkit/tpl/page/actionbar.js */;
+/* @source cardkit/tpl/page/actionbar.js */;
 
-define("../../cardkit/tpl/page/actionbar", [], function(){
+define("cardkit/tpl/page/actionbar", [], function(){
 
     return {"template":"<div class=\"ck-top-actions\">\n\n    {% if (overflowActions.length) { %}\n    <span class=\"ck-top-overflow\"\n            data-title=\"More actions...\">\n        {% overflowActions.forEach(function(action){ %}\n            {%= action %}\n        {% }); %}\n    </span>\n    {% } %}\n\n    {% visibleActions.forEach(function(action){ %}\n        {%= action %}\n    {% }); %}\n\n</div>\n"}; 
 
 });
-/* @source ../../cardkit/tpl/page/banner.js */;
+/* @source cardkit/tpl/page/banner.js */;
 
-define("../../cardkit/tpl/page/banner", [], function(){
+define("cardkit/tpl/page/banner", [], function(){
 
     return {"template":"<div class=\"ck-top-banner\"\n        {%= state.plainStyle ? 'data-cfg-plain=\"true\" ' : '' %}>\n    <div class=\"ck-top-banner-inner\">{%= content %}</div>\n</div>\n"}; 
 
 });
-/* @source ../../cardkit/tpl/page/nav.js */;
+/* @source cardkit/tpl/page/nav.js */;
 
-define("../../cardkit/tpl/page/nav", [], function(){
+define("cardkit/tpl/page/nav", [], function(){
 
     return {"template":"{% if (content) { %}\n<span class=\"ck-top-nav\">{%= content %}</span>\n{% } else { %}\n<a class=\"ck-top-nav ck-link\" href=\"{%= state.link %}\"></a>\n{% } %}\n"}; 
 
 });
-/* @source ../../cardkit/tpl/page/title.js */;
+/* @source cardkit/tpl/page/title.js */;
 
-define("../../cardkit/tpl/page/title", [], function(){
+define("cardkit/tpl/page/title", [], function(){
 
     return {"template":"<div class=\"ck-top-title\">{%= content %}</div>\n"}; 
 
 });
-/* @source ../../cardkit/card/page.js */;
+/* @source cardkit/card/page.js */;
 
 
-define("../../cardkit/card/page", [
+define("cardkit/card/page", [
   "darkdom",
   "mo/lang/mix",
   "mo/template/micro",
-  "../../cardkit/helper",
-  "../../cardkit/tpl/page/title",
-  "../../cardkit/tpl/page/nav",
-  "../../cardkit/tpl/page/banner",
-  "../../cardkit/tpl/page/actionbar",
-  "../../cardkit/tpl/page/actionbar/action",
-  "../../cardkit/tpl/page",
-  "../../cardkit/card/box",
-  "../../cardkit/card/list",
-  "../../cardkit/card/mini",
-  "../../cardkit/card/form"
+  "cardkit/helper",
+  "cardkit/tpl/page/title",
+  "cardkit/tpl/page/nav",
+  "cardkit/tpl/page/banner",
+  "cardkit/tpl/page/actionbar",
+  "cardkit/tpl/page/actionbar/action",
+  "cardkit/tpl/page",
+  "cardkit/card/box",
+  "cardkit/card/list",
+  "cardkit/card/mini",
+  "cardkit/card/form"
 ], function(__oz0, __oz1, __oz2, __oz3, __oz4, __oz5, __oz6, __oz7, __oz8, __oz9, __oz10, __oz11, __oz12, __oz13, require){
 
 var darkdom = require("darkdom"),
     _ = require("mo/lang/mix"),
     convert = require("mo/template/micro").convertTpl,
-    helper = require("../../cardkit/helper"),
-    render_title = convert(require("../../cardkit/tpl/page/title").template),
-    render_nav = convert(require("../../cardkit/tpl/page/nav").template),
-    render_banner = convert(require("../../cardkit/tpl/page/banner").template),
-    render_actionbar = convert(require("../../cardkit/tpl/page/actionbar").template),
-    render_action = convert(require("../../cardkit/tpl/page/actionbar/action").template),
-    render_page = convert(require("../../cardkit/tpl/page").template);
+    helper = require("cardkit/helper"),
+    render_title = convert(require("cardkit/tpl/page/title").template),
+    render_nav = convert(require("cardkit/tpl/page/nav").template),
+    render_banner = convert(require("cardkit/tpl/page/banner").template),
+    render_actionbar = convert(require("cardkit/tpl/page/actionbar").template),
+    render_action = convert(require("cardkit/tpl/page/actionbar/action").template),
+    render_page = convert(require("cardkit/tpl/page").template);
 
 var cards = {
-    box: require("../../cardkit/card/box").box,
-    list: require("../../cardkit/card/list").list, 
-    mini: require("../../cardkit/card/mini").mini, 
-    form: require("../../cardkit/card/form").form,
+    box: require("cardkit/card/box").box,
+    list: require("cardkit/card/list").list, 
+    mini: require("cardkit/card/mini").mini, 
+    form: require("cardkit/card/form").form,
 };
 
 var exports = {
@@ -8881,27 +8954,27 @@ return exports;
 });
 
 
-/* @source ../../cardkit/spec.js */;
+/* @source cardkit/spec.js */;
 
 
-define("../../cardkit/spec", [
-  "../../cardkit/spec/page",
-  "../../cardkit/card/page",
-  "../../cardkit/spec/box",
-  "../../cardkit/card/box",
-  "../../cardkit/spec/list",
-  "../../cardkit/card/list"
+define("cardkit/spec", [
+  "cardkit/spec/page",
+  "cardkit/card/page",
+  "cardkit/spec/box",
+  "cardkit/card/box",
+  "cardkit/spec/list",
+  "cardkit/card/list"
 ], function(__oz0, __oz1, __oz2, __oz3, __oz4, __oz5, require){
 
     return {
-        page: [require("../../cardkit/spec/page"), require("../../cardkit/card/page")],
-        box: [require("../../cardkit/spec/box"), require("../../cardkit/card/box")],
-        list: [require("../../cardkit/spec/list"), require("../../cardkit/card/list")],
+        page: [require("cardkit/spec/page"), require("cardkit/card/page")],
+        box: [require("cardkit/spec/box"), require("cardkit/card/box")],
+        list: [require("cardkit/spec/list"), require("cardkit/card/list")],
     };
 
 });
 
-/* @source ../../cardkit.js */;
+/* @source cardkit.js */;
 
 
 define('cardkit', [
@@ -8930,7 +9003,7 @@ var DEFAULT_DECK = 'main',
     _defaults = {
         appWrapper: null,
         defaultPage: 'ckDefault',
-        supportOldVer: true 
+        oldStyle: false 
     };
 
 var exports = {
@@ -8942,13 +9015,11 @@ var exports = {
     },
 
     initSpec: function(){
-        var support_old = this._config.supportOldVer;
         _.each(specs, function(data, name){
+            var spec = this._config.oldStyle 
+                ? oldspecs[name][0] : data[0];
             this.component(name, data[1][name]());
-            this.spec(name, data[0], 'default');
-            if (support_old && oldspecs[name]) {
-                this.spec(name, oldspecs[name][0], 'old');
-            }
+            this.spec(name, spec);
         }, this);
     },
 
@@ -8971,62 +9042,32 @@ var exports = {
         }
     },
 
-    spec: function(name, spec, serie){
-        if (!_.isFunction(spec)) {
-            serie = spec;
-            spec = null;
-        }
-        if (!serie) {
-            if (!spec) {
-                var re = {};
-                _.each(_specs, function(specs, serie){
-                    this[serie] = specs[name];
-                }, re);
-                return re;
-            }
-            serie = 'default';
-        }
-        var specs = _specs[serie];
-        if (!specs) {
-            specs = _specs[serie] = {};
-        }
+    spec: function(name, spec){
         if (spec) {
-            specs[name] = spec;
+            _specs[name] = spec;
         } else {
-            return specs[name];
+            return _specs[name];
         }
     },
 
-    guard: function(name, serie){
-        var guards = _guards[serie];
-        if (!guards) {
-            guards = _guards[serie] = {};
+    guard: function(name){
+        if (!_guards[name]) {
+            _guards[name] = this.component(name).createGuard();
         }
-        if (!guards[name]) {
-            guards[name] = this.component(name).createGuard();
-        }
-        return guards[name];
+        return _guards[name];
     },
 
     render: function(name, parent){
-        var series = this.spec(name);
-        _.each(series, function(spec, serie){
-            var guard = this.guard(name, serie);
+        var spec = this.spec(name);
+        var guard = this.guard(name);
+        if (spec && guard) {
             spec(guard, parent);
             guard.mount();
-        }, this);
+        }
     },
 
     openPage: function(page){
-        if (!page || typeof page === 'string') {
-            var hash = RE_HASH.exec(location.href);
-            page = page 
-                || hash && hash[1] 
-                || this._config.defaultPage;
-            page = $('#' + page);
-        } else {
-            page = $(page);
-        }
+        page = this.findPage(page);
         if (_page_opening || !page[0] 
                 || !this.isPage(page)) {
             return false;
@@ -9069,12 +9110,33 @@ var exports = {
         return true;
     },
 
+    resetPage: function(page){
+        page = this.findPage(page);
+        if (!page[0]) {
+            return;
+        }
+        page.resetDarkDOM();
+    },
+
+    findPage: function(page){
+        if (!page || typeof page === 'string') {
+            var hash = RE_HASH.exec(location.href);
+            page = page 
+                || hash && hash[1] 
+                || this._config.defaultPage;
+            page = $('#' + page);
+        } else {
+            page = $(page);
+        }
+        return page;
+    },
+
     isPage: function(page){
-        var spec = specs['page'][0];
-        var old_spec = oldspecs['page'][0];
+        var spec = (this._config.oldStyle 
+            ? oldspecs : specs)['page'][0];
         return page.is(spec.SELECTOR)
-            || page.is(old_spec.SELECTOR)
-            || page.is(old_spec.SELECTOR_OLD);
+            || spec.SELECTOR_OLD 
+                && page.is(spec.SELECTOR_OLD);
     },
 
     isLandscape: function() {
@@ -9091,6 +9153,15 @@ _.mix(exports, ui.action);
 _.mix(exports, ui.component);
 
 exports.openURL = exports.openLink; // @deprecated
+
+exports.modalCard.event.on('open', function(modal){
+    modal.lastDecktop = _decks[_current_deck];
+    exports.openPage(modal.pageNode());
+}).on('willUpdateContent', function(modal){
+    exports.resetPage(modal.pageNode());
+}).on('close', function(modal){
+    exports.openPage(modal.lastDecktop);
+});
 
 function open_page(page){
     if (page.getDarkState('isPageActive') === 'true') {
@@ -9150,15 +9221,11 @@ return exports;
 
 
 require.config({
-    baseUrl: 'vendor/',
-    aliases: {
-        cardkit: '../../cardkit/'
-    }
+    baseUrl: 'vendor/'
 });
 
 define('mo/easing/functions', [], function(){});
 define('mo/mainloop', [], function(){});
-define('cardkit', '../../cardkit.js');
 
 require(['cardkit'], function(){});
 
