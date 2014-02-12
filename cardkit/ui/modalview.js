@@ -7,6 +7,7 @@ define([
 
 var default_config = {
         className: 'ck-modalview',
+        openDelay: 400,
         closeDelay: 400,
         oldStylePage: false,
         contentFilter: false
@@ -96,9 +97,12 @@ _.mix(ModalView.prototype, {
             }
             var oldstyle = this._config.oldStylePage;
             var page_start = oldstyle 
-                ? '<div class="ckd-page-card ck-modal-page" id="ckPage-' 
-                    + this.id + '">'
-                : '<ck-card type="page" id="ckPageOld-' 
+                ? '<div class="ckd-page-card ck-modal-page" ' 
+                    + 'data-cfg-deck="modalview" '
+                    + 'id="ckPage-' + this.id + '">'
+                : '<ck-card type="page" ' 
+                    + 'data-cfg-deck="modalview" '
+                    + 'id="ckPageOld-' + this.id + '">'
                     + this.id + '" class="ck-modal-page">';
             var page_end = oldstyle ? '</ck-card>' : '</div>';
             html = page_start + html + page_end;

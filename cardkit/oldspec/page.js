@@ -8,7 +8,7 @@ var $ = require('dollar'),
     UNMOUNT_FLAG = '.unmount-page';
 
 var specs = {
-    title: '.ckcfg-card-title',
+    title: '.ckd-page-title',
     actionbar: actionbar_spec,
     nav: nav_spec,
     banner: banner_spec,
@@ -21,18 +21,18 @@ var specs = {
 };
 
 function blank_spec(guard){
-    guard.watch('.ckcfg-card-blank');
+    guard.watch('.ckd-page-blank');
 }
 
 function nav_spec(guard){
-    guard.watch('.ckcfg-card-nav');
+    guard.watch('.ckd-page-nav');
     guard.state({
         link: 'href'
     });
 }
 
 function banner_spec(guard){
-    guard.watch('.ckcfg-card-banner');
+    guard.watch('.ckd-page-banner');
     guard.watch('.ck-banner-unit'); // @deprecated
     guard.state({
         plainStyle: 'data-cfg-plain'
@@ -40,7 +40,7 @@ function banner_spec(guard){
 }
 
 function actionbar_spec(guard){
-    guard.watch('.ckcfg-card-actions');
+    guard.watch('.ckd-page-actions');
     guard.state({
         limit: 'data-cfg-limit',
         source: helper.readSource 
@@ -51,7 +51,7 @@ function actionbar_spec(guard){
 }
 
 function footer_spec(guard){
-    guard.watch('.ckcfg-card-footer');
+    guard.watch('.ckd-page-footer');
     guard.state('source', helper.readSource);
 }
 

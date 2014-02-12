@@ -2,11 +2,10 @@
 .ck-modalview {
   @extend .moui-modalview;
 
-  & > header {
-    @extend .ck-header;
+  .ck-page-card {
 
-    h1 {
-      @extend .ck-top-title;
+    .ck-article {
+      padding-top:$moui_nav_h + 5px;
     }
 
   }

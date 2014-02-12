@@ -1,11 +1,10 @@
 
 .ck-card, // @deprecated
-.ck-page-card,
-.ckcfg-page-title,
-.ckcfg-page-nav,
-.ckcfg-card-actions, // @deprecated
-.ckcfg-page-actions,
-.ckcfg-page-footer {
+.ckd-page-card,
+.ckd-page-title,
+.ckd-page-nav,
+.ckd-page-actions,
+.ckd-page-footer {
   display:none;
 }
 
@@ -63,6 +62,10 @@
 
   }
 
+  &[data-deck="modalview"] {
+    display:block;
+  }
+
   &[data-deck-active="false"][data-page-active="true"][data-curdeck="navdrawer"] {
     display:block;
     @include transform(translateX(85%));
@@ -91,6 +94,23 @@
 
     .ck-page-link-mask {
       display:block;
+    }
+
+  }
+
+  &[data-deck-active="false"][data-page-active="true"][data-curdeck="modalview"] {
+    display:block;
+    position:absolute;
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
+    //@include box-shadow(0px 0px 10px rgba(0,0,0,.35));
+    //@include transform(scale(0.9));
+    //@include transform-origin(50% 50%);
+
+    &[data-deck="modalview"] {
+      position:static;
     }
 
   }
@@ -257,7 +277,7 @@
 }
 
 .ck-article {
-  padding-top:$moui_nav_h;
+  padding-top:$moui_nav_h + 5px;
 
   .ck-in-webview &,
   .with-banner &,
