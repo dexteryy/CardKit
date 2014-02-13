@@ -125,7 +125,8 @@ module.exports = function(grunt) {
                         'momo/tap'
                     ],
                     disableAutoSuffix: true
-                }
+                },
+                "library-release": true,
             },
             standalone: {
                 src: 'build/cardkit-standalone.js',

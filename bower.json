@@ -18,9 +18,10 @@
     "node_modules",
     "components",
     "bower_components",
+    "build",
     "Gruntfile.js",
-    "build.js",
-    "dist/*",
+    "Gemfile",
+    "Gemfile.lock",
     "test",
     "tests"
   ],

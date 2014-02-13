@@ -559,7 +559,11 @@
         var alias = _config.aliases;
         if (alias) {
             mid = mid.replace(_RE_ALIAS_IN_MID, function(e1, e2){
-                return alias[e2] || (e2 + '/');
+                var path = alias[e2];
+                if (!path || mid.indexOf(path) === 0) {
+                    return e2 + '/';
+                }
+                return path;
             });
         }
         return mid;

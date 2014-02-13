@@ -1,7 +1,4 @@
 
-require.config({ enable_ozma: true });
-
-
 /* @source cardkit/bus.js */;
 
 
@@ -3104,13 +3101,3 @@ function notify_deck(page){
 return exports;
 
 });
-
-/* @source  */;
-
-
-require.config({
-    baseUrl: 'vendor/',
-});
-
-require(['cardkit'], function(){});
-
