@@ -1,5 +1,5 @@
 
-<div class="ck-page-card{%= !hasHeader ? ' no-header' : '' %}{%= !component.banner || componentData.banner.isBlank ? '' : ' with-banner' %}" 
+<div class="ck-page-card{%= !hasHeader ? ' no-header' : '' %}{%= !component.banner || componentData.banner.isBlank ? '' : ' with-banner' %}{%= state.isPageActive === 'true' ? ' topbar-enabled' : '' %}" 
         data-style="{%= state.subtype %}"
         data-page-active="{%= state.isPageActive || 'false' %}"
         data-deck-active="{%= state.isDeckActive || 'false' %}"

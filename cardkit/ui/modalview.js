@@ -100,10 +100,9 @@ _.mix(ModalView.prototype, {
                 ? '<div class="ckd-page-card ck-modal-page" ' 
                     + 'data-cfg-deck="modalview" '
                     + 'id="ckPage-' + this.id + '">'
-                : '<ck-card type="page" ' 
-                    + 'data-cfg-deck="modalview" '
-                    + 'id="ckPageOld-' + this.id + '">'
-                    + this.id + '" class="ck-modal-page">';
+                : '<ck-card type="page" class="ck-modal-page" ' 
+                    + 'deck="modalview" '
+                    + 'id="ckPageOld-' + this.id + '">';
             var page_end = oldstyle ? '</ck-card>' : '</div>';
             html = page_start + html + page_end;
         }

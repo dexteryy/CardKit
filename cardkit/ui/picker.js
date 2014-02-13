@@ -4,6 +4,9 @@ define([
     './util'
 ], function(_, picker, util) {
 
+_.mix(picker.Picker.prototype._defaults, {
+    disableRequest: false
+});
 
 return util.singleton({
 
@@ -28,30 +31,32 @@ return util.singleton({
                     component: o 
                 },
                 req_opt;
-            o.showLoading();
-            if (controller.isEnabled) {
-                req_opt = {
-                    method: cfg.enableMethod,
-                    url: cfg.enableUrl,
-                    jsonUrl: cfg.enableJsonUrl
-                };
-            } else {
-                req_opt = {
-                    method: cfg.disableMethod,
-                    url: cfg.disableUrl,
-                    jsonUrl: cfg.disableJsonUrl
-                };
-            }
-            util.request({
-                config: req_opt,
-                callback: function(data, status){
-                    o.hideLoading();
-                    if (status === 'success') {
-                        o.responseData = data;
-                        source.trigger('picker:response', eprops);
-                    }
+            if (!o._config.disableRequest) {
+                o.showLoading();
+                if (controller.isEnabled) {
+                    req_opt = {
+                        method: cfg.enableMethod,
+                        url: cfg.enableUrl,
+                        jsonUrl: cfg.enableJsonUrl
+                    };
+                } else {
+                    req_opt = {
+                        method: cfg.disableMethod,
+                        url: cfg.disableUrl,
+                        jsonUrl: cfg.disableJsonUrl
+                    };
                 }
-            });
+                util.request({
+                    config: req_opt,
+                    callback: function(data, status){
+                        o.hideLoading();
+                        if (status === 'success') {
+                            o.responseData = data;
+                            source.trigger('picker:response', eprops);
+                        }
+                    }
+                });
+            }
             source.trigger('picker:change', eprops);
         });
     }

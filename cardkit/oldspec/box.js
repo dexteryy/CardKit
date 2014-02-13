@@ -25,6 +25,7 @@ return function(guard, parent){
         guard.watch('.ckd-content');
         guard.state(source_states);
     });
+    helper.applyUserEvents(guard);
     guard.source().component(scaffold_specs);
     guard.source().component('content', '.ckd-content');
 };

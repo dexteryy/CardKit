@@ -211,7 +211,7 @@ var components = {
 var actions = {
 
     alert: function(text, opt) {
-        actionView('ckAlert', _.mix({
+        return actionView('ckAlert', _.mix({
             title: '提示',
             content: text || '',
             cancelText: '关闭',
@@ -220,7 +220,7 @@ var actions = {
     },
 
     confirm: function(text, cb, opt) {
-        actionView('ckAlert', _.mix({
+        var re = actionView('ckAlert', _.mix({
             title: '提示',
             content: text || '',
             confirmText: '确认',
@@ -228,6 +228,7 @@ var actions = {
             multiselect: true
         }, opt)).open();
         bus.on('actionView:confirmOnThis', cb);
+        return re;
     },
 
     openModal: function(opt){
@@ -246,7 +247,7 @@ var actions = {
     },
 
     notify: function(content, opt) {
-        growl(_.mix({
+        return growl(_.mix({
             content: content
         }, opt)).open();
     },

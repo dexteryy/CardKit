@@ -128,7 +128,7 @@ var exports = {
 
 function when_page_active(changes){
     if (changes.newValue === 'true') {
-        changes.root.css('min-height', window.innerHeight + 'px')
+        changes.root.css('min-height', window.innerHeight * 1.4 + 'px')
             .attr('data-page-active', true);
         setTimeout(function(){
             changes.root.addClass('topbar-enabled');
@@ -143,7 +143,8 @@ function when_page_active(changes){
 
 function when_deck_active(changes){
     if (changes.newValue === 'true') {
-        changes.root.attr('data-deck-active', true);
+        changes.root.css('min-height', window.innerHeight * 1.4 + 'px')
+            .attr('data-deck-active', true);
     } else {
         changes.root.attr('data-deck-active', false);
         setTimeout(function(){

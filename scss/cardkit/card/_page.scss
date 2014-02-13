@@ -152,7 +152,7 @@
   left:0;
   width:100%;
   background:#627b9e;
-  z-index:$moui_z_item + $moui_z_step;
+  z-index:$moui_z_view + $moui_z_step;
   @include transition(transform 0.3s);
   @include transform(translateY(-$moui_nav_h));
 
@@ -196,14 +196,14 @@
 
   width:$ck_top_btn_size;
   height:$ck_top_btn_size;
-  background:#fff;
-  @include background(linear-gradient(bottom, #78624f, #846f5b));
+  background-color: transparent;
   background-size:24px 24px;
   background-repeat:no-repeat;
   background-position:7px 7px;
   border:1px solid transparent;
 
   &:active {
+    background-color: transparent;
     @include box-shadow(inset 0 2px 4px rgba(0,0,0,.1), 0 1px 0 rgba(255,255,255,.1));
   }
 
