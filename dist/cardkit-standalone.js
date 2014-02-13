@@ -4709,10 +4709,9 @@ _.mix(ModalView.prototype, {
                 ? '<div class="ckd-page-card ck-modal-page" ' 
                     + 'data-cfg-deck="modalview" '
                     + 'id="ckPage-' + this.id + '">'
-                : '<ck-card type="page" ' 
-                    + 'data-cfg-deck="modalview" '
-                    + 'id="ckPageOld-' + this.id + '">'
-                    + this.id + '" class="ck-modal-page">';
+                : '<ck-card type="page" class="ck-modal-page" ' 
+                    + 'deck="modalview" '
+                    + 'id="ckPageOld-' + this.id + '">';
             var page_end = oldstyle ? '</ck-card>' : '</div>';
             html = page_start + html + page_end;
         }
@@ -4898,6 +4897,9 @@ define("cardkit/ui/picker", [
   "cardkit/ui/util"
 ], function(_, picker, util) {
 
+_.mix(picker.Picker.prototype._defaults, {
+    disableRequest: false
+});
 
 return util.singleton({
 
@@ -4922,30 +4924,32 @@ return util.singleton({
                     component: o 
                 },
                 req_opt;
-            o.showLoading();
-            if (controller.isEnabled) {
-                req_opt = {
-                    method: cfg.enableMethod,
-                    url: cfg.enableUrl,
-                    jsonUrl: cfg.enableJsonUrl
-                };
-            } else {
-                req_opt = {
-                    method: cfg.disableMethod,
-                    url: cfg.disableUrl,
-                    jsonUrl: cfg.disableJsonUrl
-                };
-            }
-            util.request({
-                config: req_opt,
-                callback: function(data, status){
-                    o.hideLoading();
-                    if (status === 'success') {
-                        o.responseData = data;
-                        source.trigger('picker:response', eprops);
-                    }
+            if (!o._config.disableRequest) {
+                o.showLoading();
+                if (controller.isEnabled) {
+                    req_opt = {
+                        method: cfg.enableMethod,
+                        url: cfg.enableUrl,
+                        jsonUrl: cfg.enableJsonUrl
+                    };
+                } else {
+                    req_opt = {
+                        method: cfg.disableMethod,
+                        url: cfg.disableUrl,
+                        jsonUrl: cfg.disableJsonUrl
+                    };
                 }
-            });
+                util.request({
+                    config: req_opt,
+                    callback: function(data, status){
+                        o.hideLoading();
+                        if (status === 'success') {
+                            o.responseData = data;
+                            source.trigger('picker:response', eprops);
+                        }
+                    }
+                });
+            }
             source.trigger('picker:change', eprops);
         });
     }
@@ -5804,7 +5808,7 @@ var components = {
 var actions = {
 
     alert: function(text, opt) {
-        actionView('ckAlert', _.mix({
+        return actionView('ckAlert', _.mix({
             title: '提示',
             content: text || '',
             cancelText: '关闭',
@@ -5813,7 +5817,7 @@ var actions = {
     },
 
     confirm: function(text, cb, opt) {
-        actionView('ckAlert', _.mix({
+        var re = actionView('ckAlert', _.mix({
             title: '提示',
             content: text || '',
             confirmText: '确认',
@@ -5821,6 +5825,7 @@ var actions = {
             multiselect: true
         }, opt)).open();
         bus.on('actionView:confirmOnThis', cb);
+        return re;
     },
 
     openModal: function(opt){
@@ -5839,7 +5844,7 @@ var actions = {
     },
 
     notify: function(content, opt) {
-        growl(_.mix({
+        return growl(_.mix({
             content: content
         }, opt)).open();
     },
@@ -6001,8 +6006,9 @@ return exports;
 
 define("cardkit/helper", [
   "mo/lang",
-  "dollar"
-], function(_, $){
+  "dollar",
+  "cardkit/ui"
+], function(_, $, ui){
 
 var exports = {
 
@@ -6024,11 +6030,63 @@ var exports = {
         return label.text() || label.val();
     },
 
+    forwardUserEvents: function(component){
+        component.forward({
+            'control:enable *': 'control:enable',
+            'control:disable *': 'control:disable',
+            'picker:change *': 'picker:change'
+        });
+    },
+
+    applyUserEvents: function(guard){
+        guard.forward({
+            'control:enable': forward_enable,
+            'control:disable': forward_disable,
+            'picker:change': forward_pick
+        });
+    },
+
     isBlank: function(content){
         return !content || !/\S/m.test(content);
     }
 
 };
+
+function forward_enable(e){
+    var node = e.target.id;
+    if (node) {
+        node = $('#' + node);
+        if (node[0]) {
+            ui.component.control(node, {
+                disableRequest: true
+            }).enable();
+        }
+    }
+}
+
+function forward_disable(e){
+    var node = e.target.id;
+    if (node) {
+        node = $('#' + node);
+        if (node[0]) {
+            ui.component.control(node, {
+                disableRequest: true
+            }).disable();
+        }
+    }
+}
+
+function forward_pick(e){
+    var node = e.target.id;
+    if (node) {
+        node = $('#' + node);
+        if (node[0]) {
+            ui.component.picker(node, {
+                disableRequest: true
+            }).select(e.component.val());
+        }
+    }
+}
 
 return exports;
 
@@ -6347,11 +6405,12 @@ return {
 
 define("cardkit/spec/list", [
   "dollar",
+  "cardkit/helper",
   "cardkit/spec/common/scaffold",
   "cardkit/spec/common/source_scaffold",
   "cardkit/spec/common/item",
   "cardkit/spec/common/source_item"
-], function($, 
+], function($, helper,
     scaffold_specs, source_scaffold_specs, item_specs, source_item_specs){ 
 
 var SEL = 'ck-card[type="list"]';
@@ -6394,6 +6453,7 @@ function init_list(guard){
         guard.component(item_specs);
         guard.source().component(source_item_specs);
     });
+    helper.applyUserEvents(guard);
     guard.source().component(source_scaffold_specs);
     guard.source().component('item', source_item_spec);
 }
@@ -6450,6 +6510,7 @@ function init_list(guard){
         guard.component(item_specs);
         guard.source().component(item_specs);
     });
+    helper.applyUserEvents(guard);
     guard.source().component(scaffold_specs);
     guard.source().component('item', source_item_spec);
 }
@@ -6496,6 +6557,7 @@ return function(guard, parent){
         guard.watch('.ckd-content');
         guard.state(source_states);
     });
+    helper.applyUserEvents(guard);
     guard.source().component(scaffold_specs);
     guard.source().component('content', '.ckd-content');
 };
@@ -6507,9 +6569,10 @@ return function(guard, parent){
 
 define("cardkit/spec/form", [
   "dollar",
+  "cardkit/helper",
   "cardkit/spec/common/scaffold",
   "cardkit/spec/common/source_scaffold"
-], function($, scaffold_specs, source_scaffold_specs){ 
+], function($, helper, scaffold_specs, source_scaffold_specs){ 
 
 var SEL = 'ck-card[type="form"]';
 
@@ -6529,10 +6592,24 @@ function exports(guard, parent){
     guard.component('item', function(guard){
         guard.watch('ck-part[type="item"]');
         guard.component('content', 'ck-part[type="content"]');
+        guard.forward({
+            'textarea:change': forward_textchange
+        });
         guard.source().component('content', '.ckd-content');
     });
+    helper.applyUserEvents(guard);
     guard.source().component(source_scaffold_specs);
     guard.source().component('item', source_item_spec);
+}
+
+function forward_textchange(e){
+    var node = e.target.id;
+    if (node) {
+        node = $('#' + node);
+        if (node[0]) {
+            node.val(e.target.value);
+        }
+    }
 }
 
 exports.sourceItemSpec = source_item_spec;
@@ -6576,6 +6653,7 @@ return function(guard, parent){
         });
         guard.source().component('content', '.ckd-content');
     });
+    helper.applyUserEvents(guard);
     guard.source().component(scaffold_specs);
     guard.source().component('item', source_item_spec);
 };
@@ -6626,9 +6704,10 @@ return function(guard, parent){
 
 define("cardkit/spec/box", [
   "dollar",
+  "cardkit/helper",
   "cardkit/spec/common/scaffold",
   "cardkit/spec/common/source_scaffold"
-], function($, scaffold_specs, source_scaffold_specs){ 
+], function($, helper, scaffold_specs, source_scaffold_specs){ 
 
 var SEL = 'ck-card[type="box"]';
 
@@ -6642,6 +6721,7 @@ return function(guard, parent){
     });
     guard.component(scaffold_specs);
     guard.component('content', 'ck-part[type="content"]');
+    helper.applyUserEvents(guard);
     guard.source().component(source_scaffold_specs);
     guard.source().component('content', '.ckd-content');
 };
@@ -6990,7 +7070,7 @@ DarkGuard.prototype = {
         }
         target.trigger('darkdom:willMount');
         var data = render_root(this.scanRoot(target));
-        target.hide().before(this.createRoot(data));
+        target.hide().after(this.createRoot(data));
         this._listen(data);
         target[0].isMountedDarkDOM = true;
         run_script(data);
@@ -8071,7 +8151,6 @@ var exports = {
     hdOpt: function(){
         return darkdom({
             enableSource: true,
-            entireAsContent: true,
             render: render_hdopt
         });
     },
@@ -8348,7 +8427,6 @@ var exports = {
     opt: function(){
         return darkdom({
             enableSource: true,
-            entireAsContent: true,
             render: render_opt
         });
     },
@@ -8493,14 +8571,16 @@ define("cardkit/tpl/scaffold/hdwrap", [], function(){
 define("cardkit/card/list", [
   "darkdom",
   "mo/template/micro",
+  "cardkit/helper",
   "cardkit/tpl/scaffold/hdwrap",
   "cardkit/tpl/list",
   "cardkit/card/item",
   "cardkit/card/common/scaffold"
-], function(__oz0, __oz1, __oz2, __oz3, __oz4, __oz5, require){
+], function(__oz0, __oz1, __oz2, __oz3, __oz4, __oz5, __oz6, require){
 
 var darkdom = require("darkdom"),
     convert = require("mo/template/micro").convertTpl,
+    helper = require("cardkit/helper"),
     render_hdwrap = convert(require("cardkit/tpl/scaffold/hdwrap").template),
     render_list = convert(require("cardkit/tpl/list").template),
     item = require("cardkit/card/item"),
@@ -8524,6 +8604,7 @@ var exports = {
         });
         list.contain(scaffold_components);
         list.contain('item', exports.item);
+        helper.forwardUserEvents(list);
         return list;
     }
 
@@ -8594,6 +8675,7 @@ var exports = {
         box.contain('content', exports.content, {
             content: true
         });
+        helper.forwardUserEvents(box);
         return box;
     }
 
@@ -8624,15 +8706,17 @@ define("cardkit/tpl/form/item", [], function(){
 define("cardkit/card/form", [
   "darkdom",
   "mo/template/micro",
+  "cardkit/helper",
   "cardkit/tpl/form/item",
   "cardkit/tpl/box/content",
   "cardkit/tpl/scaffold/hdwrap",
   "cardkit/tpl/form",
   "cardkit/card/common/scaffold"
-], function(__oz0, __oz1, __oz2, __oz3, __oz4, __oz5, __oz6, require){
+], function(__oz0, __oz1, __oz2, __oz3, __oz4, __oz5, __oz6, __oz7, require){
 
 var darkdom = require("darkdom"),
     convert = require("mo/template/micro").convertTpl,
+    helper = require("cardkit/helper"),
     render_item = convert(require("cardkit/tpl/form/item").template),
     render_content = convert(require("cardkit/tpl/box/content").template),
     render_hdwrap = convert(require("cardkit/tpl/scaffold/hdwrap").template),
@@ -8655,6 +8739,9 @@ var exports = {
             render: render_item
         }).contain('content', exports.content, {
             content: true
+        }).forward({
+            'change input': 'textarea:change',
+            'change textarea': 'textarea:change'
         });
     },
 
@@ -8670,6 +8757,7 @@ var exports = {
         });
         form.contain(scaffold_components);
         form.contain('item', exports.item);
+        helper.forwardUserEvents(form);
         return form;
     }
 
@@ -8693,14 +8781,16 @@ define("cardkit/tpl/mini", [], function(){
 define("cardkit/card/mini", [
   "darkdom",
   "mo/template/micro",
+  "cardkit/helper",
   "cardkit/tpl/scaffold/hdwrap",
   "cardkit/tpl/mini",
   "cardkit/card/item",
   "cardkit/card/common/scaffold"
-], function(__oz0, __oz1, __oz2, __oz3, __oz4, __oz5, require){
+], function(__oz0, __oz1, __oz2, __oz3, __oz4, __oz5, __oz6, require){
 
 var darkdom = require("darkdom"),
     convert = require("mo/template/micro").convertTpl,
+    helper = require("cardkit/helper"),
     render_hdwrap = convert(require("cardkit/tpl/scaffold/hdwrap").template),
     render_mini = convert(require("cardkit/tpl/mini").template),
     item = require("cardkit/card/item"),
@@ -8724,6 +8814,7 @@ var exports = {
         });
         mini.contain(scaffold_components);
         mini.contain('item', exports.item);
+        helper.forwardUserEvents(mini);
         return mini;
     }
 
@@ -8738,7 +8829,7 @@ return exports;
 
 define("cardkit/tpl/page", [], function(){
 
-    return {"template":"\n<div class=\"ck-page-card{%= !hasHeader ? ' no-header' : '' %}{%= !component.banner || componentData.banner.isBlank ? '' : ' with-banner' %}\" \n        data-style=\"{%= state.subtype %}\"\n        data-page-active=\"{%= state.isPageActive || 'false' %}\"\n        data-deck-active=\"{%= state.isDeckActive || 'false' %}\"\n        data-deck=\"{%= (state.deck || 'main') %}\"\n        data-curdeck=\"{%= state.currentDeck %}\"\n        data-cardid=\"{%= state.cardId %}\">\n\n    {% if (hasHeader) { %}\n    <div class=\"ck-header\">\n        {%= component.nav %}\n        {%= component.title %}\n        {%= component.actionbar %}\n    </div>\n    {% } %}\n\n    {%= component.banner %}\n\n    <div class=\"ck-article\">\n        {% if (!isBlank) { %}\n            {%= content %}\n        {% } else { %}\n            <div class=\"ck-blank-card\">\n                <article class=\"ck-card-wrap\">\n                    {% if (component.blank) { %}\n                        {%= component.blank %}\n                    {% } else { %}\n                        <div>{%=(state.blankText || '目前还没有内容')%}</div>\n                    {% } %}\n                </article>\n            </div>\n        {% } %}\n    </div>\n\n    {% if (component.footer) { %}\n    <div class=\"ck-footer\">{%= component.footer %}</div>\n    {% } %}\n\n    <a class=\"ck-page-link-mask ck-link\" href=\"#{%= state.cardId %}\"></a>\n\n</div>\n\n"}; 
+    return {"template":"\n<div class=\"ck-page-card{%= !hasHeader ? ' no-header' : '' %}{%= !component.banner || componentData.banner.isBlank ? '' : ' with-banner' %}{%= state.isPageActive === 'true' ? ' topbar-enabled' : '' %}\" \n        data-style=\"{%= state.subtype %}\"\n        data-page-active=\"{%= state.isPageActive || 'false' %}\"\n        data-deck-active=\"{%= state.isDeckActive || 'false' %}\"\n        data-deck=\"{%= (state.deck || 'main') %}\"\n        data-curdeck=\"{%= state.currentDeck %}\"\n        data-cardid=\"{%= state.cardId %}\">\n\n    {% if (hasHeader) { %}\n    <div class=\"ck-header\">\n        {%= component.nav %}\n        {%= component.title %}\n        {%= component.actionbar %}\n    </div>\n    {% } %}\n\n    {%= component.banner %}\n\n    <div class=\"ck-article\">\n        {% if (!isBlank) { %}\n            {%= content %}\n        {% } else { %}\n            <div class=\"ck-blank-card\">\n                <article class=\"ck-card-wrap\">\n                    {% if (component.blank) { %}\n                        {%= component.blank %}\n                    {% } else { %}\n                        <div>{%=(state.blankText || '目前还没有内容')%}</div>\n                    {% } %}\n                </article>\n            </div>\n        {% } %}\n    </div>\n\n    {% if (component.footer) { %}\n    <div class=\"ck-footer\">{%= component.footer %}</div>\n    {% } %}\n\n    <a class=\"ck-page-link-mask ck-link\" href=\"#{%= state.cardId %}\"></a>\n\n</div>\n\n"}; 
 
 });
 /* @source cardkit/tpl/page/actionbar/action.js */;
@@ -8923,7 +9014,7 @@ var exports = {
 
 function when_page_active(changes){
     if (changes.newValue === 'true') {
-        changes.root.css('min-height', window.innerHeight + 'px')
+        changes.root.css('min-height', window.innerHeight * 1.4 + 'px')
             .attr('data-page-active', true);
         setTimeout(function(){
             changes.root.addClass('topbar-enabled');
@@ -8938,7 +9029,8 @@ function when_page_active(changes){
 
 function when_deck_active(changes){
     if (changes.newValue === 'true') {
-        changes.root.attr('data-deck-active', true);
+        changes.root.css('min-height', window.innerHeight * 1.4 + 'px')
+            .attr('data-deck-active', true);
     } else {
         changes.root.attr('data-deck-active', false);
         setTimeout(function(){

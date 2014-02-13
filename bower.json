@@ -1,7 +1,7 @@
 {
   "name": "cardkit",
   "description": "A missing mobile web app toolkit for front-end developers",
-  "version": "2.0.0-alpha.2",
+  "version": "2.0.0-alpha.3",
   "main": "cardkit.js",
   "dependencies": {
     "mo": "~1.6.6",
