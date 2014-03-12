@@ -57,7 +57,7 @@ var exports = {
     },
 
     actionbar: function(){
-        return darkdom({
+        var component = darkdom({
             unique: true,
             enableSource: true,
             render: function(data){
@@ -75,13 +75,9 @@ var exports = {
                 }, data.visibleActions);
                 return render_actionbar(data);
             }
-        }).contain('action', exports.action)
-            .forward('control:enable .ck-item > *', 
-                'control:enable')
-            .forward('control:disable .ck-item > *', 
-                'control:disable')
-            .forward('actionView:confirm .ck-top-overflow', 
-                'overflows:confirm');
+        }).contain('action', exports.action);
+        helper.forwardActionEvents(component);
+        return component;
     },
 
     blank: function(){
@@ -121,6 +117,7 @@ var exports = {
         page.response('state:isPageActive', when_page_active);
         page.response('state:isDeckActive', when_deck_active);
         page.response('state:currentDeck', when_deck_change);
+        helper.forwardStateEvents(page);
         return page;
     }
 

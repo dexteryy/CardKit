@@ -2,7 +2,6 @@
 define(function(require){ 
 
 var $ = require('dollar'),
-    darkdom = require('darkdom'),
     helper = require('../helper'),
     UNMOUNT_FLAG = '.unmount-page';
 
@@ -56,7 +55,7 @@ function action_spec(guard){
         }
     });
     source_action_attr(guard.source());
-    exports.forwardActionbar(guard);
+    helper.applyActionEvents(guard);
 }
 
 function source_action_spec(source){
@@ -76,13 +75,6 @@ function source_action_attr(source){
     });
 }
 
-function forward_control(e){
-    var target = darkdom.getDarkById(e.target.parentNode.id);
-    if (target) {
-        target.trigger('tap').updateDarkDOM();
-    }
-}
-
 function exports(guard, parent){
     guard.watch($(exports.SELECTOR + UNMOUNT_FLAG, parent));
     guard.state({
@@ -94,23 +86,12 @@ function exports(guard, parent){
         cardId: 'id'
     });
     guard.component(specs);
+    helper.applyStateEvents(guard);
 }
 
 exports.SELECTOR = 'ck-card[type="page"]';
 
 exports.initOldStyleActionState = source_action_attr;
-
-exports.forwardActionbar = function(guard){
-    guard.forward({
-        'overflows:confirm': function(e){
-            var aid = e.component.val();
-            var target = $('#' + aid).children();
-            target.trigger('tap');
-        },
-        'control:enable': forward_control,
-        'control:disable': forward_control
-    });
-};
 
 return exports;
 

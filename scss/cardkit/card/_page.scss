@@ -181,7 +181,7 @@
   display:none;
 }
 
-.ck-top-actions .ck-item > *,
+.ck-top-actions .ck-top-act > *,
 .ck-top-overflow,
 .ck-top-nav {
   float:right;
@@ -234,7 +234,7 @@
 .ck-top-overflow {
   background-image:inline-image('more.png');
 
-  .ck-item {
+  .ck-top-act {
     display:none;
   }
 

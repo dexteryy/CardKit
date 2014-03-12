@@ -3,7 +3,6 @@ define(function(require){
 
 var darkdom = require('darkdom'),
     convert = require('mo/template/micro').convertTpl,
-    helper = require('../helper'),
     render_hdwrap = convert(require('../tpl/scaffold/hdwrap').template),
     render_list = convert(require('../tpl/list').template),
     item = require('./item'),
@@ -27,7 +26,6 @@ var exports = {
         });
         list.contain(scaffold_components);
         list.contain('item', exports.item);
-        helper.forwardUserEvents(list);
         return list;
     }
 

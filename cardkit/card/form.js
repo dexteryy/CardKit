@@ -3,11 +3,11 @@ define(function(require){
 
 var darkdom = require('darkdom'),
     convert = require('mo/template/micro').convertTpl,
-    helper = require('../helper'),
     render_item = convert(require('../tpl/form/item').template),
     render_content = convert(require('../tpl/box/content').template),
     render_hdwrap = convert(require('../tpl/scaffold/hdwrap').template),
     render_form = convert(require('../tpl/form').template),
+    helper = require('../helper'),
     scaffold_components = require('./common/scaffold');
 
 var exports = {
@@ -21,15 +21,14 @@ var exports = {
     },
 
     item: function(){
-        return darkdom({
+        var component = darkdom({
             enableSource: true,
             render: render_item
         }).contain('content', exports.content, {
             content: true
-        }).forward({
-            'change input': 'textarea:change',
-            'change textarea': 'textarea:change'
         });
+        helper.forwardInputEvents(component);
+        return component;
     },
 
     form: function(){
@@ -44,7 +43,6 @@ var exports = {
         });
         form.contain(scaffold_components);
         form.contain('item', exports.item);
-        helper.forwardUserEvents(form);
         return form;
     }
 

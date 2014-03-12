@@ -9,7 +9,6 @@ define([
 var source_states = {
         source: helper.readSource
     },
-    source_item_spec = form_spec.sourceItemSpec,
     SEL = '.ckd-form-card',
     SEL_OLD = '.ck-form-unit'; // @deprecated
 
@@ -28,11 +27,11 @@ return function(guard, parent){
             guard.watch('.ckd-content');
             guard.state(source_states);
         });
+        helper.applyInputEvents(guard);
         guard.source().component('content', '.ckd-content');
     });
-    helper.applyUserEvents(guard);
     guard.source().component(scaffold_specs);
-    guard.source().component('item', source_item_spec);
+    guard.source().component('item', form_spec.sourceItemSpec);
 };
 
 });

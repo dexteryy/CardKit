@@ -350,9 +350,7 @@ var exports = {
 
 
 function handle_control(){
-    var controller = control(this, {
-            disableRequest: this.isMountedDarkDOM
-        }),
+    var controller = control(this),
         cfg = controller.data();
     if (cfg.disableUrl || cfg.disableJsonUrl) {
         controller.toggle();
@@ -362,9 +360,7 @@ function handle_control(){
 } 
 
 function toggle_control(){
-    control(this, {
-        disableRequest: this.isMountedDarkDOM
-    }).toggle();
+    control(this).toggle();
 } 
 
 function tap_ck_post(){

@@ -47,7 +47,7 @@ function actionbar_spec(guard){
     });
     guard.component('action', action_spec);
     guard.source().component('action', action_spec);
-    newspec.forwardActionbar(guard);
+    helper.applyActionEvents(guard);
 }
 
 function footer_spec(guard){

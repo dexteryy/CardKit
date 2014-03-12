@@ -34,7 +34,6 @@ function init_list(guard){
         guard.component(item_specs);
         guard.source().component(item_specs);
     });
-    helper.applyUserEvents(guard);
     guard.source().component(scaffold_specs);
     guard.source().component('item', source_item_spec);
 }

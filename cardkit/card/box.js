@@ -34,7 +34,6 @@ var exports = {
         box.contain('content', exports.content, {
             content: true
         });
-        helper.forwardUserEvents(box);
         return box;
     }
 

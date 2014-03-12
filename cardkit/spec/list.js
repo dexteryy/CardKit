@@ -1,13 +1,12 @@
 
 define([
     'dollar',
-    '../helper',
     './common/scaffold',
     './common/source_scaffold',
     './common/item',
     './common/source_item'
-], function($, helper,
-    scaffold_specs, source_scaffold_specs, item_specs, source_item_specs){ 
+], function($, scaffold_specs, source_scaffold_specs, 
+    item_specs, source_item_specs){ 
 
 var SEL = 'ck-card[type="list"]';
 
@@ -49,7 +48,6 @@ function init_list(guard){
         guard.component(item_specs);
         guard.source().component(source_item_specs);
     });
-    helper.applyUserEvents(guard);
     guard.source().component(source_scaffold_specs);
     guard.source().component('item', source_item_spec);
 }
