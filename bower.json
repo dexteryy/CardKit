@@ -6,7 +6,7 @@
   "dependencies": {
     "mo": "~1.6.6",
     "dollar": "~1.4.1",
-    "darkdom": "~0.10.1",
+    "darkdom": "~0.11.0",
     "eventmaster": "~2.1.0",
     "soviet": "~1.0.0",
     "momo": "~1.2.0-alpha.1",

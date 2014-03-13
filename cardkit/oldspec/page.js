@@ -74,6 +74,7 @@ function exports(guard, parent){
         cardId: 'id'
     });
     guard.component(specs);
+    helper.applyStateEvents(guard);
 }
 
 exports.SELECTOR = '.ckd-page-card';

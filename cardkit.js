@@ -165,7 +165,8 @@ var exports = {
         return window.innerWidth / window.innerHeight > 1.1;
     },
 
-    delegate: ui.delegate,
+    brightDelegate: ui.brightDelegate,
+    darkDelegate: ui.darkDelegate,
     ui: ui,
     event: bus
 

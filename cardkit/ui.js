@@ -22,7 +22,33 @@ define([
 
 var doc = document,
     modalCard = modalView(),
-    _soviet_aliases = {};
+    _soviet_aliases = {},
+    _soviet_opt = {
+        aliasEvents: _soviet_aliases,
+        autoOverride: true,
+        matchesSelector: true,
+        preventDefault: true
+    };
+
+var BrightSoviet = _.construct(soviet.Soviet);
+
+BrightSoviet.prototype.on = function(event, selector, handler){
+    if (typeof selector === 'string'
+            && !/dd-autogen/.test(selector)) {
+        selector = '[dd-autogen] ' + selector;
+    }
+    return this.superMethod('on', [event, selector, handler]);
+};
+
+var DarkSoviet = _.construct(soviet.Soviet);
+
+DarkSoviet.prototype.on = function(event, selector, handler){
+    if (typeof selector === 'string'
+            && !/dd-connect/.test(selector)) {
+        selector = '[dd-connect] ' + selector;
+    }
+    return this.superMethod('on', [event, selector, handler]);
+};
 
 _.mix(momoBase.Class.prototype, {
     bind: function(ev, handler, elm){
@@ -316,32 +342,29 @@ var exports = {
             this[selector] = nothing;
         }, prevent_click_events);
         this.delegate.on('tap', tap_events)
-            .on('click', prevent_click_events)
-            .on('change', {
-                '.ck-ranger': function(e){
-                    ranger(this).val(e.target.value);
-                    return true;
-                }
-            }).on('touchstart', {
-                '.ck-ranger': function(e){
-                    ranger(this).val(e.target.value);
-                    ranger(this).changeStart();
-                    return true;
-                }
-            }).on('touchend', {
-                '.ck-ranger': function(){
-                    ranger(this).changeEnd();
-                    return true;
-                }
-            });
+            .on('click', prevent_click_events);
+        this.brightDelegate.on('change', {
+            '.ck-ranger': function(e){
+                ranger(this).val(e.target.value);
+                return true;
+            }
+        }).on('touchstart', {
+            '.ck-ranger': function(e){
+                ranger(this).val(e.target.value);
+                ranger(this).changeStart();
+                return true;
+            }
+        }).on('touchend', {
+            '.ck-ranger': function(){
+                ranger(this).changeEnd();
+                return true;
+            }
+        });
     },
 
-    delegate: soviet(doc, {
-        aliasEvents: _soviet_aliases,
-        autoOverride: true,
-        matchesSelector: true,
-        preventDefault: true
-    }),
+    delegate: soviet(doc, _soviet_opt),
+    brightDelegate: new BrightSoviet(doc, _soviet_opt),
+    darkDelegate: new DarkSoviet(doc, _soviet_opt),
 
     action: actions,
     component: components

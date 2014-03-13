@@ -47,17 +47,17 @@ var exports = {
 
     forwardActionEvents: function(component){
         component.forward({
-            'control:enable .ck-top-act > *': 'control:enable',
-            'control:disable .ck-top-act > *': 'control:disable',
-            'actionView:confirm .ck-top-overflow': 'overflows:confirm'
+            'control:enable .ck-top-act > *': 'topControl:enable',
+            'control:disable .ck-top-act > *': 'topControl:disable',
+            'actionView:confirm .ck-top-overflow': 'topOverflow:confirm'
         });
     },
 
     applyActionEvents: function(guard){
         guard.forward({
-            'overflows:confirm': apply_top_confirm,
-            'control:enable': apply_top_enable,
-            'control:disable': apply_top_disable
+            'topOverflow:confirm': apply_top_confirm,
+            'topControl:enable': apply_top_enable,
+            'topControl:disable': apply_top_disable
         });
     },
 
@@ -102,12 +102,14 @@ var apply_top_enable = find_top_dark(function(node){
     control(node, {
         disableRequest: true
     }).enable();
+    node.updateDarkDOM();
 });
 
 var apply_top_disable = find_top_dark(function(node){
     control(node, {
         disableRequest: true
     }).disable();
+    node.updateDarkDOM();
 });
 
 var apply_top_confirm = function (e){
@@ -138,7 +140,7 @@ function find_top_dark(fn){
             return;
         }
         var target = darkdom.getDarkById(e.target.parentNode.id);
-        if (target) {
+        if (target[0]) {
             fn(target, e);
         }
     };
