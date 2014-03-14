@@ -63,6 +63,7 @@ var exports = {
 
     forwardInputEvents: function(component){
         component.forward({
+            'change select': 'select:change',
             'change input': 'input:change',
             'change textarea': 'input:change'
         });
@@ -70,8 +71,20 @@ var exports = {
 
     applyInputEvents: function(guard){
         guard.forward({
-            'input:change': forward_input 
+            'select:change': apply_select,
+            'input:change': apply_input
         });
+    },
+
+    getOriginByCustomId: function(custom_id){
+        var re;
+        _.each($('body #' + custom_id), function(node){
+            if (!$.matches(node, '[dd-autogen] #' + custom_id)) {
+                re = $(node);
+                return false;
+            }
+        });
+        return re || $();
     },
 
     isBlank: function(content){
@@ -80,17 +93,9 @@ var exports = {
 
 };
 
-var apply_enable = find_dark(function(node){
-    control(node, {
-        disableRequest: true
-    }).enable();
-});
+var apply_enable = find_dark(enable_control);
 
-var apply_disable = find_dark(function(node){
-    control(node, {
-        disableRequest: true
-    }).disable();
-});
+var apply_disable = find_dark(disable_control);
 
 var apply_pick = find_dark(function(node, e){
     picker(node, {
@@ -98,19 +103,9 @@ var apply_pick = find_dark(function(node, e){
     }).select(e.component.val());
 });
 
-var apply_top_enable = find_top_dark(function(node){
-    control(node, {
-        disableRequest: true
-    }).enable();
-    node.updateDarkDOM();
-});
+var apply_top_enable = find_top_dark(enable_control);
 
-var apply_top_disable = find_top_dark(function(node){
-    control(node, {
-        disableRequest: true
-    }).disable();
-    node.updateDarkDOM();
-});
+var apply_top_disable = find_top_dark(disable_control);
 
 var apply_top_confirm = function (e){
     var aid = e.component.val();
@@ -118,30 +113,72 @@ var apply_top_confirm = function (e){
     target.trigger('tap');
 };
 
-var forward_input = find_dark(function(node, e){
-    node.val(e.target.value);
+var apply_select = find_dark(function(node, e){
+    $('option', e.target).forEach(function(option, i){
+        if (option.selected) {
+            this.eq(i).attr('selected', 'selected');
+        } else {
+            this.eq(i).removeAttr('selected');
+        }
+    }, node.find('option'));
 });
+
+var apply_input = find_dark(function(node, e){
+    var checked = e.target.checked;
+    node[0].checked = checked;
+    if (checked === false) {
+        node.removeAttr('checked');
+    } else {
+        node.attr('checked', 'checked');
+    }
+    var value = e.target.value;
+    node.val(value).attr('value', value);
+});
+
+function enable_control(node){
+    control(node, {
+        disableRequest: true
+    }).enable();
+}
+
+function disable_control(node){
+    control(node, {
+        disableRequest: true
+    }).disable();
+}
 
 function find_dark(fn){
     return function(e){
-        var node = e.target.id;
-        if (node) {
-            node = $('#' + node);
-            if (node[0]) {
-                fn(node, e);
-            }
+        var target = e.target.id;
+        if (!target) {
+            return;
+        }
+        target = exports.getOriginByCustomId(target);
+        if (target[0] 
+                && !target[0]._ckDisablePageForward) {
+            fn(target, e);
         }
     };
 }
 
 function find_top_dark(fn){
     return function(e){
-        if (e.target.id) {
+        var target = e.target.id;
+        if (target) {
+            target = exports.getOriginByCustomId(target);
+        } else {
+            target = darkdom.getDarkById(e.target.parentNode.id);
+        }
+        if (!target[0]) {
             return;
         }
-        var target = darkdom.getDarkById(e.target.parentNode.id);
-        if (target[0]) {
-            fn(target, e);
+        target[0]._ckDisablePageForward = true;
+        fn(target, e);
+        if (target[0].isDarkSource) {
+            var actionbar = $(e.target).closest('.ck-top-actions');
+            darkdom.getDarkById(actionbar[0].id).updateDarkSource();
+        } else {
+            target.updateDarkDOM();
         }
     };
 }
