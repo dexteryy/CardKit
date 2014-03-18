@@ -4,6 +4,7 @@ define([
     'dollar',
     'mo/browsers',
     'mo/template',
+    'mo/network',
     'soviet',
     'momo/base',
     'momo/tap',
@@ -15,13 +16,14 @@ define([
     './ui/growl',
     './supports',
     './bus'
-], function(_, $, browsers, tpl, soviet, 
+], function(_, $, browsers, tpl, net, soviet, 
     momoBase, momoTap,
     control, picker, ranger, 
     modalView, actionView, growl, supports, bus){
 
 var doc = document,
     modalCard = modalView(),
+    _modal_tm,
     _soviet_aliases = {},
     _soviet_opt = {
         aliasEvents: _soviet_aliases,
@@ -258,10 +260,37 @@ var actions = {
     },
 
     openModal: function(opt){
-        modalCard.set(opt).open();
+        var tm = +new Date(),
+            url = opt.jsonUrl || opt.url;
+        if (url) {
+            actions.showLoading();
+            _modal_tm = tm;
+            if (opt.jsonUrl) {
+                net.getJSON(url, callback);
+            } else if (opt.url) {
+                net.ajax({
+                    url: url,
+                    success: callback
+                });
+            }
+        } else {
+            modalCard.set(opt).open();
+        }
+        function callback(data){
+            if (tm !== _modal_tm) {
+                return;
+            }
+            if (opt.jsonUrl) {
+                data = data.html;
+            }
+            opt.content = data;
+            actions.hideLoading();
+            modalCard.set(opt).open();
+        }
     },
 
     closeModal: function(){
+        _modal_tm = 0;
         modalCard.cancel();
         return modalCard.event.promise('close');
     },
@@ -287,7 +316,7 @@ var actions = {
             });
         }
         this.loadingTips.set({
-            content: text || '正在加载...'
+            content: text || '加载中...'
         }).open();
         this._loadingStart = +new Date();
     },

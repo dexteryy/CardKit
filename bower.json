@@ -4,13 +4,13 @@
   "version": "2.0.0-alpha.3",
   "main": "cardkit.js",
   "dependencies": {
-    "mo": "~1.6.6",
+    "mo": "~1.6.7",
     "dollar": "~1.4.1",
-    "darkdom": "~0.11.0",
+    "darkdom": "~0.11.1",
     "eventmaster": "~2.1.0",
     "soviet": "~1.0.0",
     "momo": "~1.2.0-alpha.1",
-    "moui": "~2.3.0"
+    "moui": "~2.3.1"
   },
   "ignore": [
     "**/.*",

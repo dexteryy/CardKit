@@ -1,9 +1,8 @@
 define([
     'mo/lang',
     'dollar',
-    'mo/network',
     'moui/modalview'
-], function(_, $, net, originModal) {
+], function(_, $, originModal) {
 
 var default_config = {
         className: 'ck-modalview',
@@ -13,12 +12,11 @@ var default_config = {
         contentFilter: false
     },
     SCRIPT_TYPES = {
-        'text/darkscript': 1,
-        'text/cardscript': 1,
-        'text/jscode': 1
+        'text/modalview-javascript': 1,
+        'text/cardscript': 1, // @deprecated
+        'text/jscode': 1 // @deprecated
     },
-    singleton,
-    _tm;
+    singleton;
 
 var ModalView = _.construct(originModal.ModalView);
 
@@ -31,7 +29,6 @@ _.mix(ModalView.prototype, {
         this.event.bind('confirm', function(modal){
             modal.event.fire('confirmOnThis', arguments);
         }).bind('close', function(modal){
-            _tm = 0;
             modal.event.unbind('confirmOnThis');
         });
         return this;
@@ -40,23 +37,6 @@ _.mix(ModalView.prototype, {
     set: function(opt){
         if (!opt) {
             return this;
-        }
-
-        var self = this,
-            tm = +new Date(),
-            url = opt.jsonUrl || opt.url;
-        if (url) {
-            opt.content = '';
-            self.showLoading();
-            _tm = tm;
-            if (opt.jsonUrl) {
-                net.getJSON(url, callback);
-            } else if (opt.url) {
-                net.ajax({
-                    url: url,
-                    success: callback
-                });
-            }
         }
 
         if (opt.iframeUrl) {
@@ -75,18 +55,13 @@ _.mix(ModalView.prototype, {
             }).join('');
         }
 
-        function callback(data){
-            if (tm !== _tm) {
-                return;
-            }
-            if (opt.jsonUrl) {
-                data = data.html;
-            }
-            self.setContent(data);
-            self.hideLoading();
+        var re = this.superMethod('set', [opt]);
+
+        if (!this.pageNode()[0]) {
+            this._content.append(this.wrapPageContent('<div></div>'));
         }
 
-        return this.superMethod('set', [opt]);
+        return re;
     },
 
     setContent: function(html){
@@ -95,22 +70,26 @@ _.mix(ModalView.prototype, {
             if (filter) {
                 html = (new RegExp(filter).exec(html) || [])[1];
             }
-            var oldstyle = this._config.oldStylePage;
-            var page_start = oldstyle 
-                ? '<div class="ckd-page-card ck-modal-page" ' 
-                    + 'data-cfg-deck="modalview" '
-                    + 'id="ckPage-' + this.id + '">'
-                : '<ck-card type="page" class="ck-modal-page" ' 
-                    + 'deck="modalview" '
-                    + 'id="ckPageOld-' + this.id + '">';
-            var page_end = oldstyle ? '</ck-card>' : '</div>';
-            html = page_start + html + page_end;
+            html = this.wrapPageContent(html);
         }
         return this.superMethod('setContent', [html]);
     },
 
     pageNode: function(){
         return this._content.find('.ck-modal-page');
+    },
+
+    wrapPageContent: function(html){
+        var oldstyle = this._config.oldStylePage;
+        var page_start = oldstyle 
+            ? '<div class="ckd-page-card ck-modal-page" ' 
+                + 'data-cfg-deck="modalview" '
+                + 'id="ckPage-' + this.id + '">'
+            : '<ck-card type="page" class="ck-modal-page" ' 
+                + 'deck="modalview" '
+                + 'id="ckPageOld-' + this.id + '">';
+        var page_end = oldstyle ? '</div>' : '</ck-card>';
+        return page_start + html + page_end;
     }
 
 });

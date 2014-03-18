@@ -181,9 +181,14 @@ exports.modalCard.event.on('open', function(modal){
     modal.lastDecktop = _decks[_current_deck];
     exports.openPage(modal.pageNode());
 }).on('willUpdateContent', function(modal){
-    exports.resetPage(modal.pageNode());
+    var page = modal.pageNode();
+    if (page[0] && page[0].isMountedDarkDOM) {
+        exports.resetPage(page);
+    }
 }).on('close', function(modal){
     exports.openPage(modal.lastDecktop);
+//}).on('frameOnload', function(modal){
+    //exports.render('page', modal._iframeWindow[0].document);
 });
 
 function open_page(page){
