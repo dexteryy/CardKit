@@ -98,9 +98,30 @@ var apply_enable = find_dark(enable_control);
 var apply_disable = find_dark(disable_control);
 
 var apply_pick = find_dark(function(node, e){
-    picker(node, {
+    var p = picker(node, {
         disableRequest: true
-    }).select(e.component.val());
+    });
+    var new_val = e.component.val();
+    if (Array.isArray(new_val)) {
+        var old_val = p.val();
+        if (old_val.length < new_val.length) {
+            _.each(new_val, function(v){
+                if (!this[v]) {
+                    p.select(v);
+                    return false;
+                }
+            }, _.index(old_val));
+        } else {
+            _.each(old_val, function(v){
+                if (!this[v]) {
+                    p.unselect(v);
+                    return false;
+                }
+            }, _.index(new_val));
+        }
+    } else {
+        p.select(new_val);
+    }
 });
 
 var apply_top_enable = find_top_dark(enable_control);
