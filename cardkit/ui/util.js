@@ -8,6 +8,7 @@ var _default_steps = {
     flag: '_ckViewUid',
     forceOptions: {},
     defaultOptions: {},
+    customOptions: {},
     config: function(){},
     extend: function(){}
 };
@@ -39,6 +40,9 @@ var exports = {
                         factory.forceOptions, steps.forceOptions), 
                     steps.defaultOptions, factory.defaultOptions);
                 re = lib[id] = steps.factory(elm, opt);
+                _.merge(re._config, 
+                    _.merge(_.interset(opt, steps.customOptions), 
+                        steps.customOptions));
                 steps.extend(re, elm);
             }
             return re;

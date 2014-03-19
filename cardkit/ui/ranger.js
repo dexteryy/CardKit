@@ -9,6 +9,10 @@ return util.singleton({
 
     flag: '_ckRangerUid',
 
+    customOptions: {
+        enableNotify: true
+    },
+
     factory: function(elm, opt){
         return ranger(elm, opt);
     },
@@ -18,21 +22,25 @@ return util.singleton({
     },
 
     extend: function(o, source){
-        o.notify = growl({
+        o.notify = o._config.enableNotify ? growl({
             parent: source.parent(),
             corner: 'stick'
-        });
+        }) : null;
         o.event.bind('change', function(v){
-            o.notify.set({
-                content: v
-            }).open();
+            if (o.notify) {
+                o.notify.set({
+                    content: v
+                }).open();
+            }
         }).bind('changed', function(){
             var url = source.trigger('ranger:changed', {
                 component: o
             }).data('url');
             bus.fire('ranger:changed', [o, url]);
         }).bind('changeEnd', function(){
-            o.notify.close();
+            if (o.notify) {
+                o.notify.close();
+            }
         });
     }
 

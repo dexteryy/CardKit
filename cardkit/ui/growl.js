@@ -25,7 +25,7 @@ function exports(elm, opt){
         opt = _.mix(defaults, elm);
     }
     opt.className = 'ck-growl';
-    _.mix(opt, exports.forceOptions);
+    _.merge(opt, exports.defaultOptions);
     var g = growl(opt);
     if (id) {
         lib[id] = g;
@@ -33,7 +33,7 @@ function exports(elm, opt){
     return g;
 }
 
-exports.forceOptions = {};
+exports.defaultOptions = {};
 
 return exports;
 

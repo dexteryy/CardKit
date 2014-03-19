@@ -7,7 +7,8 @@ define([
 ], function(_, $, darkdom, ui){
 
 var control = ui.component.control,
-    picker = ui.component.picker;
+    picker = ui.component.picker,
+    ranger = ui.component.ranger;
 
 var exports = {
 
@@ -33,7 +34,9 @@ var exports = {
         component.forward({
             'control:enable *': 'control:enable',
             'control:disable *': 'control:disable',
-            'picker:change *': 'picker:change'
+            'picker:change *': 'picker:change',
+            'selector:change *': 'selector:change',
+            'ranger:changed *': 'ranger:changed'
         });
     },
 
@@ -41,7 +44,9 @@ var exports = {
         guard.forward({
             'control:enable': apply_enable,
             'control:disable': apply_disable,
-            'picker:change': apply_pick
+            'picker:change': apply_pick,
+            'selector:change': apply_selector,
+            'ranger:changed': apply_ranger
         });
     },
 
@@ -102,26 +107,26 @@ var apply_pick = find_dark(function(node, e){
         disableRequest: true
     });
     var new_val = e.component.val();
-    if (Array.isArray(new_val)) {
-        var old_val = p.val();
-        if (old_val.length < new_val.length) {
-            _.each(new_val, function(v){
-                if (!this[v]) {
-                    p.select(v);
-                    return false;
-                }
-            }, _.index(old_val));
-        } else {
-            _.each(old_val, function(v){
-                if (!this[v]) {
-                    p.unselect(v);
-                    return false;
-                }
-            }, _.index(new_val));
-        }
-    } else {
-        p.select(new_val);
-    }
+    ui.action.updatePicker(p, new_val);
+});
+
+var apply_selector = find_dark(function(node){
+    node.trigger('selector:change', {
+        component: picker(node, {
+            disableRequest: true
+        })
+    });
+});
+
+var apply_ranger = find_dark(function(node, e){
+    var o = ranger(node, {
+        enableNotify: false
+    });
+    var v = e.component.val();
+    o.val(v).attr('value', v);
+    node.trigger('ranger:changed', {
+        component: o
+    });
 });
 
 var apply_top_enable = find_top_dark(enable_control);

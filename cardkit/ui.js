@@ -120,8 +120,11 @@ var tap_events = {
         }
         var p = picker(me);
         show_actions(me);
-        bus.on('actionView:confirmOnThis', function(actions){
-            p.select(actions.val());
+        bus.on('actionView:confirmOnThis', function(actionWindow){
+            actions.updatePicker(p, actionWindow.val());
+            me.trigger('selector:change', {
+                component: p
+            });
         });
     },
 
@@ -131,9 +134,9 @@ var tap_events = {
     },
 
     '.ck-actions .ck-option': function(){
-        var actions = $(this).closest('.ck-actions');
-        var p = picker(actions, {
-            ignoreStatus: actions.data("ignoreStatus") !== 'false' && true
+        var acts = $(this).closest('.ck-actions');
+        var p = picker(acts, {
+            ignoreStatus: acts.data("ignoreStatus") !== 'false' && true
         });
         p.select(this);
     },
@@ -335,6 +338,24 @@ var actions = {
         }
     },
 
+    updatePicker: function(pickerObj, new_val){
+        if (Array.isArray(new_val)) {
+            var old_val = pickerObj.val();
+            _.each(old_val, function(v){
+                if (!this[v]) {
+                    pickerObj.unselect(v);
+                }
+            }, _.index(new_val));
+            _.each(new_val, function(v){
+                if (!this[v]) {
+                    pickerObj.select(v);
+                }
+            }, _.index(old_val));
+        } else {
+            pickerObj.select(new_val);
+        }
+    },
+
     openLink: function(href, opt){
         opt = opt || {};
         if (typeof href !== 'string') {
@@ -357,7 +378,7 @@ var exports = {
         opt = opt || {};
         var wrapper = $(opt.appWrapper);
         actionView.forceOptions.parent = wrapper;
-        growl.forceOptions.parent = wrapper;
+        growl.defaultOptions.parent = wrapper;
         modalCard.set({
             oldStylePage: opt.oldStyle,
             parent: wrapper
