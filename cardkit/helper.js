@@ -35,6 +35,7 @@ var exports = {
             'control:enable *': 'control:enable',
             'control:disable *': 'control:disable',
             'picker:change *': 'picker:change',
+            'picker:response *': 'picker:response',
             'selector:change *': 'selector:change',
             'ranger:changed *': 'ranger:changed'
         });
@@ -45,6 +46,7 @@ var exports = {
             'control:enable': apply_enable,
             'control:disable': apply_disable,
             'picker:change': apply_pick,
+            'picker:response': apply_pick_response,
             'selector:change': apply_selector,
             'ranger:changed': apply_ranger
         });
@@ -110,6 +112,14 @@ var apply_pick = find_dark(function(node, e){
     ui.action.updatePicker(p, new_val);
 });
 
+var apply_pick_response = find_dark(function(node, e){
+    var p = picker(node);
+    p.responseData = e.component.responseData;
+    node.trigger('picker:response', {
+        component: p
+    });
+});
+
 var apply_selector = find_dark(function(node){
     node.trigger('selector:change', {
         component: picker(node, {
@@ -161,16 +171,20 @@ var apply_input = find_dark(function(node, e){
     node.val(value).attr('value', value);
 });
 
-function enable_control(node){
-    control(node, {
+function enable_control(node, e){
+    var o = control(node, {
         disableRequest: true
-    }).enable();
+    });
+    o.responseData = e.component.responseData;
+    o.enable();
 }
 
-function disable_control(node){
-    control(node, {
+function disable_control(node, e){
+    var o = control(node, {
         disableRequest: true
-    }).disable();
+    });
+    o.responseData = e.component.responseData;
+    o.disable();
 }
 
 function find_dark(fn){
