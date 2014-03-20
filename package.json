@@ -1,6 +1,6 @@
 {
   "name": "cardkit",
-  "description": "A missing mobile web app toolkit for front-end developers",
+  "description": "CardKit is a mobile UI library provides a series of building blocks which are all components built on DarkDOM and Moui.",
   "version": "0.0.0",
   "main": "Gruntfile.js",
   "engines": {

@@ -3,13 +3,17 @@ layout: intro
 title: CardKit
 -->
 
-# CardKit
+# CardKit (v2)
 
-A mobile UI framework provides building blocks to help you build mobile web apps quickly and simply, or transfer entire website to native-like web app for touch devices.
+CardKit is a mobile UI library provides a series of building blocks to help you build mobile web apps quickly and simply, or transfer entire website to mobile-first web app for touch devices. 
 
-### Documents for Cardkit2
+CardKit building blocks are all _use-html-as-configure-style_ (like Custom Elements, directive...) components built on [DarkDOM](https://github.com/dexteryy/DarkDOM) and [Moui](https://github.com/dexteryy/moui).
 
-Coming soon...
+## Examples
+
+* Components Gallery App (Coming soon...)
+* [To-do App](https://github.com/douban-f2e/cardkit-demo-todoapp)
+* [Custom DarkDOM Components](https://github.com/douban-f2e/cardkit-demo-darkdom)
 
 ### In the Real World
 
