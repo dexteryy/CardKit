@@ -9,6 +9,7 @@
 
     {% if (hasHeader) { %}
     <div class="ck-header">
+        <div class="ck-header-shd"></div>
         {%= component.nav %}
         {%= component.title %}
         {%= component.actionbar %}

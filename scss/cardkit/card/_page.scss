@@ -151,7 +151,6 @@
   top:0;
   left:0;
   width:100%;
-  background:#627b9e;
   z-index:$moui_z_view + $moui_z_step;
   @include transition(transform 0.3s);
   @include transform(translateY(-$moui_nav_h));
@@ -161,6 +160,16 @@
     @include transform(translateY(0));
   }
 
+}
+
+.ck-header-shd {
+  background:#333;
+  opacity:.95;
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:0;
+  right:0;
 }
 
 .ck-top-title {
