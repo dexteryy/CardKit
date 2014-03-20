@@ -3,12 +3,13 @@ define('cardkit', [
     'mo/lang',
     'dollar',
     'mo/browsers',
+    'mo/mainloop',
     'cardkit/spec',
     'cardkit/oldspec',
     'cardkit/ui',
     'cardkit/supports',
     'cardkit/bus'
-], function(_, $, browsers,
+], function(_, $, browsers, mainloop,
     specs, oldspecs, ui, supports, bus){
 
 var DEFAULT_DECK = 'main',
@@ -32,14 +33,14 @@ var exports = {
 
     init: function(opt){
         this._config = _.config({}, opt, _defaults);
+        this._specs = this._config.oldStyle ? oldspecs : specs;
         this.initSpec();
         this.initView();
     },
 
     initSpec: function(){
         _.each(specs, function(data, name){
-            var spec = this._config.oldStyle 
-                ? oldspecs[name][0] : data[0];
+            var spec = this._specs[name][0];
             this.component(name, data[1][name]());
             this.spec(name, spec);
         }, this);
@@ -50,8 +51,11 @@ var exports = {
         if (browsers.webview) {
             this.wrapper.addClass('ck-in-webview');
         }
-        $(window).on('hashchange', function(){
-            exports.openPage();
+        bus.on('ready', function(){
+            $(window).on('hashchange', function(e){
+                e.preventDefault();
+                exports.openPage();
+            });
         });
         ui.init(this._config);
     },
@@ -88,15 +92,60 @@ var exports = {
         }
     },
 
+    scrollPageTo: function(pid){
+        var target = $('.ck-page-card #' + pid);
+        if (target[0]) {
+            mainloop.addTween('scrollPage', 
+                    window.scrollY, target.offset().top, 400, { 
+                easing: 'ease',
+                step: function(v){
+                    window.scrollTo(0, v);
+                },
+                callback: function(){
+                    mainloop.pause();
+                }
+            }).run('scrollPage');
+        }
+    },
+
+    openPageByNode: function(node){
+        var spec = this._specs['page'][0];
+        var outer_page = node.closest(spec.SELECTOR);
+        if (!outer_page[0]) {
+            outer_page = node.closest(spec.SELECTOR_OLD);
+        }
+        if (outer_page[0]) {
+            this.openPage(outer_page);
+        }
+        return outer_page;
+    },
+
     openPage: function(page){
-        page = this.findPage(page);
-        if (_page_opening || !page[0] 
-                || !this.isPage(page)) {
+        if (_page_opening) {
             return false;
         }
-        window.scrollTo(0, 0);
+        page = this.findPage(page);
+        var pid = page[1];
+        page = page[0];
+        var is_page = this.isPage(page);
+        if (pid && page[0] && !is_page) {
+            this.openPageByNode(page);
+            setTimeout(function(){
+                this.scrollPageTo(pid);
+            }.bind(this), 400);
+            return true;
+        }
         var last_decktop = _decks[DEFAULT_DECK];
-        if (!last_decktop) {
+        var is_init = !last_decktop;
+        if (!page[0] || !is_page) {
+            if (!is_init) {
+                return false;
+            }
+            location.replace('#' + this._config.defaultPage);
+            page = $('#' + this._config.defaultPage);
+        }
+        window.scrollTo(0, 0);
+        if (is_init) {
             last_decktop = $('#' + this._config.defaultPage);
             if (page[0] !== last_decktop[0]) {
                 _decks[DEFAULT_DECK] = last_decktop;
@@ -126,6 +175,11 @@ var exports = {
                 && $.contains(body, decktop[0])) {
             close_page(decktop);
         }
+        if (is_init) {
+            page.once('pageCard:opened', function(){
+                bus.resolve('ready');
+            });
+        }
         open_page(page);
         focus_page(page);
         _page_opening = false;
@@ -133,7 +187,7 @@ var exports = {
     },
 
     resetPage: function(page){
-        page = this.findPage(page);
+        page = this.findPage(page)[0];
         if (!page[0]) {
             return;
         }
@@ -141,21 +195,21 @@ var exports = {
     },
 
     findPage: function(page){
+        var pid;
         if (!page || typeof page === 'string') {
             var hash = RE_HASH.exec(location.href);
-            page = page 
+            pid = page 
                 || hash && hash[1] 
                 || this._config.defaultPage;
-            page = $('#' + page);
+            page = $('#' + pid);
         } else {
             page = $(page);
         }
-        return page;
+        return [page, pid];
     },
 
     isPage: function(page){
-        var spec = (this._config.oldStyle 
-            ? oldspecs : specs)['page'][0];
+        var spec = this._specs['page'][0];
         return page.is(spec.SELECTOR)
             || spec.SELECTOR_OLD 
                 && page.is(spec.SELECTOR_OLD);
