@@ -354,6 +354,9 @@
   font-size: 13px;
   font-weight: normal;
 }
+.moui-select[data-multiselect="true"] button.enabled, [data-multiselect="true"].ck-select button.enabled {
+  display: none;
+}
 .moui-select[data-fluid="true"], [data-fluid="true"].ck-select {
   width: auto;
 }
@@ -522,12 +525,11 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(13, 13, 13, 0.95);
-  opacity: 0;
-  -moz-transition: opacity 0.5s;
-  -o-transition: opacity 0.5s;
-  -webkit-transition: opacity 0.5s;
-  transition: opacity 0.5s;
+  background: rgba(13, 13, 13, 0);
+  -moz-transition: background-color 0.5s;
+  -o-transition: background-color 0.5s;
+  -webkit-transition: background-color 0.5s;
+  transition: background-color 0.5s;
 }
 .moui-actionview.confirm-kind .content header, .confirm-kind.ck-actionview .content header {
   padding-top: 30%;
@@ -536,7 +538,7 @@
   display: block;
 }
 .moui-actionview.active .shd, .active.ck-actionview .shd {
-  opacity: 1;
+  background: rgba(13, 13, 13, 0.95);
 }
 .moui-actionview.active .wrapper, .active.ck-actionview .wrapper {
   opacity: 1;
@@ -585,7 +587,7 @@
   -webkit-tap-highlight-color: transparent;
   outline: none;
 }
-.moui-actionview .wrapper .content > article .option:active, .ck-actionview .wrapper .content > article .option:active, .ck-actionview .wrapper .content > article .ck-option:active, .moui-actionview .wrapper .content > article .enabled.option, .ck-actionview .wrapper .content > article .enabled.option, .ck-actionview .wrapper .content > article .enabled.ck-option {
+.moui-actionview .wrapper .content > article .enabled.option, .ck-actionview .wrapper .content > article .enabled.option, .ck-actionview .wrapper .content > article .enabled.ck-option {
   color: #006ae2;
 }
 .moui-actionview .wrapper .content > article .option:first-child, .ck-actionview .wrapper .content > article .option:first-child, .ck-actionview .wrapper .content > article .ck-option:first-child {
@@ -614,11 +616,11 @@
   -o-transition: -o-transform 0.4s;
   -webkit-transition: -webkit-transform 0.4s;
   transition: transform 0.4s;
-  -moz-transform: translateY(100%);
-  -ms-transform: translateY(100%);
-  -o-transform: translateY(100%);
-  -webkit-transform: translateY(100%);
-  transform: translateY(100%);
+  -moz-transform: translateY(200%);
+  -ms-transform: translateY(200%);
+  -o-transform: translateY(200%);
+  -webkit-transform: translateY(200%);
+  transform: translateY(200%);
 }
 .moui-modalview .wrapper > header, .ck-modalview .wrapper > header {
   height: 40px;
@@ -667,18 +669,17 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: #333;
-  opacity: 0;
-  -moz-transition: opacity 0.4s;
-  -o-transition: opacity 0.4s;
-  -webkit-transition: opacity 0.4s;
-  transition: opacity 0.4s;
+  background: rgba(51, 51, 51, 0);
+  -moz-transition: background-color 0.4s;
+  -o-transition: background-color 0.4s;
+  -webkit-transition: background-color 0.4s;
+  transition: background-color 0.4s;
 }
 .moui-modalview.rendered, .rendered.ck-modalview {
   display: block;
 }
 .moui-modalview.active .shd, .active.ck-modalview .shd {
-  opacity: 1;
+  background: #333333;
 }
 .moui-modalview.active .wrapper, .active.ck-modalview .wrapper {
   -moz-transform: none;
@@ -939,7 +940,6 @@
   top: 0;
   left: 0;
   width: 100%;
-  background: #627b9e;
   z-index: 210;
   -moz-transition: -moz-transform 0.3s;
   -o-transition: -o-transform 0.3s;
@@ -960,6 +960,16 @@
   transform: translateY(0);
 }
 
+.ck-header-shd {
+  background: #333;
+  opacity: .95;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
 .ck-top-title {
   font-size: 20px;
   font-weight: bold;
@@ -978,7 +988,7 @@
   display: none;
 }
 
-.ck-top-actions .ck-item > *,
+.ck-top-actions .ck-top-act > *,
 .ck-top-overflow,
 .ck-top-nav {
   float: right;
@@ -1003,7 +1013,7 @@
   background-position: 7px 7px;
   border: 1px solid transparent;
 }
-.ck-top-actions .ck-item > *:active,
+.ck-top-actions .ck-top-act > *:active,
 .ck-top-overflow:active,
 .ck-top-nav:active {
   background-color: transparent;
@@ -1033,7 +1043,7 @@
 .ck-top-overflow {
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAAA5FBMVEUAAAD///8AAAD///+qqqr///8AAACZmZn///+ioqIAAAAAAAAAAAAAAAAAAAAAAAAFBQUAAAAAAAAAAAD///8AAAD///////////////////////8AAAD8/PwAAAAAAAAAAAACAgIEBAT///+Kior///+RkZGVlZX///+ZmZl5eXl7e3uCgoKJiYmzs7O0tLT///+5ubny8vL///+5ubn////CwsLz8/P09PT19fXb29ve3t7h4eHi4uLi4uLj4+Pm5ub6+vr7+/v5+fn5+fn////////8/Pz8/Pz9/f3+/v7///9iqQ7iAAAATHRSTlMAAAEBAgIDBAUIGxwdHyAhIzAxMzY3Nzg5PkBBRUVHSFhYWWBlZm1ubnJ2dnl7ioqKjIyMjY6RlZWam5+goKGhpK2trq+vsLGysrKzSXkzoAAAARZJREFUSMft08lOAkEQBmDsUQR0BEHUkX0VFBRBUBYRl5Zl3v99jFX1tx2MBy+eug8k9ae+kErVRHb++CIOOODAD+D93sHPo18BZz39McxZTcFA60FggdxQ6945QC2k1zL/0uCgAeC1OKgxOAnlFaT/AkEgoIDglEAf5VjAA4JHAWMEfQIvKMMYz79BvdkjEDMNrwTeTB0nsPsN9gnETcM7gQnKRZSAekLwrAhEFwgmBOoo2zLDJYKmzNBGUCeQuOVqlBJwdM/BnS8gNeLgJsF7SF9Nl+t5N6uwh0xntlrNOhnsQWW78/Vyen2MTR/ky9VS0tq0X6xUir616WSpWs4fmtP4mnTrgpTauiVl35L7RB1w4J/AJ0RAUE3lLcFnAAAAAElFTkSuQmCC');
 }
-.ck-top-overflow .ck-item {
+.ck-top-overflow .ck-top-act {
   display: none;
 }
 

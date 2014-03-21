@@ -61,7 +61,7 @@ function exports(elm, opt){
         opt = _.mix(defaults, elm);
     }
     opt.className = 'ck-growl';
-    _.mix(opt, exports.forceOptions);
+    _.merge(opt, exports.defaultOptions);
     var g = growl(opt);
     if (id) {
         lib[id] = g;
@@ -69,7 +69,7 @@ function exports(elm, opt){
     return g;
 }
 
-exports.forceOptions = {};
+exports.defaultOptions = {};
 
 return exports;
 
@@ -87,6 +87,7 @@ var _default_steps = {
     flag: '_ckViewUid',
     forceOptions: {},
     defaultOptions: {},
+    customOptions: {},
     config: function(){},
     extend: function(){}
 };
@@ -118,6 +119,9 @@ var exports = {
                         factory.forceOptions, steps.forceOptions), 
                     steps.defaultOptions, factory.defaultOptions);
                 re = lib[id] = steps.factory(elm, opt);
+                _.merge(re._config, 
+                    _.merge(_.interset(opt, steps.customOptions), 
+                        steps.customOptions));
                 steps.extend(re, elm);
             }
             return re;
@@ -238,9 +242,8 @@ return exports;
 define("cardkit/ui/modalview", [
   "mo/lang",
   "dollar",
-  "mo/network",
   "moui/modalview"
-], function(_, $, net, originModal) {
+], function(_, $, originModal) {
 
 var default_config = {
         className: 'ck-modalview',
@@ -250,12 +253,11 @@ var default_config = {
         contentFilter: false
     },
     SCRIPT_TYPES = {
-        'text/darkscript': 1,
-        'text/cardscript': 1,
-        'text/jscode': 1
+        'text/modalview-javascript': 1,
+        'text/cardscript': 1, // @deprecated
+        'text/jscode': 1 // @deprecated
     },
-    singleton,
-    _tm;
+    singleton;
 
 var ModalView = _.construct(originModal.ModalView);
 
@@ -268,7 +270,6 @@ _.mix(ModalView.prototype, {
         this.event.bind('confirm', function(modal){
             modal.event.fire('confirmOnThis', arguments);
         }).bind('close', function(modal){
-            _tm = 0;
             modal.event.unbind('confirmOnThis');
         });
         return this;
@@ -277,23 +278,6 @@ _.mix(ModalView.prototype, {
     set: function(opt){
         if (!opt) {
             return this;
-        }
-
-        var self = this,
-            tm = +new Date(),
-            url = opt.jsonUrl || opt.url;
-        if (url) {
-            opt.content = '';
-            self.showLoading();
-            _tm = tm;
-            if (opt.jsonUrl) {
-                net.getJSON(url, callback);
-            } else if (opt.url) {
-                net.ajax({
-                    url: url,
-                    success: callback
-                });
-            }
         }
 
         if (opt.iframeUrl) {
@@ -312,18 +296,13 @@ _.mix(ModalView.prototype, {
             }).join('');
         }
 
-        function callback(data){
-            if (tm !== _tm) {
-                return;
-            }
-            if (opt.jsonUrl) {
-                data = data.html;
-            }
-            self.setContent(data);
-            self.hideLoading();
+        var re = this.superMethod('set', [opt]);
+
+        if (!this.pageNode()[0]) {
+            this._content.append(this.wrapPageContent('<div></div>'));
         }
 
-        return this.superMethod('set', [opt]);
+        return re;
     },
 
     setContent: function(html){
@@ -332,22 +311,26 @@ _.mix(ModalView.prototype, {
             if (filter) {
                 html = (new RegExp(filter).exec(html) || [])[1];
             }
-            var oldstyle = this._config.oldStylePage;
-            var page_start = oldstyle 
-                ? '<div class="ckd-page-card ck-modal-page" ' 
-                    + 'data-cfg-deck="modalview" '
-                    + 'id="ckPage-' + this.id + '">'
-                : '<ck-card type="page" class="ck-modal-page" ' 
-                    + 'deck="modalview" '
-                    + 'id="ckPageOld-' + this.id + '">';
-            var page_end = oldstyle ? '</ck-card>' : '</div>';
-            html = page_start + html + page_end;
+            html = this.wrapPageContent(html);
         }
         return this.superMethod('setContent', [html]);
     },
 
     pageNode: function(){
         return this._content.find('.ck-modal-page');
+    },
+
+    wrapPageContent: function(html){
+        var oldstyle = this._config.oldStylePage;
+        var page_start = oldstyle 
+            ? '<div class="ckd-page-card ck-modal-page" ' 
+                + 'data-cfg-deck="modalview" '
+                + 'id="ckPage-' + this.id + '">'
+            : '<ck-card type="page" class="ck-modal-page" ' 
+                + 'deck="modalview" '
+                + 'id="ckPageOld-' + this.id + '">';
+        var page_end = oldstyle ? '</div>' : '</ck-card>';
+        return page_start + html + page_end;
     }
 
 });
@@ -378,6 +361,10 @@ return util.singleton({
 
     flag: '_ckRangerUid',
 
+    customOptions: {
+        enableNotify: true
+    },
+
     factory: function(elm, opt){
         return ranger(elm, opt);
     },
@@ -387,21 +374,25 @@ return util.singleton({
     },
 
     extend: function(o, source){
-        o.notify = growl({
+        o.notify = o._config.enableNotify ? growl({
             parent: source.parent(),
             corner: 'stick'
-        });
+        }) : null;
         o.event.bind('change', function(v){
-            o.notify.set({
-                content: v
-            }).open();
+            if (o.notify) {
+                o.notify.set({
+                    content: v
+                }).open();
+            }
         }).bind('changed', function(){
             var url = source.trigger('ranger:changed', {
                 component: o
             }).data('url');
             bus.fire('ranger:changed', [o, url]);
         }).bind('changeEnd', function(){
-            o.notify.close();
+            if (o.notify) {
+                o.notify.close();
+            }
         });
     }
 
@@ -589,6 +580,7 @@ define("cardkit/ui", [
   "dollar",
   "mo/browsers",
   "mo/template",
+  "mo/network",
   "soviet",
   "momo/base",
   "momo/tap",
@@ -600,14 +592,41 @@ define("cardkit/ui", [
   "cardkit/ui/growl",
   "cardkit/supports",
   "cardkit/bus"
-], function(_, $, browsers, tpl, soviet, 
+], function(_, $, browsers, tpl, net, soviet, 
     momoBase, momoTap,
     control, picker, ranger, 
     modalView, actionView, growl, supports, bus){
 
 var doc = document,
     modalCard = modalView(),
-    _soviet_aliases = {};
+    _modal_tm,
+    _soviet_aliases = {},
+    _soviet_opt = {
+        aliasEvents: _soviet_aliases,
+        autoOverride: true,
+        matchesSelector: true,
+        preventDefault: true
+    };
+
+var BrightSoviet = _.construct(soviet.Soviet);
+
+BrightSoviet.prototype.on = function(event, selector, handler){
+    if (typeof selector === 'string'
+            && !/dd-autogen/.test(selector)) {
+        selector = '[dd-autogen] ' + selector;
+    }
+    return this.superMethod('on', [event, selector, handler]);
+};
+
+var DarkSoviet = _.construct(soviet.Soviet);
+
+DarkSoviet.prototype.on = function(event, selector, handler){
+    if (typeof selector === 'string'
+            && !/dd-connect/.test(selector)) {
+        selector = '[dd-connect] ' + selector;
+    }
+    return this.superMethod('on', [event, selector, handler]);
+};
 
 _.mix(momoBase.Class.prototype, {
     bind: function(ev, handler, elm){
@@ -677,8 +696,11 @@ var tap_events = {
         }
         var p = picker(me);
         show_actions(me);
-        bus.on('actionView:confirmOnThis', function(actions){
-            p.select(actions.val());
+        bus.on('actionView:confirmOnThis', function(actionWindow){
+            actions.updatePicker(p, actionWindow.val());
+            me.trigger('selector:change', {
+                component: p
+            });
         });
     },
 
@@ -688,9 +710,9 @@ var tap_events = {
     },
 
     '.ck-actions .ck-option': function(){
-        var actions = $(this).closest('.ck-actions');
-        var p = picker(actions, {
-            ignoreStatus: actions.data("ignoreStatus") !== 'false' && true
+        var acts = $(this).closest('.ck-actions');
+        var p = picker(acts, {
+            ignoreStatus: acts.data("ignoreStatus") !== 'false' && true
         });
         p.select(this);
     },
@@ -817,10 +839,37 @@ var actions = {
     },
 
     openModal: function(opt){
-        modalCard.set(opt).open();
+        var tm = +new Date(),
+            url = opt.jsonUrl || opt.url;
+        if (url) {
+            actions.showLoading();
+            _modal_tm = tm;
+            if (opt.jsonUrl) {
+                net.getJSON(url, callback);
+            } else if (opt.url) {
+                net.ajax({
+                    url: url,
+                    success: callback
+                });
+            }
+        } else {
+            modalCard.set(opt).open();
+        }
+        function callback(data){
+            if (tm !== _modal_tm) {
+                return;
+            }
+            if (opt.jsonUrl) {
+                data = data.html;
+            }
+            opt.content = data;
+            actions.hideLoading();
+            modalCard.set(opt).open();
+        }
     },
 
     closeModal: function(){
+        _modal_tm = 0;
         modalCard.cancel();
         return modalCard.event.promise('close');
     },
@@ -846,7 +895,7 @@ var actions = {
             });
         }
         this.loadingTips.set({
-            content: text || '正在加载...'
+            content: text || '加载中...'
         }).open();
         this._loadingStart = +new Date();
     },
@@ -862,6 +911,24 @@ var actions = {
             if (this.loadingTips) {
                 this.loadingTips.close();
             }
+        }
+    },
+
+    updatePicker: function(pickerObj, new_val){
+        if (Array.isArray(new_val)) {
+            var old_val = pickerObj.val();
+            _.each(old_val, function(v){
+                if (!this[v]) {
+                    pickerObj.unselect(v);
+                }
+            }, _.index(new_val));
+            _.each(new_val, function(v){
+                if (!this[v]) {
+                    pickerObj.select(v);
+                }
+            }, _.index(old_val));
+        } else {
+            pickerObj.select(new_val);
         }
     },
 
@@ -887,7 +954,7 @@ var exports = {
         opt = opt || {};
         var wrapper = $(opt.appWrapper);
         actionView.forceOptions.parent = wrapper;
-        growl.forceOptions.parent = wrapper;
+        growl.defaultOptions.parent = wrapper;
         modalCard.set({
             oldStylePage: opt.oldStyle,
             parent: wrapper
@@ -901,32 +968,29 @@ var exports = {
             this[selector] = nothing;
         }, prevent_click_events);
         this.delegate.on('tap', tap_events)
-            .on('click', prevent_click_events)
-            .on('change', {
-                '.ck-ranger': function(e){
-                    ranger(this).val(e.target.value);
-                    return true;
-                }
-            }).on('touchstart', {
-                '.ck-ranger': function(e){
-                    ranger(this).val(e.target.value);
-                    ranger(this).changeStart();
-                    return true;
-                }
-            }).on('touchend', {
-                '.ck-ranger': function(){
-                    ranger(this).changeEnd();
-                    return true;
-                }
-            });
+            .on('click', prevent_click_events);
+        this.brightDelegate.on('change', {
+            '.ck-ranger': function(e){
+                ranger(this).val(e.target.value);
+                return true;
+            }
+        }).on('touchstart', {
+            '.ck-ranger': function(e){
+                ranger(this).val(e.target.value);
+                ranger(this).changeStart();
+                return true;
+            }
+        }).on('touchend', {
+            '.ck-ranger': function(){
+                ranger(this).changeEnd();
+                return true;
+            }
+        });
     },
 
-    delegate: soviet(doc, {
-        aliasEvents: _soviet_aliases,
-        autoOverride: true,
-        matchesSelector: true,
-        preventDefault: true
-    }),
+    delegate: soviet(doc, _soviet_opt),
+    brightDelegate: new BrightSoviet(doc, _soviet_opt),
+    darkDelegate: new DarkSoviet(doc, _soviet_opt),
 
     action: actions,
     component: components
@@ -935,9 +999,7 @@ var exports = {
 
 
 function handle_control(){
-    var controller = control(this, {
-            disableRequest: this.isMountedDarkDOM
-        }),
+    var controller = control(this),
         cfg = controller.data();
     if (cfg.disableUrl || cfg.disableJsonUrl) {
         controller.toggle();
@@ -947,9 +1009,7 @@ function handle_control(){
 } 
 
 function toggle_control(){
-    control(this, {
-        disableRequest: this.isMountedDarkDOM
-    }).toggle();
+    control(this).toggle();
 } 
 
 function tap_ck_post(){
@@ -995,8 +1055,13 @@ return exports;
 define("cardkit/helper", [
   "mo/lang",
   "dollar",
+  "darkdom",
   "cardkit/ui"
-], function(_, $, ui){
+], function(_, $, darkdom, ui){
+
+var control = ui.component.control,
+    picker = ui.component.picker,
+    ranger = ui.component.ranger;
 
 var exports = {
 
@@ -1018,20 +1083,68 @@ var exports = {
         return label.text() || label.val();
     },
 
-    forwardUserEvents: function(component){
+    forwardStateEvents: function(component){
         component.forward({
             'control:enable *': 'control:enable',
             'control:disable *': 'control:disable',
-            'picker:change *': 'picker:change'
+            'picker:change *': 'picker:change',
+            'picker:response *': 'picker:response',
+            'selector:change *': 'selector:change',
+            'ranger:changed *': 'ranger:changed'
         });
     },
 
-    applyUserEvents: function(guard){
+    applyStateEvents: function(guard){
         guard.forward({
-            'control:enable': forward_enable,
-            'control:disable': forward_disable,
-            'picker:change': forward_pick
+            'control:enable': apply_enable,
+            'control:disable': apply_disable,
+            'picker:change': apply_pick,
+            'picker:response': apply_pick_response,
+            'selector:change': apply_selector,
+            'ranger:changed': apply_ranger
         });
+    },
+
+    forwardActionEvents: function(component){
+        component.forward({
+            'control:enable .ck-top-act > *': 'topControl:enable',
+            'control:disable .ck-top-act > *': 'topControl:disable',
+            'actionView:confirm .ck-top-overflow': 'topOverflow:confirm'
+        });
+    },
+
+    applyActionEvents: function(guard){
+        guard.forward({
+            'topOverflow:confirm': apply_top_confirm,
+            'topControl:enable': apply_top_enable,
+            'topControl:disable': apply_top_disable
+        });
+    },
+
+    forwardInputEvents: function(component){
+        component.forward({
+            'change select': 'select:change',
+            'change input': 'input:change',
+            'change textarea': 'input:change'
+        });
+    },
+
+    applyInputEvents: function(guard){
+        guard.forward({
+            'select:change': apply_select,
+            'input:change': apply_input
+        });
+    },
+
+    getOriginByCustomId: function(custom_id){
+        var re;
+        _.each($('body #' + custom_id), function(node){
+            if (!$.matches(node, '[dd-autogen] #' + custom_id)) {
+                re = $(node);
+                return false;
+            }
+        });
+        return re || $();
     },
 
     isBlank: function(content){
@@ -1040,40 +1153,127 @@ var exports = {
 
 };
 
-function forward_enable(e){
-    var node = e.target.id;
-    if (node) {
-        node = $('#' + node);
-        if (node[0]) {
-            ui.component.control(node, {
-                disableRequest: true
-            }).enable();
+var apply_enable = find_dark(enable_control);
+
+var apply_disable = find_dark(disable_control);
+
+var apply_pick = find_dark(function(node, e){
+    var p = picker(node, {
+        disableRequest: true
+    });
+    var new_val = e.component.val();
+    ui.action.updatePicker(p, new_val);
+});
+
+var apply_pick_response = find_dark(function(node, e){
+    var p = picker(node);
+    p.responseData = e.component.responseData;
+    node.trigger('picker:response', {
+        component: p
+    });
+});
+
+var apply_selector = find_dark(function(node){
+    node.trigger('selector:change', {
+        component: picker(node, {
+            disableRequest: true
+        })
+    });
+});
+
+var apply_ranger = find_dark(function(node, e){
+    var o = ranger(node, {
+        enableNotify: false
+    });
+    var v = e.component.val();
+    o.val(v).attr('value', v);
+    node.trigger('ranger:changed', {
+        component: o
+    });
+});
+
+var apply_top_enable = find_top_dark(enable_control);
+
+var apply_top_disable = find_top_dark(disable_control);
+
+var apply_top_confirm = function (e){
+    var aid = e.component.val();
+    var target = $('#' + aid).children();
+    target.trigger('tap');
+};
+
+var apply_select = find_dark(function(node, e){
+    $('option', e.target).forEach(function(option, i){
+        if (option.selected) {
+            this.eq(i).attr('selected', 'selected');
+        } else {
+            this.eq(i).removeAttr('selected');
         }
+    }, node.find('option'));
+});
+
+var apply_input = find_dark(function(node, e){
+    var checked = e.target.checked;
+    node[0].checked = checked;
+    if (checked === false) {
+        node.removeAttr('checked');
+    } else {
+        node.attr('checked', 'checked');
     }
+    var value = e.target.value;
+    node.val(value).attr('value', value);
+});
+
+function enable_control(node, e){
+    var o = control(node, {
+        disableRequest: true
+    });
+    o.responseData = e.component.responseData;
+    o.enable();
 }
 
-function forward_disable(e){
-    var node = e.target.id;
-    if (node) {
-        node = $('#' + node);
-        if (node[0]) {
-            ui.component.control(node, {
-                disableRequest: true
-            }).disable();
-        }
-    }
+function disable_control(node, e){
+    var o = control(node, {
+        disableRequest: true
+    });
+    o.responseData = e.component.responseData;
+    o.disable();
 }
 
-function forward_pick(e){
-    var node = e.target.id;
-    if (node) {
-        node = $('#' + node);
-        if (node[0]) {
-            ui.component.picker(node, {
-                disableRequest: true
-            }).select(e.component.val());
+function find_dark(fn){
+    return function(e){
+        var target = e.target.id;
+        if (!target) {
+            return;
         }
-    }
+        target = exports.getOriginByCustomId(target);
+        if (target[0] 
+                && !target[0]._ckDisablePageForward) {
+            fn(target, e);
+        }
+    };
+}
+
+function find_top_dark(fn){
+    return function(e){
+        var target = e.target.id;
+        if (target) {
+            target = exports.getOriginByCustomId(target);
+        } else {
+            target = darkdom.getDarkById(e.target.parentNode.id);
+        }
+        if (!target[0]) {
+            return;
+        }
+        target[0]._ckDisablePageForward = true;
+        fn(target, e);
+        if (target[0].isDarkSource) {
+            var actionbar = $(e.target).closest('.ck-top-actions');
+            darkdom.getDarkById(actionbar[0].id).updateDarkSource();
+        } else {
+            target.updateDarkDOM();
+        }
+    };
 }
 
 return exports;
@@ -1393,13 +1593,12 @@ return {
 
 define("cardkit/spec/list", [
   "dollar",
-  "cardkit/helper",
   "cardkit/spec/common/scaffold",
   "cardkit/spec/common/source_scaffold",
   "cardkit/spec/common/item",
   "cardkit/spec/common/source_item"
-], function($, helper,
-    scaffold_specs, source_scaffold_specs, item_specs, source_item_specs){ 
+], function($, scaffold_specs, source_scaffold_specs, 
+    item_specs, source_item_specs){ 
 
 var SEL = 'ck-card[type="list"]';
 
@@ -1441,7 +1640,6 @@ function init_list(guard){
         guard.component(item_specs);
         guard.source().component(source_item_specs);
     });
-    helper.applyUserEvents(guard);
     guard.source().component(source_scaffold_specs);
     guard.source().component('item', source_item_spec);
 }
@@ -1498,7 +1696,6 @@ function init_list(guard){
         guard.component(item_specs);
         guard.source().component(item_specs);
     });
-    helper.applyUserEvents(guard);
     guard.source().component(scaffold_specs);
     guard.source().component('item', source_item_spec);
 }
@@ -1545,7 +1742,6 @@ return function(guard, parent){
         guard.watch('.ckd-content');
         guard.state(source_states);
     });
-    helper.applyUserEvents(guard);
     guard.source().component(scaffold_specs);
     guard.source().component('content', '.ckd-content');
 };
@@ -1564,11 +1760,6 @@ define("cardkit/spec/form", [
 
 var SEL = 'ck-card[type="form"]';
 
-function source_item_spec(guard){
-    guard.watch('.ckd-item');
-    guard.component('content', '.ckd-content');
-}
-
 function exports(guard, parent){
     guard.watch($(SEL, parent));
     guard.state({
@@ -1580,27 +1771,17 @@ function exports(guard, parent){
     guard.component('item', function(guard){
         guard.watch('ck-part[type="item"]');
         guard.component('content', 'ck-part[type="content"]');
-        guard.forward({
-            'textarea:change': forward_textchange
-        });
+        helper.applyInputEvents(guard);
         guard.source().component('content', '.ckd-content');
     });
-    helper.applyUserEvents(guard);
     guard.source().component(source_scaffold_specs);
-    guard.source().component('item', source_item_spec);
+    guard.source().component('item', exports.sourceItemSpec);
 }
 
-function forward_textchange(e){
-    var node = e.target.id;
-    if (node) {
-        node = $('#' + node);
-        if (node[0]) {
-            node.val(e.target.value);
-        }
-    }
-}
-
-exports.sourceItemSpec = source_item_spec;
+exports.sourceItemSpec = function(guard){
+    guard.watch('.ckd-item');
+    guard.component('content', '.ckd-content');
+};
 
 return exports;
 
@@ -1620,7 +1801,6 @@ define("cardkit/oldspec/form", [
 var source_states = {
         source: helper.readSource
     },
-    source_item_spec = form_spec.sourceItemSpec,
     SEL = '.ckd-form-card',
     SEL_OLD = '.ck-form-unit'; // @deprecated
 
@@ -1639,11 +1819,11 @@ return function(guard, parent){
             guard.watch('.ckd-content');
             guard.state(source_states);
         });
+        helper.applyInputEvents(guard);
         guard.source().component('content', '.ckd-content');
     });
-    helper.applyUserEvents(guard);
     guard.source().component(scaffold_specs);
-    guard.source().component('item', source_item_spec);
+    guard.source().component('item', form_spec.sourceItemSpec);
 };
 
 });
@@ -1692,10 +1872,9 @@ return function(guard, parent){
 
 define("cardkit/spec/box", [
   "dollar",
-  "cardkit/helper",
   "cardkit/spec/common/scaffold",
   "cardkit/spec/common/source_scaffold"
-], function($, helper, scaffold_specs, source_scaffold_specs){ 
+], function($, scaffold_specs, source_scaffold_specs){ 
 
 var SEL = 'ck-card[type="box"]';
 
@@ -1709,7 +1888,6 @@ return function(guard, parent){
     });
     guard.component(scaffold_specs);
     guard.component('content', 'ck-part[type="content"]');
-    helper.applyUserEvents(guard);
     guard.source().component(source_scaffold_specs);
     guard.source().component('content', '.ckd-content');
 };
@@ -1722,16 +1900,14 @@ return function(guard, parent){
 
 define("cardkit/spec/page", [
   "dollar",
-  "darkdom",
   "cardkit/helper",
   "cardkit/spec/box",
   "cardkit/spec/list",
   "cardkit/spec/mini",
   "cardkit/spec/form"
-], function(__oz0, __oz1, __oz2, __oz3, __oz4, __oz5, __oz6, require){ 
+], function(__oz0, __oz1, __oz2, __oz3, __oz4, __oz5, require){ 
 
 var $ = require("dollar"),
-    darkdom = require("darkdom"),
     helper = require("cardkit/helper"),
     UNMOUNT_FLAG = '.unmount-page';
 
@@ -1785,7 +1961,7 @@ function action_spec(guard){
         }
     });
     source_action_attr(guard.source());
-    exports.forwardActionbar(guard);
+    helper.applyActionEvents(guard);
 }
 
 function source_action_spec(source){
@@ -1805,13 +1981,6 @@ function source_action_attr(source){
     });
 }
 
-function forward_control(e){
-    var target = darkdom.getDarkById(e.target.parentNode.id);
-    if (target) {
-        target.trigger('tap').updateDarkDOM();
-    }
-}
-
 function exports(guard, parent){
     guard.watch($(exports.SELECTOR + UNMOUNT_FLAG, parent));
     guard.state({
@@ -1823,23 +1992,12 @@ function exports(guard, parent){
         cardId: 'id'
     });
     guard.component(specs);
+    helper.applyStateEvents(guard);
 }
 
 exports.SELECTOR = 'ck-card[type="page"]';
 
 exports.initOldStyleActionState = source_action_attr;
-
-exports.forwardActionbar = function(guard){
-    guard.forward({
-        'overflows:confirm': function(e){
-            var aid = e.component.val();
-            var target = $('#' + aid).children();
-            target.trigger('tap');
-        },
-        'control:enable': forward_control,
-        'control:disable': forward_control
-    });
-};
 
 return exports;
 
@@ -1905,7 +2063,7 @@ function actionbar_spec(guard){
     });
     guard.component('action', action_spec);
     guard.source().component('action', action_spec);
-    newspec.forwardActionbar(guard);
+    helper.applyActionEvents(guard);
 }
 
 function footer_spec(guard){
@@ -1932,6 +2090,7 @@ function exports(guard, parent){
         cardId: 'id'
     });
     guard.component(specs);
+    helper.applyStateEvents(guard);
 }
 
 exports.SELECTOR = '.ckd-page-card';
@@ -2032,6 +2191,7 @@ var exports = {
     hdOpt: function(){
         return darkdom({
             enableSource: true,
+            sourceAsContent: true,
             render: render_hdopt
         });
     },
@@ -2308,6 +2468,7 @@ var exports = {
     opt: function(){
         return darkdom({
             enableSource: true,
+            sourceAsContent: true,
             render: render_opt
         });
     },
@@ -2452,16 +2613,14 @@ define("cardkit/tpl/scaffold/hdwrap", [], function(){
 define("cardkit/card/list", [
   "darkdom",
   "mo/template/micro",
-  "cardkit/helper",
   "cardkit/tpl/scaffold/hdwrap",
   "cardkit/tpl/list",
   "cardkit/card/item",
   "cardkit/card/common/scaffold"
-], function(__oz0, __oz1, __oz2, __oz3, __oz4, __oz5, __oz6, require){
+], function(__oz0, __oz1, __oz2, __oz3, __oz4, __oz5, require){
 
 var darkdom = require("darkdom"),
     convert = require("mo/template/micro").convertTpl,
-    helper = require("cardkit/helper"),
     render_hdwrap = convert(require("cardkit/tpl/scaffold/hdwrap").template),
     render_list = convert(require("cardkit/tpl/list").template),
     item = require("cardkit/card/item"),
@@ -2485,7 +2644,6 @@ var exports = {
         });
         list.contain(scaffold_components);
         list.contain('item', exports.item);
-        helper.forwardUserEvents(list);
         return list;
     }
 
@@ -2556,7 +2714,6 @@ var exports = {
         box.contain('content', exports.content, {
             content: true
         });
-        helper.forwardUserEvents(box);
         return box;
     }
 
@@ -2587,21 +2744,21 @@ define("cardkit/tpl/form/item", [], function(){
 define("cardkit/card/form", [
   "darkdom",
   "mo/template/micro",
-  "cardkit/helper",
   "cardkit/tpl/form/item",
   "cardkit/tpl/box/content",
   "cardkit/tpl/scaffold/hdwrap",
   "cardkit/tpl/form",
+  "cardkit/helper",
   "cardkit/card/common/scaffold"
 ], function(__oz0, __oz1, __oz2, __oz3, __oz4, __oz5, __oz6, __oz7, require){
 
 var darkdom = require("darkdom"),
     convert = require("mo/template/micro").convertTpl,
-    helper = require("cardkit/helper"),
     render_item = convert(require("cardkit/tpl/form/item").template),
     render_content = convert(require("cardkit/tpl/box/content").template),
     render_hdwrap = convert(require("cardkit/tpl/scaffold/hdwrap").template),
     render_form = convert(require("cardkit/tpl/form").template),
+    helper = require("cardkit/helper"),
     scaffold_components = require("cardkit/card/common/scaffold");
 
 var exports = {
@@ -2615,15 +2772,14 @@ var exports = {
     },
 
     item: function(){
-        return darkdom({
+        var component = darkdom({
             enableSource: true,
             render: render_item
         }).contain('content', exports.content, {
             content: true
-        }).forward({
-            'change input': 'textarea:change',
-            'change textarea': 'textarea:change'
         });
+        helper.forwardInputEvents(component);
+        return component;
     },
 
     form: function(){
@@ -2638,7 +2794,6 @@ var exports = {
         });
         form.contain(scaffold_components);
         form.contain('item', exports.item);
-        helper.forwardUserEvents(form);
         return form;
     }
 
@@ -2662,16 +2817,14 @@ define("cardkit/tpl/mini", [], function(){
 define("cardkit/card/mini", [
   "darkdom",
   "mo/template/micro",
-  "cardkit/helper",
   "cardkit/tpl/scaffold/hdwrap",
   "cardkit/tpl/mini",
   "cardkit/card/item",
   "cardkit/card/common/scaffold"
-], function(__oz0, __oz1, __oz2, __oz3, __oz4, __oz5, __oz6, require){
+], function(__oz0, __oz1, __oz2, __oz3, __oz4, __oz5, require){
 
 var darkdom = require("darkdom"),
     convert = require("mo/template/micro").convertTpl,
-    helper = require("cardkit/helper"),
     render_hdwrap = convert(require("cardkit/tpl/scaffold/hdwrap").template),
     render_mini = convert(require("cardkit/tpl/mini").template),
     item = require("cardkit/card/item"),
@@ -2695,7 +2848,6 @@ var exports = {
         });
         mini.contain(scaffold_components);
         mini.contain('item', exports.item);
-        helper.forwardUserEvents(mini);
         return mini;
     }
 
@@ -2710,14 +2862,14 @@ return exports;
 
 define("cardkit/tpl/page", [], function(){
 
-    return {"template":"\n<div class=\"ck-page-card{%= !hasHeader ? ' no-header' : '' %}{%= !component.banner || componentData.banner.isBlank ? '' : ' with-banner' %}{%= state.isPageActive === 'true' ? ' topbar-enabled' : '' %}\" \n        data-style=\"{%= state.subtype %}\"\n        data-page-active=\"{%= state.isPageActive || 'false' %}\"\n        data-deck-active=\"{%= state.isDeckActive || 'false' %}\"\n        data-deck=\"{%= (state.deck || 'main') %}\"\n        data-curdeck=\"{%= state.currentDeck %}\"\n        data-cardid=\"{%= state.cardId %}\">\n\n    {% if (hasHeader) { %}\n    <div class=\"ck-header\">\n        {%= component.nav %}\n        {%= component.title %}\n        {%= component.actionbar %}\n    </div>\n    {% } %}\n\n    {%= component.banner %}\n\n    <div class=\"ck-article\">\n        {% if (!isBlank) { %}\n            {%= content %}\n        {% } else { %}\n            <div class=\"ck-blank-card\">\n                <article class=\"ck-card-wrap\">\n                    {% if (component.blank) { %}\n                        {%= component.blank %}\n                    {% } else { %}\n                        <div>{%=(state.blankText || '目前还没有内容')%}</div>\n                    {% } %}\n                </article>\n            </div>\n        {% } %}\n    </div>\n\n    {% if (component.footer) { %}\n    <div class=\"ck-footer\">{%= component.footer %}</div>\n    {% } %}\n\n    <a class=\"ck-page-link-mask ck-link\" href=\"#{%= state.cardId %}\"></a>\n\n</div>\n\n"}; 
+    return {"template":"\n<div class=\"ck-page-card{%= !hasHeader ? ' no-header' : '' %}{%= !component.banner || componentData.banner.isBlank ? '' : ' with-banner' %}{%= state.isPageActive === 'true' ? ' topbar-enabled' : '' %}\" \n        data-style=\"{%= state.subtype %}\"\n        data-page-active=\"{%= state.isPageActive || 'false' %}\"\n        data-deck-active=\"{%= state.isDeckActive || 'false' %}\"\n        data-deck=\"{%= (state.deck || 'main') %}\"\n        data-curdeck=\"{%= state.currentDeck %}\"\n        data-cardid=\"{%= state.cardId %}\">\n\n    {% if (hasHeader) { %}\n    <div class=\"ck-header\">\n        <div class=\"ck-header-shd\"></div>\n        {%= component.nav %}\n        {%= component.title %}\n        {%= component.actionbar %}\n    </div>\n    {% } %}\n\n    {%= component.banner %}\n\n    <div class=\"ck-article\">\n        {% if (!isBlank) { %}\n            {%= content %}\n        {% } else { %}\n            <div class=\"ck-blank-card\">\n                <article class=\"ck-card-wrap\">\n                    {% if (component.blank) { %}\n                        {%= component.blank %}\n                    {% } else { %}\n                        <div>{%=(state.blankText || '目前还没有内容')%}</div>\n                    {% } %}\n                </article>\n            </div>\n        {% } %}\n    </div>\n\n    {% if (component.footer) { %}\n    <div class=\"ck-footer\">{%= component.footer %}</div>\n    {% } %}\n\n    <a class=\"ck-page-link-mask ck-link\" href=\"#{%= state.cardId %}\"></a>\n\n</div>\n\n"}; 
 
 });
 /* @source cardkit/tpl/page/actionbar/action.js */;
 
 define("cardkit/tpl/page/actionbar/action", [], function(){
 
-    return {"template":"\n<span class=\"ck-item\">\n    <button type=\"button\" class=\"ck-option\" \n        value=\"{%= id %}\">{%= state.label %}</button>\n    {%= content %}\n</span>\n"}; 
+    return {"template":"\n<span class=\"ck-top-act\">\n    <button type=\"button\" class=\"ck-option\" \n        value=\"{%= id %}\">{%= state.label %}</button>\n    {%= content %}\n</span>\n"}; 
 
 });
 /* @source cardkit/tpl/page/actionbar.js */;
@@ -2824,7 +2976,7 @@ var exports = {
     },
 
     actionbar: function(){
-        return darkdom({
+        var component = darkdom({
             unique: true,
             enableSource: true,
             render: function(data){
@@ -2842,13 +2994,9 @@ var exports = {
                 }, data.visibleActions);
                 return render_actionbar(data);
             }
-        }).contain('action', exports.action)
-            .forward('control:enable .ck-item > *', 
-                'control:enable')
-            .forward('control:disable .ck-item > *', 
-                'control:disable')
-            .forward('actionView:confirm .ck-top-overflow', 
-                'overflows:confirm');
+        }).contain('action', exports.action);
+        helper.forwardActionEvents(component);
+        return component;
     },
 
     blank: function(){
@@ -2888,6 +3036,7 @@ var exports = {
         page.response('state:isPageActive', when_page_active);
         page.response('state:isDeckActive', when_deck_active);
         page.response('state:currentDeck', when_deck_change);
+        helper.forwardStateEvents(page);
         return page;
     }
 
@@ -2951,6 +3100,341 @@ define("cardkit/spec", [
 
 });
 
+/* @source mo/easing/base.js */;
+
+
+define("mo/easing/base", [], function(){
+
+    return {
+
+        def: 'ease',
+
+        positions: {
+            'linear'         :  [0.250, 0.250, 0.750, 0.750],
+            'ease'           :  [0.250, 0.100, 0.250, 1.000],
+            'easeIn'         :  [0.420, 0.000, 1.000, 1.000],
+            'easeOut'        :  [0.000, 0.000, 0.580, 1.000],
+            'easeInOut'      :  [0.420, 0.000, 0.580, 1.000]
+        },
+
+        values: {
+            linear: 'linear',
+            ease: 'ease',
+            easeIn: 'ease-in',
+            easeOut: 'ease-out',
+            easeInOut: 'ease-in-out'
+        },
+
+        // http://gsgd.co.uk/sandbox/jquery/easing/
+        // t: current time, b: begInnIng value, c: change In value, d: duration
+        functions: {
+            linear: function(x, t, b, c) {
+                return b + c * x;
+            },
+            ease: function(x, t, b, c) {
+                return ((-Math.cos(x*Math.PI)/2) + 0.5) * c + b;
+            },
+            easeIn: function (x, t, b, c, d) {
+                return c*(t /= d)*t + b;
+            },
+            easeOut: function (x, t, b, c, d) {
+                return -c *(t /= d)*(t-2) + b;
+            },
+            easeInOut: function (x, t, b, c, d) {
+                if ((t /= d/2) < 1) return c/2*t*t + b;
+                return -c/2 * ((--t)*(t-2) - 1) + b;
+            }
+        },
+
+    };
+
+});
+
+/* @source mo/mainloop.js */;
+
+/**
+ * Implement and manage single loop for WebApp life cycle
+ * Provide tweening API for both property animation and frame animation(canvas or css)
+ *
+ * using AMD (Asynchronous Module Definition) API with OzJS
+ * see http://ozjs.org for details
+ *
+ * Copyright (C) 2010-2012, Dexter.Yy, MIT License
+ * vim: et:ts=4:sw=4:sts=4
+ */
+define("mo/mainloop", [
+  "mo/lang",
+  "mo/easing/base"
+], function(_, easing){
+
+    var window = this,
+        ANIMATE_FRAME = "RequestAnimationFrame",
+        LONG_AFTER = 4000000000000,
+
+        animateFrame = window['webkit' + ANIMATE_FRAME] || 
+            window['moz' + ANIMATE_FRAME] || 
+            window['o' + ANIMATE_FRAME] || 
+            window['ms' + ANIMATE_FRAME],
+        suid = 1,
+        ruid = 1,
+        fps_limit = 0,
+        activeStages = [],
+        renderlib = {},
+        stageLib = {},
+
+        _default_config = {
+            fps: 0,
+            easing: _.copy(easing.functions)
+        };
+
+    function loop(timestamp){
+        for (var i = 0, stage, l = activeStages.length; i < l; i++) {
+            stage = activeStages[i];
+            if (stage) {
+                if (timestamp - stage.lastLoop >= fps_limit) {
+                    stage.lastLoop = timestamp;
+                    stage.renders.call(stage, timestamp);
+                }
+            }
+        }
+    }
+
+    var mainloop = {
+
+        config: function(opt){
+            _.config(this, opt, _default_config);
+            if (opt.fps) {
+                fps_limit = this.fps ? (1000/this.fps) : 0;
+            }
+            return this;
+        },
+
+        run: function(name){
+            if (name) {
+                var stage = stageLib[name];
+                if (!stage) {
+                    this.addStage(name);
+                    stage = stageLib[name];
+                }
+                if (stage && !stage.state) {
+                    stage.state = 1;
+                    activeStages.push(stage);
+                    stage.renders.forEach(function(render){
+                        var _delay = this.delays[render._rid];
+                        if (_delay) {
+                            _delay[3] = +new Date();
+                            _delay[0] = setTimeout(_delay[1], _delay[2]);
+                        }
+                    }, stage);
+                }
+                if (this.globalSignal) {
+                    return this;
+                }
+            }
+
+            var self = this,
+                frameFn = animateFrame,
+                clearInterv = clearInterval,
+                _loop = loop,
+                timer,
+                signal = ++suid;
+
+            this.globalSignal = 1;
+
+            function step(){
+                if (suid === signal) {
+                    var timestamp = +new Date();
+                    _loop(timestamp);
+                    if (self.globalSignal) {
+                        if (frameFn) {
+                            frameFn(step);
+                        }
+                    } else {
+                        clearInterv(timer);
+                    }
+                }
+            }
+
+            if (frameFn) {
+                frameFn(step);
+            } else {
+                timer = setInterval(step, 15);
+            }
+            return this;
+        },
+
+        pause: function(name){
+            if (name) {
+                var n = activeStages.indexOf(stageLib[name]);
+                if (n >= 0) {
+                    var stage = stageLib[name];
+                    activeStages.splice(n, 1);
+                    stage.state = 0;
+                    stage.pauseTime = +new Date();
+                    stage.renders.forEach(function(render){
+                        var _delay = this.delays[render._rid];
+                        if (_delay) {
+                            clearTimeout(_delay[0]);
+                            _delay[2] -= (this.pauseTime - _delay[3]);
+                        }
+                    }, stage);
+                }
+            } else {
+                this.globalSignal = 0;
+            }
+            return this;
+        },
+
+        complete: function(name){
+            var stage = stageLib[name];
+            if (stage && stage.state) {
+                stage.renders.forEach(function(render){
+                    var _delay = stage.delays[render._rid];
+                    if (_delay) {
+                        clearTimeout(_delay[0]);
+                        _delay[1]();
+                    }
+                    render.call(stage, this);
+                }, LONG_AFTER);
+                return this.remove(name);
+            }
+            return this;
+        },
+
+        remove: function(name, fn){
+            if (fn) {
+                var stage = stageLib[name];
+                if (stage) {
+                    clearTimeout((stage.delays[fn._rid] || [])[0]);
+                    stage.renders.clear(fn);
+                }
+            } else {
+                this.pause(name);
+                delete stageLib[name];
+            }
+            return this;
+        },
+
+        info: function(name){
+            return stageLib[name];
+        },
+
+        isRunning: function(name){
+            return !!(stageLib[name] || {}).state;
+        },
+
+        addStage: function(name, ctx){
+            if (name) {
+                stageLib[name] = {
+                    name: name,
+                    ctx: ctx,
+                    state: 0,
+                    lastLoop: 0,
+                    pauseTime: 0,
+                    delays: {},
+                    renders: _.fnQueue()
+                };
+            }
+            return this;
+        },
+
+        addRender: function(name, fn, ctx){
+            if (!stageLib[name]) {
+                this.addStage(name, ctx);
+            }
+            this._lastestRender = fn;
+            stageLib[name].renders.push(fn);
+            return this;
+        },
+
+        getRender: function(renderId){
+            return renderlib[renderId] || this._lastestRender;
+        },
+
+        addTween: function(name, current, end, duration, opt){
+            var self = this,
+                start, _delays,
+                rid = opt.renderId,
+                easing = opt.easing,
+                lastPause = 0,
+                d = end - current;
+            function render(timestamp){
+                if (lastPause !== this.pauseTime && start < this.pauseTime) {
+                    lastPause = this.pauseTime;
+                    start += +new Date() - lastPause;
+                }
+                var v, time = timestamp - start,
+                    p = time/duration;
+                if (time <= 0) {
+                    return;
+                }
+                if (p < 1) {
+                    if (easing) {
+                        p = self.easing[easing](p, time, 0, 1, duration);
+                    }
+                    if (d < 0) {
+                        p = 1 - p;
+                        v = end + -1 * d * p;
+                    } else {
+                        v = current + d * p;
+                    }
+                }
+                if (time >= duration) {
+                    opt.step(end, duration);
+                    self.remove(name, render);
+                    if (opt.callback) {
+                        opt.callback();
+                    }
+                } else {
+                    opt.step(v, time);
+                }
+            }
+            if (opt.delay) {
+                if (!stageLib[name]) {
+                    this.addStage(name);
+                }
+                if (!rid) {
+                    rid = opt.renderId = '_oz_mainloop_' + ruid++;
+                }
+                _delays = stageLib[name].delays;
+                var _timer = setTimeout(add_render, opt.delay);
+                _delays[rid] = [_timer, add_render, opt.delay, +new Date()];
+            } else {
+                add_render();
+            }
+            if (rid) {
+                render._rid = rid;
+                renderlib[rid] = render;
+            }
+            function add_render(){
+                if (_delays) {
+                    delete _delays[rid];
+                }
+                if (duration) {
+                    opt.step(current, 0);
+                } else {
+                    opt.step(end, 0);
+                    if (opt.callback) {
+                        setTimeout(function(){
+                            opt.callback();
+                        }, 0);
+                    }
+                    return;
+                }
+                start = +new Date();
+                self.addRender(name, render);
+            }
+            return this;
+        }
+
+    };
+
+    mainloop.config(_default_config);
+
+    return mainloop;
+
+});
+
 /* @source cardkit.js */;
 
 
@@ -2958,12 +3442,13 @@ define('cardkit', [
   "mo/lang",
   "dollar",
   "mo/browsers",
+  "mo/mainloop",
   "cardkit/spec",
   "cardkit/oldspec",
   "cardkit/ui",
   "cardkit/supports",
   "cardkit/bus"
-], function(_, $, browsers,
+], function(_, $, browsers, mainloop,
     specs, oldspecs, ui, supports, bus){
 
 var DEFAULT_DECK = 'main',
@@ -2987,14 +3472,14 @@ var exports = {
 
     init: function(opt){
         this._config = _.config({}, opt, _defaults);
+        this._specs = this._config.oldStyle ? oldspecs : specs;
         this.initSpec();
         this.initView();
     },
 
     initSpec: function(){
         _.each(specs, function(data, name){
-            var spec = this._config.oldStyle 
-                ? oldspecs[name][0] : data[0];
+            var spec = this._specs[name][0];
             this.component(name, data[1][name]());
             this.spec(name, spec);
         }, this);
@@ -3005,8 +3490,11 @@ var exports = {
         if (browsers.webview) {
             this.wrapper.addClass('ck-in-webview');
         }
-        $(window).on('hashchange', function(){
-            exports.openPage();
+        bus.on('ready', function(){
+            $(window).on('hashchange', function(e){
+                e.preventDefault();
+                exports.openPage();
+            });
         });
         ui.init(this._config);
     },
@@ -3043,15 +3531,63 @@ var exports = {
         }
     },
 
+    scrollPageTo: function(pid){
+        var target = $('.ck-page-card #' + pid);
+        if (target[0]) {
+            mainloop.addTween('scrollPage', 
+                    window.scrollY, target.offset().top, 400, { 
+                easing: 'ease',
+                step: function(v){
+                    window.scrollTo(0, v);
+                },
+                callback: function(){
+                    mainloop.pause();
+                }
+            }).run('scrollPage');
+        }
+    },
+
+    openPageByNode: function(node){
+        var spec = this._specs['page'][0];
+        var outer_page = node.closest(spec.SELECTOR);
+        if (!outer_page[0]) {
+            outer_page = node.closest(spec.SELECTOR_OLD);
+        }
+        if (outer_page[0]) {
+            var last_decktop = _decks[_current_deck];
+            if (!last_decktop || last_decktop[0] !== outer_page[0]) {
+                this.openPage(outer_page);
+            }
+        }
+        return outer_page;
+    },
+
     openPage: function(page){
-        page = this.findPage(page);
-        if (_page_opening || !page[0] 
-                || !this.isPage(page)) {
+        if (_page_opening) {
             return false;
         }
-        window.scrollTo(0, 0);
+        page = this.findPage(page);
+        var pid = page[1];
+        page = page[0];
+        var is_page = this.isPage(page);
+        if (pid && page[0] && !is_page) {
+            this.openPageByNode(page);
+            setTimeout(function(){
+                this.scrollPageTo(pid);
+            }.bind(this), 400);
+            return true;
+        }
         var last_decktop = _decks[DEFAULT_DECK];
-        if (!last_decktop) {
+        var is_init = !last_decktop;
+        if (!page[0] || !is_page) {
+            if (!is_init) {
+                return false;
+            }
+            location.replace('#' + this._config.defaultPage);
+            page = $('#' + this._config.defaultPage);
+        }
+        window.scrollTo(0, 0);
+        if (is_init) {
             last_decktop = $('#' + this._config.defaultPage);
             if (page[0] !== last_decktop[0]) {
                 _decks[DEFAULT_DECK] = last_decktop;
@@ -3081,6 +3617,11 @@ var exports = {
                 && $.contains(body, decktop[0])) {
             close_page(decktop);
         }
+        if (is_init) {
+            page.once('pageCard:opened', function(){
+                bus.resolve('ready');
+            });
+        }
         open_page(page);
         focus_page(page);
         _page_opening = false;
@@ -3088,7 +3629,7 @@ var exports = {
     },
 
     resetPage: function(page){
-        page = this.findPage(page);
+        page = this.findPage(page)[0];
         if (!page[0]) {
             return;
         }
@@ -3096,21 +3637,21 @@ var exports = {
     },
 
     findPage: function(page){
+        var pid;
         if (!page || typeof page === 'string') {
             var hash = RE_HASH.exec(location.href);
-            page = page 
+            pid = page 
                 || hash && hash[1] 
                 || this._config.defaultPage;
-            page = $('#' + page);
+            page = $('#' + pid);
         } else {
             page = $(page);
         }
-        return page;
+        return [page, pid];
     },
 
     isPage: function(page){
-        var spec = (this._config.oldStyle 
-            ? oldspecs : specs)['page'][0];
+        var spec = this._specs['page'][0];
         return page.is(spec.SELECTOR)
             || spec.SELECTOR_OLD 
                 && page.is(spec.SELECTOR_OLD);
@@ -3120,7 +3661,8 @@ var exports = {
         return window.innerWidth / window.innerHeight > 1.1;
     },
 
-    delegate: ui.delegate,
+    brightDelegate: ui.brightDelegate,
+    darkDelegate: ui.darkDelegate,
     ui: ui,
     event: bus
 
@@ -3135,9 +3677,14 @@ exports.modalCard.event.on('open', function(modal){
     modal.lastDecktop = _decks[_current_deck];
     exports.openPage(modal.pageNode());
 }).on('willUpdateContent', function(modal){
-    exports.resetPage(modal.pageNode());
+    var page = modal.pageNode();
+    if (page[0] && page[0].isMountedDarkDOM) {
+        exports.resetPage(page);
+    }
 }).on('close', function(modal){
     exports.openPage(modal.lastDecktop);
+//}).on('frameOnload', function(modal){
+    //exports.render('page', modal._iframeWindow[0].document);
 });
 
 function open_page(page){
