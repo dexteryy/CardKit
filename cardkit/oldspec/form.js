@@ -23,12 +23,21 @@ return function(guard, parent){
     guard.component(scaffold_specs);
     guard.component('item', function(guard){
         guard.watch('.ckd-item');
-        guard.component('content', function(guard){
-            guard.watch('.ckd-content');
-            guard.state(source_states);
+        guard.component({
+            title: function(guard){
+                guard.watch('.ckd-title');
+                guard.state(source_states);
+            },
+            content: function(guard){
+                guard.watch('.ckd-content');
+                guard.state(source_states);
+            }
         });
         helper.applyInputEvents(guard);
-        guard.source().component('content', '.ckd-content');
+        guard.source().component({
+            title: '.ckd-title',
+            content: '.ckd-content'
+        });
     });
     guard.source().component(scaffold_specs);
     guard.source().component('item', form_spec.sourceItemSpec);

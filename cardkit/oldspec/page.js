@@ -8,7 +8,7 @@ var $ = require('dollar'),
     UNMOUNT_FLAG = '.unmount-page';
 
 var specs = {
-    title: '.ckd-page-title',
+    title: title_spec,
     actionbar: actionbar_spec,
     nav: nav_spec,
     banner: banner_spec,
@@ -20,14 +20,21 @@ var specs = {
     form: require('./form'),
 };
 
+function title_spec(guard){
+    guard.watch('.ckd-page-title');
+    guard.state('source', helper.readSource);
+}
+
 function blank_spec(guard){
     guard.watch('.ckd-page-blank');
+    guard.state('source', helper.readSource);
 }
 
 function nav_spec(guard){
     guard.watch('.ckd-page-nav');
     guard.state({
-        link: 'href'
+        link: 'href',
+        source: helper.readSource 
     });
 }
 
@@ -35,7 +42,8 @@ function banner_spec(guard){
     guard.watch('.ckd-page-banner');
     guard.watch('.ck-banner-unit'); // @deprecated
     guard.state({
-        plainStyle: 'data-cfg-plain'
+        plainStyle: 'data-cfg-plain',
+        source: helper.readSource 
     });
 }
 

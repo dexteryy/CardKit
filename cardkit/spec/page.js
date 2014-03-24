@@ -11,16 +11,12 @@ var specs = {
     nav: nav_spec,
     banner: banner_spec,
     footer: 'ck-part[type="footer"]',
-    blank: blank_spec,
+    blank: 'ck-part[type="blank"]',
     box: require('./box'),
     list: require('./list'),
     mini: require('./mini'),
     form: require('./form'),
 };
-
-function blank_spec(guard){
-    guard.watch('ck-part[type="blank"]');
-}
 
 function nav_spec(guard){
     guard.watch('ck-part[type="nav"]');

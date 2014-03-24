@@ -4,7 +4,8 @@ define(function(require){
 var darkdom = require('darkdom'),
     convert = require('mo/template/micro').convertTpl,
     render_item = convert(require('../tpl/form/item').template),
-    render_content = convert(require('../tpl/box/content').template),
+    render_title = convert(require('../tpl/form/title').template),
+    render_content = convert(require('../tpl/form/content').template),
     render_hdwrap = convert(require('../tpl/scaffold/hdwrap').template),
     render_form = convert(require('../tpl/form').template),
     helper = require('../helper'),
@@ -12,6 +13,14 @@ var darkdom = require('darkdom'),
 
 var exports = {
 
+    title: function(){
+        return darkdom({
+            unique: true,
+            enableSource: true,
+            render: render_title
+        });
+    },
+    
     content: function(){
         return darkdom({
             enableSource: true,
@@ -26,7 +35,7 @@ var exports = {
             render: render_item
         }).contain('content', exports.content, {
             content: true
-        });
+        }).contain('title', exports.title);
         helper.forwardInputEvents(component);
         return component;
     },

@@ -18,7 +18,10 @@ function exports(guard, parent){
     guard.component(scaffold_specs);
     guard.component('item', function(guard){
         guard.watch('ck-part[type="item"]');
-        guard.component('content', 'ck-part[type="content"]');
+        guard.component({
+            title: 'ck-part[type="title"]',
+            content: 'ck-part[type="content"]'
+        });
         helper.applyInputEvents(guard);
         guard.source().component('content', '.ckd-content');
     });
@@ -28,7 +31,10 @@ function exports(guard, parent){
 
 exports.sourceItemSpec = function(guard){
     guard.watch('.ckd-item');
-    guard.component('content', '.ckd-content');
+    guard.component({
+        title: '.ckd-title',
+        content: '.ckd-content'
+    });
 };
 
 return exports;

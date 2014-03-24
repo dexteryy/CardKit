@@ -1,1 +1,4 @@
-<div class="ck-item">{%= content %}</div>
+<div class="ck-item">
+    {%= component.title %}
+    {%= content %}
+</div>
