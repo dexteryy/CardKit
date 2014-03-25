@@ -1770,7 +1770,10 @@ function exports(guard, parent){
     guard.component(scaffold_specs);
     guard.component('item', function(guard){
         guard.watch('ck-part[type="item"]');
-        guard.component('content', 'ck-part[type="content"]');
+        guard.component({
+            title: 'ck-part[type="title"]',
+            content: 'ck-part[type="content"]'
+        });
         helper.applyInputEvents(guard);
         guard.source().component('content', '.ckd-content');
     });
@@ -1780,7 +1783,10 @@ function exports(guard, parent){
 
 exports.sourceItemSpec = function(guard){
     guard.watch('.ckd-item');
-    guard.component('content', '.ckd-content');
+    guard.component({
+        title: '.ckd-title',
+        content: '.ckd-content'
+    });
 };
 
 return exports;
@@ -1815,12 +1821,21 @@ return function(guard, parent){
     guard.component(scaffold_specs);
     guard.component('item', function(guard){
         guard.watch('.ckd-item');
-        guard.component('content', function(guard){
-            guard.watch('.ckd-content');
-            guard.state(source_states);
+        guard.component({
+            title: function(guard){
+                guard.watch('.ckd-title');
+                guard.state(source_states);
+            },
+            content: function(guard){
+                guard.watch('.ckd-content');
+                guard.state(source_states);
+            }
         });
         helper.applyInputEvents(guard);
-        guard.source().component('content', '.ckd-content');
+        guard.source().component({
+            title: '.ckd-title',
+            content: '.ckd-content'
+        });
     });
     guard.source().component(scaffold_specs);
     guard.source().component('item', form_spec.sourceItemSpec);
@@ -1917,16 +1932,12 @@ var specs = {
     nav: nav_spec,
     banner: banner_spec,
     footer: 'ck-part[type="footer"]',
-    blank: blank_spec,
+    blank: 'ck-part[type="blank"]',
     box: require("cardkit/spec/box"),
     list: require("cardkit/spec/list"),
     mini: require("cardkit/spec/mini"),
     form: require("cardkit/spec/form"),
 };
-
-function blank_spec(guard){
-    guard.watch('ck-part[type="blank"]');
-}
 
 function nav_spec(guard){
     guard.watch('ck-part[type="nav"]');
@@ -1949,6 +1960,7 @@ function actionbar_spec(guard){
     });
     guard.component('action', action_spec);
     guard.source().component('action', source_action_spec);
+    helper.applyActionEvents(guard);
 }
 
 function action_spec(guard){
@@ -1961,7 +1973,6 @@ function action_spec(guard){
         }
     });
     source_action_attr(guard.source());
-    helper.applyActionEvents(guard);
 }
 
 function source_action_spec(source){
@@ -2024,7 +2035,7 @@ var $ = require("dollar"),
     UNMOUNT_FLAG = '.unmount-page';
 
 var specs = {
-    title: '.ckd-page-title',
+    title: title_spec,
     actionbar: actionbar_spec,
     nav: nav_spec,
     banner: banner_spec,
@@ -2036,14 +2047,21 @@ var specs = {
     form: require("cardkit/oldspec/form"),
 };
 
+function title_spec(guard){
+    guard.watch('.ckd-page-title');
+    guard.state('source', helper.readSource);
+}
+
 function blank_spec(guard){
     guard.watch('.ckd-page-blank');
+    guard.state('source', helper.readSource);
 }
 
 function nav_spec(guard){
     guard.watch('.ckd-page-nav');
     guard.state({
-        link: 'href'
+        link: 'href',
+        source: helper.readSource 
     });
 }
 
@@ -2051,7 +2069,8 @@ function banner_spec(guard){
     guard.watch('.ckd-page-banner');
     guard.watch('.ck-banner-unit'); // @deprecated
     guard.state({
-        plainStyle: 'data-cfg-plain'
+        plainStyle: 'data-cfg-plain',
+        source: helper.readSource 
     });
 }
 
@@ -2731,11 +2750,25 @@ define("cardkit/tpl/form", [], function(){
     return {"template":"<div class=\"ck-form-card{%= (state.blankText === 'false' ? ' no-blank' : '') %}\"\n        data-style=\"{%= state.subtype %}\"\n        {%= state.plainHdStyle ? 'data-cfg-plainhd=\"true\" ' : '' %}>\n\n    {% if (hasSplitHd) { %}\n        {%= hdwrap %}\n    {% } %}\n\n    <article class=\"ck-card-wrap\">\n\n        {% if (!hasSplitHd) { %}\n            {%= hdwrap %}\n        {% } %}\n\n        {% if (component.item.length) { %}\n            {% component.item.forEach(function(item){ %}\n                {%= item %}\n            {% }); %}\n        {% } else { %}\n            <div class=\"ck-item blank\">\n            {% if (component.blank) { %}\n                {%= component.blank %}\n            {% } else { %}\n                {%=(state.blankText || '目前还没有内容')%}\n            {% } %}\n            </div>\n        {% } %}\n\n        {%= component.ft %}\n\n    </article>\n\n</div>\n"}; 
 
 });
+/* @source cardkit/tpl/form/content.js */;
+
+define("cardkit/tpl/form/content", [], function(){
+
+    return {"template":"<div class=\"ck-content\">{%= content %}</div>\n"}; 
+
+});
+/* @source cardkit/tpl/form/title.js */;
+
+define("cardkit/tpl/form/title", [], function(){
+
+    return {"template":"<label class=\"ck-title\">{%= content %}</label>\n"}; 
+
+});
 /* @source cardkit/tpl/form/item.js */;
 
 define("cardkit/tpl/form/item", [], function(){
 
-    return {"template":"<div class=\"ck-item\">{%= content %}</div>\n"}; 
+    return {"template":"<div class=\"ck-item\">\n    {%= component.title %}\n    {%= content %}\n</div>\n"}; 
 
 });
 /* @source cardkit/card/form.js */;
@@ -2745,17 +2778,19 @@ define("cardkit/card/form", [
   "darkdom",
   "mo/template/micro",
   "cardkit/tpl/form/item",
-  "cardkit/tpl/box/content",
+  "cardkit/tpl/form/title",
+  "cardkit/tpl/form/content",
   "cardkit/tpl/scaffold/hdwrap",
   "cardkit/tpl/form",
   "cardkit/helper",
   "cardkit/card/common/scaffold"
-], function(__oz0, __oz1, __oz2, __oz3, __oz4, __oz5, __oz6, __oz7, require){
+], function(__oz0, __oz1, __oz2, __oz3, __oz4, __oz5, __oz6, __oz7, __oz8, require){
 
 var darkdom = require("darkdom"),
     convert = require("mo/template/micro").convertTpl,
     render_item = convert(require("cardkit/tpl/form/item").template),
-    render_content = convert(require("cardkit/tpl/box/content").template),
+    render_title = convert(require("cardkit/tpl/form/title").template),
+    render_content = convert(require("cardkit/tpl/form/content").template),
     render_hdwrap = convert(require("cardkit/tpl/scaffold/hdwrap").template),
     render_form = convert(require("cardkit/tpl/form").template),
     helper = require("cardkit/helper"),
@@ -2763,6 +2798,14 @@ var darkdom = require("darkdom"),
 
 var exports = {
 
+    title: function(){
+        return darkdom({
+            unique: true,
+            enableSource: true,
+            render: render_title
+        });
+    },
+    
     content: function(){
         return darkdom({
             enableSource: true,
@@ -2777,7 +2820,7 @@ var exports = {
             render: render_item
         }).contain('content', exports.content, {
             content: true
-        });
+        }).contain('title', exports.title);
         helper.forwardInputEvents(component);
         return component;
     },
