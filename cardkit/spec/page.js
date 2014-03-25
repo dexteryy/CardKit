@@ -39,6 +39,7 @@ function actionbar_spec(guard){
     });
     guard.component('action', action_spec);
     guard.source().component('action', source_action_spec);
+    helper.applyActionEvents(guard);
 }
 
 function action_spec(guard){
@@ -51,7 +52,6 @@ function action_spec(guard){
         }
     });
     source_action_attr(guard.source());
-    helper.applyActionEvents(guard);
 }
 
 function source_action_spec(source){
