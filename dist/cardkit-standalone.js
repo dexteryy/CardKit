@@ -6116,6 +6116,7 @@ var _defaults = {
     _dark_models = {},
     _guards = {},
     _updaters = {},
+    _update_tm = 0,
     _tm = 0,
     _tuid = 0,
     _to_string = Object.prototype.toString,
@@ -6390,8 +6391,9 @@ DarkComponent.prototype = {
             opt = component;
         }
         opt = opt || {};
-        var dict = mix_setter(name, component, 
-            this._components, { execFunc: true });
+        var dict = mix_setter(name, component, this._components, { 
+            execFunc: true 
+        });
         if (opt.content) {
             _.mix(this._contents, dict);
         }
@@ -6469,7 +6471,9 @@ DarkGuard.prototype = {
      * @method
      */
     component: function(name, spec){
-        mix_setter(name, spec, this._specs);
+        mix_setter(name, spec, this._specs, {
+            enableExtension: true
+        });
         return this;
     },
 
@@ -6572,6 +6576,10 @@ DarkGuard.prototype = {
                 target.attr(MY_BRIGHT, bright_id);
             }
         }
+        if (!this._config.isSource
+                && (target[0].lastUpdateDarkDOM || 0) > _update_tm) {
+            return bright_id;
+        }
         _guards[bright_id] = this;
         if (!this._config.isSource) {
             _.each(DarkDOM.prototype, function(method, name){
@@ -6581,6 +6589,7 @@ DarkGuard.prototype = {
             target[0].isDarkSource = true;
         }
         this._darkRoots.push(target[0]);
+        target[0].lastUpdateDarkDOM = +new Date();
         return bright_id;
     },
 
@@ -6598,6 +6607,7 @@ DarkGuard.prototype = {
         _.each(DarkDOM.prototype, function(method, name){
             delete this[name];
         }, target[0]);
+        delete target[0].lastUpdateDarkDOM;
         clear(this._darkRoots, target[0]);
     },
 
@@ -6682,32 +6692,48 @@ DarkGuard.prototype = {
     },
 
     _scanComponents: function(dark_model, target){
-        var re = {}, cfg = this._config, opts = this._options;
-        _.each(cfg.components, function(component, name){
-            var guard = component.createGuard({
+        var cfg = this._config, 
+            opts = this._options,
+            specs = this._specs, 
+            guard_opt = {
                 contextModel: dark_model,
                 contextTarget: target,
                 isSource: cfg.isSource
-            });
-            var spec = this._specs[name];
-            if (typeof spec === 'string') {
-                guard.watch(spec);
-            } else if (spec) {
-                spec(guard);
+            },
+            non_contents = {},
+            re = {};
+        _.each(cfg.components, function(component, name){
+            if (!cfg.contents[name]) {
+                non_contents[name] = component;
+                return;
             }
-            guard.buffer();
-            if (cfg.contents[name]) {
-                guard._bufferContent();
-            } else {
-                re[name] = guard.releaseModel();
-            }
-        }, this);
+            var guard = auto_guard(component, name);
+            guard._bufferContent();
+        });
+        _.each(non_contents, function(component, name){
+            var guard = auto_guard(component, name);
+            re[name] = guard.releaseModel();
+        });
         dark_model.componentData = re;
         dark_model.contentData = this._scanContents(target, {
             scriptContext: !opts.disableScript && target[0],
             entireAsContent: opts.entireAsContent,
             noComs: !Object.keys(cfg.components).length
         });
+        function auto_guard(component, name){
+            var guard = component.createGuard(guard_opt);
+            var spec = specs[name];
+            if (spec) {
+                var last_fn = spec[spec.length - 1];
+                if (typeof last_fn === 'string') {
+                    guard.watch(last_fn);
+                } else if (spec) {
+                    exec_queue(spec, [guard, target]);
+                }
+            }
+            guard.buffer();
+            return guard;
+        }
     },
 
     _scanContents: scan_contents,
@@ -7089,6 +7115,7 @@ function update_target(target, opt){
     if (!guard || !origin) {
         return;
     }
+    _update_tm = +new Date();
     var dark_modelset;
     if (opt.onlyStates) {
         dark_modelset = guard.scanRoot(target, opt);
@@ -7395,13 +7422,17 @@ function fix_userdata_component(component, name){
         dataset = [dataset];
     }
     var spec = this.specs[name];
-    spec = typeof spec !== 'string' && spec;
+    if (spec && typeof spec[spec.length - 1] === 'string') {
+        spec = false;
+    }
     dataset.forEach(function(data){
+        var fake_parent = $();
         var user_guard = this.createGuard({
+            contextTarget: fake_parent,
             isSource: true
         });
         if (spec) {
-            spec(user_guard);
+            exec_queue(spec, [user_guard, fake_parent]);
         }
         fix_userdata(data, user_guard);
     }, component);
@@ -7478,9 +7509,34 @@ function mix_setter(key, value, context, opt){
         if (opt.execFunc && is_function(value)) {
             value = value(this[key]);
         }
-        this[key] = re[key] = value;
+        if (opt.enableExtension) {
+            if (!this[key]) {
+                this[key] = [];
+            }
+            if (!re[key]) {
+                re[key] = [];
+            }
+            this[key].push(value);
+            re[key].push(value);
+        } else {
+            this[key] = re[key] = value;
+        }
     }, context);
     return re;
+}
+
+function exec_queue(queue, args){
+    if (queue.length > 1) {
+        queue.reduce(function(orig_fn, new_fn){
+            return function(){
+                var args = [].slice.call(arguments);
+                args[args.length] = orig_fn;
+                return new_fn.apply(this, args);
+            };
+        }).apply(this, args);
+    } else {
+        queue[0].apply(this, args);
+    }
 }
 
 /**
@@ -9651,7 +9707,7 @@ var exports = {
         _.each(specs, function(data, name){
             var spec = this._specs[name][0];
             this.component(name, data[1][name]());
-            this.spec(name, spec);
+            _specs[name] = spec;
         }, this);
     },
 
@@ -9677,14 +9733,6 @@ var exports = {
         }
     },
 
-    spec: function(name, spec){
-        if (spec) {
-            _specs[name] = spec;
-        } else {
-            return _specs[name];
-        }
-    },
-
     guard: function(name){
         if (!_guards[name]) {
             _guards[name] = this.component(name).createGuard();
@@ -9693,10 +9741,10 @@ var exports = {
     },
 
     render: function(name, parent){
-        var spec = this.spec(name);
+        var spec = _specs[name];
         var guard = this.guard(name);
         if (spec && guard) {
-            spec(guard, parent);
+            spec(guard, parent || this.wrapper);
             guard.mount();
         }
     },
@@ -9804,6 +9852,16 @@ var exports = {
             return;
         }
         page.resetDarkDOM();
+    },
+
+    updatePage: function(page){
+        page = page ? this.findPage(page)[0]
+            : this.currentPage()[0];
+        page.updateDarkDOM();
+    },
+
+    currentPage: function(){
+        return _decks[_current_deck] || $();
     },
 
     findPage: function(page){
