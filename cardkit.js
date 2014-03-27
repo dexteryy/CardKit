@@ -42,7 +42,7 @@ var exports = {
         _.each(specs, function(data, name){
             var spec = this._specs[name][0];
             this.component(name, data[1][name]());
-            this.spec(name, spec);
+            _specs[name] = spec;
         }, this);
     },
 
@@ -68,14 +68,6 @@ var exports = {
         }
     },
 
-    spec: function(name, spec){
-        if (spec) {
-            _specs[name] = spec;
-        } else {
-            return _specs[name];
-        }
-    },
-
     guard: function(name){
         if (!_guards[name]) {
             _guards[name] = this.component(name).createGuard();
@@ -84,10 +76,10 @@ var exports = {
     },
 
     render: function(name, parent){
-        var spec = this.spec(name);
+        var spec = _specs[name];
         var guard = this.guard(name);
         if (spec && guard) {
-            spec(guard, parent);
+            spec(guard, parent || this.wrapper);
             guard.mount();
         }
     },
@@ -195,6 +187,16 @@ var exports = {
             return;
         }
         page.resetDarkDOM();
+    },
+
+    updatePage: function(page){
+        page = page ? this.findPage(page)[0]
+            : this.currentPage()[0];
+        page.updateDarkDOM();
+    },
+
+    currentPage: function(){
+        return _decks[_current_deck] || $();
     },
 
     findPage: function(page){
