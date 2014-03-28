@@ -1,7 +1,7 @@
 {
   "name": "cardkit",
   "description": "CardKit is a mobile UI library provides a series of building blocks which are all components built on DarkDOM and Moui.",
-  "version": "2.0.0-alpha.6",
+  "version": "2.0.0-alpha.7",
   "main": "cardkit.js",
   "dependencies": {
     "mo": "~1.6.7",

@@ -1936,16 +1936,16 @@ define("dollar/origin", [
         children: function(){
             var r = new $();
             this.forEach(function(node){
-                this(r, $(node.children));
-            }, _.merge);
+                _array_push.apply(this, _array_slice.call(node.children));
+            }, r);
             return r;
         },
 
         contents: function(){
             var r = new $();
             this.forEach(function(node){
-                this(r, $(node.childNodes));
-            }, _.merge);
+                _array_push.apply(this, _array_slice.call(node.childNodes));
+            }, r);
             return r;
         },
 
@@ -5985,9 +5985,7 @@ var exports = {
             oldStylePage: opt.oldStyle,
             parent: wrapper
         });
-        var tapGesture = momoTap(doc, {
-            tapThreshold: 20 
-        });
+        var tapGesture = momoTap(doc);
         set_alias_events(tapGesture.event);
         var prevent_click_events = {};
         Object.keys(tap_events).forEach(function(selector){
@@ -6128,7 +6126,9 @@ var _defaults = {
     RE_CONTENT_COM = new RegExp('\\{\\{' 
         + MY_BRIGHT + '=(\\w+)\\}\\}', 'g'),
     RE_EVENT_SEL = /(\S+)\s*(.*)/,
-    RE_HTMLTAG = /^\s*<(\w+|!)[^>]*>/;
+    RE_ATTR_ID = /(\sid=['"])[^"']*/,
+    RE_ATTR_MARK = new RegExp('(' + IS_BRIGHT + "=['\"])[^'\"]*"),
+    RE_HTMLTAG = /^\s*(<[\w\-]+)([^>]*)>/;
 
 /**
  * @memberof module:darkdom
@@ -6622,7 +6622,7 @@ DarkGuard.prototype = {
         }
         target.trigger('darkdom:willMount');
         var dark_model = render_root(this.scanRoot(target));
-        target.hide().after(this.createRoot(dark_model));
+        target.hide().after(this.render(dark_model));
         this._listen(dark_model);
         target[0].isMountedDarkDOM = true;
         run_script(dark_model);
@@ -6770,20 +6770,27 @@ DarkGuard.prototype = {
         return this;
     },
 
-    createRoot: function(dark_model){
-        var html = this.render(dark_model);
-        if (!RE_HTMLTAG.test(html)) {
-            return html;
-        }
-        var bright_root = $(html);
-        bright_root.attr(IS_BRIGHT, 'true');
-        bright_root.attr('id', dark_model.id);
-        return bright_root;
-    },
-
     render: function(dark_model){
-        return (this._options.render
+        var html = (this._options.render 
             || default_render)(dark_model);
+        return html.replace(RE_HTMLTAG, function($0, $1, $2){
+            var has_id, has_mark;
+            $2 = $2.replace(RE_ATTR_ID, function($0, $1){
+                has_id = true;
+                return $1 + dark_model.id;
+            });
+            $2 = $2.replace(RE_ATTR_MARK, function($0, $1){
+                has_mark = true;
+                return $1 + 'true';
+            });
+            if (!has_id) {
+                $2 = ' id="' + dark_model.id + '"' + $2;
+            }
+            if (!has_mark) {
+                $2 = ' ' + IS_BRIGHT + '="true"' + $2;
+            }
+            return $1 + $2 + '>';
+        });
     },
 
     _listen: function(dark_model){
@@ -6838,7 +6845,7 @@ DarkGuard.prototype = {
             return re;
         }
         if (changes.root[0]) {
-            this.createRoot(changes.model).replaceAll(changes.root);
+            $(this.render(changes.model)).replaceAll(changes.root);
             this._listen(changes.model);
             return re;
         }
@@ -7096,7 +7103,7 @@ function run_script(dark_model){
             .call(content._context);
     }
     _.each(content._index || {}, run_script);
-    _.each(dark_model.componentData || [], run_script);
+    _.each(dark_model.componentData || {}, run_script);
 }
 
 function update_target(target, opt){
@@ -7289,7 +7296,7 @@ function merge_source(dark_model, source_model, context){
     if (!dark_model.componentData) {
         dark_model.componentData = {};
     }
-    _.each(source_model.componentData || [],
+    _.each(source_model.componentData || {},
         merge_source_components, dark_model);
     return dark_model;
 }
@@ -7442,21 +7449,25 @@ function render_root(dark_model){
     _.each(dark_model.componentData, function(dark_modelset, name){
         if (_is_array(dark_modelset)) {
             this[name] = dark_modelset.map(function(dark_model){
-                return render_model(dark_model);
-            });
+                return this(dark_model);
+            }, render_model);
         } else {
             this[name] = render_model(dark_modelset);
         }
     }, dark_model.component || (dark_model.component = {}));
     var content_data = dark_model.contentData;
-    dark_model.content = content_data.text
-        .replace(RE_CONTENT_COM, function($0, bright_id){
-            var dark_model = content_data._index[bright_id];
-            if (dark_model === 'string') {
+    var index = content_data._index;
+    var text = content_data.text;
+    if (!is_empty_object(index)) {
+        text = text.replace(RE_CONTENT_COM, function($0, bright_id){
+            var dark_model = index[bright_id];
+            if (typeof dark_model === 'string') {
                 return dark_model;
             }
             return render_model(dark_model);
         });
+    }
+    dark_model.content = text;
     _dark_models[dark_model.id] = dark_model;
     return dark_model;
 }
@@ -7469,10 +7480,7 @@ function render_model(dark_model){
     if (!dark_model.component) {
         dark_model = render_root(dark_model);
     }
-    var root = guard.createRoot(dark_model);
-    return typeof root === 'string' 
-        ? root
-        : root[0].outerHTML;
+    return guard.render(dark_model);
 }
 
 function read_state(target, getter){
@@ -7495,6 +7503,14 @@ function default_render(dark_model){
 
 function is_function(obj) {
     return _to_string.call(obj) === "[object Function]";
+}
+
+function is_empty_object(obj) {
+    for (var name in obj) {
+        name = null;
+        return false;
+    }
+    return true;
 }
 
 function mix_setter(key, value, context, opt){

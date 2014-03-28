@@ -839,10 +839,6 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
   border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   z-index: 10;
-  -moz-user-select: -moz-none;
-  -ms-user-select: none;
-  -webkit-user-select: none;
-  user-select: none;
 }
 .ck-header a {
   -webkit-touch-callout: none;
@@ -864,10 +860,6 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   min-height: 100%;
   overflow: hidden;
   margin: 0;
-  -moz-user-select: -moz-none;
-  -ms-user-select: none;
-  -webkit-user-select: none;
-  user-select: none;
   font: 11px Helvetica, sans-serif;
   color: #252525;
   line-height: 1.6;
@@ -974,12 +966,6 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   color: #006ae2;
   -webkit-tap-highlight-color: rgba(0, 119, 220, 0.2);
 }
-.ck-page-card .ck-link-mask {
-  -moz-user-select: -moz-none;
-  -ms-user-select: none;
-  -webkit-user-select: none;
-  user-select: none;
-}
 
 .ck-page-link-mask {
   display: none;
@@ -996,6 +982,10 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   top: 0;
   left: 0;
   width: 100%;
+  -moz-user-select: -moz-none;
+  -ms-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
   z-index: 210;
   -moz-transition: -moz-transform 0.3s;
   -o-transition: -o-transform 0.3s;
@@ -1319,10 +1309,6 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   border-color: #e6e6e6;
   padding: 40px 0 10px 0;
   font-size: 17px;
-  -moz-user-select: text;
-  -ms-user-select: text;
-  -webkit-user-select: text;
-  user-select: text;
 }
 .ck-box-card[data-cfg-paper="true"] .ck-card-wrap > section p, .ck-list-card[data-cfg-paper="true"] .ck-card-wrap > section p {
   margin: 0 0 25px 0;
@@ -1533,10 +1519,6 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   display: block;
   line-height: 1.4;
   margin: 0 0 4px 0;
-  -moz-user-select: text;
-  -ms-user-select: text;
-  -webkit-user-select: text;
-  user-select: text;
 }
 .ck-list-card .ck-content-wrap img, .ck-mini-card .ck-content-wrap img,
 .ck-list-card .ck-author-content-wrap img,
@@ -1783,10 +1765,6 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   -moz-border-radius: 3px;
   -webkit-border-radius: 3px;
   border-radius: 3px;
-  -moz-user-select: text;
-  -ms-user-select: text;
-  -webkit-user-select: text;
-  user-select: text;
 }
 .ck-form-card .ck-item input[type="number"] {
   width: 80px;
