@@ -210,7 +210,6 @@
     padding:40px 0 $moui_space 0;
     //line-height:(54px/2);
     font-size:(34px/2);
-    @include user-select(text);
 
     p {
       margin:0 0 (50px/2) 0;

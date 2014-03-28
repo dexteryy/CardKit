@@ -14,7 +14,6 @@
   min-height:100%;
   overflow:hidden;
   margin:0;
-  @include user-select(none);
   font:$moui_text_size Helvetica,sans-serif;
   color:$moui_text_color;
   line-height:1.6;
@@ -130,7 +129,7 @@
   }
 
   .ck-link-mask {
-    @include user-select(none);
+    //@include user-select(none);
   }
 
 }
@@ -151,6 +150,7 @@
   top:0;
   left:0;
   width:100%;
+  @include user-select(none);
   z-index:$moui_z_view + $moui_z_step;
   @include transition(transform 0.3s);
   @include transform(translateY(-$moui_nav_h));

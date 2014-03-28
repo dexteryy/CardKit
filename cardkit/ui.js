@@ -383,9 +383,7 @@ var exports = {
             oldStylePage: opt.oldStyle,
             parent: wrapper
         });
-        var tapGesture = momoTap(doc, {
-            tapThreshold: 20 
-        });
+        var tapGesture = momoTap(doc);
         set_alias_events(tapGesture.event);
         var prevent_click_events = {};
         Object.keys(tap_events).forEach(function(selector){
