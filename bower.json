@@ -5,8 +5,8 @@
   "main": "cardkit.js",
   "dependencies": {
     "mo": "~1.6.7",
-    "dollar": "~1.5.0",
-    "darkdom": "~0.14.0",
+    "dollar": "~1.5.1",
+    "darkdom": "~0.15.0",
     "eventmaster": "~2.1.0",
     "soviet": "~1.0.0",
     "momo": "~1.2.0-alpha.1",

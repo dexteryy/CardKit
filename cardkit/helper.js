@@ -83,17 +83,6 @@ var exports = {
         });
     },
 
-    getOriginByCustomId: function(custom_id){
-        var re;
-        _.each($('body #' + custom_id), function(node){
-            if (!$.matches(node, '[dd-autogen] #' + custom_id)) {
-                re = $(node);
-                return false;
-            }
-        });
-        return re || $();
-    },
-
     isBlank: function(content){
         return !content || !/\S/m.test(content);
     }
@@ -193,7 +182,7 @@ function find_dark(fn){
         if (!target) {
             return;
         }
-        target = exports.getOriginByCustomId(target);
+        target = darkdom.getDarkByCustomId(target);
         if (target[0] 
                 && !target[0]._ckDisablePageForward) {
             fn(target, e);
@@ -205,7 +194,7 @@ function find_top_dark(fn){
     return function(e){
         var target = e.target.id;
         if (target) {
-            target = exports.getOriginByCustomId(target);
+            target = darkdom.getDarkByCustomId(target);
         } else {
             target = darkdom.getDarkById(e.target.parentNode.id);
         }

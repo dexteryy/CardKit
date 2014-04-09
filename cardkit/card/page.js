@@ -124,26 +124,28 @@ var exports = {
 };
 
 function when_page_active(changes){
+    var root = changes.root;
     if (changes.newValue === 'true') {
-        changes.root.css('min-height', window.innerHeight * 1.4 + 'px')
+        root.css('min-height', window.innerHeight * 1.4 + 'px')
             .attr('data-page-active', true);
         setTimeout(function(){
-            changes.root.addClass('topbar-enabled');
+            root.addClass('topbar-enabled');
             window.scrollTo(0, 0);
         }, 100);
     } else {
-        changes.root.attr('data-page-active', false)
+        root.attr('data-page-active', false)
             .removeClass('topbar-enabled');
     }
     return false;
 }
 
 function when_deck_active(changes){
+    var root = changes.root;
     if (changes.newValue === 'true') {
-        changes.root.css('min-height', window.innerHeight * 1.4 + 'px')
+        root.css('min-height', window.innerHeight * 1.4 + 'px')
             .attr('data-deck-active', true);
     } else {
-        changes.root.attr('data-deck-active', false);
+        root.attr('data-deck-active', false);
         setTimeout(function(){
             window.scrollTo(0, 0);
         }, 300);
