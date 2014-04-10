@@ -581,11 +581,12 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(13, 13, 13, 0);
-  -moz-transition: background-color 0.5s;
-  -o-transition: background-color 0.5s;
-  -webkit-transition: background-color 0.5s;
-  transition: background-color 0.5s;
+  background: #0d0d0d;
+  opacity: 0;
+  -moz-transition: opacity 0.5s;
+  -o-transition: opacity 0.5s;
+  -webkit-transition: opacity 0.5s;
+  transition: opacity 0.5s;
 }
 .moui-actionview.confirm-kind .content header, .confirm-kind.ck-actionview .content header {
   padding-top: 30%;
@@ -594,7 +595,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   display: block;
 }
 .moui-actionview.active .shd, .active.ck-actionview .shd {
-  background: rgba(13, 13, 13, 0.95);
+  opacity: 1;
 }
 .moui-actionview.active .wrapper, .active.ck-actionview .wrapper {
   opacity: 1;
@@ -725,17 +726,18 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(51, 51, 51, 0);
-  -moz-transition: background-color 0.4s;
-  -o-transition: background-color 0.4s;
-  -webkit-transition: background-color 0.4s;
-  transition: background-color 0.4s;
+  background: #333;
+  opacity: 0;
+  -moz-transition: opacity 0.4s;
+  -o-transition: opacity 0.4s;
+  -webkit-transition: opacity 0.4s;
+  transition: opacity 0.4s;
 }
 .moui-modalview.rendered, .rendered.ck-modalview {
   display: block;
 }
 .moui-modalview.active .shd, .active.ck-modalview .shd {
-  background: #333333;
+  opacity: 1;
 }
 .moui-modalview.active .wrapper, .active.ck-modalview .wrapper {
   -moz-transform: none;
@@ -889,7 +891,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   position: absolute;
   top: 0;
   left: 0;
-  width: 85%;
+  width: 280px;
   -moz-transform: translateX(0);
   -ms-transform: translateX(0);
   -o-transform: translateX(0);
@@ -915,11 +917,11 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 }
 .ck-page-card[data-deck-active="false"][data-page-active="true"][data-curdeck="navdrawer"] {
   display: block;
-  -moz-transform: translateX(85%);
-  -ms-transform: translateX(85%);
-  -o-transform: translateX(85%);
-  -webkit-transform: translateX(85%);
-  transform: translateX(85%);
+  -moz-transform: translateX(280px);
+  -ms-transform: translateX(280px);
+  -o-transform: translateX(280px);
+  -webkit-transform: translateX(280px);
+  transform: translateX(280px);
   z-index: 10;
   position: fixed;
   top: 0;
@@ -927,12 +929,15 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   right: 0;
 }
 .ck-page-card[data-deck-active="false"][data-page-active="true"][data-curdeck="navdrawer"] .ck-header {
-  position: static;
+  position: relative;
   -moz-transform: translateY(0);
   -ms-transform: translateY(0);
   -o-transform: translateY(0);
   -webkit-transform: translateY(0);
   transform: translateY(0);
+}
+.ck-bugfix-fixed .ck-page-card[data-deck-active="false"][data-page-active="true"][data-curdeck="navdrawer"] .ck-header {
+  display: none;
 }
 .ck-page-card[data-deck-active="false"][data-page-active="true"][data-curdeck="navdrawer"] .ck-top-banner {
   padding-top: 0;
@@ -1667,6 +1672,11 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   overflow: hidden;
 }
 .ck-mini-card[data-style="slide"] .ck-card-wrap.slide .ck-list-wrap {
+  -moz-transform: translateX(0);
+  -ms-transform: translateX(0);
+  -o-transform: translateX(0);
+  -webkit-transform: translateX(0);
+  transform: translateX(0);
   overflow-x: scroll;
   margin-bottom: -8px;
 }

@@ -18,13 +18,11 @@ define("cardkit/supports", [
   "mo/browsers"
 ], function(browsers){
 
-    var div = document.createElement('div');
-
     var exports = {
         touch: browsers.isTouch,
-        overflowScroll: "webkitOverflowScrolling" in document.body.style,
-        JSON: !!window.JSON,
-        dataset: 'dataset' in div
+        webview: browsers.webview,
+        noBugWhenFixed: browsers.os !== 'android'
+            || browsers.shell !== 'ucbrowser'
     };
 
     return exports;
@@ -1081,6 +1079,12 @@ var exports = {
         return label.text() || label.val();
     },
 
+    readClass: function(node){
+        return node[0].className.split(/\s+/).filter(function(cname){
+            return cname && !/^ckd\-/.test(cname);
+        }).join(' ');
+    },
+
     forwardStateEvents: function(component){
         component.forward({
             'control:enable *': 'control:enable',
@@ -1134,17 +1138,6 @@ var exports = {
         });
     },
 
-    getOriginByCustomId: function(custom_id){
-        var re;
-        _.each($('body #' + custom_id), function(node){
-            if (!$.matches(node, '[dd-autogen] #' + custom_id)) {
-                re = $(node);
-                return false;
-            }
-        });
-        return re || $();
-    },
-
     isBlank: function(content){
         return !content || !/\S/m.test(content);
     }
@@ -1156,33 +1149,33 @@ var apply_enable = find_dark(enable_control);
 var apply_disable = find_dark(disable_control);
 
 var apply_pick = find_dark(function(node, e){
-    var p = picker(node, {
+    var p = picker(node, _.merge({
         disableRequest: true
-    });
+    }, e.component._config));
     var new_val = e.component.val();
     ui.action.updatePicker(p, new_val);
 });
 
 var apply_pick_response = find_dark(function(node, e){
-    var p = picker(node);
+    var p = picker(node, _.merge({}, e.component._config));
     p.responseData = e.component.responseData;
     node.trigger('picker:response', {
         component: p
     });
 });
 
-var apply_selector = find_dark(function(node){
+var apply_selector = find_dark(function(node, e){
     node.trigger('selector:change', {
-        component: picker(node, {
+        component: picker(node, _.merge({
             disableRequest: true
-        })
+        }, e.component._config))
     });
 });
 
 var apply_ranger = find_dark(function(node, e){
-    var o = ranger(node, {
+    var o = ranger(node, _.merge({
         enableNotify: false
-    });
+    }, e.component._config));
     var v = e.component.val();
     o.val(v).attr('value', v);
     node.trigger('ranger:changed', {
@@ -1223,31 +1216,34 @@ var apply_input = find_dark(function(node, e){
 });
 
 function enable_control(node, e){
-    var o = control(node, {
+    var o = control(node, _.merge({
         disableRequest: true
-    });
+    }, e.component._config));
     o.responseData = e.component.responseData;
     o.enable();
 }
 
 function disable_control(node, e){
-    var o = control(node, {
+    var o = control(node, _.merge({
         disableRequest: true
-    });
+    }, e.component._config));
     o.responseData = e.component.responseData;
     o.disable();
 }
 
 function find_dark(fn){
-    return function(e){
+    return function(e, root){
         var target = e.target.id;
         if (!target) {
             return;
         }
-        target = exports.getOriginByCustomId(target);
+        target = darkdom.getDarkByCustomId(target);
         if (target[0] 
                 && !target[0]._ckDisablePageForward) {
             fn(target, e);
+            root.updateDarkDOM({
+                ignoreRender: true
+            });
         }
     };
 }
@@ -1256,7 +1252,7 @@ function find_top_dark(fn){
     return function(e){
         var target = e.target.id;
         if (target) {
-            target = exports.getOriginByCustomId(target);
+            target = darkdom.getDarkByCustomId(target);
         } else {
             target = darkdom.getDarkById(e.target.parentNode.id);
         }
@@ -1591,11 +1587,12 @@ return {
 
 define("cardkit/spec/list", [
   "dollar",
+  "cardkit/helper",
   "cardkit/spec/common/scaffold",
   "cardkit/spec/common/source_scaffold",
   "cardkit/spec/common/item",
   "cardkit/spec/common/source_item"
-], function($, scaffold_specs, source_scaffold_specs, 
+], function($, helper, scaffold_specs, source_scaffold_specs, 
     item_specs, source_item_specs){ 
 
 var SEL = 'ck-card[type="list"]';
@@ -1608,7 +1605,8 @@ var source_item_states = {
     },
     isAlone: function(node){
         return node.hasClass('ckd-title-link-alone');
-    }
+    },
+    customClass: helper.readClass
 };
 
 function source_item_spec(source){
@@ -1625,7 +1623,8 @@ function init_list(guard){
         col: 'col', 
         paperStyle: 'paper-style',
         plainStyle: 'plain-style',
-        plainHdStyle: 'plain-hd-style'
+        plainHdStyle: 'plain-hd-style',
+        customClass: 'custom-class'
     });
     guard.component(scaffold_specs);
     guard.component('item', function(guard){
@@ -1633,13 +1632,17 @@ function init_list(guard){
         guard.state({
             link: 'href',
             linkTarget: 'target',
-            isAlone: 'alone-mode'
+            isAlone: 'alone-mode',
+            customClass: 'custom-class'
         });
         guard.component(item_specs);
-        guard.source().component(source_item_specs);
+        guard.source()
+            .state(source_item_states)
+            .component(source_item_specs);
     });
-    guard.source().component(source_scaffold_specs);
-    guard.source().component('item', source_item_spec);
+    guard.source()
+        .component(source_scaffold_specs)
+        .component('item', source_item_spec);
 }
 
 function exports(guard, parent){
@@ -1683,7 +1686,8 @@ function init_list(guard){
         col: 'data-cfg-col', 
         paperStyle: 'data-cfg-paper',
         plainStyle: 'data-cfg-plain',
-        plainHdStyle: 'data-cfg-plainhd'
+        plainHdStyle: 'data-cfg-plainhd',
+        customClass: helper.readClass
     });
     guard.state(source_states);
     guard.component(scaffold_specs);
@@ -1694,8 +1698,9 @@ function init_list(guard){
         guard.component(item_specs);
         guard.source().component(item_specs);
     });
-    guard.source().component(scaffold_specs);
-    guard.source().component('item', source_item_spec);
+    guard.source()
+        .component(scaffold_specs)
+        .component('item', source_item_spec);
 }
 
 function exports(guard, parent){
@@ -1733,15 +1738,17 @@ return function(guard, parent){
         subtype: 'data-style',
         paperStyle: 'data-cfg-paper',
         plainStyle: 'data-cfg-plain',
-        plainHdStyle: 'data-cfg-plainhd'
+        plainHdStyle: 'data-cfg-plainhd',
+        customClass: helper.readClass
     });
     guard.component(scaffold_specs);
     guard.component('content', function(guard){
         guard.watch('.ckd-content');
         guard.state(source_states);
     });
-    guard.source().component(scaffold_specs);
-    guard.source().component('content', '.ckd-content');
+    guard.source()
+        .component(scaffold_specs)
+        .component('content', '.ckd-content');
 };
 
 });
@@ -1763,7 +1770,8 @@ function exports(guard, parent){
     guard.state({
         subtype: 'subtype',
         blankText: 'blank-text',
-        plainHdStyle: 'plain-hd-style'
+        plainHdStyle: 'plain-hd-style',
+        customClass: 'custom-class'
     });
     guard.component(scaffold_specs);
     guard.component('item', function(guard){
@@ -1773,10 +1781,14 @@ function exports(guard, parent){
             content: 'ck-part[type="content"]'
         });
         helper.applyInputEvents(guard);
-        guard.source().component('content', '.ckd-content');
+        guard.source().component({
+            title: '.ckd-title',
+            content: '.ckd-content'
+        });
     });
-    guard.source().component(source_scaffold_specs);
-    guard.source().component('item', exports.sourceItemSpec);
+    guard.source()
+        .component(source_scaffold_specs)
+        .component('item', exports.sourceItemSpec);
 }
 
 exports.sourceItemSpec = function(guard){
@@ -1814,7 +1826,8 @@ return function(guard, parent){
     guard.state({
         subtype: 'data-style',
         blankText: 'data-cfg-blank',
-        plainHdStyle: 'data-cfg-plainhd'
+        plainHdStyle: 'data-cfg-plainhd',
+        customClass: helper.readClass
     });
     guard.component(scaffold_specs);
     guard.component('item', function(guard){
@@ -1835,8 +1848,9 @@ return function(guard, parent){
             content: '.ckd-content'
         });
     });
-    guard.source().component(scaffold_specs);
-    guard.source().component('item', form_spec.sourceItemSpec);
+    guard.source()
+        .component(scaffold_specs)
+        .component('item', form_spec.sourceItemSpec);
 };
 
 });
@@ -1897,12 +1911,14 @@ return function(guard, parent){
         subtype: 'subtype',
         paperStyle: 'paper-style',
         plainStyle: 'plain-style',
-        plainHdStyle: 'plain-hd-style'
+        plainHdStyle: 'plain-hd-style',
+        customClass: 'custom-class'
     });
     guard.component(scaffold_specs);
     guard.component('content', 'ck-part[type="content"]');
-    guard.source().component(source_scaffold_specs);
-    guard.source().component('content', '.ckd-content');
+    guard.source()
+        .component(source_scaffold_specs)
+        .component('content', '.ckd-content');
 };
 
 });
@@ -2361,7 +2377,7 @@ define("cardkit/tpl/item/title", [], function(){
 
 define("cardkit/tpl/item", [], function(){
 
-    return {"template":"<div class=\"ck-item {%= (itemLink && 'clickable' || '') %}\" \n        style=\"width:{%= (context.state.col ? Math.floor(1000/context.state.col)/10 + '%' : '') %};\">\n\n    <div class=\"ck-initem\">\n\n        {% if (itemLink && !isItemLinkAlone) { %}\n        <a href=\"{%= itemLink %}\" \n            target=\"{%= (itemLinkTarget || '_self') %}\"\n            class=\"ck-link-mask ck-link\"></a>\n        {% } %}\n\n        <div class=\"ck-title-box\">\n\n            {%= component.opt.join('') %}\n            {%= component.icon %}\n\n            <div class=\"ck-title-set\">\n\n                {% if (itemContent) { %}\n                <div class=\"ck-title-line\">\n                    {%= component.titlePrefix.join('') %}\n                    {%= itemContent %}\n                    {%= component.titleSuffix.join('') %}\n                    {%= component.titleTag.join('') %}\n                </div>\n                {% } %}\n\n                {% if (component.info.length) { %}\n                <div class=\"ck-info-wrap\">\n                    {%= component.info.join('') %}\n                </div>\n                {% } %}\n\n                {% if (component.desc.length) { %}\n                <div class=\"ck-desc-wrap\">\n                    {%= component.desc.join('') %}\n                </div>\n                {% } %}\n\n            </div>\n\n            {% if (component.content.length) { %}\n            <div class=\"ck-content-wrap\">\n                {%= component.content.join('') %}\n            </div>\n            {% } %}\n\n            {% if (component.meta.length) { %}\n            <div class=\"ck-meta-wrap\">\n                {%= component.meta.join('') %}\n            </div>\n            {% } %}\n\n        </div>\n\n        {% if (component.author || component.authorDesc.length || component.authorMeta.length) { %}\n        <div class=\"ck-author-box\">\n\n            {%= component.avatar %}\n\n            <div class=\"ck-author-set\">\n\n                <div class=\"ck-author-line\">\n                    {%= component.authorPrefix.join('') %}\n                    {%= component.author %}\n                    {%= component.authorSuffix.join('') %}\n                </div>\n\n                {% if (component.authorInfo.length) { %}\n                <div class=\"ck-author-info-wrap\">\n                    {%= component.authorInfo.join('') %}\n                </div>\n                {% } %}\n\n                {% if (component.authorDesc.length) { %}\n                <div class=\"ck-author-desc-wrap\">\n                    {%= component.authorDesc.join('') %}\n                </div>\n                {% } %}\n\n            </div>\n\n            {% if (component.authorMeta.length) { %}\n            <div class=\"ck-author-meta-wrap\">\n                {%= component.authorMeta.join('') %}\n            </div>\n            {% } %}\n\n        </div>\n        {% } %}\n\n    </div>\n\n</div>\n\n"}; 
+    return {"template":"<div class=\"ck-item {%= (itemLink && 'clickable' || '') %}  {%= state.customClass %}\" \n        style=\"width:{%= (context.state.col ? Math.floor(1000/context.state.col)/10 + '%' : '') %};\">\n\n    <div class=\"ck-initem\">\n\n        {% if (itemLink && !isItemLinkAlone) { %}\n        <a href=\"{%= itemLink %}\" \n            target=\"{%= (itemLinkTarget || '_self') %}\"\n            class=\"ck-link-mask ck-link\"></a>\n        {% } %}\n\n        <div class=\"ck-title-box\">\n\n            {%= component.opt.join('') %}\n            {%= component.icon %}\n\n            <div class=\"ck-title-set\">\n\n                {% if (itemContent) { %}\n                <div class=\"ck-title-line\">\n                    {%= component.titlePrefix.join('') %}\n                    {%= itemContent %}\n                    {%= component.titleSuffix.join('') %}\n                    {%= component.titleTag.join('') %}\n                </div>\n                {% } %}\n\n                {% if (component.info.length) { %}\n                <div class=\"ck-info-wrap\">\n                    {%= component.info.join('') %}\n                </div>\n                {% } %}\n\n                {% if (component.desc.length) { %}\n                <div class=\"ck-desc-wrap\">\n                    {%= component.desc.join('') %}\n                </div>\n                {% } %}\n\n            </div>\n\n            {% if (component.content.length) { %}\n            <div class=\"ck-content-wrap\">\n                {%= component.content.join('') %}\n            </div>\n            {% } %}\n\n            {% if (component.meta.length) { %}\n            <div class=\"ck-meta-wrap\">\n                {%= component.meta.join('') %}\n            </div>\n            {% } %}\n\n        </div>\n\n        {% if (component.author || component.authorDesc.length || component.authorMeta.length) { %}\n        <div class=\"ck-author-box\">\n\n            {%= component.avatar %}\n\n            <div class=\"ck-author-set\">\n\n                <div class=\"ck-author-line\">\n                    {%= component.authorPrefix.join('') %}\n                    {%= component.author %}\n                    {%= component.authorSuffix.join('') %}\n                </div>\n\n                {% if (component.authorInfo.length) { %}\n                <div class=\"ck-author-info-wrap\">\n                    {%= component.authorInfo.join('') %}\n                </div>\n                {% } %}\n\n                {% if (component.authorDesc.length) { %}\n                <div class=\"ck-author-desc-wrap\">\n                    {%= component.authorDesc.join('') %}\n                </div>\n                {% } %}\n\n            </div>\n\n            {% if (component.authorMeta.length) { %}\n            <div class=\"ck-author-meta-wrap\">\n                {%= component.authorMeta.join('') %}\n            </div>\n            {% } %}\n\n        </div>\n        {% } %}\n\n    </div>\n\n</div>\n\n"}; 
 
 });
 /* @source cardkit/card/item.js */;
@@ -2614,7 +2630,7 @@ return exports;
 
 define("cardkit/tpl/list", [], function(){
 
-    return {"template":"<div class=\"ck-list-card{%= (state.blankText === 'false' ? ' no-blank' : '') %}\"\n        data-style=\"{%= state.subtype %}\"\n        {%= state.col ? 'data-cfg-col=\"' + state.col + '\" ' : '' %}\n        {%= state.paperStyle ? 'data-cfg-paper=\"true\" ' : '' %}\n        {%= state.plainStyle ? 'data-cfg-plain=\"true\" ' : '' %}\n        {%= state.plainHdStyle ? 'data-cfg-plainhd=\"true\" ' : '' %}>\n\n    {% if (hasSplitHd) { %}\n        {%= hdwrap %}\n    {% } %}\n\n    <article class=\"ck-card-wrap\">\n\n        {% if (!hasSplitHd) { %}\n            {%= hdwrap %}\n        {% } %}\n        \n        <div class=\"ck-list-wrap\">\n\n            {% if (component.item.length) { %}\n\n                <div class=\"ck-list\">\n                {% component.item.forEach(function(item, i){ %}\n\n                    {% if (i && (i % state.col === 0)) { %}\n                    </div><div class=\"ck-list\">\n                    {% } %}\n\n                    {%= item %}\n\n                {% }); %}\n                </div>\n\n            {% } else { %}\n\n                <div class=\"ck-list\">\n                    <div class=\"ck-item blank\">\n                        <div class=\"ck-initem\">\n                        {% if (component.blank) { %}\n                            {%= component.blank %}\n                        {% } else { %}\n                            {%=(state.blankText || '目前还没有内容')%}\n                        {% } %}\n                        </div>\n                    </div>\n                </div>\n\n            {% } %}\n\n        </div>\n\n        {%= component.ft %}\n\n    </article>\n\n</div>\n\n"}; 
+    return {"template":"<div class=\"ck-list-card {%= (state.blankText === 'false' ? 'no-blank' : '') %} {%= state.customClass %}\"\n        data-style=\"{%= state.subtype %}\"\n        {%= state.col ? 'data-cfg-col=\"' + state.col + '\" ' : '' %}\n        {%= state.paperStyle ? 'data-cfg-paper=\"true\" ' : '' %}\n        {%= state.plainStyle ? 'data-cfg-plain=\"true\" ' : '' %}\n        {%= state.plainHdStyle ? 'data-cfg-plainhd=\"true\" ' : '' %}>\n\n    {% if (hasSplitHd) { %}\n        {%= hdwrap %}\n    {% } %}\n\n    <article class=\"ck-card-wrap\">\n\n        {% if (!hasSplitHd) { %}\n            {%= hdwrap %}\n        {% } %}\n        \n        <div class=\"ck-list-wrap\">\n\n            {% if (component.item.length) { %}\n\n                <div class=\"ck-list\">\n                {% component.item.forEach(function(item, i){ %}\n\n                    {% if (i && (i % state.col === 0)) { %}\n                    </div><div class=\"ck-list\">\n                    {% } %}\n\n                    {%= item %}\n\n                {% }); %}\n                </div>\n\n            {% } else { %}\n\n                <div class=\"ck-list\">\n                    <div class=\"ck-item blank\">\n                        <div class=\"ck-initem\">\n                        {% if (component.blank) { %}\n                            {%= component.blank %}\n                        {% } else { %}\n                            {%=(state.blankText || '目前还没有内容')%}\n                        {% } %}\n                        </div>\n                    </div>\n                </div>\n\n            {% } %}\n\n        </div>\n\n        {%= component.ft %}\n\n    </article>\n\n</div>\n\n"}; 
 
 });
 /* @source cardkit/tpl/scaffold/hdwrap.js */;
@@ -2675,7 +2691,7 @@ return exports;
 
 define("cardkit/tpl/box", [], function(){
 
-    return {"template":"<div class=\"ck-box-card\"\n        data-style=\"{%= state.subtype %}\"\n        {%= state.paperStyle ? 'data-cfg-paper=\"true\" ' : '' %}\n        {%= state.plainStyle ? 'data-cfg-plain=\"true\" ' : '' %}\n        {%= state.plainHdStyle ? 'data-cfg-plainhd=\"true\" ' : '' %}>\n\n    {% if (hasSplitHd) { %}\n        {%= hdwrap %}\n    {% } %}\n\n    <article class=\"ck-card-wrap\">\n\n        {% if (!hasSplitHd) { %}\n            {%= hdwrap %}\n        {% } %}\n\n        {% if (!isBlank) { %}\n            <section>{%= content %}</section>\n        {% } %}\n\n        {%= component.ft %}\n\n    </article>\n\n</div>\n"}; 
+    return {"template":"<div class=\"ck-box-card {%= state.customClass %}\"\n        data-style=\"{%= state.subtype %}\"\n        {%= state.paperStyle ? 'data-cfg-paper=\"true\" ' : '' %}\n        {%= state.plainStyle ? 'data-cfg-plain=\"true\" ' : '' %}\n        {%= state.plainHdStyle ? 'data-cfg-plainhd=\"true\" ' : '' %}>\n\n    {% if (hasSplitHd) { %}\n        {%= hdwrap %}\n    {% } %}\n\n    <article class=\"ck-card-wrap\">\n\n        {% if (!hasSplitHd) { %}\n            {%= hdwrap %}\n        {% } %}\n\n        {% if (!isBlank) { %}\n            <section>{%= content %}</section>\n        {% } %}\n\n        {%= component.ft %}\n\n    </article>\n\n</div>\n"}; 
 
 });
 /* @source cardkit/tpl/box/content.js */;
@@ -2745,7 +2761,7 @@ return exports;
 
 define("cardkit/tpl/form", [], function(){
 
-    return {"template":"<div class=\"ck-form-card{%= (state.blankText === 'false' ? ' no-blank' : '') %}\"\n        data-style=\"{%= state.subtype %}\"\n        {%= state.plainHdStyle ? 'data-cfg-plainhd=\"true\" ' : '' %}>\n\n    {% if (hasSplitHd) { %}\n        {%= hdwrap %}\n    {% } %}\n\n    <article class=\"ck-card-wrap\">\n\n        {% if (!hasSplitHd) { %}\n            {%= hdwrap %}\n        {% } %}\n\n        {% if (component.item.length) { %}\n            {% component.item.forEach(function(item){ %}\n                {%= item %}\n            {% }); %}\n        {% } else { %}\n            <div class=\"ck-item blank\">\n            {% if (component.blank) { %}\n                {%= component.blank %}\n            {% } else { %}\n                {%=(state.blankText || '目前还没有内容')%}\n            {% } %}\n            </div>\n        {% } %}\n\n        {%= component.ft %}\n\n    </article>\n\n</div>\n"}; 
+    return {"template":"<div class=\"ck-form-card {%= (state.blankText === 'false' ? 'no-blank' : '') %} {%= state.customClass %}\"\n        data-style=\"{%= state.subtype %}\"\n        {%= state.plainHdStyle ? 'data-cfg-plainhd=\"true\" ' : '' %}>\n\n    {% if (hasSplitHd) { %}\n        {%= hdwrap %}\n    {% } %}\n\n    <article class=\"ck-card-wrap\">\n\n        {% if (!hasSplitHd) { %}\n            {%= hdwrap %}\n        {% } %}\n\n        {% if (component.item.length) { %}\n            {% component.item.forEach(function(item){ %}\n                {%= item %}\n            {% }); %}\n        {% } else { %}\n            <div class=\"ck-item blank\">\n            {% if (component.blank) { %}\n                {%= component.blank %}\n            {% } else { %}\n                {%=(state.blankText || '目前还没有内容')%}\n            {% } %}\n            </div>\n        {% } %}\n\n        {%= component.ft %}\n\n    </article>\n\n</div>\n"}; 
 
 });
 /* @source cardkit/tpl/form/content.js */;
@@ -2849,7 +2865,7 @@ return exports;
 
 define("cardkit/tpl/mini", [], function(){
 
-    return {"template":"<div class=\"ck-mini-card{%= (state.blankText === 'false' ? ' no-blank' : '') %}\"\n        data-style=\"{%= state.subtype %}\">\n\n    {% if (hasSplitHd) { %}\n        {%= hdwrap %}\n    {% } %}\n\n    <article class=\"ck-card-wrap {%= (component.item.length > 1 ? 'slide' : '') %}\">\n\n        {% if (!hasSplitHd) { %}\n            {%= hdwrap %}\n        {% } %}\n        \n        <div class=\"ck-list-wrap\">\n\n            {% if (component.item.length) { %}\n\n                <div class=\"ck-list\" style=\"width:{%= listWidth %};\">\n                {% component.item.forEach(function(item){ %}\n                    <div class=\"ck-col\" style=\"width:{%= itemWidth %};\">\n                        {%= item %}\n                    </div>\n                {% }); %}\n                </div>\n\n            {% } else { %}\n\n                <div class=\"ck-list\">\n                    <div class=\"ck-item blank\">\n                        <div class=\"ck-initem\">\n                        {% if (component.blank) { %}\n                            {%= component.blank %}\n                        {% } else { %}\n                            {%=(state.blankText || '目前还没有内容')%}\n                        {% } %}\n                        </div>\n                    </div>\n                </div>\n\n            {% } %}\n\n        </div>\n\n        {%= component.ft %}\n\n    </article>\n\n</div>\n\n"}; 
+    return {"template":"<div class=\"ck-mini-card {%= (state.blankText === 'false' ? 'no-blank' : '') %} {%= state.customClass %}\"\n        data-style=\"{%= state.subtype %}\">\n\n    {% if (hasSplitHd) { %}\n        {%= hdwrap %}\n    {% } %}\n\n    <article class=\"ck-card-wrap {%= (component.item.length > 1 ? 'slide' : '') %}\">\n\n        {% if (!hasSplitHd) { %}\n            {%= hdwrap %}\n        {% } %}\n        \n        <div class=\"ck-list-wrap\">\n\n            {% if (component.item.length) { %}\n\n                <div class=\"ck-list\" style=\"width:{%= listWidth %};\">\n                {% component.item.forEach(function(item){ %}\n                    <div class=\"ck-col\" style=\"width:{%= itemWidth %};\">\n                        {%= item %}\n                    </div>\n                {% }); %}\n                </div>\n\n            {% } else { %}\n\n                <div class=\"ck-list\">\n                    <div class=\"ck-item blank\">\n                        <div class=\"ck-initem\">\n                        {% if (component.blank) { %}\n                            {%= component.blank %}\n                        {% } else { %}\n                            {%=(state.blankText || '目前还没有内容')%}\n                        {% } %}\n                        </div>\n                    </div>\n                </div>\n\n            {% } %}\n\n        </div>\n\n        {%= component.ft %}\n\n    </article>\n\n</div>\n\n"}; 
 
 });
 /* @source cardkit/card/mini.js */;
@@ -3084,26 +3100,28 @@ var exports = {
 };
 
 function when_page_active(changes){
+    var root = changes.root;
     if (changes.newValue === 'true') {
-        changes.root.css('min-height', window.innerHeight * 1.4 + 'px')
+        root.css('min-height', window.innerHeight * 1.4 + 'px')
             .attr('data-page-active', true);
         setTimeout(function(){
-            changes.root.addClass('topbar-enabled');
+            root.addClass('topbar-enabled');
             window.scrollTo(0, 0);
         }, 100);
     } else {
-        changes.root.attr('data-page-active', false)
+        root.attr('data-page-active', false)
             .removeClass('topbar-enabled');
     }
     return false;
 }
 
 function when_deck_active(changes){
+    var root = changes.root;
     if (changes.newValue === 'true') {
-        changes.root.css('min-height', window.innerHeight * 1.4 + 'px')
+        root.css('min-height', window.innerHeight * 1.4 + 'px')
             .attr('data-deck-active', true);
     } else {
-        changes.root.attr('data-deck-active', false);
+        root.attr('data-deck-active', false);
         setTimeout(function(){
             window.scrollTo(0, 0);
         }, 300);
@@ -3482,14 +3500,13 @@ define("mo/mainloop", [
 define('cardkit', [
   "mo/lang",
   "dollar",
-  "mo/browsers",
   "mo/mainloop",
   "cardkit/spec",
   "cardkit/oldspec",
   "cardkit/ui",
   "cardkit/supports",
   "cardkit/bus"
-], function(_, $, browsers, mainloop,
+], function(_, $, mainloop,
     specs, oldspecs, ui, supports, bus){
 
 var DEFAULT_DECK = 'main',
@@ -3528,8 +3545,11 @@ var exports = {
 
     initView: function(){
         this.wrapper = $(this._config.appWrapper || body);
-        if (browsers.webview) {
+        if (supports.webview) {
             this.wrapper.addClass('ck-in-webview');
+        }
+        if (!supports.noBugWhenFixed) {
+            this.wrapper.addClass('ck-bugfix-fixed');
         }
         bus.on('ready', function(){
             $(window).on('hashchange', function(e){
@@ -3639,7 +3659,11 @@ var exports = {
         _decks[deck] = page;
         _.each(_decks, notify_deck, deck);
         if (deck !== _current_deck) {
+            var is_modal = _current_deck === 'modalview';
             _current_deck = deck;
+            if (is_modal) {
+                exports.closeModal();
+            }
             if (last_decktop 
                     && $.contains(body, last_decktop[0])) {
                 blur_page(last_decktop);
@@ -3725,7 +3749,9 @@ exports.modalCard.event.on('open', function(modal){
         exports.resetPage(page);
     }
 }).on('close', function(modal){
-    exports.openPage(modal.lastDecktop);
+    if (_current_deck === 'modalview') {
+        exports.openPage(modal.lastDecktop);
+    }
 //}).on('frameOnload', function(modal){
     //exports.render('page', modal._iframeWindow[0].document);
 });

@@ -1665,13 +1665,11 @@ define("cardkit/supports", [
   "mo/browsers"
 ], function(browsers){
 
-    var div = document.createElement('div');
-
     var exports = {
         touch: browsers.isTouch,
-        overflowScroll: "webkitOverflowScrolling" in document.body.style,
-        JSON: !!window.JSON,
-        dataset: 'dataset' in div
+        webview: browsers.webview,
+        noBugWhenFixed: browsers.os !== 'android'
+            || browsers.shell !== 'ucbrowser'
     };
 
     return exports;
@@ -1746,869 +1744,882 @@ define("dollar/origin", [
   "mo/lang/type"
 ], function(es5, _, detect){
 
-    var window = this,
-        doc = window.document,
-        NEXT_SIB = 'nextElementSibling',
-        PREV_SIB = 'previousElementSibling',
-        FIRST_CHILD = 'firstElementChild',
-        MATCHES_SELECTOR = [
-            'webkitMatchesSelector', 
-            'mozMatchesSelector', 
-            'msMatchesSelector', 
-            'matchesSelector'
-        ].map(function(name){
-            return this[name] && name;
-        }, doc.body).filter(pick)[0],
-        MOUSE_EVENTS = { click: 1, mousedown: 1, mouseup: 1, mousemove: 1 },
-        TOUCH_EVENTS = { touchstart: 1, touchmove: 1, touchend: 1, touchcancel: 1 },
-        SPECIAL_TRIGGERS = { submit: 1, focus: 1, blur: 1 },
-        CSS_NUMBER = {
-            'column-count': 1,
-            'columns': 1,
-            'font-weight': 1,
-            'line-height': 1,
-            'opacity': 1,
-            'z-index': 1,
-            'zoom': 1
-        },
-        RE_HTMLTAG = /^\s*<(\w+|!)[^>]*>/,
-        is_function = detect.isFunction,
-        is_window = detect.isWindow,
-        _array_map = Array.prototype.map,
-        _array_push = Array.prototype.push,
-        _array_slice = Array.prototype.slice,
-        _elm_display = {},
-        _html_containers = {};
+var window = this,
+    doc = window.document,
+    NEXT_SIB = 'nextElementSibling',
+    PREV_SIB = 'previousElementSibling',
+    FIRST_CHILD = 'firstElementChild',
+    MATCHES_SELECTOR = [
+        'webkitMatchesSelector', 
+        'mozMatchesSelector', 
+        'msMatchesSelector', 
+        'matchesSelector'
+    ].map(function(name){
+        return this[name] && name;
+    }, doc.body).filter(pick)[0],
+    MOUSE_EVENTS = { click: 1, mousedown: 1, mouseup: 1, mousemove: 1 },
+    TOUCH_EVENTS = { touchstart: 1, touchmove: 1, touchend: 1, touchcancel: 1 },
+    SPECIAL_TRIGGERS = { submit: 1, focus: 1, blur: 1 },
+    CSS_NUMBER = {
+        'column-count': 1,
+        'columns': 1,
+        'font-weight': 1,
+        'line-height': 1,
+        'opacity': 1,
+        'z-index': 1,
+        'zoom': 1
+    },
+    RE_HTMLTAG = /^\s*<(\w+|!)[^>]*>/,
+    RE_ID_SEL = /^#[\w_]+$/,
+    RE_CSS_NAME = /-+(.)?/g,
+    RE_CAMEL = /([a-z\d])([A-Z])/g,
+    RE_CAMEL_BEGIN_WITH_CAP = /([A-Z]+)([A-Z][a-z])/g,
+    RE_DOUBLE_COLON = /::/g,
+    RE_UNDER = /_/g,
+    is_function = detect.isFunction,
+    is_window = detect.isWindow,
+    _array_map = Array.prototype.map,
+    _array_push = Array.prototype.push,
+    _array_slice = Array.prototype.slice,
+    _elm_display = {},
+    _html_containers = {};
 
 
-    function $(selector, context){
-        if (selector) {
-            if (selector.constructor === $) {
-                return selector;
-            } else if (typeof selector !== 'string') {
-                var nodes = new $();
-                if (detect.isArraylike(selector)
-                        && selector.nodeType !== 1) {
-                    _array_push.apply(nodes, _array_slice.call(selector));
-                } else {
-                    _array_push.call(nodes, selector);
-                }
-                return nodes;
+function $(selector, context){
+    if (selector) {
+        if (selector.constructor === $) {
+            return selector;
+        } else if (typeof selector !== 'string') {
+            var nodes = new $();
+            if (detect.isArraylike(selector)
+                    && selector.nodeType !== 1) {
+                _array_push.apply(nodes, _array_slice.call(selector));
             } else {
-                selector = selector.trim();
-                if (RE_HTMLTAG.test(selector)) {
-                    return $.createNodes(selector);
-                } else if (context) {
-                    return $(context).find(selector);
-                } else {
-                    return ext.find(selector);
-                }
-            }
-        } else if (is_window(this)) {
-            return new $();
-        }
-    }
-
-    var ext = $.fn = $.prototype = [];
-
-    ['map', 'filter', 'slice', 'reverse', 'sort'].forEach(function(method){
-        var origin = this['_' + method] = this[method];
-        this[method] = function(){
-            return $(origin.apply(this, arguments));
-        };
-    }, ext);
-
-    var origin_concat = ext._concat = ext.concat;
-    ext.concat = function(){
-        return $(origin_concat.apply(this._slice(), check_array_argument(arguments)));
-    };
-
-    var origin_splice = ext._splice = ext.splice;
-    ext.splice = function(){
-        return $(origin_splice.apply(this, check_array_argument(arguments)));
-    };
-
-    _.mix(ext, {
-
-        constructor: $,
-
-        toString: function(){
-            return this.join(',');
-        },
-
-        // Traversing
-
-        find: function(selector){
-            var nodes = new $(), contexts;
-            if (this === ext) {
-                contexts = [doc];
-            } else {
-                nodes.prevObject = contexts = this;
-            }
-            if (/^#[\w_]+$/.test(selector)) {
-                var elm = ((contexts[0] || doc).getElementById 
-                    || doc.getElementById).call(doc, selector.substr(1));
-                if (elm) {
-                    nodes.push(elm);
-                }
-            } else {
-                if (contexts[1]) {
-                    contexts.forEach(function(context){
-                        _array_push.apply(this, 
-                            $._querySelector(context, selector));
-                    }, nodes);
-                } else if (contexts[0]) {
-                    _array_push.apply(nodes, 
-                        $._querySelector(contexts[0], selector));
-                }
+                _array_push.call(nodes, selector);
             }
             return nodes;
-        },
-
-        eq: function(i){
-            i = parseInt(i, 10);
-            return i === -1 ? this.slice(-1) : this.slice(i, i + 1);
-        },
-
-        not: function(selector){
-            return this.filter(function(node){
-                return node && !this(node, selector);
-            }, $.matches);
-        },
-
-        matches: function(selector){
-            return this.filter(function(node){
-                return node && this(node, selector);
-            }, $.matches);
-        },
-
-        has: function(selector){
-            return this.filter(function(node){
-                if (!node) {
-                    return false;
-                }
-                if (typeof selector === 'string') {
-                    return $(selector, node).length;
-                } else {
-                    return $.contains(node, $(selector)[0]);
-                }
-            });
-        },
-
-        parent: find_near('parentNode'),
-
-        parents: function(selector){
-            var ancestors = new $(), p = this,
-                finding = selector 
-                    ? find_selector(selector, 'parentNode') 
-                    : function(node){
-                        return this[this.push(node.parentNode) - 1];
-                    };
-            while (p.length) {
-                p = p.map(finding, ancestors);
-            }
-            return ancestors;
-        },
-
-        closest: function(selector){
-            var ancestors = new $(), p = this, 
-                finding = find_selector(selector, 'parentNode');
-            while (p.length && !ancestors.length) {
-                p = p.map(finding, ancestors);
-            }
-            return ancestors.length && ancestors || this;
-        },
-
-        siblings: find_sibs(NEXT_SIB, FIRST_CHILD),
-
-        next: find_near(NEXT_SIB),
-
-        nextAll: find_sibs(NEXT_SIB),
-
-        nextUntil: find_sibs(NEXT_SIB, false, true),
-
-        prev: find_near(PREV_SIB),
-
-        prevAll: find_sibs(PREV_SIB),
-
-        prevUntil: find_sibs(PREV_SIB, false, true),
-
-        children: function(){
-            var r = new $();
-            this.forEach(function(node){
-                _array_push.apply(this, _array_slice.call(node.children));
-            }, r);
-            return r;
-        },
-
-        contents: function(){
-            var r = new $();
-            this.forEach(function(node){
-                _array_push.apply(this, _array_slice.call(node.childNodes));
-            }, r);
-            return r;
-        },
-
-        // Detection
-
-        is: function(selector){
-            return this.some(function(node){
-                return node && $.matches(node, selector);
-            });
-        },
-
-        hasClass: function(cname){
-            for (var i = 0, l = this.length; i < l; i++) {
-                if (this[i].classList.contains(cname)) {
-                    return true;
-                }
-            }
-            return false;
-        },
-
-        // Properties
-
-        addClass: function(cname){
-            return nodes_access.call(this, cname, function(node, value){
-                node.classList.add(value);
-            }, function(node){
-                return node.className;
-            });
-        },
-
-        removeClass: function(cname){
-            return nodes_access.call(this, cname, function(node, value){
-                node.classList.remove(value);
-            }, function(node){
-                return node.className;
-            });
-        },
-
-        toggleClass: function(cname, force){
-            return nodes_access.call(this, cname, function(node, value){
-                node.classList[force === undefined && 'toggle'
-                    || force && 'add' || 'remove'](value);
-            }, function(node){
-                return node.className;
-            });
-        },
-
-        attr: kv_access(function(node, name, value){
-            node.setAttribute(name, value);
-        }, function(node, name){
-            return node.getAttribute(name);
-        }),
-
-        removeAttr: function(name){
-            this.forEach(function(node){
-                node.removeAttribute(this);
-            }, name);
-            return this;
-        },
-
-        prop: kv_access(function(node, name, value){
-            node[name] = value;
-        }, function(node, name){
-            return node[name];
-        }),
-
-        removeProp: function(name){
-            this.forEach(function(node){
-                delete node[this];
-            }, name);
-            return this;
-        },
-
-        data: kv_access(function(node, name, value){
-            node.dataset[css_method(name)] = value;
-        }, function(node, name){
-            var data = node.dataset;
-            if (!data) {
-                return;
-            }
-            return name ? data[css_method(name)] 
-                : _.mix({}, data);
-        }),
-
-        removeData: function(name){
-            this.forEach(function(node){
-                delete node.dataset[this];
-            }, name);
-            return this;
-        },
-
-        val: v_access(function(node, value){
-            node.value = value;
-        }, function(node){
-            if (this.multiple) {
-                return $('option', this).filter(function(item){
-                    return item.selected;
-                }).map(function(item){
-                    return item.value;
-                });
-            }
-            return node.value;
-        }),
-
-        empty: function(){
-            this.forEach(function(node){
-                node.innerHTML = '';
-            });
-            return this;
-        },
-
-        html: v_access(function(node, value){
-            if (RE_HTMLTAG.test(value)) {
-                $(node).empty().append(value);
-            } else {
-                node.innerHTML = value;
-            }
-        }, function(node){
-            return node.innerHTML;
-        }),
-
-        text: v_access(function(node, value){
-            node.textContent = value;
-        }, function(node){
-            return node.textContent;
-        }),
-
-        clone: function(){
-            return this.map(function(node){
-                return node.cloneNode(true);
-            });
-        },
-
-        css: kv_access(function(node, name, value){
-            var prop = css_prop(name);
-            if (!value && value !== 0) {
-                node.style.removeProperty(prop);
-            } else {
-                node.style.cssText += ';' + prop + ":" + css_unit(prop, value);
-            }
-        }, function(node, name){
-            return node.style[css_method(name)] 
-                || $.getPropertyValue(node, name);
-        }, function(dict){
-            var prop, value, css = '';
-            for (var name in dict) {
-                value = dict[name];
-                prop = css_prop(name);
-                if (!value && value !== 0) {
-                    this.forEach(function(node){
-                        node.style.removeProperty(this);
-                    }, prop);
-                } else {
-                    css += prop + ":" + css_unit(prop, value) + ';';
-                }
-            }
-            this.forEach(function(node){
-                node.style.cssText += ';' + this;
-            }, css);
-        }),
-
-        hide: function(){
-            return this.css("display", "none");
-        },
-
-        show: function(){
-            this.forEach(function(node){
-                if (node.style.display === "none") {
-                    node.style.display = null;
-                }
-                if (this(node, "display") === "none") {
-                    node.style.display = default_display(node.nodeName);
-                }
-            }, $.getPropertyValue);
-            return this;
-        },
-
-        // Dimensions
-
-        offset: function(){
-            if (!this[0]) {
-                return;
-            }
-            var set = this[0].getBoundingClientRect();
-            return {
-                left: set.left + window.pageXOffset,
-                top: set.top + window.pageYOffset,
-                width: set.width,
-                height: set.height
-            };
-        },
-
-        width: dimension('Width'),
-
-        height: dimension('Height'),
-
-        scrollLeft: scroll_offset(),
-
-        scrollTop: scroll_offset(true),
-
-        // Manipulation
-
-        appendTo: operator_insert_to(1),
-
-        append: operator_insert(1),
-
-        prependTo: operator_insert_to(3),
-
-        prepend: operator_insert(3),
-
-        insertBefore: operator_insert_to(2),
-
-        before: operator_insert(2),
-
-        insertAfter: operator_insert_to(4),
-
-        after: operator_insert(4),
-
-        replaceAll: function(targets){
-            var t = $(targets);
-            this.insertBefore(t);
-            t.remove();
-            return this;
-        },
-
-        replaceWith: function(contents){
-            return $(contents).replaceAll(this);
-        },
-
-        wrap: function(boxes){
-            return nodes_access.call(this, boxes, function(node, value){
-                $(value).insertBefore(node).append(node);
-            });
-        },
-
-        wrapAll: function(boxes){
-            $(boxes).insertBefore(this.eq(0)).append(this);
-            return this;
-        },
-
-        wrapInner: function(boxes){
-            return nodes_access.call(this, boxes, function(node, value){
-                $(node).contents().wrapAll(value);
-            });
-        },
-
-        unwrap: function(){
-            this.parent().forEach(function(node){
-                this(node).children().replaceAll(node);
-            }, $);
-            return this;
-        },
-
-        remove: function(){
-            this.forEach(function(node){
-                var parent = node.parentNode;
-                if (parent) {
-                    parent.removeChild(node);
-                }
-            });
-            return this;
-        },
-
-        // Event
-
-        on: event_access('add'),
-
-        off: event_access('remove'),
-
-        once: function(subject, cb){
-            var fn = function(){
-                $(this).off(subject, fn);
-                return cb.apply(this, arguments);
-            };
-            return $(this).on(subject, fn);
-        },
-
-        trigger: trigger,
-
-        // Miscellaneous
-
-        end: function(){
-            return this.prevObject || new $();
-        },
-
-        each: function(fn){
-            for (var i = 0, l = this.length; i < l; i++){
-                var re = fn.call(this[i], i);
-                if (re === false) {
-                    break;      
-                }
-            }
-            return this;
-        }
-
-    });
-
-    ext.bind = ext.on;
-    ext.unbind = ext.off;
-    ext.one = ext.once;
-
-    // private
-
-    function pick(v){ 
-        return v; 
-    }
-
-    function find_selector(selector, attr){
-        return function(node){
-            if (attr) {
-                node = node[attr];
-            }
-            if ($.matches(node, selector)) {
-                this.push(node);
-            }
-            return node;
-        };
-    }
-
-    function find_near(prop){
-        return function(selector){
-            return $(_.unique([undefined, doc, null].concat(
-                this._map(selector ? function(node){
-                    var n = node[prop];
-                    if (n && $.matches(n, selector)) {
-                        return n;
-                    }
-                } : function(node){
-                    return node[prop];
-                })
-            )).slice(3));
-        };
-    }
-
-    function find_sibs(prop, start, has_until){
-        return function(target, selector){
-            if (!has_until) {
-                selector = target;
-            }
-            var sibs = new $();
-            this.forEach(function(node){
-                var until,
-                    n = start ? node.parentNode[start] : node;
-                if (has_until) {
-                    until = $(target, node.parentNode);
-                }
-                do {
-                    if (until && until.indexOf(n) > -1) {
-                        break;
-                    }
-                    if (node !== n && (!selector 
-                        || $.matches(n, selector))) {
-                        this.push(n);
-                    }
-                } while (n = n[prop]);
-            }, sibs);
-            return _.unique(sibs);
-        };
-    }
-
-    function nodes_access(value, setter, getter, name){
-        if (value === null || value === undefined) {
-            return this;
-        }
-        var is_fn_arg = is_function(value);
-        this.forEach(function(node, i){
-            if (!node) {
-                return;
-            }
-            var v = !is_fn_arg 
-                ? value 
-                : value.call(this, i, 
-                    getter && getter.call(this, node, name));
-            setter.call(this, node, name || v, v);
-        }, this);
-        return this;
-    }
-
-    function v_access(setter, getter){
-        return function(value){
-            if (arguments.length > 0) {
-                return nodes_access.call(this, value, setter, getter);
-            } else {
-                return this[0] ? getter.call(this, this[0]) : undefined;
-            }
-            return this;
-        };
-    }
-
-    function kv_access(setter, getter, map){
-        return function(name, value){
-            if (typeof name === 'object') {
-                if (map) {
-                    map.call(this, name);
-                } else {
-                    for (var k in name) {
-                        this.forEach(function(node){
-                            if (!node) {
-                                return;
-                            }
-                            setter.call(this, node, k, name[k]);
-                        }, this);
-                    }
-                }
-            } else {
-                if (arguments.length > 1) {
-                    return nodes_access.call(this, value, setter, getter, name);
-                } else {
-                    return this[0] ? getter.call(this, this[0], name) : undefined;
-                }
-            }
-            return this;
-        };
-    }
-
-    function event_access(action){
-        function access(subject, cb){
-            if (typeof subject === 'object') {
-                for (var i in subject) {
-                    access.call(this, [i, subject[i]]);
-                }
-            } else if (cb) {
-                subject = $.Event.aliases[subject] || subject;
-                this.forEach(function(node){
-                    node[action + 'EventListener'](subject, this, false);
-                }, cb);
-            }  // not support 'removeAllEventListener'
-            return this;
-        }
-        return access;
-    }
-
-    function trigger(me, event, data){
-        if (this === $) {
-            me = $(me);
         } else {
-            data = event;
-            event = me;
-            me = this;
-        }
-        if (typeof event === 'string') {
-            event = $.Event(event);
-        }
-        _.mix(event, data);
-        me.forEach((SPECIAL_TRIGGERS[event.type]
-                && !event.defaultPrevented) 
-            ? function(node){
-                node[event.type]();
-            } : function(node){
-                if ('dispatchEvent' in node) {
-                    node.dispatchEvent(this);
-                }
-            }, event);
-        return this;
-    }
-
-    function css_method(name){
-        return name.replace(/-+(.)?/g, function($0, $1){
-            return $1 ? $1.toUpperCase() : '';
-        }); 
-    }
-
-    function css_prop(name) {
-        return name.replace(/::/g, '/')
-            .replace(/([A-Z]+)([A-Z][a-z])/g, '$1_$2')
-            .replace(/([a-z\d])([A-Z])/g, '$1_$2')
-            .replace(/_/g, '-')
-            .toLowerCase();
-    }
-
-    function css_unit(name, value) {
-        return typeof value == "number" && !CSS_NUMBER[name] 
-            && value + "px" || value;
-    }
-
-    function default_display(tag) {
-        var display = _elm_display[tag];
-        if (!display) {
-            var tmp = document.createElement(tag);
-            doc.body.appendChild(tmp);
-            display = $.getPropertyValue(tmp, "display");
-            tmp.parentNode.removeChild(tmp);
-            if (display === "none") {
-                display = "block";
-            }
-            _elm_display[tag] = display;
-        }
-        return display;
-    }
-
-    function dimension(method){
-        return function(){
-            var node = this[0];
-            if (!node) {
-                return;
-            }
-            return is_window(node)
-                ? node['inner' + method]
-                : node.nodeType === 9 
-                    ? node.documentElement['offset' + method] 
-                    : (this.offset() || {})[method.toLowerCase()];
-        };
-    }
-
-    function scroll_offset(is_top){
-        var method = 'scroll' + is_top ? 'Top' : 'Left',
-            prop = 'page' + (is_top ? 'Y' : 'X') + 'Offset';
-        return function(){
-            var node = this[0];
-            if (!node) {
-                return;
-            }
-            return is_window(node) ? node[prop] : node[method];
-        };
-    }
-
-    function insert_node(target, node, action){
-        if (node.nodeName.toUpperCase() === 'SCRIPT' 
-                && (!node.type || node.type === 'text/javascript')) {
-            window['eval'].call(window, node.innerHTML);
-        }
-        switch(action) {
-        case 1:
-            target.appendChild(node);
-            break;
-        case 2: 
-            target.parentNode.insertBefore(node, target);
-            break;
-        case 3:
-            target.insertBefore(node, target.firstChild);
-            break;
-        case 4:
-            target.parentNode.insertBefore(node, target.nextSibling);
-            break;
-        default:
-            break;
-        }
-    }
-
-    function insert_nodes(action, is_reverse){
-        var fn = is_reverse ? function(target){
-            insert_node(target, this, action);
-        } : function(content){
-            insert_node(this, content, action);
-        };
-        return function(selector){
-            this.forEach(function(node){
-                this.forEach(fn, node);
-            }, is_reverse 
-                    || typeof selector !== 'string'
-                    || RE_HTMLTAG.test(selector)
-                ? $(selector)
-                : $.createNodes(selector));
-            return this;
-        };
-    }
-
-    function operator_insert_to(action){
-        return insert_nodes(action, true);
-    }
-
-    function operator_insert(action){
-        return insert_nodes(action);
-    }
-
-    function check_array_argument(args){
-        return _array_map.call(args, function(i){
-            if (typeof i === 'object') {
-                return i._slice();
+            selector = selector.trim();
+            if (RE_HTMLTAG.test(selector)) {
+                return $.createNodes(selector);
+            } else if (context) {
+                return $(context).find(selector);
             } else {
-                return i;
+                return ext.find(selector);
             }
-        });
+        }
+    } else if (is_window(this)) {
+        return new $();
     }
+}
 
-    // public static API
+var ext = $.fn = $.prototype = [];
 
-    $.find = $;
+['map', 'filter', 'slice', 'reverse', 'sort'].forEach(function(method){
+    var origin = this['_' + method] = this[method];
+    this[method] = function(){
+        return $(origin.apply(this, arguments));
+    };
+}, ext);
 
-    $._querySelector = function(context, selector){
-        try {
-            return _array_slice.call(context.querySelectorAll(selector));
-        } catch (ex) {
-            return [];
+var origin_concat = ext._concat = ext.concat;
+ext.concat = function(){
+    return $(origin_concat.apply(this._slice(), check_array_argument(arguments)));
+};
+
+var origin_splice = ext._splice = ext.splice;
+ext.splice = function(){
+    return $(origin_splice.apply(this, check_array_argument(arguments)));
+};
+
+_.mix(ext, {
+
+    constructor: $,
+
+    toString: function(){
+        return this.join(',');
+    },
+
+    // Traversing
+
+    find: function(selector){
+        var nodes = new $(), contexts;
+        if (this === ext) {
+            contexts = [doc];
+        } else {
+            nodes.prevObject = contexts = this;
         }
-    };
-
-    $.matches = $.matchesSelector = function(elm, selector){
-        return elm && elm.nodeType === 1 && elm[MATCHES_SELECTOR](selector);
-    };
-
-    $.contains = function(parent, elm){
-        return parent !== elm && parent.contains(elm);
-    };
-
-    $.createNodes = function(str, attrs){
-        var tag = (RE_HTMLTAG.exec(str) || [])[0] || str;
-        var temp = _html_containers[tag];
-        if (!temp) {
-            temp = _html_containers[tag] = tag === 'tr' 
-                    && document.createElement('tbody')
-                || (tag === 'tbody' || tag === 'thead' || tag === 'tfoot') 
-                    && document.createElement('table')
-                || (tag === 'td' || tag === 'th') 
-                    && document.createElement('tr')
-                || document.createElement('div');
-        }
-        temp.innerHTML = str;
-        var nodes = new $();
-        _array_push.apply(nodes, _array_slice.call(temp.childNodes));
-        nodes.forEach(function(node){
-            this.removeChild(node);
-        }, temp);
-        if (attrs) {
-            for (var k in attrs) {
-                nodes.attr(k, attrs[k]);
+        if (RE_ID_SEL.test(selector)) {
+            contexts = contexts[0];
+            selector = selector.substr(1);
+            var context_query = contexts !== doc 
+                && contexts && contexts.getElementById;
+            var elm = context_query 
+                ? context_query.call(contexts, selector)
+                : doc.getElementById(selector);
+            if (elm) {
+                nodes.push(elm);
+            }
+        } else {
+            if (contexts[1]) {
+                contexts.forEach(function(context){
+                    _array_push.apply(this, 
+                        $._querySelector(context, selector));
+                }, nodes);
+            } else if (contexts[0]) {
+                _array_push.apply(nodes, 
+                    $._querySelector(contexts[0], selector));
             }
         }
         return nodes;
-    };
+    },
 
-    $.getStyles = window.getComputedStyle && function(elm){
-        return window.getComputedStyle(elm, null);
-    } || document.documentElement.currentStyle && function(elm){
-        return elm.currentStyle;
-    };
+    eq: function(i){
+        i = parseInt(i, 10);
+        return i === -1 ? this.slice(-1) : this.slice(i, i + 1);
+    },
 
-    $.getPropertyValue = function(elm, name){
-        var styles = $.getStyles(elm);
-        return styles.getPropertyValue 
-            && styles.getPropertyValue(name) || styles[name];
-    };
+    not: function(selector){
+        return this.filter(function(node){
+            return node && !this(node, selector);
+        }, $.matches);
+    },
 
-    $.Event = function(type, props) {
-        var real_type = $.Event.aliases[type] || type;
-        var bubbles = true,
-            is_touch = TOUCH_EVENTS[type],
-            event = document.createEvent(is_touch && 'TouchEvent' 
-                || MOUSE_EVENTS[type] && 'MouseEvents' 
-                || 'Events');
-        if (props) {
-            if ('bubbles' in props) {
-                bubbles = !!props.bubbles;
-                delete props.bubbles;
+    matches: function(selector){
+        return this.filter(function(node){
+            return node && this(node, selector);
+        }, $.matches);
+    },
+
+    has: function(selector){
+        return this.filter(function(node){
+            if (!node) {
+                return false;
             }
-            _.mix(event, props);
+            if (typeof selector === 'string') {
+                return $(selector, node).length;
+            } else {
+                return $.contains(node, $(selector)[0]);
+            }
+        });
+    },
+
+    parent: find_near('parentNode'),
+
+    parents: function(selector){
+        var ancestors = new $(), p = this,
+            finding = selector 
+                ? find_selector(selector, 'parentNode') 
+                : function(node){
+                    return this[this.push(node.parentNode) - 1];
+                };
+        while (p.length) {
+            p = p.map(finding, ancestors);
         }
-        event[is_touch && 'initTouchEvent' 
-            || 'initEvent'](real_type, bubbles, true);
-        return event;
+        return ancestors;
+    },
+
+    closest: function(selector){
+        var ancestors = new $(), p = this, 
+            finding = find_selector(selector, 'parentNode');
+        while (p.length && !ancestors.length) {
+            p = p.map(finding, ancestors);
+        }
+        return ancestors.length && ancestors || this;
+    },
+
+    siblings: find_sibs(NEXT_SIB, FIRST_CHILD),
+
+    next: find_near(NEXT_SIB),
+
+    nextAll: find_sibs(NEXT_SIB),
+
+    nextUntil: find_sibs(NEXT_SIB, false, true),
+
+    prev: find_near(PREV_SIB),
+
+    prevAll: find_sibs(PREV_SIB),
+
+    prevUntil: find_sibs(PREV_SIB, false, true),
+
+    children: function(){
+        var r = new $();
+        this.forEach(function(node){
+            _array_push.apply(this, _array_slice.call(node.children));
+        }, r);
+        return r;
+    },
+
+    contents: function(){
+        var r = new $();
+        this.forEach(function(node){
+            _array_push.apply(this, _array_slice.call(node.childNodes));
+        }, r);
+        return r;
+    },
+
+    // Detection
+
+    is: function(selector){
+        return this.some(function(node){
+            return node && $.matches(node, selector);
+        });
+    },
+
+    hasClass: function(cname){
+        for (var i = 0, l = this.length; i < l; i++) {
+            if (this[i].classList.contains(cname)) {
+                return true;
+            }
+        }
+        return false;
+    },
+
+    // Properties
+
+    addClass: function(cname){
+        return nodes_access.call(this, cname, function(node, value){
+            node.classList.add(value);
+        }, function(node){
+            return node.className;
+        });
+    },
+
+    removeClass: function(cname){
+        return nodes_access.call(this, cname, function(node, value){
+            node.classList.remove(value);
+        }, function(node){
+            return node.className;
+        });
+    },
+
+    toggleClass: function(cname, force){
+        return nodes_access.call(this, cname, function(node, value){
+            node.classList[force === undefined && 'toggle'
+                || force && 'add' || 'remove'](value);
+        }, function(node){
+            return node.className;
+        });
+    },
+
+    attr: kv_access(function(node, name, value){
+        node.setAttribute(name, value);
+    }, function(node, name){
+        return node.getAttribute(name);
+    }),
+
+    removeAttr: function(name){
+        this.forEach(function(node){
+            node.removeAttribute(this);
+        }, name);
+        return this;
+    },
+
+    prop: kv_access(function(node, name, value){
+        node[name] = value;
+    }, function(node, name){
+        return node[name];
+    }),
+
+    removeProp: function(name){
+        this.forEach(function(node){
+            delete node[this];
+        }, name);
+        return this;
+    },
+
+    data: kv_access(function(node, name, value){
+        node.dataset[css_method(name)] = value;
+    }, function(node, name){
+        var data = node.dataset;
+        if (!data) {
+            return;
+        }
+        return name ? data[css_method(name)] 
+            : _.mix({}, data);
+    }),
+
+    removeData: function(name){
+        this.forEach(function(node){
+            delete node.dataset[this];
+        }, name);
+        return this;
+    },
+
+    val: v_access(function(node, value){
+        node.value = value;
+    }, function(node){
+        if (this.multiple) {
+            return $('option', this).filter(function(item){
+                return item.selected;
+            }).map(function(item){
+                return item.value;
+            });
+        }
+        return node.value;
+    }),
+
+    empty: function(){
+        this.forEach(function(node){
+            node.innerHTML = '';
+        });
+        return this;
+    },
+
+    html: v_access(function(node, value){
+        if (RE_HTMLTAG.test(value)) {
+            $(node).empty().append(value);
+        } else {
+            node.innerHTML = value;
+        }
+    }, function(node){
+        return node.innerHTML;
+    }),
+
+    text: v_access(function(node, value){
+        node.textContent = value;
+    }, function(node){
+        return node.textContent;
+    }),
+
+    clone: function(){
+        return this.map(function(node){
+            return node.cloneNode(true);
+        });
+    },
+
+    css: kv_access(function(node, name, value){
+        var prop = css_prop(name);
+        if (!value && value !== 0) {
+            node.style.removeProperty(prop);
+        } else {
+            node.style.cssText += ';' + prop + ":" + css_unit(prop, value);
+        }
+    }, function(node, name){
+        return node.style[css_method(name)] 
+            || $.getPropertyValue(node, name);
+    }, function(dict){
+        var prop, value, css = '';
+        for (var name in dict) {
+            value = dict[name];
+            prop = css_prop(name);
+            if (!value && value !== 0) {
+                this.forEach(function(node){
+                    node.style.removeProperty(this);
+                }, prop);
+            } else {
+                css += prop + ":" + css_unit(prop, value) + ';';
+            }
+        }
+        this.forEach(function(node){
+            node.style.cssText += ';' + this;
+        }, css);
+    }),
+
+    hide: function(){
+        return this.css("display", "none");
+    },
+
+    show: function(){
+        this.forEach(function(node){
+            if (node.style.display === "none") {
+                node.style.display = null;
+            }
+            if (this(node, "display") === "none") {
+                node.style.display = default_display(node.nodeName);
+            }
+        }, $.getPropertyValue);
+        return this;
+    },
+
+    // Dimensions
+
+    offset: function(){
+        if (!this[0]) {
+            return;
+        }
+        var set = this[0].getBoundingClientRect();
+        return {
+            left: set.left + window.pageXOffset,
+            top: set.top + window.pageYOffset,
+            width: set.width,
+            height: set.height
+        };
+    },
+
+    width: dimension('Width'),
+
+    height: dimension('Height'),
+
+    scrollLeft: scroll_offset(),
+
+    scrollTop: scroll_offset(true),
+
+    // Manipulation
+
+    appendTo: operator_insert_to(1),
+
+    append: operator_insert(1),
+
+    prependTo: operator_insert_to(3),
+
+    prepend: operator_insert(3),
+
+    insertBefore: operator_insert_to(2),
+
+    before: operator_insert(2),
+
+    insertAfter: operator_insert_to(4),
+
+    after: operator_insert(4),
+
+    replaceAll: function(targets){
+        var t = $(targets);
+        this.insertBefore(t);
+        t.remove();
+        return this;
+    },
+
+    replaceWith: function(contents){
+        return $(contents).replaceAll(this);
+    },
+
+    wrap: function(boxes){
+        return nodes_access.call(this, boxes, function(node, value){
+            $(value).insertBefore(node).append(node);
+        });
+    },
+
+    wrapAll: function(boxes){
+        $(boxes).insertBefore(this.eq(0)).append(this);
+        return this;
+    },
+
+    wrapInner: function(boxes){
+        return nodes_access.call(this, boxes, function(node, value){
+            $(node).contents().wrapAll(value);
+        });
+    },
+
+    unwrap: function(){
+        this.parent().forEach(function(node){
+            this(node).children().replaceAll(node);
+        }, $);
+        return this;
+    },
+
+    remove: function(){
+        this.forEach(function(node){
+            var parent = node.parentNode;
+            if (parent) {
+                parent.removeChild(node);
+            }
+        });
+        return this;
+    },
+
+    // Event
+
+    on: event_access('add'),
+
+    off: event_access('remove'),
+
+    once: function(subject, cb){
+        var fn = function(){
+            $(this).off(subject, fn);
+            return cb.apply(this, arguments);
+        };
+        return $(this).on(subject, fn);
+    },
+
+    trigger: trigger,
+
+    // Miscellaneous
+
+    end: function(){
+        return this.prevObject || new $();
+    },
+
+    each: function(fn){
+        for (var i = 0, l = this.length; i < l; i++){
+            var re = fn.call(this[i], i);
+            if (re === false) {
+                break;      
+            }
+        }
+        return this;
+    }
+
+});
+
+ext.bind = ext.on;
+ext.unbind = ext.off;
+ext.one = ext.once;
+
+// private
+
+function pick(v){ 
+    return v; 
+}
+
+function find_selector(selector, attr){
+    return function(node){
+        if (attr) {
+            node = node[attr];
+        }
+        if ($.matches(node, selector)) {
+            this.push(node);
+        }
+        return node;
     };
+}
 
-    $.Event.aliases = {};
+function find_near(prop){
+    return function(selector){
+        return $(_.unique([undefined, doc, null].concat(
+            this._map(selector ? function(node){
+                var n = node[prop];
+                if (n && $.matches(n, selector)) {
+                    return n;
+                }
+            } : function(node){
+                return node[prop];
+            })
+        )).slice(3));
+    };
+}
 
-    $.trigger = trigger;
+function find_sibs(prop, start, has_until){
+    return function(target, selector){
+        if (!has_until) {
+            selector = target;
+        }
+        var sibs = new $();
+        this.forEach(function(node){
+            var until,
+                n = start ? node.parentNode[start] : node;
+            if (has_until) {
+                until = $(target, node.parentNode);
+            }
+            do {
+                if (until && until.indexOf(n) > -1) {
+                    break;
+                }
+                if (node !== n && (!selector 
+                    || $.matches(n, selector))) {
+                    this.push(n);
+                }
+            } while (n = n[prop]);
+        }, sibs);
+        return _.unique(sibs);
+    };
+}
 
-    $.camelize = css_method;
-    $.dasherize = css_prop;
-    $._vAccess = v_access;
-    $._kvAccess = kv_access;
-    $._nodesAccess = nodes_access;
+function nodes_access(value, setter, getter, name){
+    if (value === null || value === undefined) {
+        return this;
+    }
+    var is_fn_arg = is_function(value);
+    this.forEach(function(node, i){
+        if (!node) {
+            return;
+        }
+        var v = !is_fn_arg 
+            ? value 
+            : value.call(this, i, 
+                getter && getter.call(this, node, name));
+        setter.call(this, node, name || v, v);
+    }, this);
+    return this;
+}
 
-    return $;
+function v_access(setter, getter){
+    return function(value){
+        if (arguments.length > 0) {
+            return nodes_access.call(this, value, setter, getter);
+        } else {
+            return this[0] ? getter.call(this, this[0]) : undefined;
+        }
+        return this;
+    };
+}
+
+function kv_access(setter, getter, map){
+    return function(name, value){
+        if (typeof name === 'object') {
+            if (map) {
+                map.call(this, name);
+            } else {
+                for (var k in name) {
+                    this.forEach(function(node){
+                        if (!node) {
+                            return;
+                        }
+                        setter.call(this, node, k, name[k]);
+                    }, this);
+                }
+            }
+        } else {
+            if (arguments.length > 1) {
+                return nodes_access.call(this, value, setter, getter, name);
+            } else {
+                return this[0] ? getter.call(this, this[0], name) : undefined;
+            }
+        }
+        return this;
+    };
+}
+
+function event_access(action){
+    function access(subject, cb){
+        if (typeof subject === 'object') {
+            for (var i in subject) {
+                access.call(this, [i, subject[i]]);
+            }
+        } else if (cb) {
+            subject = $.Event.aliases[subject] || subject;
+            this.forEach(function(node){
+                node[action + 'EventListener'](subject, this, false);
+            }, cb);
+        }  // not support 'removeAllEventListener'
+        return this;
+    }
+    return access;
+}
+
+function trigger(me, event, data){
+    if (this === $) {
+        me = $(me);
+    } else {
+        data = event;
+        event = me;
+        me = this;
+    }
+    if (typeof event === 'string') {
+        event = $.Event(event);
+    }
+    _.mix(event, data);
+    me.forEach((SPECIAL_TRIGGERS[event.type]
+            && !event.defaultPrevented) 
+        ? function(node){
+            node[event.type]();
+        } : function(node){
+            if ('dispatchEvent' in node) {
+                node.dispatchEvent(this);
+            }
+        }, event);
+    return this;
+}
+
+function css_method(name){
+    return name.replace(RE_CSS_NAME, replace_css_method); 
+}
+
+function replace_css_method($0, $1){
+    return $1 ? $1.toUpperCase() : '';
+}
+
+function css_prop(name) {
+    return name.replace(RE_DOUBLE_COLON, '/')
+        .replace(RE_CAMEL_BEGIN_WITH_CAP, '$1_$2')
+        .replace(RE_CAMEL, '$1_$2')
+        .replace(RE_UNDER, '-')
+        .toLowerCase();
+}
+
+function css_unit(name, value) {
+    return typeof value == "number" && !CSS_NUMBER[name] 
+        && value + "px" || value;
+}
+
+function default_display(tag) {
+    var display = _elm_display[tag];
+    if (!display) {
+        var tmp = document.createElement(tag);
+        doc.body.appendChild(tmp);
+        display = $.getPropertyValue(tmp, "display");
+        tmp.parentNode.removeChild(tmp);
+        if (display === "none") {
+            display = "block";
+        }
+        _elm_display[tag] = display;
+    }
+    return display;
+}
+
+function dimension(method){
+    return function(){
+        var node = this[0];
+        if (!node) {
+            return;
+        }
+        return is_window(node)
+            ? node['inner' + method]
+            : node.nodeType === 9 
+                ? node.documentElement['offset' + method] 
+                : (this.offset() || {})[method.toLowerCase()];
+    };
+}
+
+function scroll_offset(is_top){
+    var method = 'scroll' + is_top ? 'Top' : 'Left',
+        prop = 'page' + (is_top ? 'Y' : 'X') + 'Offset';
+    return function(){
+        var node = this[0];
+        if (!node) {
+            return;
+        }
+        return is_window(node) ? node[prop] : node[method];
+    };
+}
+
+function insert_node(target, node, action){
+    if (node.nodeName.toUpperCase() === 'SCRIPT' 
+            && (!node.type || node.type === 'text/javascript')) {
+        window['eval'].call(window, node.innerHTML);
+    }
+    switch(action) {
+    case 1:
+        target.appendChild(node);
+        break;
+    case 2: 
+        target.parentNode.insertBefore(node, target);
+        break;
+    case 3:
+        target.insertBefore(node, target.firstChild);
+        break;
+    case 4:
+        target.parentNode.insertBefore(node, target.nextSibling);
+        break;
+    default:
+        break;
+    }
+}
+
+function insert_nodes(action, is_reverse){
+    var fn = is_reverse ? function(target){
+        insert_node(target, this, action);
+    } : function(content){
+        insert_node(this, content, action);
+    };
+    return function(selector){
+        this.forEach(function(node){
+            this.forEach(fn, node);
+        }, is_reverse 
+                || typeof selector !== 'string'
+                || RE_HTMLTAG.test(selector)
+            ? $(selector)
+            : $.createNodes(selector));
+        return this;
+    };
+}
+
+function operator_insert_to(action){
+    return insert_nodes(action, true);
+}
+
+function operator_insert(action){
+    return insert_nodes(action);
+}
+
+function check_array_argument(args){
+    return _array_map.call(args, function(i){
+        if (typeof i === 'object') {
+            return i._slice();
+        } else {
+            return i;
+        }
+    });
+}
+
+// public static API
+
+$.find = $;
+
+$._querySelector = function(context, selector){
+    try {
+        return _array_slice.call(context.querySelectorAll(selector));
+    } catch (ex) {
+        return [];
+    }
+};
+
+$.matches = $.matchesSelector = function(elm, selector){
+    return elm && elm.nodeType === 1 && elm[MATCHES_SELECTOR](selector);
+};
+
+$.contains = function(parent, elm){
+    return parent !== elm && parent.contains(elm);
+};
+
+$.createNodes = function(str, attrs){
+    var tag = (RE_HTMLTAG.exec(str) || [])[0] || str;
+    var temp = _html_containers[tag];
+    if (!temp) {
+        temp = _html_containers[tag] = tag === 'tr' 
+                && document.createElement('tbody')
+            || (tag === 'tbody' || tag === 'thead' || tag === 'tfoot') 
+                && document.createElement('table')
+            || (tag === 'td' || tag === 'th') 
+                && document.createElement('tr')
+            || document.createElement('div');
+    }
+    temp.innerHTML = str;
+    var nodes = new $();
+    _array_push.apply(nodes, _array_slice.call(temp.childNodes));
+    nodes.forEach(function(node){
+        this.removeChild(node);
+    }, temp);
+    if (attrs) {
+        for (var k in attrs) {
+            nodes.attr(k, attrs[k]);
+        }
+    }
+    return nodes;
+};
+
+$.getStyles = window.getComputedStyle && function(elm){
+    return window.getComputedStyle(elm, null);
+} || document.documentElement.currentStyle && function(elm){
+    return elm.currentStyle;
+};
+
+$.getPropertyValue = function(elm, name){
+    var styles = $.getStyles(elm);
+    return styles.getPropertyValue 
+        && styles.getPropertyValue(name) || styles[name];
+};
+
+$.Event = function(type, props) {
+    var real_type = $.Event.aliases[type] || type;
+    var bubbles = true,
+        is_touch = TOUCH_EVENTS[type],
+        event = document.createEvent(is_touch && 'TouchEvent' 
+            || MOUSE_EVENTS[type] && 'MouseEvents' 
+            || 'Events');
+    if (props) {
+        if ('bubbles' in props) {
+            bubbles = !!props.bubbles;
+            delete props.bubbles;
+        }
+        _.mix(event, props);
+    }
+    event[is_touch && 'initTouchEvent' 
+        || 'initEvent'](real_type, bubbles, true);
+    return event;
+};
+
+$.Event.aliases = {};
+
+$.trigger = trigger;
+
+$.camelize = css_method;
+$.dasherize = css_prop;
+$._vAccess = v_access;
+$._kvAccess = kv_access;
+$._nodesAccess = nodes_access;
+
+return $;
 
 });
 
@@ -6126,6 +6137,7 @@ var _defaults = {
     RE_CONTENT_COM = new RegExp('\\{\\{' 
         + MY_BRIGHT + '=(\\w+)\\}\\}', 'g'),
     RE_EVENT_SEL = /(\S+)\s*(.*)/,
+    RE_INNER = /(<[\s\S]+?>)([\s\S]*)(<.+>)/,
     RE_ATTR_ID = /(\sid=['"])[^"']*/,
     RE_ATTR_MARK = new RegExp('(' + IS_BRIGHT + "=['\"])[^'\"]*"),
     RE_HTMLTAG = /^\s*(<[\w\-]+)([^>]*)>/;
@@ -6151,7 +6163,7 @@ function DarkDOM(){}
 DarkDOM.prototype = {
 
     /**
-     * @method
+     * @public
      * @returns {DarkGuard} 
      */
     darkGuard: function(){
@@ -6159,7 +6171,7 @@ DarkDOM.prototype = {
     },
 
     /**
-     * @method
+     * @public
      * @see module:darkdom.DarkGuard#mount
      * @see module:darkdom.DarkGuard#mountRoot
      */
@@ -6171,7 +6183,7 @@ DarkDOM.prototype = {
     },
 
     /**
-     * @method
+     * @public
      * @see module:darkdom.DarkGuard#unmount
      * @see module:darkdom.DarkGuard#unmountRoot
      */
@@ -6187,7 +6199,7 @@ DarkDOM.prototype = {
      * module:darkdom.DarkDOM#unmountDarkDOM} & [deregister]{@link 
      * module:darkdom.DarkGuard#unregisterRoot}
      *
-     * @method
+     * @public
      * @see module:darkdom.DarkGuard#unmount
      * @see module:darkdom.DarkGuard#unwatch
      * @see module:darkdom.DarkGuard#unmountRoot
@@ -6226,7 +6238,7 @@ DarkDOM.prototype = {
      * );
      * console.log($('.x-folder').getDarkState('isFolded')); // (B3)
      *
-     * @method
+     * @public
      * @param {String} name - 
      * @see module:darkdom.DarkComponent#state
      * @see module:darkdom.DarkGuard#state
@@ -6239,7 +6251,7 @@ DarkDOM.prototype = {
     },
 
     /**
-     * @method
+     * @public
      * @param {String} name - 
      * @param {String|Function} value - 
      * @param {String} opt - 
@@ -6261,27 +6273,30 @@ DarkDOM.prototype = {
      * High-performance version of [DarkDOM#updateDarkDOM]{@link 
      * module:darkdom.DarkDOM#updateDarkDOM}
      *
-     * @method
+     * @public
      */
-    updateDarkStates: function(){
-        update_target(this, {
+    updateDarkStates: function(opt){
+        update_target(this, _.merge({
             onlyStates: true
-        });
+        }, opt));
     },
 
     /**
-     * @method
+     * @public
      */
-    updateDarkDOM: function(){
-        update_target(this, {});
-        exports.DarkGuard.gc();
+    updateDarkDOM: function(opt){
+        opt = opt || {};
+        update_target(this, opt);
+        if (!opt.ignoreRender) {
+            exports.DarkGuard.gc();
+        }
     },
 
     /**
-     * @method
+     * @public
      */
     updateDarkSource: function(){
-        var bright_id = $(this).attr(MY_BRIGHT);
+        var bright_id = this.getAttribute(MY_BRIGHT);
         delete _source_models[bright_id];
         this.updateDarkDOM();
     },
@@ -6302,22 +6317,33 @@ DarkDOM.prototype = {
      *     }
      * }).end().updateDarkDOM();
      *
-     * @method
+     * @public
      * @param {Function} fn - accepts {@link SourceModel}
      */
     feedDarkDOM: function(fn){
-        var bright_id = $(this).attr(MY_BRIGHT);
+        var bright_id = this.getAttribute(MY_BRIGHT);
         update_source_model(bright_id, fn, true);
     },
 
     /**
-     * @method
+     * @public
+     */
+    forwardDarkDOM: function(selector, handler){
+        var bright_id = this.getAttribute(MY_BRIGHT);
+        var guard = _guards[bright_id];
+        var subject = bright_id + '|' + selector;
+        mix_setter(selector, subject, guard._config.events);
+        guard.forward(subject, handler);
+        guard.registerEvents($('#' + bright_id), subject, selector);
+    },
+
+    /**
+     * @public
      * @param {UpdateEventName} subject
      * @param {Function} handler - accepts {@link DarkModelChanges}
      */
     responseDarkDOM: function(subject, handler){
-        var target = $(this),
-            bright_id = target.attr(MY_BRIGHT),
+        var bright_id = this.getAttribute(MY_BRIGHT),
             updaters = _updaters[bright_id];
         if (!updaters) {
             updaters = _updaters[bright_id] = {};
@@ -6348,7 +6374,7 @@ function DarkComponent(opt){
 DarkComponent.prototype = {
 
     /**
-     * @method
+     * @public
      * @param {object}
      */
     set: function(opt){
@@ -6360,7 +6386,7 @@ DarkComponent.prototype = {
     },
 
     /**
-     * @method
+     * @public
      * @param {string|object} name
      * @param {(function|string)} getter
      * @param {(function|string)} setter
@@ -6384,7 +6410,7 @@ DarkComponent.prototype = {
     },
 
     /**
-     * @method
+     * @public
      */
     contain: function(name, component, opt){
         if (typeof name === 'object') {
@@ -6401,7 +6427,7 @@ DarkComponent.prototype = {
     },
 
     /**
-     * @method
+     * @public
      */
     forward: function(selector, subject){
         mix_setter(selector, subject, this._events);
@@ -6409,7 +6435,7 @@ DarkComponent.prototype = {
     },
 
     /**
-     * @method
+     * @public
      */
     response: function(subject, handler){
         this._updaters[subject] = handler;
@@ -6417,17 +6443,22 @@ DarkComponent.prototype = {
     },
 
     /**
-     * @method
+     * @public
      */
     component: function(name){
         return this._components[name];
     },
 
     /**
-     * @method
+     * @public
      */
     createGuard: function(opt){
-        return new exports.DarkGuard(_.mix({
+        // @hotspot
+        opt = opt || {};
+        return new exports.DarkGuard({
+            contextModel: opt.contextModel,
+            contextTarget: opt.contextTarget,
+            isSource: opt.isSource,
             stateGetters: this._stateGetters,
             stateSetters: this._stateSetters,
             components: this._components,
@@ -6435,7 +6466,7 @@ DarkComponent.prototype = {
             updaters: this._updaters,
             events: this._events,
             options: this._config
-        }, opt));
+        });
     }
 
 };
@@ -6449,15 +6480,12 @@ function DarkGuard(opt){
     this._stateGetters = Object.create(opt.stateGetters);
     this._stateSetters = Object.create(opt.stateSetters);
     this._options = opt.options;
-    this._config = _.mix({}, opt);
+    this._config = opt;
     this._darkRoots = [];
     this._specs = {};
     this._buffer = [];
     this._events = {};
     this._sourceGuard = null;
-    if (this._options.enableSource) {
-        this.createSource(opt);
-    }
 }
 
 DarkGuard.prototype = {
@@ -6468,7 +6496,7 @@ DarkGuard.prototype = {
     state: DarkComponent.prototype.state,
 
     /**
-     * @method
+     * @public
      */
     component: function(name, spec){
         mix_setter(name, spec, this._specs, {
@@ -6478,7 +6506,7 @@ DarkGuard.prototype = {
     },
 
     /**
-     * @method
+     * @public
      */
     forward: function(subject, selector){
         mix_setter(subject, selector, this._events);
@@ -6486,31 +6514,32 @@ DarkGuard.prototype = {
     },
 
     /**
-     * @method
+     * @public
      */
     source: function(){
         if (!this._options.enableSource) {
             return;
         }
-        return this._sourceGuard;
+        return this._sourceGuard
+            || (this._sourceGuard = this.createSource(this._config));
     },
 
     /**
-     * @method
+     * @public
      */
     stateGetter: function(name){
         return this._stateGetters[name];
     },
 
     /**
-     * @method
+     * @public
      */
     stateSetter: function(name){
         return this._stateSetters[name];
     },
 
     /**
-     * @method
+     * @public
      */
     watch: function(targets){
         this.selectTargets(targets)
@@ -6519,7 +6548,7 @@ DarkGuard.prototype = {
     },
 
     /**
-     * @method
+     * @public
      */
     unwatch: function(targets){
         targets = targets 
@@ -6530,7 +6559,7 @@ DarkGuard.prototype = {
     },
 
     /**
-     * @method
+     * @public
      */
     mount: function(){
         this._darkRoots.forEach(this.mountRoot, this);
@@ -6538,88 +6567,89 @@ DarkGuard.prototype = {
     },
 
     /**
-     * @method
+     * @public
      */
     unmount: function(){
         this._darkRoots.forEach(this.unmountRoot, this);
         return this;
     },
 
+    /**
+     * @public
+     */
     buffer: function(){
         this._darkRoots.forEach(this.bufferRoot, this);
         return this;
     },
 
+    /**
+     * @public
+     */
     update: function(){
         this._darkRoots.forEach(this.updateRoot, this);
         return this;
     },
 
     gc: function(bright_id){
-        _.each(this._darkRoots, function(target){
-            if ($(target).attr(MY_BRIGHT) === bright_id) {
-                this.unregisterRoot(target);
+        _.each(this._darkRoots, function(elm){
+            if (elm.getAttribute(MY_BRIGHT) === bright_id) {
+                this.unregisterRoot(elm);
                 return false;
             }
         }, this);
     },
 
-    registerRoot: function(target){
-        target = $(target);
-        if (target.attr(IS_BRIGHT)) {
+    registerRoot: function(elm){
+        // @hotspot
+        if (elm.getAttribute(IS_BRIGHT)) {
             return;
         }
-        var bright_id = target.attr(MY_BRIGHT);
+        var is_source = this._config.isSource;
+        var bright_id = elm.getAttribute(MY_BRIGHT);
         if (!bright_id) {
             bright_id = uuid();
-            if (!this._config.isSource) {
-                target.attr(MY_BRIGHT, bright_id);
+            if (!is_source) {
+                elm.setAttribute(MY_BRIGHT, bright_id);
             }
         }
-        if (!this._config.isSource
-                && (target[0].lastUpdateDarkDOM || 0) > _update_tm) {
+        if (!is_source
+                && (elm.lastUpdateDarkDOM || 0) > _update_tm) {
             return bright_id;
         }
         _guards[bright_id] = this;
-        if (!this._config.isSource) {
-            _.each(DarkDOM.prototype, function(method, name){
-                this[name] = method;
-            }, target[0]);
+        if (!is_source) {
+            var dom_api = DarkDOM.prototype;
+            for (var name in dom_api) {
+                elm[name] = dom_api[name];
+            }
         } else {
-            target[0].isDarkSource = true;
+            elm.isDarkSource = true;
         }
-        this._darkRoots.push(target[0]);
-        target[0].lastUpdateDarkDOM = +new Date();
+        this._darkRoots.push(elm);
+        elm.lastUpdateDarkDOM = +new Date();
         return bright_id;
     },
 
-    /**
-     * @method
-     */
-    unregisterRoot: function(target){
-        target = $(target);
-        var bright_id = target.attr(MY_BRIGHT);
+    unregisterRoot: function(elm){
+        var bright_id = elm.getAttribute(MY_BRIGHT);
         if (this !== _guards[bright_id]) {
             return;
         }
-        target.removeAttr(MY_BRIGHT);
+        elm.removeAttribute(MY_BRIGHT);
         unregister(bright_id);
         _.each(DarkDOM.prototype, function(method, name){
             delete this[name];
-        }, target[0]);
-        delete target[0].lastUpdateDarkDOM;
-        clear(this._darkRoots, target[0]);
+        }, elm);
+        delete elm.lastUpdateDarkDOM;
+        clear(this._darkRoots, elm);
     },
 
-    /**
-     * @method
-     */
-    mountRoot: function(target){
-        target = $(target);
-        if (target.attr(IS_BRIGHT)
-                || target[0].isMountedDarkDOM) {
+    mountRoot: function(elm){
+        if (elm.getAttribute(IS_BRIGHT)
+                || elm.isMountedDarkDOM) {
             return this;
         }
+        var target = $(elm);
         target.trigger('darkdom:willMount');
         var dark_model = render_root(this.scanRoot(target));
         target.hide().after(this.render(dark_model));
@@ -6631,43 +6661,41 @@ DarkGuard.prototype = {
         return this;
     },
 
-    /**
-     * method
-     */
-    unmountRoot: function(target){
-        target = $(target);
-        var bright_id = target.attr(MY_BRIGHT);
-        target.find('[' + MY_BRIGHT + ']').forEach(function(child){
-            var child_id = $(child).attr(MY_BRIGHT);
+    unmountRoot: function(elm){
+        var bright_id = elm.getAttribute(MY_BRIGHT);
+        $('[' + MY_BRIGHT + ']', elm).forEach(function(child){
+            var child_id = child.getAttribute(MY_BRIGHT);
             var guard = _guards[child_id];
             guard.unregisterRoot(child);
         }, _dark_models);
         $('#' + bright_id).remove();
-        delete target[0].isMountedDarkDOM;
+        delete elm.isMountedDarkDOM;
         delete _dark_models[bright_id];
     },
 
-    bufferRoot: function(target){
-        target = $(target);
-        if (target.attr(IS_BRIGHT)) {
+    bufferRoot: function(elm){
+        // @hotspot
+        if (elm.getAttribute(IS_BRIGHT)) {
             return this;
         }
-        var dark_model = this.scanRoot(target); 
+        var dark_model = this.scanRoot(elm); 
         this._bufferModel(dark_model);
-        target[0].isMountedDarkDOM = true;
+        elm.isMountedDarkDOM = true;
         return this;
     },
 
-    updateRoot: function(target){
-        $(target).updateDarkDOM();
+    updateRoot: function(elm){
+        elm.updateDarkDOM();
         return this;
     },
 
     scanRoot: function(target, opt){
+        // @hotspot
+        target = $(target);
         opt = opt || {};
         var is_source = this._config.isSource;
         var bright_id = is_source 
-            ? this.registerRoot(target)
+            ? this.registerRoot(target[0])
             : target.attr(MY_BRIGHT);
         var dark_model = {
             id: bright_id,
@@ -6685,7 +6713,7 @@ DarkGuard.prototype = {
         if (!is_source
                 && (dark_model.state.source 
                     || _source_models[bright_id])
-                && this._sourceGuard) {
+                && this._options.enableSource) {
             this._mergeSource(dark_model, opt);
         }
         return dark_model;
@@ -6851,13 +6879,18 @@ DarkGuard.prototype = {
         }
     },
 
-    registerEvents: function(bright_root){
+    registerEvents: function(bright_root, subject, selector){
         var bright_id = bright_root.attr('id'),
             guard = _guards[bright_id];
         if (!guard) {
             return;
         }
-        _.each(guard._config.events, function(subject, bright_sel){
+        if (selector) {
+            register.call(bright_root, subject, selector);
+        } else {
+            _.each(guard._config.events, register, bright_root);
+        }
+        function register(subject, bright_sel){
             bright_sel = RE_EVENT_SEL.exec(bright_sel);
             this.on(bright_sel[1], function(e){
                 if (_matches_selector(e.target, bright_sel[2])) {
@@ -6865,7 +6898,7 @@ DarkGuard.prototype = {
                 }
                 return false;
             });
-        }, bright_root);
+        }
     },
 
     triggerEvent: function(bright_id, subject, e){
@@ -6892,30 +6925,37 @@ DarkGuard.prototype = {
     },
 
     /**
-     * @method
+     * @public
      */
     isSource: function(){
         return this._config.isSource;
     },
 
     createSource: function(opt){
-        this._sourceGuard = new exports.DarkGuard(_.merge({
-            isSource: true,
-            contextTarget: null,
-            options: _.merge({
-                entireAsContent: opt.options.sourceAsContent 
-                    || opt.options.entireAsContent,
-                enableSource: false 
-            }, opt.options)
-        }, opt));
-        return this._sourceGuard;
+        // @hotspot
+        var i, options = opt.options,
+            source_options = {};
+        for (i in options) {
+            source_options[i] = options[i];
+        }
+        source_options.entireAsContent = options.sourceAsContent 
+            || options.entireAsContent;
+        source_options.enableSource = false;
+        var source_opt = {};
+        for (i in opt) {
+            source_opt[i] = opt[i];
+        }
+        source_opt.isSource = true;
+        source_opt.contextTarget = null;
+        source_opt.options = source_options;
+        return new exports.DarkGuard(source_opt);
     },
 
     scanSource: function(bright_id, selector){
         if (!selector) {
             return;
         }
-        var guard = this._sourceGuard;
+        var guard = this.source();
         guard._darkRoots.length = 0;
         var targets = guard.selectTargets(selector);
         guard.watch(targets);
@@ -6959,13 +6999,24 @@ DarkGuard.getDarkById = function(bright_id){
     return $('[' + MY_BRIGHT + '="' + bright_id + '"]');
 };
 
+DarkGuard.getDarkByCustomId = function(custom_id){
+    var re;
+    _.each($('body #' + custom_id), function(node){
+        if (!this(node, '[dd-autogen] #' + custom_id)) {
+            re = $(node);
+            return false;
+        }
+    }, $.matches);
+    return re || $();
+};
+
 /**
  * @desc gc
  */
 DarkGuard.gc = function(){
     var current = {};
-    $('[' + MY_BRIGHT + ']').forEach(function(target){
-        this[$(target).attr(MY_BRIGHT)] = true;
+    $('[' + MY_BRIGHT + ']').forEach(function(elm){
+        this[elm.getAttribute(MY_BRIGHT)] = true;
     }, current);
     Object.keys(_guards).forEach(function(bright_id){
         if (this[bright_id] || $('#' + bright_id)[0]) {
@@ -7043,7 +7094,7 @@ function scan_contents(target, opt){
     opt.data = data;
     if (data._hasOuter) {
         content_spider.call(opt, 
-            target.clone().removeAttr(MY_BRIGHT));
+            target.clone().removeAttr(MY_BRIGHT)[0]);
     } else {
         target.contents().forEach(content_spider, opt);
     }
@@ -7051,42 +7102,47 @@ function scan_contents(target, opt){
 }
 
 function content_spider(content){
+    // @hotspot
     var data = this.data;
-    content = $(content);
-    if (content[0].nodeType !== 1) {
-        if (content[0].nodeType === 3) {
-            content = content.text();
+    if (content.nodeType !== 1) {
+        if (content.nodeType === 3) {
+            content = content.textContent || content.nodeValue;
             if (/\S/.test(content)) {
                 data.text += content;
             }
         }
         return;
     } else if (data._context
-            && content[0].nodeName === 'SCRIPT'
-            && content.attr('type') === 'text/darkscript') {
-        data._script += content[0].innerHTML;
+            && content.nodeName === 'SCRIPT'
+            && content.getAttribute('type') === 'text/darkscript') {
+        data._script += content.innerHTML;
         return;
     }
-    var mark = content[0].isMountedDarkDOM;
+    var mark = content.isMountedDarkDOM;
     if (this.noComs 
             && (!this.scriptContext
-                || !content.find('script').length)) {
+                || !content.getElementsByTagName('script').length)) {
         if (!mark) {
-            data.text += content[0].outerHTML || '';
+            data.text += content.outerHTML || '';
         }
         return;
     }
-    var buffer_id = content.attr(MY_BRIGHT),
+    var buffer_id = content.getAttribute(MY_BRIGHT),
         buffer = _content_buffer[buffer_id];
     delete _content_buffer[buffer_id];
     if (buffer) {
         data._index[buffer_id] = buffer;
         data.text += '{{' + MY_BRIGHT + '=' + buffer_id + '}}';
     } else if (!mark) {
-        var childs_data = scan_contents(content);
-        data.text += content.clone()
-            .html(childs_data.text)[0].outerHTML || '';
-        _.mix(data._index, childs_data._index);
+        var childs_data = scan_contents($(content));
+        var content_html = content.outerHTML || '';
+        if (is_empty_object(childs_data._index)) {
+            data.text += content_html;
+        } else {
+            data.text += content_html.replace(RE_INNER, 
+                '$1' + childs_data.text + '$3');
+            _.mix(data._index, childs_data._index);
+        }
     }
 }
 
@@ -7106,11 +7162,10 @@ function run_script(dark_model){
     _.each(dark_model.componentData || {}, run_script);
 }
 
-function update_target(target, opt){
-    target = $(target);
-    var bright_id = target.attr(MY_BRIGHT);
-    if (!$.contains(document.body, target[0])) {
-        if (!opt.onlyStates) {
+function update_target(elm, opt){
+    var bright_id = elm.getAttribute(MY_BRIGHT);
+    if (!$.contains(document.body, elm)) {
+        if (!opt.onlyStates && !opt.ignoreRender) {
             trigger_update(bright_id, null, {
                 type: 'remove'
             });
@@ -7125,16 +7180,21 @@ function update_target(target, opt){
     _update_tm = +new Date();
     var dark_modelset;
     if (opt.onlyStates) {
-        dark_modelset = guard.scanRoot(target, opt);
+        dark_modelset = guard.scanRoot(elm, opt);
         _.merge(dark_modelset, origin);
-        compare_states(origin, dark_modelset);
+        if (!opt.ignoreRender) {
+            compare_states(origin, dark_modelset);
+        }
         if (origin.state) {
             _.mix(origin.state, dark_modelset.state);
         }
     } else {
-        dark_modelset = guard.bufferRoot(target)
+        dark_modelset = guard.bufferRoot(elm)
             .renderBuffer()
             .releaseModel();
+        if (opt.ignoreRender) {
+            return;
+        }
         compare_model(origin, 
             _is_array(dark_modelset) 
                 ? dark_modelset[0] : dark_modelset);
@@ -7573,6 +7633,12 @@ exports.DarkGuard = DarkGuard;
 exports.getDarkById = DarkGuard.getDarkById;
 /** 
  * @method
+ * @borrows DarkGuard.getDarkByCustomId
+ * @see module:darkdom.DarkGuard.getDarkByCustomId
+ */
+exports.getDarkByCustomId = DarkGuard.getDarkByCustomId;
+/** 
+ * @method
  * @borrows DarkGuard.gc
  * @see module:darkdom.DarkGuard.gc
  */
@@ -7615,6 +7681,12 @@ var exports = {
         }
         label = $(label || node);
         return label.text() || label.val();
+    },
+
+    readClass: function(node){
+        return node[0].className.split(/\s+/).filter(function(cname){
+            return cname && !/^ckd\-/.test(cname);
+        }).join(' ');
     },
 
     forwardStateEvents: function(component){
@@ -7670,17 +7742,6 @@ var exports = {
         });
     },
 
-    getOriginByCustomId: function(custom_id){
-        var re;
-        _.each($('body #' + custom_id), function(node){
-            if (!$.matches(node, '[dd-autogen] #' + custom_id)) {
-                re = $(node);
-                return false;
-            }
-        });
-        return re || $();
-    },
-
     isBlank: function(content){
         return !content || !/\S/m.test(content);
     }
@@ -7692,33 +7753,33 @@ var apply_enable = find_dark(enable_control);
 var apply_disable = find_dark(disable_control);
 
 var apply_pick = find_dark(function(node, e){
-    var p = picker(node, {
+    var p = picker(node, _.merge({
         disableRequest: true
-    });
+    }, e.component._config));
     var new_val = e.component.val();
     ui.action.updatePicker(p, new_val);
 });
 
 var apply_pick_response = find_dark(function(node, e){
-    var p = picker(node);
+    var p = picker(node, _.merge({}, e.component._config));
     p.responseData = e.component.responseData;
     node.trigger('picker:response', {
         component: p
     });
 });
 
-var apply_selector = find_dark(function(node){
+var apply_selector = find_dark(function(node, e){
     node.trigger('selector:change', {
-        component: picker(node, {
+        component: picker(node, _.merge({
             disableRequest: true
-        })
+        }, e.component._config))
     });
 });
 
 var apply_ranger = find_dark(function(node, e){
-    var o = ranger(node, {
+    var o = ranger(node, _.merge({
         enableNotify: false
-    });
+    }, e.component._config));
     var v = e.component.val();
     o.val(v).attr('value', v);
     node.trigger('ranger:changed', {
@@ -7759,31 +7820,34 @@ var apply_input = find_dark(function(node, e){
 });
 
 function enable_control(node, e){
-    var o = control(node, {
+    var o = control(node, _.merge({
         disableRequest: true
-    });
+    }, e.component._config));
     o.responseData = e.component.responseData;
     o.enable();
 }
 
 function disable_control(node, e){
-    var o = control(node, {
+    var o = control(node, _.merge({
         disableRequest: true
-    });
+    }, e.component._config));
     o.responseData = e.component.responseData;
     o.disable();
 }
 
 function find_dark(fn){
-    return function(e){
+    return function(e, root){
         var target = e.target.id;
         if (!target) {
             return;
         }
-        target = exports.getOriginByCustomId(target);
+        target = darkdom.getDarkByCustomId(target);
         if (target[0] 
                 && !target[0]._ckDisablePageForward) {
             fn(target, e);
+            root.updateDarkDOM({
+                ignoreRender: true
+            });
         }
     };
 }
@@ -7792,7 +7856,7 @@ function find_top_dark(fn){
     return function(e){
         var target = e.target.id;
         if (target) {
-            target = exports.getOriginByCustomId(target);
+            target = darkdom.getDarkByCustomId(target);
         } else {
             target = darkdom.getDarkById(e.target.parentNode.id);
         }
@@ -8127,11 +8191,12 @@ return {
 
 define("cardkit/spec/list", [
   "dollar",
+  "cardkit/helper",
   "cardkit/spec/common/scaffold",
   "cardkit/spec/common/source_scaffold",
   "cardkit/spec/common/item",
   "cardkit/spec/common/source_item"
-], function($, scaffold_specs, source_scaffold_specs, 
+], function($, helper, scaffold_specs, source_scaffold_specs, 
     item_specs, source_item_specs){ 
 
 var SEL = 'ck-card[type="list"]';
@@ -8144,7 +8209,8 @@ var source_item_states = {
     },
     isAlone: function(node){
         return node.hasClass('ckd-title-link-alone');
-    }
+    },
+    customClass: helper.readClass
 };
 
 function source_item_spec(source){
@@ -8161,7 +8227,8 @@ function init_list(guard){
         col: 'col', 
         paperStyle: 'paper-style',
         plainStyle: 'plain-style',
-        plainHdStyle: 'plain-hd-style'
+        plainHdStyle: 'plain-hd-style',
+        customClass: 'custom-class'
     });
     guard.component(scaffold_specs);
     guard.component('item', function(guard){
@@ -8169,13 +8236,17 @@ function init_list(guard){
         guard.state({
             link: 'href',
             linkTarget: 'target',
-            isAlone: 'alone-mode'
+            isAlone: 'alone-mode',
+            customClass: 'custom-class'
         });
         guard.component(item_specs);
-        guard.source().component(source_item_specs);
+        guard.source()
+            .state(source_item_states)
+            .component(source_item_specs);
     });
-    guard.source().component(source_scaffold_specs);
-    guard.source().component('item', source_item_spec);
+    guard.source()
+        .component(source_scaffold_specs)
+        .component('item', source_item_spec);
 }
 
 function exports(guard, parent){
@@ -8219,7 +8290,8 @@ function init_list(guard){
         col: 'data-cfg-col', 
         paperStyle: 'data-cfg-paper',
         plainStyle: 'data-cfg-plain',
-        plainHdStyle: 'data-cfg-plainhd'
+        plainHdStyle: 'data-cfg-plainhd',
+        customClass: helper.readClass
     });
     guard.state(source_states);
     guard.component(scaffold_specs);
@@ -8230,8 +8302,9 @@ function init_list(guard){
         guard.component(item_specs);
         guard.source().component(item_specs);
     });
-    guard.source().component(scaffold_specs);
-    guard.source().component('item', source_item_spec);
+    guard.source()
+        .component(scaffold_specs)
+        .component('item', source_item_spec);
 }
 
 function exports(guard, parent){
@@ -8269,15 +8342,17 @@ return function(guard, parent){
         subtype: 'data-style',
         paperStyle: 'data-cfg-paper',
         plainStyle: 'data-cfg-plain',
-        plainHdStyle: 'data-cfg-plainhd'
+        plainHdStyle: 'data-cfg-plainhd',
+        customClass: helper.readClass
     });
     guard.component(scaffold_specs);
     guard.component('content', function(guard){
         guard.watch('.ckd-content');
         guard.state(source_states);
     });
-    guard.source().component(scaffold_specs);
-    guard.source().component('content', '.ckd-content');
+    guard.source()
+        .component(scaffold_specs)
+        .component('content', '.ckd-content');
 };
 
 });
@@ -8299,7 +8374,8 @@ function exports(guard, parent){
     guard.state({
         subtype: 'subtype',
         blankText: 'blank-text',
-        plainHdStyle: 'plain-hd-style'
+        plainHdStyle: 'plain-hd-style',
+        customClass: 'custom-class'
     });
     guard.component(scaffold_specs);
     guard.component('item', function(guard){
@@ -8309,10 +8385,14 @@ function exports(guard, parent){
             content: 'ck-part[type="content"]'
         });
         helper.applyInputEvents(guard);
-        guard.source().component('content', '.ckd-content');
+        guard.source().component({
+            title: '.ckd-title',
+            content: '.ckd-content'
+        });
     });
-    guard.source().component(source_scaffold_specs);
-    guard.source().component('item', exports.sourceItemSpec);
+    guard.source()
+        .component(source_scaffold_specs)
+        .component('item', exports.sourceItemSpec);
 }
 
 exports.sourceItemSpec = function(guard){
@@ -8350,7 +8430,8 @@ return function(guard, parent){
     guard.state({
         subtype: 'data-style',
         blankText: 'data-cfg-blank',
-        plainHdStyle: 'data-cfg-plainhd'
+        plainHdStyle: 'data-cfg-plainhd',
+        customClass: helper.readClass
     });
     guard.component(scaffold_specs);
     guard.component('item', function(guard){
@@ -8371,8 +8452,9 @@ return function(guard, parent){
             content: '.ckd-content'
         });
     });
-    guard.source().component(scaffold_specs);
-    guard.source().component('item', form_spec.sourceItemSpec);
+    guard.source()
+        .component(scaffold_specs)
+        .component('item', form_spec.sourceItemSpec);
 };
 
 });
@@ -8433,12 +8515,14 @@ return function(guard, parent){
         subtype: 'subtype',
         paperStyle: 'paper-style',
         plainStyle: 'plain-style',
-        plainHdStyle: 'plain-hd-style'
+        plainHdStyle: 'plain-hd-style',
+        customClass: 'custom-class'
     });
     guard.component(scaffold_specs);
     guard.component('content', 'ck-part[type="content"]');
-    guard.source().component(source_scaffold_specs);
-    guard.source().component('content', '.ckd-content');
+    guard.source()
+        .component(source_scaffold_specs)
+        .component('content', '.ckd-content');
 };
 
 });
@@ -8897,7 +8981,7 @@ define("cardkit/tpl/item/title", [], function(){
 
 define("cardkit/tpl/item", [], function(){
 
-    return {"template":"<div class=\"ck-item {%= (itemLink && 'clickable' || '') %}\" \n        style=\"width:{%= (context.state.col ? Math.floor(1000/context.state.col)/10 + '%' : '') %};\">\n\n    <div class=\"ck-initem\">\n\n        {% if (itemLink && !isItemLinkAlone) { %}\n        <a href=\"{%= itemLink %}\" \n            target=\"{%= (itemLinkTarget || '_self') %}\"\n            class=\"ck-link-mask ck-link\"></a>\n        {% } %}\n\n        <div class=\"ck-title-box\">\n\n            {%= component.opt.join('') %}\n            {%= component.icon %}\n\n            <div class=\"ck-title-set\">\n\n                {% if (itemContent) { %}\n                <div class=\"ck-title-line\">\n                    {%= component.titlePrefix.join('') %}\n                    {%= itemContent %}\n                    {%= component.titleSuffix.join('') %}\n                    {%= component.titleTag.join('') %}\n                </div>\n                {% } %}\n\n                {% if (component.info.length) { %}\n                <div class=\"ck-info-wrap\">\n                    {%= component.info.join('') %}\n                </div>\n                {% } %}\n\n                {% if (component.desc.length) { %}\n                <div class=\"ck-desc-wrap\">\n                    {%= component.desc.join('') %}\n                </div>\n                {% } %}\n\n            </div>\n\n            {% if (component.content.length) { %}\n            <div class=\"ck-content-wrap\">\n                {%= component.content.join('') %}\n            </div>\n            {% } %}\n\n            {% if (component.meta.length) { %}\n            <div class=\"ck-meta-wrap\">\n                {%= component.meta.join('') %}\n            </div>\n            {% } %}\n\n        </div>\n\n        {% if (component.author || component.authorDesc.length || component.authorMeta.length) { %}\n        <div class=\"ck-author-box\">\n\n            {%= component.avatar %}\n\n            <div class=\"ck-author-set\">\n\n                <div class=\"ck-author-line\">\n                    {%= component.authorPrefix.join('') %}\n                    {%= component.author %}\n                    {%= component.authorSuffix.join('') %}\n                </div>\n\n                {% if (component.authorInfo.length) { %}\n                <div class=\"ck-author-info-wrap\">\n                    {%= component.authorInfo.join('') %}\n                </div>\n                {% } %}\n\n                {% if (component.authorDesc.length) { %}\n                <div class=\"ck-author-desc-wrap\">\n                    {%= component.authorDesc.join('') %}\n                </div>\n                {% } %}\n\n            </div>\n\n            {% if (component.authorMeta.length) { %}\n            <div class=\"ck-author-meta-wrap\">\n                {%= component.authorMeta.join('') %}\n            </div>\n            {% } %}\n\n        </div>\n        {% } %}\n\n    </div>\n\n</div>\n\n"}; 
+    return {"template":"<div class=\"ck-item {%= (itemLink && 'clickable' || '') %}  {%= state.customClass %}\" \n        style=\"width:{%= (context.state.col ? Math.floor(1000/context.state.col)/10 + '%' : '') %};\">\n\n    <div class=\"ck-initem\">\n\n        {% if (itemLink && !isItemLinkAlone) { %}\n        <a href=\"{%= itemLink %}\" \n            target=\"{%= (itemLinkTarget || '_self') %}\"\n            class=\"ck-link-mask ck-link\"></a>\n        {% } %}\n\n        <div class=\"ck-title-box\">\n\n            {%= component.opt.join('') %}\n            {%= component.icon %}\n\n            <div class=\"ck-title-set\">\n\n                {% if (itemContent) { %}\n                <div class=\"ck-title-line\">\n                    {%= component.titlePrefix.join('') %}\n                    {%= itemContent %}\n                    {%= component.titleSuffix.join('') %}\n                    {%= component.titleTag.join('') %}\n                </div>\n                {% } %}\n\n                {% if (component.info.length) { %}\n                <div class=\"ck-info-wrap\">\n                    {%= component.info.join('') %}\n                </div>\n                {% } %}\n\n                {% if (component.desc.length) { %}\n                <div class=\"ck-desc-wrap\">\n                    {%= component.desc.join('') %}\n                </div>\n                {% } %}\n\n            </div>\n\n            {% if (component.content.length) { %}\n            <div class=\"ck-content-wrap\">\n                {%= component.content.join('') %}\n            </div>\n            {% } %}\n\n            {% if (component.meta.length) { %}\n            <div class=\"ck-meta-wrap\">\n                {%= component.meta.join('') %}\n            </div>\n            {% } %}\n\n        </div>\n\n        {% if (component.author || component.authorDesc.length || component.authorMeta.length) { %}\n        <div class=\"ck-author-box\">\n\n            {%= component.avatar %}\n\n            <div class=\"ck-author-set\">\n\n                <div class=\"ck-author-line\">\n                    {%= component.authorPrefix.join('') %}\n                    {%= component.author %}\n                    {%= component.authorSuffix.join('') %}\n                </div>\n\n                {% if (component.authorInfo.length) { %}\n                <div class=\"ck-author-info-wrap\">\n                    {%= component.authorInfo.join('') %}\n                </div>\n                {% } %}\n\n                {% if (component.authorDesc.length) { %}\n                <div class=\"ck-author-desc-wrap\">\n                    {%= component.authorDesc.join('') %}\n                </div>\n                {% } %}\n\n            </div>\n\n            {% if (component.authorMeta.length) { %}\n            <div class=\"ck-author-meta-wrap\">\n                {%= component.authorMeta.join('') %}\n            </div>\n            {% } %}\n\n        </div>\n        {% } %}\n\n    </div>\n\n</div>\n\n"}; 
 
 });
 /* @source cardkit/card/item.js */;
@@ -9150,7 +9234,7 @@ return exports;
 
 define("cardkit/tpl/list", [], function(){
 
-    return {"template":"<div class=\"ck-list-card{%= (state.blankText === 'false' ? ' no-blank' : '') %}\"\n        data-style=\"{%= state.subtype %}\"\n        {%= state.col ? 'data-cfg-col=\"' + state.col + '\" ' : '' %}\n        {%= state.paperStyle ? 'data-cfg-paper=\"true\" ' : '' %}\n        {%= state.plainStyle ? 'data-cfg-plain=\"true\" ' : '' %}\n        {%= state.plainHdStyle ? 'data-cfg-plainhd=\"true\" ' : '' %}>\n\n    {% if (hasSplitHd) { %}\n        {%= hdwrap %}\n    {% } %}\n\n    <article class=\"ck-card-wrap\">\n\n        {% if (!hasSplitHd) { %}\n            {%= hdwrap %}\n        {% } %}\n        \n        <div class=\"ck-list-wrap\">\n\n            {% if (component.item.length) { %}\n\n                <div class=\"ck-list\">\n                {% component.item.forEach(function(item, i){ %}\n\n                    {% if (i && (i % state.col === 0)) { %}\n                    </div><div class=\"ck-list\">\n                    {% } %}\n\n                    {%= item %}\n\n                {% }); %}\n                </div>\n\n            {% } else { %}\n\n                <div class=\"ck-list\">\n                    <div class=\"ck-item blank\">\n                        <div class=\"ck-initem\">\n                        {% if (component.blank) { %}\n                            {%= component.blank %}\n                        {% } else { %}\n                            {%=(state.blankText || '目前还没有内容')%}\n                        {% } %}\n                        </div>\n                    </div>\n                </div>\n\n            {% } %}\n\n        </div>\n\n        {%= component.ft %}\n\n    </article>\n\n</div>\n\n"}; 
+    return {"template":"<div class=\"ck-list-card {%= (state.blankText === 'false' ? 'no-blank' : '') %} {%= state.customClass %}\"\n        data-style=\"{%= state.subtype %}\"\n        {%= state.col ? 'data-cfg-col=\"' + state.col + '\" ' : '' %}\n        {%= state.paperStyle ? 'data-cfg-paper=\"true\" ' : '' %}\n        {%= state.plainStyle ? 'data-cfg-plain=\"true\" ' : '' %}\n        {%= state.plainHdStyle ? 'data-cfg-plainhd=\"true\" ' : '' %}>\n\n    {% if (hasSplitHd) { %}\n        {%= hdwrap %}\n    {% } %}\n\n    <article class=\"ck-card-wrap\">\n\n        {% if (!hasSplitHd) { %}\n            {%= hdwrap %}\n        {% } %}\n        \n        <div class=\"ck-list-wrap\">\n\n            {% if (component.item.length) { %}\n\n                <div class=\"ck-list\">\n                {% component.item.forEach(function(item, i){ %}\n\n                    {% if (i && (i % state.col === 0)) { %}\n                    </div><div class=\"ck-list\">\n                    {% } %}\n\n                    {%= item %}\n\n                {% }); %}\n                </div>\n\n            {% } else { %}\n\n                <div class=\"ck-list\">\n                    <div class=\"ck-item blank\">\n                        <div class=\"ck-initem\">\n                        {% if (component.blank) { %}\n                            {%= component.blank %}\n                        {% } else { %}\n                            {%=(state.blankText || '目前还没有内容')%}\n                        {% } %}\n                        </div>\n                    </div>\n                </div>\n\n            {% } %}\n\n        </div>\n\n        {%= component.ft %}\n\n    </article>\n\n</div>\n\n"}; 
 
 });
 /* @source cardkit/tpl/scaffold/hdwrap.js */;
@@ -9211,7 +9295,7 @@ return exports;
 
 define("cardkit/tpl/box", [], function(){
 
-    return {"template":"<div class=\"ck-box-card\"\n        data-style=\"{%= state.subtype %}\"\n        {%= state.paperStyle ? 'data-cfg-paper=\"true\" ' : '' %}\n        {%= state.plainStyle ? 'data-cfg-plain=\"true\" ' : '' %}\n        {%= state.plainHdStyle ? 'data-cfg-plainhd=\"true\" ' : '' %}>\n\n    {% if (hasSplitHd) { %}\n        {%= hdwrap %}\n    {% } %}\n\n    <article class=\"ck-card-wrap\">\n\n        {% if (!hasSplitHd) { %}\n            {%= hdwrap %}\n        {% } %}\n\n        {% if (!isBlank) { %}\n            <section>{%= content %}</section>\n        {% } %}\n\n        {%= component.ft %}\n\n    </article>\n\n</div>\n"}; 
+    return {"template":"<div class=\"ck-box-card {%= state.customClass %}\"\n        data-style=\"{%= state.subtype %}\"\n        {%= state.paperStyle ? 'data-cfg-paper=\"true\" ' : '' %}\n        {%= state.plainStyle ? 'data-cfg-plain=\"true\" ' : '' %}\n        {%= state.plainHdStyle ? 'data-cfg-plainhd=\"true\" ' : '' %}>\n\n    {% if (hasSplitHd) { %}\n        {%= hdwrap %}\n    {% } %}\n\n    <article class=\"ck-card-wrap\">\n\n        {% if (!hasSplitHd) { %}\n            {%= hdwrap %}\n        {% } %}\n\n        {% if (!isBlank) { %}\n            <section>{%= content %}</section>\n        {% } %}\n\n        {%= component.ft %}\n\n    </article>\n\n</div>\n"}; 
 
 });
 /* @source cardkit/tpl/box/content.js */;
@@ -9281,7 +9365,7 @@ return exports;
 
 define("cardkit/tpl/form", [], function(){
 
-    return {"template":"<div class=\"ck-form-card{%= (state.blankText === 'false' ? ' no-blank' : '') %}\"\n        data-style=\"{%= state.subtype %}\"\n        {%= state.plainHdStyle ? 'data-cfg-plainhd=\"true\" ' : '' %}>\n\n    {% if (hasSplitHd) { %}\n        {%= hdwrap %}\n    {% } %}\n\n    <article class=\"ck-card-wrap\">\n\n        {% if (!hasSplitHd) { %}\n            {%= hdwrap %}\n        {% } %}\n\n        {% if (component.item.length) { %}\n            {% component.item.forEach(function(item){ %}\n                {%= item %}\n            {% }); %}\n        {% } else { %}\n            <div class=\"ck-item blank\">\n            {% if (component.blank) { %}\n                {%= component.blank %}\n            {% } else { %}\n                {%=(state.blankText || '目前还没有内容')%}\n            {% } %}\n            </div>\n        {% } %}\n\n        {%= component.ft %}\n\n    </article>\n\n</div>\n"}; 
+    return {"template":"<div class=\"ck-form-card {%= (state.blankText === 'false' ? 'no-blank' : '') %} {%= state.customClass %}\"\n        data-style=\"{%= state.subtype %}\"\n        {%= state.plainHdStyle ? 'data-cfg-plainhd=\"true\" ' : '' %}>\n\n    {% if (hasSplitHd) { %}\n        {%= hdwrap %}\n    {% } %}\n\n    <article class=\"ck-card-wrap\">\n\n        {% if (!hasSplitHd) { %}\n            {%= hdwrap %}\n        {% } %}\n\n        {% if (component.item.length) { %}\n            {% component.item.forEach(function(item){ %}\n                {%= item %}\n            {% }); %}\n        {% } else { %}\n            <div class=\"ck-item blank\">\n            {% if (component.blank) { %}\n                {%= component.blank %}\n            {% } else { %}\n                {%=(state.blankText || '目前还没有内容')%}\n            {% } %}\n            </div>\n        {% } %}\n\n        {%= component.ft %}\n\n    </article>\n\n</div>\n"}; 
 
 });
 /* @source cardkit/tpl/form/content.js */;
@@ -9385,7 +9469,7 @@ return exports;
 
 define("cardkit/tpl/mini", [], function(){
 
-    return {"template":"<div class=\"ck-mini-card{%= (state.blankText === 'false' ? ' no-blank' : '') %}\"\n        data-style=\"{%= state.subtype %}\">\n\n    {% if (hasSplitHd) { %}\n        {%= hdwrap %}\n    {% } %}\n\n    <article class=\"ck-card-wrap {%= (component.item.length > 1 ? 'slide' : '') %}\">\n\n        {% if (!hasSplitHd) { %}\n            {%= hdwrap %}\n        {% } %}\n        \n        <div class=\"ck-list-wrap\">\n\n            {% if (component.item.length) { %}\n\n                <div class=\"ck-list\" style=\"width:{%= listWidth %};\">\n                {% component.item.forEach(function(item){ %}\n                    <div class=\"ck-col\" style=\"width:{%= itemWidth %};\">\n                        {%= item %}\n                    </div>\n                {% }); %}\n                </div>\n\n            {% } else { %}\n\n                <div class=\"ck-list\">\n                    <div class=\"ck-item blank\">\n                        <div class=\"ck-initem\">\n                        {% if (component.blank) { %}\n                            {%= component.blank %}\n                        {% } else { %}\n                            {%=(state.blankText || '目前还没有内容')%}\n                        {% } %}\n                        </div>\n                    </div>\n                </div>\n\n            {% } %}\n\n        </div>\n\n        {%= component.ft %}\n\n    </article>\n\n</div>\n\n"}; 
+    return {"template":"<div class=\"ck-mini-card {%= (state.blankText === 'false' ? 'no-blank' : '') %} {%= state.customClass %}\"\n        data-style=\"{%= state.subtype %}\">\n\n    {% if (hasSplitHd) { %}\n        {%= hdwrap %}\n    {% } %}\n\n    <article class=\"ck-card-wrap {%= (component.item.length > 1 ? 'slide' : '') %}\">\n\n        {% if (!hasSplitHd) { %}\n            {%= hdwrap %}\n        {% } %}\n        \n        <div class=\"ck-list-wrap\">\n\n            {% if (component.item.length) { %}\n\n                <div class=\"ck-list\" style=\"width:{%= listWidth %};\">\n                {% component.item.forEach(function(item){ %}\n                    <div class=\"ck-col\" style=\"width:{%= itemWidth %};\">\n                        {%= item %}\n                    </div>\n                {% }); %}\n                </div>\n\n            {% } else { %}\n\n                <div class=\"ck-list\">\n                    <div class=\"ck-item blank\">\n                        <div class=\"ck-initem\">\n                        {% if (component.blank) { %}\n                            {%= component.blank %}\n                        {% } else { %}\n                            {%=(state.blankText || '目前还没有内容')%}\n                        {% } %}\n                        </div>\n                    </div>\n                </div>\n\n            {% } %}\n\n        </div>\n\n        {%= component.ft %}\n\n    </article>\n\n</div>\n\n"}; 
 
 });
 /* @source cardkit/card/mini.js */;
@@ -9620,26 +9704,28 @@ var exports = {
 };
 
 function when_page_active(changes){
+    var root = changes.root;
     if (changes.newValue === 'true') {
-        changes.root.css('min-height', window.innerHeight * 1.4 + 'px')
+        root.css('min-height', window.innerHeight * 1.4 + 'px')
             .attr('data-page-active', true);
         setTimeout(function(){
-            changes.root.addClass('topbar-enabled');
+            root.addClass('topbar-enabled');
             window.scrollTo(0, 0);
         }, 100);
     } else {
-        changes.root.attr('data-page-active', false)
+        root.attr('data-page-active', false)
             .removeClass('topbar-enabled');
     }
     return false;
 }
 
 function when_deck_active(changes){
+    var root = changes.root;
     if (changes.newValue === 'true') {
-        changes.root.css('min-height', window.innerHeight * 1.4 + 'px')
+        root.css('min-height', window.innerHeight * 1.4 + 'px')
             .attr('data-deck-active', true);
     } else {
-        changes.root.attr('data-deck-active', false);
+        root.attr('data-deck-active', false);
         setTimeout(function(){
             window.scrollTo(0, 0);
         }, 300);
@@ -9683,14 +9769,13 @@ define("cardkit/spec", [
 define('cardkit', [
   "mo/lang",
   "dollar",
-  "mo/browsers",
   "mo/mainloop",
   "cardkit/spec",
   "cardkit/oldspec",
   "cardkit/ui",
   "cardkit/supports",
   "cardkit/bus"
-], function(_, $, browsers, mainloop,
+], function(_, $, mainloop,
     specs, oldspecs, ui, supports, bus){
 
 var DEFAULT_DECK = 'main',
@@ -9729,8 +9814,11 @@ var exports = {
 
     initView: function(){
         this.wrapper = $(this._config.appWrapper || body);
-        if (browsers.webview) {
+        if (supports.webview) {
             this.wrapper.addClass('ck-in-webview');
+        }
+        if (!supports.noBugWhenFixed) {
+            this.wrapper.addClass('ck-bugfix-fixed');
         }
         bus.on('ready', function(){
             $(window).on('hashchange', function(e){
@@ -9840,7 +9928,11 @@ var exports = {
         _decks[deck] = page;
         _.each(_decks, notify_deck, deck);
         if (deck !== _current_deck) {
+            var is_modal = _current_deck === 'modalview';
             _current_deck = deck;
+            if (is_modal) {
+                exports.closeModal();
+            }
             if (last_decktop 
                     && $.contains(body, last_decktop[0])) {
                 blur_page(last_decktop);
@@ -9926,7 +10018,9 @@ exports.modalCard.event.on('open', function(modal){
         exports.resetPage(page);
     }
 }).on('close', function(modal){
-    exports.openPage(modal.lastDecktop);
+    if (_current_deck === 'modalview') {
+        exports.openPage(modal.lastDecktop);
+    }
 //}).on('frameOnload', function(modal){
     //exports.render('page', modal._iframeWindow[0].document);
 });
