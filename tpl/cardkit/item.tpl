@@ -1,4 +1,4 @@
-<div class="ck-item {%= (itemLink && 'clickable' || '') %}" 
+<div class="ck-item {%= (itemLink && 'clickable' || '') %}  {%= state.customClass %}" 
         style="width:{%= (context.state.col ? Math.floor(1000/context.state.col)/10 + '%' : '') %};">
 
     <div class="ck-initem">

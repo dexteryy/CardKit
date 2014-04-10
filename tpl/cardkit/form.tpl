@@ -1,4 +1,4 @@
-<div class="ck-form-card{%= (state.blankText === 'false' ? ' no-blank' : '') %}"
+<div class="ck-form-card {%= (state.blankText === 'false' ? 'no-blank' : '') %} {%= state.customClass %}"
         data-style="{%= state.subtype %}"
         {%= state.plainHdStyle ? 'data-cfg-plainhd="true" ' : '' %}>
 

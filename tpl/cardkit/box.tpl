@@ -1,4 +1,4 @@
-<div class="ck-box-card"
+<div class="ck-box-card {%= state.customClass %}"
         data-style="{%= state.subtype %}"
         {%= state.paperStyle ? 'data-cfg-paper="true" ' : '' %}
         {%= state.plainStyle ? 'data-cfg-plain="true" ' : '' %}

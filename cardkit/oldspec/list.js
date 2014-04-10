@@ -23,7 +23,8 @@ function init_list(guard){
         col: 'data-cfg-col', 
         paperStyle: 'data-cfg-paper',
         plainStyle: 'data-cfg-plain',
-        plainHdStyle: 'data-cfg-plainhd'
+        plainHdStyle: 'data-cfg-plainhd',
+        customClass: helper.readClass
     });
     guard.state(source_states);
     guard.component(scaffold_specs);
@@ -34,8 +35,9 @@ function init_list(guard){
         guard.component(item_specs);
         guard.source().component(item_specs);
     });
-    guard.source().component(scaffold_specs);
-    guard.source().component('item', source_item_spec);
+    guard.source()
+        .component(scaffold_specs)
+        .component('item', source_item_spec);
 }
 
 function exports(guard, parent){

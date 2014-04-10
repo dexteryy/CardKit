@@ -30,6 +30,12 @@ var exports = {
         return label.text() || label.val();
     },
 
+    readClass: function(node){
+        return node[0].className.split(/\s+/).filter(function(cname){
+            return cname && !/^ckd\-/.test(cname);
+        }).join(' ');
+    },
+
     forwardStateEvents: function(component){
         component.forward({
             'control:enable *': 'control:enable',

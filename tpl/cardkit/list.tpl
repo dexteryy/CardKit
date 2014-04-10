@@ -1,4 +1,4 @@
-<div class="ck-list-card{%= (state.blankText === 'false' ? ' no-blank' : '') %}"
+<div class="ck-list-card {%= (state.blankText === 'false' ? 'no-blank' : '') %} {%= state.customClass %}"
         data-style="{%= state.subtype %}"
         {%= state.col ? 'data-cfg-col="' + state.col + '" ' : '' %}
         {%= state.paperStyle ? 'data-cfg-paper="true" ' : '' %}

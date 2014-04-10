@@ -18,15 +18,17 @@ return function(guard, parent){
         subtype: 'data-style',
         paperStyle: 'data-cfg-paper',
         plainStyle: 'data-cfg-plain',
-        plainHdStyle: 'data-cfg-plainhd'
+        plainHdStyle: 'data-cfg-plainhd',
+        customClass: helper.readClass
     });
     guard.component(scaffold_specs);
     guard.component('content', function(guard){
         guard.watch('.ckd-content');
         guard.state(source_states);
     });
-    guard.source().component(scaffold_specs);
-    guard.source().component('content', '.ckd-content');
+    guard.source()
+        .component(scaffold_specs)
+        .component('content', '.ckd-content');
 };
 
 });

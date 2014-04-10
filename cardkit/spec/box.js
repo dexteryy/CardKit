@@ -13,12 +13,14 @@ return function(guard, parent){
         subtype: 'subtype',
         paperStyle: 'paper-style',
         plainStyle: 'plain-style',
-        plainHdStyle: 'plain-hd-style'
+        plainHdStyle: 'plain-hd-style',
+        customClass: 'custom-class'
     });
     guard.component(scaffold_specs);
     guard.component('content', 'ck-part[type="content"]');
-    guard.source().component(source_scaffold_specs);
-    guard.source().component('content', '.ckd-content');
+    guard.source()
+        .component(source_scaffold_specs)
+        .component('content', '.ckd-content');
 };
 
 });

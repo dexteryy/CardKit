@@ -13,7 +13,8 @@ function exports(guard, parent){
     guard.state({
         subtype: 'subtype',
         blankText: 'blank-text',
-        plainHdStyle: 'plain-hd-style'
+        plainHdStyle: 'plain-hd-style',
+        customClass: 'custom-class'
     });
     guard.component(scaffold_specs);
     guard.component('item', function(guard){
@@ -23,10 +24,14 @@ function exports(guard, parent){
             content: 'ck-part[type="content"]'
         });
         helper.applyInputEvents(guard);
-        guard.source().component('content', '.ckd-content');
+        guard.source().component({
+            title: '.ckd-title',
+            content: '.ckd-content'
+        });
     });
-    guard.source().component(source_scaffold_specs);
-    guard.source().component('item', exports.sourceItemSpec);
+    guard.source()
+        .component(source_scaffold_specs)
+        .component('item', exports.sourceItemSpec);
 }
 
 exports.sourceItemSpec = function(guard){

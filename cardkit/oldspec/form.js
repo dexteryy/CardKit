@@ -18,7 +18,8 @@ return function(guard, parent){
     guard.state({
         subtype: 'data-style',
         blankText: 'data-cfg-blank',
-        plainHdStyle: 'data-cfg-plainhd'
+        plainHdStyle: 'data-cfg-plainhd',
+        customClass: helper.readClass
     });
     guard.component(scaffold_specs);
     guard.component('item', function(guard){
@@ -39,8 +40,9 @@ return function(guard, parent){
             content: '.ckd-content'
         });
     });
-    guard.source().component(scaffold_specs);
-    guard.source().component('item', form_spec.sourceItemSpec);
+    guard.source()
+        .component(scaffold_specs)
+        .component('item', form_spec.sourceItemSpec);
 };
 
 });
