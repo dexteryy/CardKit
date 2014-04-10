@@ -159,7 +159,11 @@ var exports = {
         _decks[deck] = page;
         _.each(_decks, notify_deck, deck);
         if (deck !== _current_deck) {
+            var is_modal = _current_deck === 'modalview';
             _current_deck = deck;
+            if (is_modal) {
+                exports.closeModal();
+            }
             if (last_decktop 
                     && $.contains(body, last_decktop[0])) {
                 blur_page(last_decktop);
@@ -245,7 +249,9 @@ exports.modalCard.event.on('open', function(modal){
         exports.resetPage(page);
     }
 }).on('close', function(modal){
-    exports.openPage(modal.lastDecktop);
+    if (_current_deck === 'modalview') {
+        exports.openPage(modal.lastDecktop);
+    }
 //}).on('frameOnload', function(modal){
     //exports.render('page', modal._iframeWindow[0].document);
 });
