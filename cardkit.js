@@ -2,14 +2,13 @@
 define('cardkit', [
     'mo/lang',
     'dollar',
-    'mo/browsers',
     'mo/mainloop',
     'cardkit/spec',
     'cardkit/oldspec',
     'cardkit/ui',
     'cardkit/supports',
     'cardkit/bus'
-], function(_, $, browsers, mainloop,
+], function(_, $, mainloop,
     specs, oldspecs, ui, supports, bus){
 
 var DEFAULT_DECK = 'main',
@@ -48,8 +47,11 @@ var exports = {
 
     initView: function(){
         this.wrapper = $(this._config.appWrapper || body);
-        if (browsers.webview) {
+        if (supports.webview) {
             this.wrapper.addClass('ck-in-webview');
+        }
+        if (!supports.noBugWhenFixed) {
+            this.wrapper.addClass('ck-bugfix-fixed');
         }
         bus.on('ready', function(){
             $(window).on('hashchange', function(e){

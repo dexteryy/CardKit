@@ -41,7 +41,7 @@
     position:absolute;
     top:0;
     left:0;
-    width:85%;
+    width:280px;
     @include transform(translateX(0));
     @include box-shadow(none);
 
@@ -67,7 +67,7 @@
 
   &[data-deck-active="false"][data-page-active="true"][data-curdeck="navdrawer"] {
     display:block;
-    @include transform(translateX(85%));
+    @include transform(translateX(280px));
     z-index:$moui_z_step;
     position:fixed;
     top:0;
@@ -75,8 +75,13 @@
     right:0;
 
     .ck-header {
-      position:static;
+      position:relative;
       @include transform(translateY(0));
+
+      .ck-bugfix-fixed & {
+        display:none;
+      }
+
     }
 
     .ck-top-banner {
