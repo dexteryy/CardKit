@@ -100,33 +100,33 @@ var apply_enable = find_dark(enable_control);
 var apply_disable = find_dark(disable_control);
 
 var apply_pick = find_dark(function(node, e){
-    var p = picker(node, {
+    var p = picker(node, _.merge({
         disableRequest: true
-    });
+    }, e.component._config));
     var new_val = e.component.val();
     ui.action.updatePicker(p, new_val);
 });
 
 var apply_pick_response = find_dark(function(node, e){
-    var p = picker(node);
+    var p = picker(node, _.merge({}, e.component._config));
     p.responseData = e.component.responseData;
     node.trigger('picker:response', {
         component: p
     });
 });
 
-var apply_selector = find_dark(function(node){
+var apply_selector = find_dark(function(node, e){
     node.trigger('selector:change', {
-        component: picker(node, {
+        component: picker(node, _.merge({
             disableRequest: true
-        })
+        }, e.component._config))
     });
 });
 
 var apply_ranger = find_dark(function(node, e){
-    var o = ranger(node, {
+    var o = ranger(node, _.merge({
         enableNotify: false
-    });
+    }, e.component._config));
     var v = e.component.val();
     o.val(v).attr('value', v);
     node.trigger('ranger:changed', {
@@ -167,23 +167,23 @@ var apply_input = find_dark(function(node, e){
 });
 
 function enable_control(node, e){
-    var o = control(node, {
+    var o = control(node, _.merge({
         disableRequest: true
-    });
+    }, e.component._config));
     o.responseData = e.component.responseData;
     o.enable();
 }
 
 function disable_control(node, e){
-    var o = control(node, {
+    var o = control(node, _.merge({
         disableRequest: true
-    });
+    }, e.component._config));
     o.responseData = e.component.responseData;
     o.disable();
 }
 
 function find_dark(fn){
-    return function(e){
+    return function(e, root){
         var target = e.target.id;
         if (!target) {
             return;
@@ -192,6 +192,9 @@ function find_dark(fn){
         if (target[0] 
                 && !target[0]._ckDisablePageForward) {
             fn(target, e);
+            root.updateDarkDOM({
+                ignoreRender: true
+            });
         }
     };
 }
