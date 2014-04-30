@@ -15,23 +15,30 @@ CardKit building blocks are all _use-html-as-configure-style_ (like Custom Eleme
 * [To-do App](https://github.com/douban-f2e/cardkit-demo-todoapp)
 * [Custom DarkDOM Components](https://github.com/douban-f2e/cardkit-demo-darkdom)
 
+## References
+
+* Presentation in QCon Beijing 2014 (in Chinese): [slides + transcript](http://www.douban.com/note/347692465/)
+
 ### In the Real World
 
-![douban apps](http://ozjs.org/CardKit/screenshot/doubanapp.png)
+![douban apps](http://douban-f2e.github.io/cardkit-demo-gallery/screenshot/doubanapp.png)
 
-## Download
+## Installation
 
-Packaged version without dependencies:
+Install via bower:
 
-* [cardkit.js](https://github.com/douban-f2e/CardKit/blob/master/dist/cardkit.js)
-* [cardkit.min.js](https://github.com/douban-f2e/CardKit/blob/master/dist/cardkit.min.js)
+```
+bower install cardkit
+```
 
-Packaged version with dependencies:
+Or download directly:
 
-* [cardkit-standalone.js](https://github.com/douban-f2e/CardKit/blob/master/dist/cardkit-standalone.js)
-* [cardkit-standalone.min.js](https://github.com/douban-f2e/CardKit/blob/master/dist/cardkit-standalone.min.js)
-
-or build your own:
+* Packaged version without dependencies  
+  [cardkit.js](https://github.com/douban-f2e/CardKit/blob/master/dist/cardkit.js)  
+  [cardkit.min.js](https://github.com/douban-f2e/CardKit/blob/master/dist/cardkit.min.js)  
+* Packaged version with dependencies  
+  [cardkit-standalone.js](https://github.com/douban-f2e/CardKit/blob/master/dist/cardkit-standalone.js)  
+  [cardkit-standalone.min.js](https://github.com/douban-f2e/CardKit/blob/master/dist/cardkit-standalone.min.js)
 
 ## Quick Start for building
 
