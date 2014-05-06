@@ -4,7 +4,7 @@
   "version": "2.0.0-alpha.8",
   "main": "cardkit.js",
   "dependencies": {
-    "mo": "~1.6.7",
+    "mo": "~1.6.8",
     "dollar": "~1.5.1",
     "darkdom": "~0.15.0",
     "eventmaster": "~2.1.0",
