@@ -3245,9 +3245,21 @@ return exports;
  * Copyright (C) 2010-2012, Dexter.Yy, MIT License
  * vim: et:ts=4:sw=4:sts=4
  */
-define("mo/network/ajax", [
-  "mo/browsers"
-], function(browsers, require, exports){
+define("mo/network/ajax", [], function(require, exports){
+
+    var rquery = /\?/,
+        rhash = /#.*$/,
+        rnoContent = /^(?:GET|HEAD)$/,
+        xhrObj = window.XMLHttpRequest 
+                && (window.location.protocol !== "file:" 
+                    || !window.ActiveXObject) 
+            ? function(){
+                return new window.XMLHttpRequest();
+            } : function(){
+                try {
+                    return new window.ActiveXObject("Microsoft.XMLHTTP");
+                } catch(e) {}
+            };
 
     exports.params = function(a) {
         var s = [];
@@ -3262,13 +3274,14 @@ define("mo/network/ajax", [
     };
 
     exports.parseJSON = function(json){
-        json = json
-            .replace(/^[\w(<\/*!\s]*?\{/, '{')
-            .replace(/[^\}]*$/, '');
+        json = json.replace(/^.*?(\{|\[)/, '$1')
+            .replace(/(\]|\})[^\]\}]*$/, '$1');
         try {
-            json = window.JSON && window.JSON.parse 
-                ? window.JSON.parse(json) 
-                : window["eval"](json);
+            if (window.JSON && window.JSON.parse) {
+                json = window.JSON.parse(json);
+            } else {
+                json = (new Function("return " + json))();
+            }
         } catch(ex) {
             json = false;
         }
@@ -3284,16 +3297,18 @@ define("mo/network/ajax", [
             url: s.url || "",
             data: s.data || null,
             dataType: s.dataType,
-            contentType: s.contentType === false? false : (s.contentType || "application/x-www-form-urlencoded"),
+            contentType: s.contentType === false 
+                ? false 
+                : (s.contentType || "application/x-www-form-urlencoded"),
             username: s.username || null,
             password: s.password || null,
             timeout: s.timeout || 0,
             processData: s.processData === undefined ? true : s.processData,
-            beforeSend: s.beforeSend || function(){},
+            beforeSend: s.beforeSend || null,
             complete: s.complete || function(){},
             handleError: s.handleError || function(){},
             success: s.success || function(){},
-            xhrFields: s.xhrFields || {},
+            xhrFields: s.xhrFields || null,
             headers: s.headers || {},
             accepts: {
                 xml: "application/xml, text/xml",
@@ -3304,16 +3319,31 @@ define("mo/network/ajax", [
                 _default: "*/*"
             }
         };
+        var type = options.type.toUpperCase();
+        var noContent = rnoContent.test(type);
+
+        options.url = options.url.replace(rhash, "");
         
-        if ( options.data && options.processData && typeof options.data != "string" )
+        if (options.data && options.processData 
+                && typeof options.data !== "string") {
             options.data = this.params(options.data);
-        if ( options.data && options.type.toLowerCase() == "get" ) {
-            options.url += (options.url.match(/\?/) ? "&" : "?") + options.data;
+        }
+        if (options.data && noContent) {
+            options.url += (rquery.test(options.url) ? "&" : "?") 
+                + options.data;
             options.data = null;
         }
         
-        var status, data, requestDone = false, xhr = window.ActiveXObject ? new ActiveXObject("Microsoft.XMLHTTP") : new XMLHttpRequest();
-        xhr.open( options.type, options.url, true, options.username, options.password );
+        var status, data, requestDone = false, xhr = xhrObj();
+        if (!xhr) {
+            return;
+        }
+        if (options.username) {
+            xhr.open(type, options.url, true, 
+                options.username, options.password);
+        } else {
+            xhr.open(type, options.url, true);
+        }
 
         try {
             var i;
@@ -3322,80 +3352,128 @@ define("mo/network/ajax", [
                     xhr[i] = options.xhrFields[i];
                 }
             }
-            if ( options.data && options.contentType !== false ) { 
+            if (options.data && !noContent 
+                    && options.contentType !== false) { 
                 xhr.setRequestHeader("Content-Type", options.contentType);
             }
             xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-            xhr.setRequestHeader("Accept", s.dataType && options.accepts[ s.dataType ] ?
-                options.accepts[ s.dataType ] + ", */*" :
-                options.accepts._default );
+            xhr.setRequestHeader("Accept", 
+                options.dataType && options.accepts[options.dataType] ?
+                    options.accepts[options.dataType] + ", */*; q=0.01" :
+                    options.accepts._default);
             for (i in options.headers) {
                 xhr.setRequestHeader(i, options.headers[i]);
             }
         } catch(e){}
         
-        if ( options.beforeSend )
+        if (options.beforeSend) {
             options.beforeSend(xhr);
+        }
             
-        var onreadystatechange = function(isTimeout){
-            if ( !requestDone && xhr && (xhr.readyState == 4 || isTimeout == "timeout") ) {
-                requestDone = true;
-                if (ival) {
-                    clearInterval(ival);
-                    ival = null;
+        var onreadystatechange = xhr.onreadystatechange = function(isTimeout){
+            if (!xhr || xhr.readyState === 0 || isTimeout === "abort") {
+                if (!requestDone) {
+                    options.complete(xhr);
                 }
-
-                status = isTimeout == "timeout" && "timeout" || !httpSuccess( xhr ) && "error" || "success";
-
-                if ( status == "success" ) {
+                requestDone = true;
+                if (xhr) {
+                    xhr.onreadystatechange = noop;
+                }
+            } else if (!requestDone && xhr 
+                    && (xhr.readyState === 4 || isTimeout === "timeout")) {
+                requestDone = true;
+                xhr.onreadystatechange = noop;
+                status = isTimeout === "timeout" ?
+                    "timeout" :
+                    !httpSuccess(xhr) ?
+                        "error" : "success";
+                var errMsg;
+                if (status === "success") {
                     try {
-                        data = httpData( xhr, options.dataType );
-                    } catch(e) {
+                        data = httpData(xhr, options.dataType);
+                    } catch(parserError) {
                         status = "parsererror";
+                        errMsg = parserError;
                     }
-                    
-                    options.success( data, status );
-                } else
-                    options.handleError( xhr, status );
-                options.complete( xhr, status );
+                    options.success(data);
+                } else {
+                    options.handleError(xhr, status, errMsg);
+                }
+                options.complete(xhr);
+                if (isTimeout === "timeout") {
+                    xhr.abort();
+                }
                 xhr = null;
             }
         };
 
-        var ival = setInterval(onreadystatechange, 13); 
-        if ( options.timeout > 0 )
-            setTimeout(function(){
-                if ( xhr ) {
-                    xhr.abort();
-                    if( !requestDone )
-                        onreadystatechange( "timeout" );
+        try {
+            var oldAbort = xhr.abort;
+            xhr.abort = function(){
+                if (xhr) {
+                    Function.prototype.call.call(oldAbort, xhr);
                 }
-            }, options.timeout);    
-            
-        xhr.send(options.data);
+                onreadystatechange('abort');
+            };
+        } catch(e) {}
+
+        if (options.timeout > 0) {
+            setTimeout(function(){
+                if (xhr && !requestDone) {
+                    onreadystatechange("timeout");
+                }
+            }, options.timeout);
+        }
+
+        try {
+            xhr.send(noContent || options.data == null ? null : options.data);
+        } catch(sendError) {
+            options.handleError(xhr, null, sendError);
+            options.complete(xhr);
+        }
 
         function httpSuccess(r) {
             try {
-                return !r.status && location.protocol == "file:" || ( r.status >= 200 && r.status < 300 ) || r.status == 304 || r.status == 1223 || browsers.safari && !r.status;
+                return !r.status && location.protocol == "file:" 
+                    || ( r.status >= 200 && r.status < 300 ) 
+                    || r.status === 304 || r.status === 1223 || r.status === 0;
             } catch(e){}
             return false;
         }
-        function httpData(r,type) {
-            var ct = r.getResponseHeader("content-type");
-            var xml = type == "xml" || !type && ct && ct.indexOf("xml") >= 0;
+
+        function httpData(r, type) {
+            var ct = r.getResponseHeader("content-type") || '';
+            var xml = type === "xml" || !type && ct && ct.indexOf("xml") >= 0;
             var data = xml ? r.responseXML : r.responseText;
-            if ( xml && data.documentElement.tagName == "parsererror" )
+            if (xml && data.documentElement.tagName === "parsererror") {
                 throw "parsererror";
-            if ( type == "script" )
-                (window.execScript || function(data){
-                    window["eval"].call(window, data);
-                })(data);
-            if ( type == "json" )
+            }
+            if (type === "json" || !type && ct.indexOf("json") >= 0) {
                 data = exports.parseJSON(data);
+            } else if (type === "script" || !type && ct.indexOf("javascript") >= 0) {
+                globalEval(data);
+            }
             return data;
         }
+
         return xhr;
     };
+
+    function noop(){}
+
+    function globalEval(code){
+        var script, indirect = eval;
+        if (code) {
+            if (/^[^\S]*use strict/.test(code)) {
+                script = document.createElement("script");
+                script.text = code;
+                document.head.appendChild(script)
+                    .parentNode.removeChild(script);
+            } else {
+                indirect(code);
+            }
+        }
+    }
 
 });
 
