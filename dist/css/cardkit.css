@@ -954,6 +954,9 @@
   -webkit-transform: translateY(0);
   transform: translateY(0);
 }
+.ck-in-hybird .ck-header {
+  display: none;
+}
 
 .ck-header-shd {
   background: #333;

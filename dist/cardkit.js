@@ -604,7 +604,8 @@ var doc = document,
         autoOverride: true,
         matchesSelector: true,
         preventDefault: true
-    };
+    },
+    _delegate = soviet(doc, _soviet_opt);
 
 var BrightSoviet = _.construct(soviet.Soviet);
 
@@ -963,7 +964,7 @@ var exports = {
         Object.keys(tap_events).forEach(function(selector){
             this[selector] = nothing;
         }, prevent_click_events);
-        this.delegate.on('tap', tap_events)
+        _delegate.on('tap', tap_events)
             .on('click', prevent_click_events);
         this.brightDelegate.on('change', {
             '.ck-ranger': function(e){
@@ -984,7 +985,6 @@ var exports = {
         });
     },
 
-    delegate: soviet(doc, _soviet_opt),
     brightDelegate: new BrightSoviet(doc, _soviet_opt),
     darkDelegate: new DarkSoviet(doc, _soviet_opt),
 
@@ -992,7 +992,6 @@ var exports = {
     component: components
 
 };
-
 
 function handle_control(){
     var controller = control(this),
@@ -1741,14 +1740,24 @@ return function(guard, parent){
         plainHdStyle: 'data-cfg-plainhd',
         customClass: helper.readClass
     });
+    guard.state(source_states);
     guard.component(scaffold_specs);
-    guard.component('content', function(guard){
-        guard.watch('.ckd-content');
-        guard.state(source_states);
+    guard.component({
+        content: function(guard){
+            guard.watch('.ckd-content');
+            guard.state(source_states);
+        },
+        collect: function(guard){
+            guard.watch('.ckd-collect');
+            guard.state(source_states);
+        }
     });
     guard.source()
         .component(scaffold_specs)
-        .component('content', '.ckd-content');
+        .component({
+            content: '.ckd-content',
+            collect: '.ckd-collect'
+        });
 };
 
 });
@@ -1829,6 +1838,7 @@ return function(guard, parent){
         plainHdStyle: 'data-cfg-plainhd',
         customClass: helper.readClass
     });
+    guard.state(source_states);
     guard.component(scaffold_specs);
     guard.component('item', function(guard){
         guard.watch('.ckd-item');
@@ -1915,10 +1925,16 @@ return function(guard, parent){
         customClass: 'custom-class'
     });
     guard.component(scaffold_specs);
-    guard.component('content', 'ck-part[type="content"]');
+    guard.component({
+        content: 'ck-part[type="content"]',
+        collect: 'ck-part[type="collect"]'
+    });
     guard.source()
         .component(source_scaffold_specs)
-        .component('content', '.ckd-content');
+        .component({
+            content: '.ckd-content',
+            collect: '.ckd-collect'
+        });
 };
 
 });
@@ -2691,7 +2707,14 @@ return exports;
 
 define("cardkit/tpl/box", [], function(){
 
-    return {"template":"<div class=\"ck-box-card {%= state.customClass %}\"\n        data-style=\"{%= state.subtype %}\"\n        {%= state.paperStyle ? 'data-cfg-paper=\"true\" ' : '' %}\n        {%= state.plainStyle ? 'data-cfg-plain=\"true\" ' : '' %}\n        {%= state.plainHdStyle ? 'data-cfg-plainhd=\"true\" ' : '' %}>\n\n    {% if (hasSplitHd) { %}\n        {%= hdwrap %}\n    {% } %}\n\n    <article class=\"ck-card-wrap\">\n\n        {% if (!hasSplitHd) { %}\n            {%= hdwrap %}\n        {% } %}\n\n        {% if (!isBlank) { %}\n            <section>{%= content %}</section>\n        {% } %}\n\n        {%= component.ft %}\n\n    </article>\n\n</div>\n"}; 
+    return {"template":"<div class=\"ck-box-card {%= state.customClass %}\"\n        data-style=\"{%= state.subtype %}\"\n        {%= state.paperStyle ? 'data-cfg-paper=\"true\" ' : '' %}\n        {%= state.plainStyle ? 'data-cfg-plain=\"true\" ' : '' %}\n        {%= state.plainHdStyle ? 'data-cfg-plainhd=\"true\" ' : '' %}>\n\n    {% if (hasSplitHd) { %}\n        {%= hdwrap %}\n    {% } %}\n\n    <article class=\"ck-card-wrap\">\n\n        {% if (!hasSplitHd) { %}\n            {%= hdwrap %}\n        {% } %}\n\n        {% if (!isBlank) { %}\n            <section>{%= component.collect.join('') || content %}</section>\n        {% } %}\n\n        {%= component.ft %}\n\n    </article>\n\n</div>\n"}; 
+
+});
+/* @source cardkit/tpl/box/collect.js */;
+
+define("cardkit/tpl/box/collect", [], function(){
+
+    return {"template":"<div class=\"ck-content\">{%= content %}</div>\n"}; 
 
 });
 /* @source cardkit/tpl/box/content.js */;
@@ -2709,15 +2732,17 @@ define("cardkit/card/box", [
   "mo/template/micro",
   "cardkit/helper",
   "cardkit/tpl/box/content",
+  "cardkit/tpl/box/collect",
   "cardkit/tpl/scaffold/hdwrap",
   "cardkit/tpl/box",
   "cardkit/card/common/scaffold"
-], function(__oz0, __oz1, __oz2, __oz3, __oz4, __oz5, __oz6, require){
+], function(__oz0, __oz1, __oz2, __oz3, __oz4, __oz5, __oz6, __oz7, require){
 
 var darkdom = require("darkdom"),
     convert = require("mo/template/micro").convertTpl,
     helper = require("cardkit/helper"),
     render_content = convert(require("cardkit/tpl/box/content").template),
+    render_collect = convert(require("cardkit/tpl/box/collect").template),
     render_hdwrap = convert(require("cardkit/tpl/scaffold/hdwrap").template),
     render_box = convert(require("cardkit/tpl/box").template),
     scaffold_components = require("cardkit/card/common/scaffold");
@@ -2732,11 +2757,20 @@ var exports = {
         });
     },
 
+    collect: function(){
+        return darkdom({
+            enableSource: true,
+            sourceAsContent: true,
+            render: render_collect
+        });
+    },
+
     box: function(){
         var box = darkdom({
             enableSource: true,
             render: function(data){
-                data.isBlank = helper.isBlank(data.content);
+                data.isBlank = !data.component.collect.length 
+                    && helper.isBlank(data.content);
                 data.hasSplitHd = data.state.plainStyle === 'true'
                     || data.state.plainHdStyle === 'true';
                 data.hdwrap = render_hdwrap(data);
@@ -2747,6 +2781,7 @@ var exports = {
         box.contain('content', exports.content, {
             content: true
         });
+        box.contain('collect', exports.collect);
         return box;
     }
 
@@ -3523,7 +3558,8 @@ var DEFAULT_DECK = 'main',
     _defaults = {
         appWrapper: null,
         defaultPage: 'ckDefault',
-        oldStyle: false 
+        oldStyle: false,
+        hybirdMode: false
     };
 
 var exports = {
@@ -3547,6 +3583,9 @@ var exports = {
         this.wrapper = $(this._config.appWrapper || body);
         if (supports.webview) {
             this.wrapper.addClass('ck-in-webview');
+        }
+        if (this._config.hybirdMode) {
+            this.wrapper.addClass('ck-in-hybird');
         }
         if (!supports.noBugWhenFixed) {
             this.wrapper.addClass('ck-bugfix-fixed');

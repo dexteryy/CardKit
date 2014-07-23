@@ -4,10 +4,10 @@
   "version": "2.0.0",
   "main": "cardkit.js",
   "dependencies": {
-    "mo": "~1.6.8",
+    "mo": "~1.7.2",
     "dollar": "~1.5.1",
-    "darkdom": "~0.15.0",
-    "eventmaster": "~2.1.0",
+    "darkdom": "0.15.0",
+    "eventmaster": "2.1.0",
     "soviet": "~1.0.0",
     "momo": "~1.2.0-alpha.1",
     "moui": "~2.3.2"
@@ -26,7 +26,7 @@
     "tests"
   ],
   "resolutions": {
-    "dollar": "~1.5.0",
+    "dollar": "~1.5.1",
     "mo": ">=1.6.6"
   }
 }
