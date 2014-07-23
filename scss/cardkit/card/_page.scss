@@ -165,6 +165,10 @@
     @include transform(translateY(0));
   }
 
+  .ck-in-hybird & {
+    display:none;
+  }
+
 }
 
 .ck-header-shd {

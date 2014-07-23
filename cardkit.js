@@ -25,7 +25,8 @@ var DEFAULT_DECK = 'main',
     _defaults = {
         appWrapper: null,
         defaultPage: 'ckDefault',
-        oldStyle: false 
+        oldStyle: false,
+        hybirdMode: false
     };
 
 var exports = {
@@ -49,6 +50,9 @@ var exports = {
         this.wrapper = $(this._config.appWrapper || body);
         if (supports.webview) {
             this.wrapper.addClass('ck-in-webview');
+        }
+        if (this._config.hybirdMode) {
+            this.wrapper.addClass('ck-in-hybird');
         }
         if (!supports.noBugWhenFixed) {
             this.wrapper.addClass('ck-bugfix-fixed');
