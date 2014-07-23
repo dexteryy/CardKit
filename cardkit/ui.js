@@ -30,7 +30,8 @@ var doc = document,
         autoOverride: true,
         matchesSelector: true,
         preventDefault: true
-    };
+    },
+    _delegate = soviet(doc, _soviet_opt);
 
 var BrightSoviet = _.construct(soviet.Soviet);
 
@@ -389,7 +390,7 @@ var exports = {
         Object.keys(tap_events).forEach(function(selector){
             this[selector] = nothing;
         }, prevent_click_events);
-        this.delegate.on('tap', tap_events)
+        _delegate.on('tap', tap_events)
             .on('click', prevent_click_events);
         this.brightDelegate.on('change', {
             '.ck-ranger': function(e){
@@ -410,7 +411,6 @@ var exports = {
         });
     },
 
-    delegate: soviet(doc, _soviet_opt),
     brightDelegate: new BrightSoviet(doc, _soviet_opt),
     darkDelegate: new DarkSoviet(doc, _soviet_opt),
 
@@ -418,7 +418,6 @@ var exports = {
     component: components
 
 };
-
 
 function handle_control(){
     var controller = control(this),
