@@ -21,6 +21,7 @@ return function(guard, parent){
         plainHdStyle: 'data-cfg-plainhd',
         customClass: helper.readClass
     });
+    guard.state(source_states);
     guard.component(scaffold_specs);
     guard.component('item', function(guard){
         guard.watch('.ckd-item');
