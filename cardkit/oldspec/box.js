@@ -23,13 +23,22 @@ return function(guard, parent){
     });
     guard.state(source_states);
     guard.component(scaffold_specs);
-    guard.component('content', function(guard){
-        guard.watch('.ckd-content');
-        guard.state(source_states);
+    guard.component({
+        content: function(guard){
+            guard.watch('.ckd-content');
+            guard.state(source_states);
+        },
+        collect: function(guard){
+            guard.watch('.ckd-collect');
+            guard.state(source_states);
+        }
     });
     guard.source()
         .component(scaffold_specs)
-        .component('content', '.ckd-content');
+        .component({
+            content: '.ckd-content',
+            collect: '.ckd-collect'
+        });
 };
 
 });

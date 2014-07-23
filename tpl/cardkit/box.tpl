@@ -15,7 +15,7 @@
         {% } %}
 
         {% if (!isBlank) { %}
-            <section>{%= content %}</section>
+            <section>{%= component.collect.join('') || content %}</section>
         {% } %}
 
         {%= component.ft %}

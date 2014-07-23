@@ -17,10 +17,16 @@ return function(guard, parent){
         customClass: 'custom-class'
     });
     guard.component(scaffold_specs);
-    guard.component('content', 'ck-part[type="content"]');
+    guard.component({
+        content: 'ck-part[type="content"]',
+        collect: 'ck-part[type="collect"]'
+    });
     guard.source()
         .component(source_scaffold_specs)
-        .component('content', '.ckd-content');
+        .component({
+            content: '.ckd-content',
+            collect: '.ckd-collect'
+        });
 };
 
 });
