@@ -5,6 +5,7 @@
         data-deck-active="{%= state.isDeckActive || 'false' %}"
         data-deck="{%= (state.deck || 'main') %}"
         data-curdeck="{%= state.currentDeck %}"
+        data-fixed-minheight="{%= (state.fixedMinHeight === 'false' && 'false' || 'true') %}"
         data-cardid="{%= state.cardId %}">
 
     {% if (hasHeader) { %}

@@ -126,8 +126,10 @@ var exports = {
 function when_page_active(changes){
     var root = changes.root;
     if (changes.newValue === 'true') {
-        root.css('min-height', window.innerHeight * 1.4 + 'px')
-            .attr('data-page-active', true);
+        if (root.attr('data-fixed-minheight') !== 'false') {
+            root.css('min-height', window.innerHeight * 1.4 + 'px');
+        }
+        root.attr('data-page-active', true);
         setTimeout(function(){
             root.addClass('topbar-enabled');
             window.scrollTo(0, 0);
@@ -142,8 +144,10 @@ function when_page_active(changes){
 function when_deck_active(changes){
     var root = changes.root;
     if (changes.newValue === 'true') {
-        root.css('min-height', window.innerHeight * 1.4 + 'px')
-            .attr('data-deck-active', true);
+        if (root.attr('data-fixed-minheight') !== 'false') {
+            root.css('min-height', window.innerHeight * 1.4 + 'px');
+        }
+        root.attr('data-deck-active', true);
     } else {
         root.attr('data-deck-active', false);
         setTimeout(function(){

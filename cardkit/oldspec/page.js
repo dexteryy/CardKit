@@ -79,6 +79,7 @@ function exports(guard, parent){
         isPageActive: 'data-active-page',
         isDeckActive: 'data-active-deck',
         currentDeck: 'data-current-deck',
+        fixedMinHeight: 'data-fixed-minheight',
         cardId: 'id'
     });
     guard.component(specs);

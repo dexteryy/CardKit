@@ -29,6 +29,10 @@
 
   }
 
+  &[data-fixed-minheight="false"] {
+    @include box-shadow(none);
+  }
+
   &[data-page-active="false"] {
     display:none;
   }

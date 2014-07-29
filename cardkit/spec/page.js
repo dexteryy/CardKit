@@ -79,6 +79,7 @@ function exports(guard, parent){
         isPageActive: 'active-page',
         isDeckActive: 'active-deck',
         currentDeck: 'current-deck',
+        fixedMinHeight: 'fixed-minheight',
         cardId: 'id'
     });
     guard.component(specs);
