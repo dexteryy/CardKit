@@ -2030,6 +2030,7 @@ function exports(guard, parent){
         isPageActive: 'active-page',
         isDeckActive: 'active-deck',
         currentDeck: 'current-deck',
+        fixedMinHeight: 'fixed-minheight',
         cardId: 'id'
     });
     guard.component(specs);
@@ -2136,6 +2137,7 @@ function exports(guard, parent){
         isPageActive: 'data-active-page',
         isDeckActive: 'data-active-deck',
         currentDeck: 'data-current-deck',
+        fixedMinHeight: 'data-fixed-minheight',
         cardId: 'id'
     });
     guard.component(specs);
@@ -2954,7 +2956,7 @@ return exports;
 
 define("cardkit/tpl/page", [], function(){
 
-    return {"template":"\n<div class=\"ck-page-card{%= !hasHeader ? ' no-header' : '' %}{%= !component.banner || componentData.banner.isBlank ? '' : ' with-banner' %}{%= state.isPageActive === 'true' ? ' topbar-enabled' : '' %}\" \n        data-style=\"{%= state.subtype %}\"\n        data-page-active=\"{%= state.isPageActive || 'false' %}\"\n        data-deck-active=\"{%= state.isDeckActive || 'false' %}\"\n        data-deck=\"{%= (state.deck || 'main') %}\"\n        data-curdeck=\"{%= state.currentDeck %}\"\n        data-cardid=\"{%= state.cardId %}\">\n\n    {% if (hasHeader) { %}\n    <div class=\"ck-header\">\n        <div class=\"ck-header-shd\"></div>\n        {%= component.nav %}\n        {%= component.title %}\n        {%= component.actionbar %}\n    </div>\n    {% } %}\n\n    {%= component.banner %}\n\n    <div class=\"ck-article\">\n        {% if (!isBlank) { %}\n            {%= content %}\n        {% } else { %}\n            <div class=\"ck-blank-card\">\n                <article class=\"ck-card-wrap\">\n                    {% if (component.blank) { %}\n                        {%= component.blank %}\n                    {% } else { %}\n                        <div>{%=(state.blankText || '目前还没有内容')%}</div>\n                    {% } %}\n                </article>\n            </div>\n        {% } %}\n    </div>\n\n    {% if (component.footer) { %}\n    <div class=\"ck-footer\">{%= component.footer %}</div>\n    {% } %}\n\n    <a class=\"ck-page-link-mask ck-link\" href=\"#{%= state.cardId %}\"></a>\n\n</div>\n\n"}; 
+    return {"template":"\n<div class=\"ck-page-card{%= !hasHeader ? ' no-header' : '' %}{%= !component.banner || componentData.banner.isBlank ? '' : ' with-banner' %}{%= state.isPageActive === 'true' ? ' topbar-enabled' : '' %}\" \n        data-style=\"{%= state.subtype %}\"\n        data-page-active=\"{%= state.isPageActive || 'false' %}\"\n        data-deck-active=\"{%= state.isDeckActive || 'false' %}\"\n        data-deck=\"{%= (state.deck || 'main') %}\"\n        data-curdeck=\"{%= state.currentDeck %}\"\n        data-fixed-minheight=\"{%= (state.fixedMinHeight === 'false' && 'false' || 'true') %}\"\n        data-cardid=\"{%= state.cardId %}\">\n\n    {% if (hasHeader) { %}\n    <div class=\"ck-header\">\n        <div class=\"ck-header-shd\"></div>\n        {%= component.nav %}\n        {%= component.title %}\n        {%= component.actionbar %}\n    </div>\n    {% } %}\n\n    {%= component.banner %}\n\n    <div class=\"ck-article\">\n        {% if (!isBlank) { %}\n            {%= content %}\n        {% } else { %}\n            <div class=\"ck-blank-card\">\n                <article class=\"ck-card-wrap\">\n                    {% if (component.blank) { %}\n                        {%= component.blank %}\n                    {% } else { %}\n                        <div>{%=(state.blankText || '目前还没有内容')%}</div>\n                    {% } %}\n                </article>\n            </div>\n        {% } %}\n    </div>\n\n    {% if (component.footer) { %}\n    <div class=\"ck-footer\">{%= component.footer %}</div>\n    {% } %}\n\n    <a class=\"ck-page-link-mask ck-link\" href=\"#{%= state.cardId %}\"></a>\n\n</div>\n\n"}; 
 
 });
 /* @source cardkit/tpl/page/actionbar/action.js */;
@@ -3137,8 +3139,10 @@ var exports = {
 function when_page_active(changes){
     var root = changes.root;
     if (changes.newValue === 'true') {
-        root.css('min-height', window.innerHeight * 1.4 + 'px')
-            .attr('data-page-active', true);
+        if (root.attr('data-fixed-minheight') !== 'false') {
+            root.css('min-height', window.innerHeight * 1.4 + 'px');
+        }
+        root.attr('data-page-active', true);
         setTimeout(function(){
             root.addClass('topbar-enabled');
             window.scrollTo(0, 0);
@@ -3153,8 +3157,10 @@ function when_page_active(changes){
 function when_deck_active(changes){
     var root = changes.root;
     if (changes.newValue === 'true') {
-        root.css('min-height', window.innerHeight * 1.4 + 'px')
-            .attr('data-deck-active', true);
+        if (root.attr('data-fixed-minheight') !== 'false') {
+            root.css('min-height', window.innerHeight * 1.4 + 'px');
+        }
+        root.attr('data-deck-active', true);
     } else {
         root.attr('data-deck-active', false);
         setTimeout(function(){

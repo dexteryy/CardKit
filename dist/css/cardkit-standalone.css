@@ -881,6 +881,11 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
   -webkit-transform: translateY(0);
   transform: translateY(0);
 }
+.ck-page-card[data-fixed-minheight="false"] {
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
 .ck-page-card[data-page-active="false"] {
   display: none;
 }
